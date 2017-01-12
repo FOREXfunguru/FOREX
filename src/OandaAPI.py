@@ -12,6 +12,7 @@ from pandas.tseries.offsets import BDay
 from matplotlib.finance import volume_overlay
 from datetime import datetime,timedelta
 import datetime
+from pandas.stats.tests.common import start
 
 class Candle(object):
     '''
@@ -286,6 +287,40 @@ class Reversal(object):
     Class representing a potential price reversal
     '''
     
+    def __offset_closed_marked(self,start,end,freq,delta,dir):
+        '''
+        This private function will check a period between 2 dates and will extend start/end depending on a particular date falling
+        on a day when the market is closed
+        
+        start: datetime object
+            Start of the period that will be checked
+        end: datetime object
+            End of the period that will be checked
+        freq: str
+            Time frequency to increase the intervals. eg 'D', 'H12', ...
+        delta: timedelta object 
+            Used for the offset
+        dir: str, 'L'/'R'
+            Direction of interval extension. 
+        '''
+        
+        for d in pd.date_range(start=start,end=end, freq=freq):
+            if (d.weekday()==4 and d.time()==datetime.time(22,0,0)) or d.weekday()==5 or (d.weekday()==6 and d.time()<datetime.time(22, 0, 0)):
+                if dir=='L':
+                    start=start-delta
+                elif dir=='R':
+                    end=end+delta
+                if dir=='L':
+                    while (start.weekday()==4 and start.time()==datetime.time(22,0,0)) or start.weekday()==5 or (start.weekday()==6 and start.time()<datetime.time(22, 0, 0)):
+                        start=start-delta
+                elif dir=='R':
+                    while (end.weekday()==4 and end.time()==datetime.time(22,0,0)) or end.weekday()==5 or (end.weekday()==6 and end.time()<datetime.time(22, 0, 0)):
+                        end=end+delta
+        if dir=='L':
+             return start
+        elif dir=='R':
+             return end 
+
     def __init__(self, ic,outcome,number_pre,number_post,instrument,granularity='D',pre_candles=None,post_candles=None):
         '''
         Constructor
@@ -336,27 +371,22 @@ class Reversal(object):
         start=candle-self.number_pre*delta
         end=candle+self.number_post*delta
         
-        for d in pd.date_range(start=start,end=candle, freq=freq):
-            if (d.weekday()==4 and d.time()==datetime.time(22,0,0)) or d.weekday()==5 or (d.weekday()==6 and d.time()<datetime.time(22, 0, 0)):
-                start=start-delta
-                
-        if start.weekday()==4 and start.time()==datetime.time(22,0,0):
-            start=start-delta
-        
-        for d in pd.date_range(start=candle+delta,end=end, freq=freq):
-            if (d.weekday()==4 and d.time()==datetime.time(22,0,0)) or d.weekday()==5 or (d.weekday()==6 and d.time()<datetime.time(22, 0, 0)):
-                end=end+delta
-                
-        if end.weekday()==5:
-            end=end+delta
+        start=self.__offset_closed_marked(start,candle,freq,delta,'L')
+        end=self.__offset_closed_marked(candle+delta,end,freq,delta,'R')
         
         oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',instrument=self.instrument,granularity=self.granularity,alignmentTimezone='Europe/London',dailyAlignment=22,start=start.isoformat(),end=end.isoformat())
-    
-        '''
-        oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',instrument=self.instrument,granularity=self.granularity,alignmentTimezone='Europe/London',dailyAlignment=22,start=start.isoformat(),count=5)
-        '''
         
         candlelist=oanda.fetch_candleset()
+        
+        '''
+        check if candlelist is correct
+        '''
+        total=number_pre+number_post+1
+        midle=number_pre+1
+        if total!=len(candlelist):
+            raise Exception("candlelist length was not expected!")
+        
+        
 
         for c in candlelist:
             c.set_candle_features()
