@@ -12,12 +12,14 @@ logging.info("Program started")
 
 
 xls_file = pd.ExcelFile('/Users/ernesto/Google_Drive/MONEDAS/backtesting/data_collection_29012017stripped.xlsx')
-
+'''
+xls_file = pd.ExcelFile('/Users/ernesto/Google_Drive/MONEDAS/backtesting/test.xlsx')
+'''
 df = xls_file.parse('Sheet1')
 
 newline=""
 out=open('/Users/ernesto/projects/FOREX/out.txt','w')
-out.write("instrument\tgranularity\tdate time\ttype\toutcome\tengulfing?\tdiffm1_u\tdiffm1_l\tdiffp1_u\tdiffp1_l\t[perc_uwick:perc_body:perc_lwick]p1\tcolors_pre_[m1,ic]\tcolors_post_[ic,p1]\tformation_pre_[m1,ic]\tformation_post_[ic,p1]\tavg_volume_pre\tvolume_pre_[m1,ic]\tvolume_post_[ic,p1]\n")
+out.write("instrument\tgranularity\tdate time\ttype\toutcome\tengulfing?\tICdiffm1_wh\tICdiffm1_wl\tp1diffIC_wh\tp1diffIC_wl\tICdiffm1_ch\tICdiffm1_cl\tp1diffIC_ch\tp1diffIC_cl\t[perc_uwick:perc_body:perc_lwick]p1\tcolors_pre_[m1,ic]\tcolors_post_[ic,p1]\tformation_pre_[m1,ic]\tformation_post_[ic,p1]\tavg_volume_pre\tvolume_pre_[m1,ic]\tvolume_post_[ic,p1]\n")
 
 for index, row in df.iterrows():
     warnings.warn("INFO: Analysing %s:%s" % (row['pair'],row['date']))
@@ -34,13 +36,23 @@ for index, row in df.iterrows():
     candlelist_pre.append(r.ic_candle)
     bc=BiCandle(candleA=candlelist_post[0],candleB=candlelist_post[1])
     newline= newline+"\t"+ str(bc.is_engulfing()) +"\t"
-    listpost_upper=r.getwick_differential(candlelist_post,'upper')
-    listpost_lower=r.getwick_differential(candlelist_post,'lower')
-    listpre_upper=r.getwick_differential(candlelist_pre,'upper')
-    listpre_lower=r.getwick_differential(candlelist_pre,'lower')
-    for i, j in zip(listpre_upper, listpre_lower):
+    
+    listpost_upper_wick=r.get_differential(candlelist_post,'upper',entity='wick')
+    listpost_lower_wick=r.get_differential(candlelist_post,'lower',entity='wick')
+    listpre_upper_wick=r.get_differential(candlelist_pre,'upper',entity='wick')
+    listpre_lower_wick=r.get_differential(candlelist_pre,'lower',entity='wick')
+    for i, j in zip(listpre_upper_wick, listpre_lower_wick):
         newline= newline+"%f\t%f\t" % (i,j)
-    for i, j in zip(listpost_upper, listpost_lower):
+    for i, j in zip(listpost_upper_wick, listpost_lower_wick):
+        newline= newline+"%f\t%f\t" % (i,j)
+        
+    listpost_upper_candle=r.get_differential(candlelist_post,'upper',entity='candle')
+    listpost_lower_candle=r.get_differential(candlelist_post,'lower',entity='candle')
+    listpre_upper_candle=r.get_differential(candlelist_pre,'upper',entity='candle')
+    listpre_lower_candle=r.get_differential(candlelist_pre,'lower',entity='candle')
+    for i, j in zip(listpre_upper_candle, listpre_lower_candle):
+        newline= newline+"%f\t%f\t" % (i,j)
+    for i, j in zip(listpost_upper_candle, listpost_lower_candle):
         newline= newline+"%f\t%f" % (i,j)
     
     newline=newline+"\t[%f:%f:%f]" %(candlelist_post[1].perc_uwick,candlelist_post[1].perc_body,candlelist_post[1].perc_lwick)

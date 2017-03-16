@@ -553,9 +553,9 @@ class Reversal(object):
         self.ic_candle=newlist[middle-1]
         self.post_candles=newlist[middle:]
         
-    def getwick_differential(self,candlelist,select):
+    def get_differential(self,candlelist,select,entity):
         '''
-        Method to get the difference in the price between the current upper/lower wick and the previous one
+        Method to get the difference in the price between the current upper/lower wick/candle and the previous one
         
         Parameters
         ----------
@@ -563,6 +563,8 @@ class Reversal(object):
                     List of candles
         select : str, [upper, lower] required
                  Calculate the different between highs (upper), lows (lower)
+        entity : str, [wick, candle] required
+                 Calculate the differential on the wick or the candle
         
         Return
         ------
@@ -575,9 +577,15 @@ class Reversal(object):
         for k,i in enumerate(candlelist):
             val=0.0
             if select=="upper":
-                val=i.highBid
+                if entity=="wick":
+                    val=i.highBid
+                elif entity=="candle":
+                    val=i.openBid
             elif select=="lower":
-                val=i.lowBid
+                if entity=="wick":
+                    val=i.lowBid
+                elif entity=="candle":
+                    val=i.closeBid
             else:
                 raise Exception("select argument %s is not recognised" % select)         
             
