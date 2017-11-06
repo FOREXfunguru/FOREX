@@ -4,6 +4,7 @@ Created on 24 Nov 2016
 @author: ernesto
 '''
 
+import pdb
 import re
 import os
 import requests,json
@@ -13,7 +14,7 @@ from matplotlib.finance import volume_overlay
 from datetime import datetime,timedelta
 import datetime
 import pytz
-from pandas.stats.tests.common import start
+#from pandas.stats.tests.common import start
 
 class Candle(object):
     '''
@@ -190,7 +191,7 @@ class BidAskCandle(Candle):
     
     def __str__(self):
         out_str=""
-        for attr, value in self.__dict__.iteritems():
+        for attr, value in self.__dict__.items():
             out_str+="%s:%s " %(attr, value)
         return out_str
             
@@ -261,14 +262,14 @@ class OandaAPI(object):
             if data:
                 self.data=data
             else:
-                self.data = json.loads(resp.content)
+                 self.data = json.loads(resp.content.decode("utf-8"))
             
     def print_url(self):
         '''
         Print url from requests module
         '''
         
-        print "URL: %s" % self.resp.url
+        print("URL: %s" % self.resp.url)
         
     def fetch_candleset(self):
         '''
