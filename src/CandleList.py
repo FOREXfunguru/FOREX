@@ -76,7 +76,7 @@ class CandleList(object):
                     p_candle = getattr(c, portion)
                 else:
                     res=getattr(c, portion)-p_candle
-                    res= float('%.4f' % res)
+                    res= float('%.5f' % res)
                     if type is 'long' and res>0:
                         bin_string+="1"
                     elif type is 'long' and res<0:
@@ -86,6 +86,10 @@ class CandleList(object):
                         bin_string+="0"
                     elif type is 'short' and res<0:
                         bin_string+="1"
+
+                    if res==0:
+                        print("p_candle:{0} current:{1}".format(p_candle,getattr(c, portion)))
+                        raise Exception("Error getting the difference between candles")
 
                     p_candle = getattr(c, portion)
 
