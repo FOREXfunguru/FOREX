@@ -1,32 +1,28 @@
 import pytest
 
-from TradeJournal import TradeJournal
+from TradeJournal.Trade import Trade
 
 @pytest.fixture
-def tj_object():
-    '''Returns a TradeJournal object'''
-    '''
-    td=TradeJournal(url="data/Trading_journal_07082017.xlsx")
-    '''
+def t_object():
+    '''Returns a Trade object'''
 
-    td=TradeJournal(url="data/test.xlsx")
+    td=Trade(
+        start="2017-04-20T14:30:00",
+        end="2017-04-26T16:43:00",
+        pair="AUD/USD",
+        type="bullish",
+        timeframe="H8"
+        )
     return td
-'''
-def test_fetch_trades(tj_object):
 
-    trade_list=tj_object.fetch_trades()
-    
-    assert len(trade_list)==86
-    assert trade_list[0].start.strftime('%Y-%m-%d')=='2017-03-20'
-    assert trade_list[0].end.strftime('%Y-%m-%d')=='2017-03-23'
-    assert trade_list[0].pair=='AUD_NZD'
-    assert trade_list[0].timeframe=='H12'
-    assert trade_list[0].type=='short'
-'''
-def test_add_trend_momentum(tj_object):
+def test_fetch_candlelist(t_object):
+    '''
+    This test checks the function to return a CandleList object 
+    corresponding to this trade
+    '''
+    cl=t_object.fetch_candlelist()
 
-    tj_object.add_trend_momentum()
-
-    assert 0
+    assert cl.next().openBid==0.7521
+    assert cl.next().highBid==0.75326
 
 

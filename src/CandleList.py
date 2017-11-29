@@ -1,4 +1,6 @@
 from OandaAPI import Candle
+from scipy import stats
+import pandas as pd
 import pdb
 import re
 
@@ -11,11 +13,36 @@ class CandleList(object):
     ---------------
     clist : list, Required
             List of Candle objects
+    type : str, Required
+           Type of this CandleList. Possible values are 'long'/'short'
+    seq : dict, Optional
+          Dictionary containing the binary seq for the different candle portions
+    number_of_0s : dict, Optional
+          Dictionary containing the number of 0s (possibly normalized) in the different
+          binary seqs in self.seq
+    longest_stretch : dict, Optional
+           Dictionary containing the longest stretch of 0s in the different binary seqs
+           in self.seq
+    highlow_double0s : number, Optional
+          Number of double 0s in the high/low of the candles in CandleList
+    openclose_double0s : number, Optional
+          Number of double 0s in the open/close of the candles in CandleList
+    entropy : Dict of Floats, Optional
+          Entropy for each of the sequences in self.seq 
     '''
 
-    def __init__(self, clist):
+    def __init__(self, clist,type,seq=None, number_of_0s=None,
+                 longest_stretch=None, highlow_double0s=None, 
+                 openclose_double0s=None, entropy=None):
         self.clist=clist
+        self.type=type
         self.len=len(clist)
+        self.seq=seq
+        self.number_of_0s=number_of_0s
+        self.longest_stretch=longest_stretch
+        self.highlow_double0s=highlow_double0s
+        self.openclose_double0s=openclose_double0s
+        self.entropy=entropy
         self.ix=0
 
     def __iter__(self):
@@ -30,67 +57,209 @@ class CandleList(object):
             raise StopIteration()
     next = __next__  # python2.x compatibility.
 
-    def get_binary_seq(self,type,p):
+    def calc_binary_seq(self, merge=True):
         '''
-        Get a sequence of 1s and 0s corresponding to the progression of the candles in
-        the trend. For example, if the funtion is run with type='short',p='high' then 
+        Calculate the sequence of 1s and 0s corresponding to the progression of the candles in
+        the trend. For example, if the CandleList is  is of type='short',then 
         '111' means that there are 3 candles for which each of the candle highs mark lower
         highs
 
         Parameters
         ----------
-        type : string, Required
-               Type of the trade corresponding to this clist. Possible values are:
-               long/short
-        p : string, Required
-            Use candle highs/lows or open/close or colour for calculating the sequence.
-            Possible values are: 'high','low','open','close','colour'
+        merge : bool, Optional
+                If true, then the function will calculate a merged binary sequence produced after concatenating the seqs
+                for the different portions of the candle (i.e. 'high','low','open','close','colour')
         
         Returns
         ------
-        A str composed of 1s and 0s
+        Nothing
         '''
 
-        portion="{0}Bid".format(p)
-        portion= re.sub('colourBid','colour',portion)
+        adict={}
+        for p in ['high','low','open','close','colour']:
+            portion="{0}Bid".format(p)
 
-        bin_string=""
-
-        if portion is "colour":
-            for c in self.clist:
-                c.set_candle_features()
-                if type is 'long' and c.colour is "green":
-                    bin_string+="1"
-                elif type is 'long' and c.colour is "red":
-                    bin_string+="0"
-                
-                if type is 'short' and c.colour is "green":
-                    bin_string+="0"
-                elif type is 'short' and c.colour is "red":
-                    bin_string+="1"
-                
-        else:
-            p_candle=None
-            for c in self.clist:
-                if p_candle is None:
-                    p_candle = getattr(c, portion)
-                else:
-                    res=getattr(c, portion)-p_candle
-                    res= float('%.5f' % res)
-                    if type is 'long' and res>0:
+            if p is "colour":
+                bin_string=""
+                for c in self.clist:
+                    c.set_candle_features()
+                    if self.type is 'long' and c.colour is "green":
                         bin_string+="1"
-                    elif type is 'long' and res<0:
+                    elif self.type is 'long' and c.colour is "red":
                         bin_string+="0"
+                
+                    if self.type is 'short' and c.colour is "green":
+                        bin_string+="0"
+                    elif self.type is 'short' and c.colour is "red":
+                        bin_string+="1"
+                adict['colour']=bin_string
+                if merge is True:
+                    if 'merge' in adict:
+                        adict['merge']=adict['merge']+bin_string
+                    else:
+                        adict['merge']=bin_string
+            else:
+                bin_string=""
+                p_candle=None
+                for c in self.clist:
+                    if p_candle is None:
+                        p_candle = getattr(c, portion)
+                    else:
+                        res=getattr(c, portion)-p_candle
+                        res= float('%.7f' % res)
+                        if self.type is 'long' and res>0:
+                            bin_string+="1"
+                        elif self. type is 'long' and res<0:
+                            bin_string+="0"
+                        elif self.type is 'long' and res==0:
+                            bin_string+="N"
                         
-                    if type is 'short' and res>0:
-                        bin_string+="0"
-                    elif type is 'short' and res<0:
-                        bin_string+="1"
+                        if self.type is 'short' and res>0:
+                            bin_string+="0"
+                        elif self.type is 'short' and res<0:
+                            bin_string+="1"
+                        elif self.type is 'short' and res==0:
+                            bin_string+="N"
 
-                    if res==0:
-                        print("p_candle:{0} current:{1}".format(p_candle,getattr(c, portion)))
-                        raise Exception("Error getting the difference between candles")
+                        p_candle = getattr(c, portion)
+                adict[p]=bin_string
+                if merge is True:
+                    if 'merge' in adict:
+                        adict['merge']=adict['merge']+bin_string
+                    else:
+                        adict['merge']=bin_string
+        self.seq=adict
 
-                    p_candle = getattr(c, portion)
+    def calc_number_of_0s(self, norm=True):
+        '''
+        This function will calculate the number of 0s
+        in self.seq (i.e. 00100=4)
 
-        return bin_string
+        Parameters
+        ----------
+        norm: bool, Optional
+              If True then the calculated value will
+              be normalized by length. Default: True
+
+        Returns
+        -------
+        Nothing
+        '''
+
+        a_dict={}
+        for key in self.seq:
+            sequence=self.seq[key]
+            a_list=list(sequence)
+            new_list=[a_number for a_number in a_list if a_number=='0']
+            number_of_0s=0
+            if norm is True:
+                number_of_0s=len(new_list)/len(a_list)
+            else:
+                number_of_0s=len(new_list)
+            a_dict[key]=number_of_0s
+     
+        self.number_of_0s=a_dict
+
+    def get_entropy(self, norm=True):
+        '''
+        Calculates the entropy for each of the sequences in self.seq
+
+        Parameters
+        ----------
+        norm: bool, Optional
+              If True then the calculated value will
+              be normalized by length. Default: True
+
+        Returns
+        -------
+        Nothing
+        '''
+
+        a_dict={}
+        for key in ['high','low','open','close','colour']:
+            s_list=list(self.seq[key])
+            data = pd.Series(s_list)
+            p_data= data.value_counts()/len(data) # calculates the probabilities
+            entropy=stats.entropy(p_data)  # input probabilities to get the entropy
+            f_entropy=None
+            if norm is True:
+                f_entropy=entropy/len(s_list)
+            else:
+                f_entropy
+            a_dict[key]=f_entropy
+        
+        self.entropy=a_dict
+
+    def __get_number_of_double0s(self,seq1,seq2,norm=True):
+        '''
+        This function will detect the columns having 2 0s in an alignment.
+        For example:
+        10100111
+        11001000
+        Will have 1 double 0
+
+        Parameters
+        ----------
+        seq1: str, Required
+        seq2: str, Required
+        norm: bool, Optional
+              If True then the returned value will
+              be normalized by length. Default: True
+
+        Returns
+        -------
+        A float
+        '''
+        list1=list(seq1)
+        list2=list(seq2)
+
+        if len(list1) != len(list2):
+            raise Exception("Lengths of seq1 and seq2 are not equal")
+
+        number_of_double0s=0
+        for i, j in zip(list1, list2):
+            if i is "N" or j is "N":
+                print("Skipping this column as there is a N in the binary seq")
+                continue
+            if int(i)==0 and int(j)==0:
+                number_of_double0s=number_of_double0s+1
+
+        if norm is True:
+            return number_of_double0s/len(list1)
+        else:
+            return number_of_double0s
+
+
+    def calc_number_of_doubles0s(self,norm=True):
+        '''
+        This function will set the 'highlow_double0s' and 'openclose_double0s'
+        class members
+        '''
+
+        high_low=self.__get_number_of_double0s(self.seq['high'], self.seq['low'], norm=norm)
+        open_close=self.__get_number_of_double0s(self.seq['open'], self.seq['close'], norm=norm)
+        
+        self.highlow_double0s=high_low
+        self.openclose_double0s=open_close
+        
+    def calc_longest_stretch(self):
+        '''
+        This function will calculate the longest stretch of contiguous 0s.
+
+        For example:
+        1010000111
+
+        Will return 4
+
+        Returns
+        -------
+        Nothing
+        '''
+        a_dict={}
+        for key in ['high','low','open','close','colour']:
+            sequence=self.seq[key]
+            length=len(max(re.compile("(0+0)*").findall(sequence)))
+            a_dict[key]=length
+
+        self.longest_stretch=a_dict
+
