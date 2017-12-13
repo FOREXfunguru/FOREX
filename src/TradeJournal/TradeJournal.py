@@ -2,6 +2,7 @@ import pandas as pd
 import pdb
 import re
 import warnings
+from datetime import datetime
 from TradeJournal.Trade import Trade
 from openpyxl import load_workbook
 
@@ -14,13 +15,16 @@ class TradeJournal(object):
     ---------------
     
     url: path to the .xlsx file with the trade journal
+    worksheet: str, Required
+               Name of the worksheet that will be used to create the object. i.e. trading_journal
     '''
 
-    def __init__(self, url):
+    def __init__(self, url, worksheet):
         self.url=url
+        self.worksheet=worksheet
         #read-in the 'trading_journal' worksheet from a .xlsx file into a pandas dataframe
         xls_file = pd.ExcelFile(url)
-        df = xls_file.parse('trading_journal')
+        df = xls_file.parse(worksheet,converters={'Start of trade': str, 'End of trade': str})
         self.df=df
 
     def fetch_trades(self):
@@ -28,8 +32,8 @@ class TradeJournal(object):
         trade_list=[]
         for index,row in self.df.iterrows():
             t=Trade(
-                start=row['Start of trade'].to_pydatetime(),
-                end=row['End of trade'].to_pydatetime(),
+                start=datetime.strptime(row['Start of trade'], '%Y-%m-%d %H:%M:%S'),
+                end=datetime.strptime(row['End of trade'], '%Y-%m-%d %H:%M:%S'),
                 pair=row['Currency Pair'],
                 type=row['Type'],
                 timeframe=row['Entry Time-frame'],
@@ -54,7 +58,7 @@ class TradeJournal(object):
             if trade.timeframe=="H10":
                 warnings.warn("Timeframe format: {0} is not valid. Skipping".format(trade.timeframe))
                 continue
-            elif trade.timeframe=="na":
+            if trade.timeframe=="na":
                 warnings.warn("Timeframe is not defined. Skipping")
                 continue
             row=[]

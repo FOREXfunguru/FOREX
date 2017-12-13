@@ -1,0 +1,1842 @@
+
+% Default to the notebook output style
+
+    
+
+
+% Inherit from the specified cell style.
+
+
+
+
+    
+\documentclass[11pt]{article}
+
+    
+    
+    \usepackage[T1]{fontenc}
+    % Nicer default font (+ math font) than Computer Modern for most use cases
+    \usepackage{mathpazo}
+
+    % Basic figure setup, for now with no caption control since it's done
+    % automatically by Pandoc (which extracts ![](path) syntax from Markdown).
+    \usepackage{graphicx}
+    % We will generate all images so they have a width \maxwidth. This means
+    % that they will get their normal width if they fit onto the page, but
+    % are scaled down if they would overflow the margins.
+    \makeatletter
+    \def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth
+    \else\Gin@nat@width\fi}
+    \makeatother
+    \let\Oldincludegraphics\includegraphics
+    % Set max figure width to be 80% of text width, for now hardcoded.
+    \renewcommand{\includegraphics}[1]{\Oldincludegraphics[width=.8\maxwidth]{#1}}
+    % Ensure that by default, figures have no caption (until we provide a
+    % proper Figure object with a Caption API and a way to capture that
+    % in the conversion process - todo).
+    \usepackage{caption}
+    \DeclareCaptionLabelFormat{nolabel}{}
+    \captionsetup{labelformat=nolabel}
+
+    \usepackage{adjustbox} % Used to constrain images to a maximum size 
+    \usepackage{xcolor} % Allow colors to be defined
+    \usepackage{enumerate} % Needed for markdown enumerations to work
+    \usepackage{geometry} % Used to adjust the document margins
+    \usepackage{amsmath} % Equations
+    \usepackage{amssymb} % Equations
+    \usepackage{textcomp} % defines textquotesingle
+    % Hack from http://tex.stackexchange.com/a/47451/13684:
+    \AtBeginDocument{%
+        \def\PYZsq{\textquotesingle}% Upright quotes in Pygmentized code
+    }
+    \usepackage{upquote} % Upright quotes for verbatim code
+    \usepackage{eurosym} % defines \euro
+    \usepackage[mathletters]{ucs} % Extended unicode (utf-8) support
+    \usepackage[utf8x]{inputenc} % Allow utf-8 characters in the tex document
+    \usepackage{fancyvrb} % verbatim replacement that allows latex
+    \usepackage{grffile} % extends the file name processing of package graphics 
+                         % to support a larger range 
+    % The hyperref package gives us a pdf with properly built
+    % internal navigation ('pdf bookmarks' for the table of contents,
+    % internal cross-reference links, web links for URLs, etc.)
+    \usepackage{hyperref}
+    \usepackage{longtable} % longtable support required by pandoc >1.10
+    \usepackage{booktabs}  % table support for pandoc > 1.12.2
+    \usepackage[inline]{enumitem} % IRkernel/repr support (it uses the enumerate* environment)
+    \usepackage[normalem]{ulem} % ulem is needed to support strikethroughs (\sout)
+                                % normalem makes italics be italics, not underlines
+    
+
+    
+    
+    % Colors for the hyperref package
+    \definecolor{urlcolor}{rgb}{0,.145,.698}
+    \definecolor{linkcolor}{rgb}{.71,0.21,0.01}
+    \definecolor{citecolor}{rgb}{.12,.54,.11}
+
+    % ANSI colors
+    \definecolor{ansi-black}{HTML}{3E424D}
+    \definecolor{ansi-black-intense}{HTML}{282C36}
+    \definecolor{ansi-red}{HTML}{E75C58}
+    \definecolor{ansi-red-intense}{HTML}{B22B31}
+    \definecolor{ansi-green}{HTML}{00A250}
+    \definecolor{ansi-green-intense}{HTML}{007427}
+    \definecolor{ansi-yellow}{HTML}{DDB62B}
+    \definecolor{ansi-yellow-intense}{HTML}{B27D12}
+    \definecolor{ansi-blue}{HTML}{208FFB}
+    \definecolor{ansi-blue-intense}{HTML}{0065CA}
+    \definecolor{ansi-magenta}{HTML}{D160C4}
+    \definecolor{ansi-magenta-intense}{HTML}{A03196}
+    \definecolor{ansi-cyan}{HTML}{60C6C8}
+    \definecolor{ansi-cyan-intense}{HTML}{258F8F}
+    \definecolor{ansi-white}{HTML}{C5C1B4}
+    \definecolor{ansi-white-intense}{HTML}{A1A6B2}
+
+    % commands and environments needed by pandoc snippets
+    % extracted from the output of `pandoc -s`
+    \providecommand{\tightlist}{%
+      \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+    \DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+    % Add ',fontsize=\small' for more characters per line
+    \newenvironment{Shaded}{}{}
+    \newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.56,0.13,0.00}{{#1}}}
+    \newcommand{\DecValTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\FloatTok}[1]{\textcolor[rgb]{0.25,0.63,0.44}{{#1}}}
+    \newcommand{\CharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\StringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\CommentTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textit{{#1}}}}
+    \newcommand{\OtherTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{{#1}}}
+    \newcommand{\AlertTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.02,0.16,0.49}{{#1}}}
+    \newcommand{\RegionMarkerTok}[1]{{#1}}
+    \newcommand{\ErrorTok}[1]{\textcolor[rgb]{1.00,0.00,0.00}{\textbf{{#1}}}}
+    \newcommand{\NormalTok}[1]{{#1}}
+    
+    % Additional commands for more recent versions of Pandoc
+    \newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.53,0.00,0.00}{{#1}}}
+    \newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.25,0.44,0.63}{{#1}}}
+    \newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.73,0.40,0.53}{{#1}}}
+    \newcommand{\ImportTok}[1]{{#1}}
+    \newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.73,0.13,0.13}{\textit{{#1}}}}
+    \newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\VariableTok}[1]{\textcolor[rgb]{0.10,0.09,0.49}{{#1}}}
+    \newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.00,0.44,0.13}{\textbf{{#1}}}}
+    \newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.40,0.40,0.40}{{#1}}}
+    \newcommand{\BuiltInTok}[1]{{#1}}
+    \newcommand{\ExtensionTok}[1]{{#1}}
+    \newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.74,0.48,0.00}{{#1}}}
+    \newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.49,0.56,0.16}{{#1}}}
+    \newcommand{\InformationTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    \newcommand{\WarningTok}[1]{\textcolor[rgb]{0.38,0.63,0.69}{\textbf{\textit{{#1}}}}}
+    
+    
+    % Define a nice break command that doesn't care if a line doesn't already
+    % exist.
+    \def\br{\hspace*{\fill} \\* }
+    % Math Jax compatability definitions
+    \def\gt{>}
+    \def\lt{<}
+    % Document parameters
+    \title{Analysis of the exit signals}
+    
+    
+    
+
+    % Pygments definitions
+    
+\makeatletter
+\def\PY@reset{\let\PY@it=\relax \let\PY@bf=\relax%
+    \let\PY@ul=\relax \let\PY@tc=\relax%
+    \let\PY@bc=\relax \let\PY@ff=\relax}
+\def\PY@tok#1{\csname PY@tok@#1\endcsname}
+\def\PY@toks#1+{\ifx\relax#1\empty\else%
+    \PY@tok{#1}\expandafter\PY@toks\fi}
+\def\PY@do#1{\PY@bc{\PY@tc{\PY@ul{%
+    \PY@it{\PY@bf{\PY@ff{#1}}}}}}}
+\def\PY#1#2{\PY@reset\PY@toks#1+\relax+\PY@do{#2}}
+
+\expandafter\def\csname PY@tok@sb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@nf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@nc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@gi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@ge\endcsname{\let\PY@it=\textit}
+\expandafter\def\csname PY@tok@s\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@cs\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@o\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@sh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@ow\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@sr\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@gd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@vm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@ne\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.82,0.25,0.23}{##1}}}
+\expandafter\def\csname PY@tok@sc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@c1\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@sd\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@mh\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@s2\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@vg\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@s1\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@gp\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@err\endcsname{\def\PY@bc##1{\setlength{\fboxsep}{0pt}\fcolorbox[rgb]{1.00,0.00,0.00}{1,1,1}{\strut ##1}}}
+\expandafter\def\csname PY@tok@sx\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@no\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@sa\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@vc\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@nn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@mo\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@ss\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@nb\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kc\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@go\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.53,0.53,0.53}{##1}}}
+\expandafter\def\csname PY@tok@kr\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gh\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@bp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nd\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.67,0.13,1.00}{##1}}}
+\expandafter\def\csname PY@tok@ch\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@cp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.74,0.48,0.00}{##1}}}
+\expandafter\def\csname PY@tok@fm\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.00,1.00}{##1}}}
+\expandafter\def\csname PY@tok@il\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@k\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@nl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.63,0.63,0.00}{##1}}}
+\expandafter\def\csname PY@tok@mi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@mf\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@kn\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@c\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@m\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.40,0.40,0.40}{##1}}}
+\expandafter\def\csname PY@tok@na\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.49,0.56,0.16}{##1}}}
+\expandafter\def\csname PY@tok@kt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.69,0.00,0.25}{##1}}}
+\expandafter\def\csname PY@tok@se\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.13}{##1}}}
+\expandafter\def\csname PY@tok@kp\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@si\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.73,0.40,0.53}{##1}}}
+\expandafter\def\csname PY@tok@ni\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.60,0.60,0.60}{##1}}}
+\expandafter\def\csname PY@tok@gr\endcsname{\def\PY@tc##1{\textcolor[rgb]{1.00,0.00,0.00}{##1}}}
+\expandafter\def\csname PY@tok@gt\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.00,0.27,0.87}{##1}}}
+\expandafter\def\csname PY@tok@cm\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+\expandafter\def\csname PY@tok@vi\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@nv\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.10,0.09,0.49}{##1}}}
+\expandafter\def\csname PY@tok@dl\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.13,0.13}{##1}}}
+\expandafter\def\csname PY@tok@gs\endcsname{\let\PY@bf=\textbf}
+\expandafter\def\csname PY@tok@gu\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.50,0.00,0.50}{##1}}}
+\expandafter\def\csname PY@tok@w\endcsname{\def\PY@tc##1{\textcolor[rgb]{0.73,0.73,0.73}{##1}}}
+\expandafter\def\csname PY@tok@nt\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@kd\endcsname{\let\PY@bf=\textbf\def\PY@tc##1{\textcolor[rgb]{0.00,0.50,0.00}{##1}}}
+\expandafter\def\csname PY@tok@cpf\endcsname{\let\PY@it=\textit\def\PY@tc##1{\textcolor[rgb]{0.25,0.50,0.50}{##1}}}
+
+\def\PYZbs{\char`\\}
+\def\PYZus{\char`\_}
+\def\PYZob{\char`\{}
+\def\PYZcb{\char`\}}
+\def\PYZca{\char`\^}
+\def\PYZam{\char`\&}
+\def\PYZlt{\char`\<}
+\def\PYZgt{\char`\>}
+\def\PYZsh{\char`\#}
+\def\PYZpc{\char`\%}
+\def\PYZdl{\char`\$}
+\def\PYZhy{\char`\-}
+\def\PYZsq{\char`\'}
+\def\PYZdq{\char`\"}
+\def\PYZti{\char`\~}
+% for compatibility with earlier versions
+\def\PYZat{@}
+\def\PYZlb{[}
+\def\PYZrb{]}
+\makeatother
+
+
+    % Exact colors from NB
+    \definecolor{incolor}{rgb}{0.0, 0.0, 0.5}
+    \definecolor{outcolor}{rgb}{0.545, 0.0, 0.0}
+
+
+
+    
+    % Prevent overflowing lines due to hard-to-break entities
+    \sloppy 
+    % Setup hyperref package
+    \hypersetup{
+      breaklinks=true,  % so long urls are correctly broken across lines
+      colorlinks=true,
+      urlcolor=urlcolor,
+      linkcolor=linkcolor,
+      citecolor=citecolor,
+      }
+    % Slightly bigger margins than the latex defaults
+    
+    \geometry{verbose,tmargin=1in,bmargin=1in,lmargin=1in,rmargin=1in}
+    
+    
+
+    \begin{document}
+    
+    
+    \maketitle
+    
+    
+
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}397}]:} \PY{k+kn}{import} \PY{n+nn}{pandas} \PY{k}{as} \PY{n+nn}{pd}
+          \PY{k+kn}{import} \PY{n+nn}{seaborn} \PY{k}{as} \PY{n+nn}{sns}
+          \PY{k+kn}{import} \PY{n+nn}{scipy}\PY{n+nn}{.}\PY{n+nn}{stats} \PY{k}{as} \PY{n+nn}{stats}
+          \PY{k+kn}{import} \PY{n+nn}{re}
+          
+          \PY{o}{\PYZpc{}}\PY{k}{matplotlib} inline
+          \PY{n}{sns}\PY{o}{.}\PY{n}{set}\PY{p}{(}\PY{n}{style}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{whitegrid}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    This notebook describes an attempt of getting the exit signal for any
+trade.
+
+First things first, read in the .csv into a Pandas dataframe
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}398}]:} \PY{n}{df} \PY{o}{=} \PY{n}{pd}\PY{o}{.}\PY{n}{read\PYZus{}csv}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{/Users/ernesto/lib/FOREX/tests/data/trend\PYZus{}momentum.csv}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{n}{sep}\PY{o}{=}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{,}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{index\PYZus{}col}\PY{o}{=}\PY{k+kc}{False}\PY{p}{,} \PY{n}{parse\PYZus{}dates}\PY{o}{=}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{start}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{end}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}\PY{p}{)}
+\end{Verbatim}
+
+
+    \section{Exploratory analysis of each of the independent variables
+}\label{exploratory-analysis-of-each-of-the-independent-variables}
+
+The analysis will consider only the trades having \textgreater{}= 2
+candles. I will create a new dataframe composed of these trades and
+having an additional column that will have the length (number of candles
+of the trade)
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}399}]:} \PY{k}{def} \PY{n+nf}{get\PYZus{}seq\PYZus{}length}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{:}
+              \PY{n}{x}\PY{o}{=}\PY{n}{re}\PY{o}{.}\PY{n}{sub}\PY{p}{(}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+se}{\PYZbs{}\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{\PYZsq{}}\PY{p}{,}\PY{n}{x}\PY{p}{)}
+              \PY{k}{return}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{x}\PY{p}{)}\PY{p}{)}
+          \PY{n}{df}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{length}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{=} \PY{n}{df}\PY{o}{.}\PY{n}{high}\PY{o}{.}\PY{n}{apply}\PY{p}{(}\PY{n}{get\PYZus{}seq\PYZus{}length}\PY{p}{)}
+          \PY{n}{filtered\PYZus{}data} \PY{o}{=} \PY{n}{df}\PY{p}{[}\PY{n}{df}\PY{o}{.}\PY{n}{length} \PY{o}{\PYZgt{}} \PY{l+m+mi}{2} \PY{p}{]}
+\end{Verbatim}
+
+
+    Number of trades:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}400}]:} \PY{n+nb}{print}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{filtered\PYZus{}data}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+255
+
+    \end{Verbatim}
+
+    \subsection{Length of the trade}\label{length-of-the-trade}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}401}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{length}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{length}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_8_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}402}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}length}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{length}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}length}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{length}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg length  for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}length}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg length for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}length}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}length}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}length}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg length  for success set: 9.177778
+Avg length for failure set: 8.675926
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}402}]:} Ttest\_indResult(statistic=0.59780245729907178, pvalue=0.55055013498459915)
+\end{Verbatim}
+            
+    \subsubsection{Conclusion}\label{conclusion}
+
+These 2 variables (length,outcome) are not associated
+
+    \subsection{Number of 0s}\label{number-of-0s}
+
+\subsubsection{High}\label{high}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}403}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}high}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}high}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_12_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}404}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}high}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}high}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}high}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}high}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}high}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}high}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}high}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}high}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of 0s for success set: 0.297383
+Avg number of 0s for failure set: 0.590256
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}404}]:} Ttest\_indResult(statistic=-13.467946494831775, pvalue=9.0398174708859095e-31)
+\end{Verbatim}
+            
+    \subsubsection{Low}\label{low}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}405}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}low}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}low}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_15_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}406}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}low}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}low}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}low}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}low}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}low}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}low}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}low}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}low}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of 0s for success set: 0.294314
+Avg number of 0s for failure set: 0.585622
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}406}]:} Ttest\_indResult(statistic=-13.855480723476328, pvalue=2.7627503125047824e-32)
+\end{Verbatim}
+            
+    \subsubsection{Open}\label{open}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}407}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}open}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}open}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_18_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}408}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}open}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}open}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}open}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}open}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}open}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}open}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}open}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}open}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of 0s for success set: 0.314873
+Avg number of 0s for failure set: 0.519407
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}408}]:} Ttest\_indResult(statistic=-10.911858703644764, pvalue=9.0069318175830964e-23)
+\end{Verbatim}
+            
+    \subsubsection{Close}\label{close}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}409}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}close}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}close}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_21_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}410}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}close}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}close}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}close}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}close}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}close}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}close}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of 0s for success set: 0.307512
+Avg number of 0s for failure set: 0.617270
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}410}]:} Ttest\_indResult(statistic=-15.083431343522593, pvalue=1.5007452467692373e-36)
+\end{Verbatim}
+            
+    \subsubsection{Colour}\label{colour}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}411}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}colour}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}colour}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_24_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}412}]:} \PY{n}{succes\PYZus{}coulour}\PY{o}{=}\PY{l+m+mi}{0}
+          \PY{n}{failure\PYZus{}colour}\PY{o}{=}\PY{l+m+mi}{0}
+          
+          \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}colour}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}colour}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}colour}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}colour}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}colour}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}colour}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}colour}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}colour}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of 0s for success set: 0.295834
+Avg number of 0s for failure set: 0.556426
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}412}]:} Ttest\_indResult(statistic=-15.215660493677193, pvalue=4.5387429197236384e-37)
+\end{Verbatim}
+            
+    \subsubsection{Merge}\label{merge}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}413}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_27_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}414}]:} \PY{n}{succes\PYZus{}merge}\PY{o}{=}\PY{l+m+mi}{0}
+          \PY{n}{failure\PYZus{}merge}\PY{o}{=}\PY{l+m+mi}{0}
+          
+          \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}merge}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}merge}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}merge}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}merge}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}merge}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}merge}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of 0s for success set: 0.301931
+Avg number of 0s for failure set: 0.573088
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}414}]:} Ttest\_indResult(statistic=-17.575030189124714, pvalue=4.7687077891436797e-45)
+\end{Verbatim}
+            
+    \subsection{double0s}\label{double0s}
+
+\subsubsection{high\_low}\label{high_low}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}415}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_30_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}416}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}highlow}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}highlow}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}highlow}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}highlow}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}highlow}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}highlow}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of double 0s for success set: 0.161823
+Avg number of double 0s for failure set: 0.435103
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}416}]:} Ttest\_indResult(statistic=-14.296503999668079, pvalue=1.0362871691127868e-32)
+\end{Verbatim}
+            
+    \subsubsection{openclose}\label{openclose}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}417}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_33_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}418}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}openclose}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}openclose}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}openclose}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}openclose}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}openclose}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}openclose}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of double 0s for success set: 0.086574
+Avg number of double 0s for failure set: 0.310498
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}418}]:} Ttest\_indResult(statistic=-11.581939399622957, pvalue=3.0973232787002159e-23)
+\end{Verbatim}
+            
+    \subsection{Stretch}\label{stretch}
+
+\subsubsection{high}\label{high}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}419}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}high}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}high}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.266667
+Avg stretch of 0s for failure set: 2.555556
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}419}]:} Ttest\_indResult(statistic=-6.5217971435195929, pvalue=4.326488141997224e-10)
+\end{Verbatim}
+            
+    \subsubsection{low}\label{low}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}420}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}low}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}low}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.103704
+Avg stretch of 0s for failure set: 2.750000
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}420}]:} Ttest\_indResult(statistic=-8.7034603405959903, pvalue=6.6552102967117223e-16)
+\end{Verbatim}
+            
+    \subsubsection{open}\label{open}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}421}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}open}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}open}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.155556
+Avg stretch of 0s for failure set: 2.203704
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}421}]:} Ttest\_indResult(statistic=-5.8972625345472602, pvalue=1.3233721301303208e-08)
+\end{Verbatim}
+            
+    \subsubsection{close}\label{close}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}422}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.185185
+Avg stretch of 0s for failure set: 2.694444
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}422}]:} Ttest\_indResult(statistic=-8.5323199326295249, pvalue=2.0107504939783045e-15)
+\end{Verbatim}
+            
+    \subsubsection{colour}\label{colour}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}423}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}colour}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}colour}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.200000
+Avg stretch of 0s for failure set: 2.712963
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}423}]:} Ttest\_indResult(statistic=-8.630186578784393, pvalue=1.090141506628172e-15)
+\end{Verbatim}
+            
+    \subsection{Analysis of trend by
+timeframe}\label{analysis-of-trend-by-timeframe}
+
+\subsubsection{Daily}\label{daily}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}424}]:} \PY{n}{daily\PYZus{}data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{timeframe}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{D}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+\end{Verbatim}
+
+
+    The number of records is:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}425}]:} \PY{n+nb}{print}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{daily\PYZus{}data}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+47
+
+    \end{Verbatim}
+
+    \paragraph{Merge}\label{merge}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}426}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_50_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}427}]:} \PY{n}{succes\PYZus{}merge}\PY{o}{=}\PY{l+m+mi}{0}
+          \PY{n}{failure\PYZus{}merge}\PY{o}{=}\PY{l+m+mi}{0}
+          
+          \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}merge}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}merge}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}merge}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}merge}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}merge}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}merge}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of 0s for success set: 0.286631
+Avg number of 0s for failure set: 0.586430
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}427}]:} Ttest\_indResult(statistic=-8.6827518161000903, pvalue=3.9209614732560135e-10)
+\end{Verbatim}
+            
+    \paragraph{double0s}\label{double0s}
+
+\subparagraph{high\_low}\label{high_low}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}428}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_53_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}429}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}highlow}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}highlow}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}highlow}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}highlow}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}highlow}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}highlow}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of double 0s for success set: 0.150174
+Avg number of double 0s for failure set: 0.469730
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}429}]:} Ttest\_indResult(statistic=-7.7651720476777362, pvalue=1.7013219261339239e-08)
+\end{Verbatim}
+            
+    \subparagraph{openclose}\label{openclose}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}430}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_56_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}431}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}openclose}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}openclose}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}openclose}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}openclose}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}openclose}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}openclose}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of double 0s for success set: 0.065386
+Avg number of double 0s for failure set: 0.346254
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}431}]:} Ttest\_indResult(statistic=-5.7351480854223933, pvalue=1.9063454288988846e-05)
+\end{Verbatim}
+            
+    \paragraph{Stretch}\label{stretch}
+
+\subparagraph{high}\label{high}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}432}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}high}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}high}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 0.757576
+Avg stretch of 0s for failure set: 2.538462
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}432}]:} Ttest\_indResult(statistic=-4.1789794742776465, pvalue=0.00044215015331607911)
+\end{Verbatim}
+            
+    \subparagraph{low}\label{low}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}433}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}low}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}low}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 0.606061
+Avg stretch of 0s for failure set: 2.538462
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}433}]:} Ttest\_indResult(statistic=-4.8730572712108451, pvalue=0.00010584351913113163)
+\end{Verbatim}
+            
+    \subparagraph{open}\label{open}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}434}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}open}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}open}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 0.666667
+Avg stretch of 0s for failure set: 2.384615
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}434}]:} Ttest\_indResult(statistic=-5.132408113453506, pvalue=2.2353428072165932e-05)
+\end{Verbatim}
+            
+    \subparagraph{close}\label{close}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}435}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 0.666667
+Avg stretch of 0s for failure set: 2.769231
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}435}]:} Ttest\_indResult(statistic=-5.081372627976374, pvalue=5.6920135242655952e-05)
+\end{Verbatim}
+            
+    \subparagraph{colour}\label{colour}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}436}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}colour}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{o}{=}\PY{n}{daily\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{daily\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}colour}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 0.666667
+Avg stretch of 0s for failure set: 2.615385
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}436}]:} Ttest\_indResult(statistic=-5.2518212350929465, pvalue=2.5669860924727505e-05)
+\end{Verbatim}
+            
+    \subsubsection{H12}\label{h12}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}437}]:} \PY{n}{h12\PYZus{}data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{timeframe}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{H12}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+\end{Verbatim}
+
+
+    The number of records is:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}438}]:} \PY{n+nb}{print}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{h12\PYZus{}data}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+68
+
+    \end{Verbatim}
+
+    \paragraph{Merge}\label{merge}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}439}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_73_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}440}]:} \PY{n}{succes\PYZus{}merge}\PY{o}{=}\PY{l+m+mi}{0}
+          \PY{n}{failure\PYZus{}merge}\PY{o}{=}\PY{l+m+mi}{0}
+          
+          \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}merge}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}merge}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}merge}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}merge}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}merge}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}merge}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of 0s for success set: 0.273526
+Avg number of 0s for failure set: 0.556580
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}440}]:} Ttest\_indResult(statistic=-9.4534963912210142, pvalue=1.4156329821364174e-13)
+\end{Verbatim}
+            
+    \paragraph{double0s}\label{double0s}
+
+\subparagraph{high\_low}\label{high_low}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}441}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_76_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}442}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}highlow}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}highlow}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}highlow}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}highlow}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}highlow}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}highlow}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of double 0s for success set: 0.138016
+Avg number of double 0s for failure set: 0.424649
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}442}]:} Ttest\_indResult(statistic=-8.3718746649539355, pvalue=7.5743790312027887e-11)
+\end{Verbatim}
+            
+    \subparagraph{openclose}\label{openclose}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}443}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_79_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}444}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}openclose}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}openclose}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}openclose}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}openclose}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}openclose}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}openclose}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of double 0s for success set: 0.088351
+Avg number of double 0s for failure set: 0.255314
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}444}]:} Ttest\_indResult(statistic=-5.0917796473079378, pvalue=7.1703362249497407e-06)
+\end{Verbatim}
+            
+    \paragraph{Stretch}\label{stretch}
+
+\subparagraph{high}\label{high}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}445}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}high}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}high}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 0.871795
+Avg stretch of 0s for failure set: 1.960000
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}445}]:} Ttest\_indResult(statistic=-3.0373522911907416, pvalue=0.0038856290838799783)
+\end{Verbatim}
+            
+    \subparagraph{low}\label{low}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}446}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}low}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}low}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.153846
+Avg stretch of 0s for failure set: 2.920000
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}446}]:} Ttest\_indResult(statistic=-4.3990730288211459, pvalue=5.6141375475723284e-05)
+\end{Verbatim}
+            
+    \subparagraph{open}\label{open}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}447}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}open}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}open}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.102564
+Avg stretch of 0s for failure set: 1.840000
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}447}]:} Ttest\_indResult(statistic=-2.041420896447411, pvalue=0.047044972617585577)
+\end{Verbatim}
+            
+    \subparagraph{close}\label{close}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}448}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.230769
+Avg stretch of 0s for failure set: 2.320000
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}448}]:} Ttest\_indResult(statistic=-3.2318448248759348, pvalue=0.002103602163789524)
+\end{Verbatim}
+            
+    \subparagraph{colour}\label{colour}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}449}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}colour}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{o}{=}\PY{n}{h12\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h12\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}colour}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.230769
+Avg stretch of 0s for failure set: 2.280000
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}449}]:} Ttest\_indResult(statistic=-3.2187972223061547, pvalue=0.0021466777567307189)
+\end{Verbatim}
+            
+    \subsubsection{H8}\label{h8}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}450}]:} \PY{n}{h8\PYZus{}data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{timeframe}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{H8}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+\end{Verbatim}
+
+
+    The number of records is:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}451}]:} \PY{n+nb}{print}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{h8\PYZus{}data}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+45
+
+    \end{Verbatim}
+
+    \paragraph{Merge}\label{merge}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}452}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_96_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}453}]:} \PY{n}{succes\PYZus{}merge}\PY{o}{=}\PY{l+m+mi}{0}
+          \PY{n}{failure\PYZus{}merge}\PY{o}{=}\PY{l+m+mi}{0}
+          
+          \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}merge}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}merge}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}merge}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}merge}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}merge}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}merge}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of 0s for success set: 0.263503
+Avg number of 0s for failure set: 0.607262
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}453}]:} Ttest\_indResult(statistic=-9.4883747786985442, pvalue=3.1372230983292192e-11)
+\end{Verbatim}
+            
+    \paragraph{double0s}\label{double0s}
+
+\subparagraph{high\_low}\label{high_low}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}454}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_99_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}455}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}highlow}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}highlow}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}highlow}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}highlow}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}highlow}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}highlow}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of double 0s for success set: 0.121745
+Avg number of double 0s for failure set: 0.472360
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}455}]:} Ttest\_indResult(statistic=-7.2639988484952109, pvalue=9.7949233934607516e-09)
+\end{Verbatim}
+            
+    \subparagraph{openclose}\label{openclose}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}456}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_102_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}457}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}openclose}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}openclose}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}openclose}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}openclose}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}openclose}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}openclose}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of double 0s for success set: 0.065173
+Avg number of double 0s for failure set: 0.322723
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}457}]:} Ttest\_indResult(statistic=-6.0518062815028406, pvalue=8.4429154754930452e-07)
+\end{Verbatim}
+            
+    \paragraph{Stretch}\label{stretch}
+
+\subparagraph{high}\label{high}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}458}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}high}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}high}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 0.894737
+Avg stretch of 0s for failure set: 2.434783
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}458}]:} Ttest\_indResult(statistic=-3.3987652892326388, pvalue=0.0016311837360339725)
+\end{Verbatim}
+            
+    \subparagraph{low}\label{low}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}459}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}low}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}low}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 0.736842
+Avg stretch of 0s for failure set: 2.521739
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}459}]:} Ttest\_indResult(statistic=-3.9223632785857379, pvalue=0.0003557971962337437)
+\end{Verbatim}
+            
+    \subparagraph{open}\label{open}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}460}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}open}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}open}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 0.947368
+Avg stretch of 0s for failure set: 1.739130
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}460}]:} Ttest\_indResult(statistic=-2.1085674104926757, pvalue=0.041410081949058312)
+\end{Verbatim}
+            
+    \subparagraph{close}\label{close}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}461}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.000000
+Avg stretch of 0s for failure set: 2.434783
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}461}]:} Ttest\_indResult(statistic=-4.1296679994966112, pvalue=0.00023206714181767864)
+\end{Verbatim}
+            
+    \subparagraph{colour}\label{colour}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}462}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}colour}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{o}{=}\PY{n}{h8\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h8\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}colour}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 0.947368
+Avg stretch of 0s for failure set: 2.565217
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}462}]:} Ttest\_indResult(statistic=-4.6010379282920999, pvalue=4.7877143211950209e-05)
+\end{Verbatim}
+            
+    \subsubsection{H4}\label{h4}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}463}]:} \PY{n}{h4\PYZus{}data}\PY{o}{=}\PY{n}{filtered\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{filtered\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{timeframe}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{H4}\PY{l+s+s2}{\PYZdq{}}\PY{p}{]}
+\end{Verbatim}
+
+
+    The number of records is:
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}464}]:} \PY{n+nb}{print}\PY{p}{(}\PY{n+nb}{len}\PY{p}{(}\PY{n}{h4\PYZus{}data}\PY{p}{)}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+93
+
+    \end{Verbatim}
+
+    \paragraph{Merge}\label{merge}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}465}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_119_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}466}]:} \PY{n}{succes\PYZus{}merge}\PY{o}{=}\PY{l+m+mi}{0}
+          \PY{n}{failure\PYZus{}merge}\PY{o}{=}\PY{l+m+mi}{0}
+          
+          \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}merge}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}merge}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}0s\PYZus{}merge}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}merge}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}merge}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}merge}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}merge}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of 0s for success set: 0.355178
+Avg number of 0s for failure set: 0.561454
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}466}]:} Ttest\_indResult(statistic=-8.8464106752269203, pvalue=7.8342462526898837e-14)
+\end{Verbatim}
+            
+    \paragraph{double0s}\label{double0s}
+
+\subparagraph{high\_low}\label{high_low}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}467}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_122_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}468}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}highlow}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}highlow}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}higlow}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}highlow}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}highlow}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}highlow}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}highlow}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of double 0s for success set: 0.208966
+Avg number of double 0s for failure set: 0.412854
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}468}]:} Ttest\_indResult(statistic=-6.7513597364947699, pvalue=1.7902109571937646e-09)
+\end{Verbatim}
+            
+    \subparagraph{openclose}\label{openclose}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}469}]:} \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{boxplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{p}{)}
+          \PY{n}{ax} \PY{o}{=} \PY{n}{sns}\PY{o}{.}\PY{n}{swarmplot}\PY{p}{(}\PY{n}{x}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{outcome}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{y}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,} \PY{n}{data}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{p}{,} \PY{n}{color}\PY{o}{=}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{.25}\PY{l+s+s2}{\PYZdq{}}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{center}
+    \adjustimage{max size={0.9\linewidth}{0.9\paperheight}}{output_125_0.png}
+    \end{center}
+    { \hspace*{\fill} \\}
+    
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}470}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}openclose}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}openclose}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{No\PYZus{}of\PYZus{}double0\PYZus{}openclose}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}openclose}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg number of double 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}openclose}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=} \PY{n}{success\PYZus{}openclose}\PY{p}{,}\PY{n}{b}\PY{o}{=} \PY{n}{failure\PYZus{}openclose}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg number of double 0s for success set: 0.110132
+Avg number of double 0s for failure set: 0.323979
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}470}]:} Ttest\_indResult(statistic=-6.6637122138845228, pvalue=5.1097481534876523e-09)
+\end{Verbatim}
+            
+    \paragraph{Stretch}\label{stretch}
+
+\subparagraph{high}\label{high}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}471}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}high}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}high}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}high}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}high}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 2.159091
+Avg stretch of 0s for failure set: 2.936170
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}471}]:} Ttest\_indResult(statistic=-2.3332831210997504, pvalue=0.022107504908254895)
+\end{Verbatim}
+            
+    \subparagraph{low}\label{low}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}472}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}low}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}low}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}low}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}low}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.590909
+Avg stretch of 0s for failure set: 2.829787
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}472}]:} Ttest\_indResult(statistic=-4.0059409858935027, pvalue=0.00013254530766521955)
+\end{Verbatim}
+            
+    \subparagraph{open}\label{open}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}473}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}open}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}open}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}open}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}open}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.659091
+Avg stretch of 0s for failure set: 2.574468
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}473}]:} Ttest\_indResult(statistic=-2.9681412043184423, pvalue=0.0038673519710562838)
+\end{Verbatim}
+            
+    \subparagraph{close}\label{close}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}474}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}close}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}close}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}close}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.613636
+Avg stretch of 0s for failure set: 3.000000
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}474}]:} Ttest\_indResult(statistic=-4.39575707383481, pvalue=3.0458176519825966e-05)
+\end{Verbatim}
+            
+    \subparagraph{colour}\label{colour}
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+{\color{incolor}In [{\color{incolor}475}]:} \PY{c+c1}{\PYZsh{}getting the 2 series, one with differences for outcome=True and the other with outcome=False}
+          \PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{success}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}colour}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          \PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{o}{=}\PY{n}{h4\PYZus{}data}\PY{o}{.}\PY{n}{loc}\PY{p}{[}\PY{n}{h4\PYZus{}data}\PY{p}{[}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{outcome}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]} \PY{o}{==} \PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{failure}\PY{l+s+s2}{\PYZdq{}}\PY{p}{,}\PY{l+s+s1}{\PYZsq{}}\PY{l+s+s1}{stretch\PYZus{}colour}\PY{l+s+s1}{\PYZsq{}}\PY{p}{]}
+          
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for success set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          \PY{n+nb}{print}\PY{p}{(}\PY{l+s+s2}{\PYZdq{}}\PY{l+s+s2}{Avg stretch of 0s for failure set: }\PY{l+s+si}{\PYZpc{}f}\PY{l+s+s2}{\PYZdq{}} \PY{o}{\PYZpc{}} \PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{o}{.}\PY{n}{mean}\PY{p}{(}\PY{p}{)}\PY{p}{)}
+          
+          \PY{c+c1}{\PYZsh{}performing paired t\PYZhy{}test}
+          \PY{n}{stats}\PY{o}{.}\PY{n}{ttest\PYZus{}ind}\PY{p}{(}\PY{n}{a}\PY{o}{=}\PY{n}{success\PYZus{}stretch\PYZus{}colour}\PY{p}{,}\PY{n}{b}\PY{o}{=}\PY{n}{failure\PYZus{}stretch\PYZus{}colour}\PY{p}{,}\PY{n}{equal\PYZus{}var}\PY{o}{=}\PY{k+kc}{False}\PY{p}{)}
+\end{Verbatim}
+
+
+    \begin{Verbatim}[commandchars=\\\{\}]
+Avg stretch of 0s for success set: 1.681818
+Avg stretch of 0s for failure set: 3.042553
+
+    \end{Verbatim}
+
+\begin{Verbatim}[commandchars=\\\{\}]
+{\color{outcolor}Out[{\color{outcolor}475}]:} Ttest\_indResult(statistic=-4.3996037686059033, pvalue=3.0204814206730304e-05)
+\end{Verbatim}
+            
+
+    % Add a bibliography block to the postdoc
+    
+    
+    
+    \end{document}

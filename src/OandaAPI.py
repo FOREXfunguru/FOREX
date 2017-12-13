@@ -257,6 +257,7 @@ class OandaAPI(object):
         
             if resp.status_code != 200:
                  # This means something went wrong.
+                 print("Something went wrong. url used was:\n{0}".format(resp.url))
                  raise Exception('GET /candles {}'.format(resp.status_code))
     
             if data:

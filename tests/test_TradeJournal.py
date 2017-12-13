@@ -6,7 +6,7 @@ from TradeJournal.TradeJournal import TradeJournal
 def tj_object():
     '''Returns a TradeJournal object'''
 
-    td=TradeJournal(url="data/test.xlsx")
+    td=TradeJournal(url="data/test.xlsx",worksheet='trading_journal')
 
     return td
 
