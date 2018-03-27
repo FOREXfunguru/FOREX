@@ -1,5 +1,3 @@
 {
-  "test_OandaAPI.py::test_OandaAPI": true,
-  "test_OandaAPI.py::test_fetch_candleset": true,
-  "test_OandaAPI.py::test_set_candle_features": true
+  "test_OandaAPI.py::test_OandaAPI_onlystart": true
 }

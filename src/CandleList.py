@@ -83,14 +83,14 @@ class CandleList(object):
                 bin_string=""
                 for c in self.clist:
                     c.set_candle_features()
-                    if self.type is 'long' and c.colour is "green":
+                    if self.type=='long' and c.colour== "green":
                         bin_string+="1"
-                    elif self.type is 'long' and c.colour is "red":
+                    elif self.type=='long' and c.colour=="red":
                         bin_string+="0"
                 
-                    if self.type is 'short' and c.colour is "green":
+                    if self.type=='short' and c.colour=="green":
                         bin_string+="0"
-                    elif self.type is 'short' and c.colour is "red":
+                    elif self.type=='short' and c.colour=="red":
                         bin_string+="1"
                 adict['colour']=bin_string
                 if merge is True:
@@ -107,18 +107,18 @@ class CandleList(object):
                     else:
                         res=getattr(c, portion)-p_candle
                         res= float('%.7f' % res)
-                        if self.type is 'long' and res>0:
+                        if self.type=='long' and res>0:
                             bin_string+="1"
-                        elif self. type is 'long' and res<0:
+                        elif self.type=='long' and res<0:
                             bin_string+="0"
-                        elif self.type is 'long' and res==0:
+                        elif self.type=='long' and res==0:
                             bin_string+="N"
                         
-                        if self.type is 'short' and res>0:
+                        if self.type=='short' and res>0:
                             bin_string+="0"
-                        elif self.type is 'short' and res<0:
+                        elif self.type=='short' and res<0:
                             bin_string+="1"
-                        elif self.type is 'short' and res==0:
+                        elif self.type=='short' and res==0:
                             bin_string+="N"
 
                         p_candle = getattr(c, portion)
