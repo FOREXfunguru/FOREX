@@ -68,7 +68,6 @@ def digit_binary(x,transl_dict,name):
     return transl_dict[x[name]]
 
 contDF['ext_outcome']=contDF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='ext_outcome')
-contDF['Candle +1 against trade']=contDF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='Candle +1 against trade')
 contDF['entry on RSI']=contDF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='entry on RSI')
 contDF['strong trend']=contDF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='strong trend')
 
