@@ -161,9 +161,15 @@ attbs.append({
         'rel' : 'less',
         'points' : 2
         })
+attbs.append({
+        'attr' : 'entry on RSI',
+        'cutoff' : 'bool',
+        'rel' : 'is_true',
+        'points' : 1
+        })
 attbs.append( {
         'attr' : 'length of trend',
-        'cutoff' : '15-70',
+        'cutoff' : '5-70',
         'rel' : 'range',
         'points' : 1
         })
@@ -177,11 +183,11 @@ attbs.append( {
         'attr' : 'strong trend',
         'cutoff' : 'bool',
         'rel' : 'is_true',
-        'points' : 2
+        'points' : 1
         })
 attbs.append( {
         'attr' : 'sum_bounces',
-        'cutoff' : 10,
+        'cutoff' : 8,
         'rel' : 'less',
         'points' : 2
         })
