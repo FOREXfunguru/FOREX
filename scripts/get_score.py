@@ -129,18 +129,23 @@ def calculate_points(row,attribs):
         value=row[a['attr']]
         cutoff=a['cutoff']
         points=a['points']
+        final_points=0
         if cutoff =='bool':
             if a['rel'] == 'is_true':
                 if value == True or value == 1:
                     score+=points
+                    final_points+=points
                 if value == False  or value == 0:
                     score+=-1*points
+                    final_points+=-1*points
         else:
             if a['rel'] == 'less':
                 if value < cutoff: 
                     score+=points
+                    final_points+=points
                 if value >= cutoff: 
                     score+=-1*points
+                    final_points+=-1*points
             elif a['rel'] == 'range':
                 p=re.compile("(\d+)-(\d+)")
                 m=p.match(cutoff)
@@ -148,9 +153,11 @@ def calculate_points(row,attribs):
                 low=int(m.group(1))
                 if value >=low and value <=upp:
                     score+=points
+                    final_points+=points
                 else:
                     score+=-1*points
-                
+                    final_points+=-1*points
+        print("Attrib {0} contributes with the following points:{1}".format(a['attr'],final_points))
     return score
 
 attbs=[]
