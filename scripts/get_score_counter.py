@@ -26,7 +26,7 @@ def read_tradedata(tradefile,sep,na_values):
     
     return DF
 
-contDF=read_tradedata('/Users/ernesto/Downloads/Screenshot_analysis_counter.csv',sep=",",na_values=["n.a.","n.a"])
+contDF=read_tradedata('/Users/ernesto/Downloads/Screenshot analysis - counter_backtesting.csv',sep=",",na_values=["n.a.","n.a"])
 
 contDF['start']= pd.to_datetime(contDF['start'])
 contDF['last time']= pd.to_datetime(contDF['last time'])
@@ -188,21 +188,27 @@ def calculate_points(row,attribs):
         value=row[a['attr']]
         cutoff=a['cutoff']
         points=a['points']
+        final_points=0
         if cutoff =='bool':
             if a['rel'] == 'is_true':
                 if value == True or value == 1:
                     score+=points
+                    final_points+=points
                 if value == False  or value == 0:
                     score+=-1*points
+                    final_points+=-1*points
             if a['rel'] == 'is_true_oneway':
                 if value == True or value == 1:
                     score+=points
+                    final_points+=points
         else:
             if a['rel'] == 'less':
                 if value < cutoff: 
                     score+=points
+                    final_points+=points
                 if value >= cutoff: 
                     score+=-1*points
+                    final_points+=-1*points
             elif a['rel'] == 'range':
                 p=re.compile("(\d+)-(\d+)")
                 m=p.match(cutoff)
@@ -210,14 +216,18 @@ def calculate_points(row,attribs):
                 low=int(m.group(1))
                 if value >=low and value <=upp:
                     score+=points
+                    final_points+=points
                 else:
                     score+=-1*points
+                    final_points+=-1*points
             elif a['rel'] == 'gt':
                 if value >= cutoff: 
                     score+=points
+                    final_points+=points
                 if value < cutoff: 
                     score+=-1*points
-                
+                    final_points+=-1*points
+        print("Attrib {0} contributes with the following points:{1}".format(a['attr'],final_points))           
     return score
 
 attbs=[]
@@ -260,7 +270,7 @@ attbs.append( {
         })
 attbs.append( {
         'attr' : 'bounces',
-        'cutoff' : 2,
+        'cutoff' : 3,
         'rel' : 'gt',
         'points' : 2
         })
@@ -284,9 +294,9 @@ attbs.append( {
         })
 attbs.append( {
         'attr' : 'diff',
-        'cutoff' : 590,
+        'cutoff' : 680,
         'rel' : 'gt',
-        'points' : 1
+        'points' : 2
         })
 
 contDF['score']=contDF.apply(calculate_points, axis=1, attribs=attbs)
