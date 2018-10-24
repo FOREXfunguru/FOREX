@@ -204,6 +204,12 @@ attbs.append( {
         'rel' : 'less',
         'points' : 2
         })
+attbs.append( {
+        'attr' : 'entry_aligned',
+        'cutoff' : 'bool',
+        'rel' : 'is_true',
+        'points' : 3
+        })
 
 
 # Now, let's apply the calculate_points on each row for the training and the test set
