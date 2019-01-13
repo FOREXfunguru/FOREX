@@ -27,6 +27,7 @@ def read_tradedata(tradefile,sep,na_values):
     return DF
 
 contDF=read_tradedata('~/Downloads/Screenshot analysis - only1row.tsv',sep="\t",na_values=["n.a.","n.a"])
+#contDF=read_tradedata('~/Downloads/continuations01122018.tsv',sep="\t",na_values=["n.a.","n.a"])
 
 contDF['start']= pd.to_datetime(contDF['start'])
 contDF['last time']= pd.to_datetime(contDF['last time'])
@@ -36,10 +37,6 @@ contDF['last time']= pd.to_datetime(contDF['last time'])
 contDF["bounce length"].fillna(0, inplace=True)
 contDF["length of trend (-1)"].fillna(0, inplace=True)
 contDF["length in pips (-1)"].fillna(0, inplace=True)
-
-# Selecting the desired dataframe
-contDF=contDF[contDF.timeframe == 'H12']
-
 
 # ## Transforming
 
@@ -75,10 +72,8 @@ def digit_binary(x,transl_dict,name):
     
     return transl_dict[x[name]]
 
-contDF['ext_outcome']=contDF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='ext_outcome')
 contDF['outcome']=contDF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='outcome')
 contDF['entry on RSI']=contDF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='entry on RSI')
-contDF['strong trend']=contDF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='strong trend')
 
 
 contDF=contDF[contDF.timeframe == 'H12']
@@ -101,8 +96,10 @@ def sum_lengths(x):
     -------
     An integer representing the total bounce length
     '''
-    
-    return sum([int(i) for i in x.split(",")])
+    if x=='0.0':
+        return 0
+    else:
+        return sum([int(i) for i in x.split(",")])
     
 
 contDF['sum_bounces']=contDF['bounce length'].astype(str).apply(sum_lengths)
