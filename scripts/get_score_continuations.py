@@ -154,7 +154,7 @@ def sum_lengths(x):
 
 contDF['sum_bounces']=contDF['bounce length'].astype(str).apply(sum_lengths)
 contDF['pips_ratio']=contDF['length in pips (-1)'].astype(int)/contDF['length of trend (-1)'].astype(int)
-
+contDF['bounce_ratio']=contDF['inn_bounce']/contDF['indecission']
 verbose=str_to_bool(args.verbose)
 
 
@@ -179,7 +179,6 @@ def calculate_points(row,attribs,verbose=verbose):
     Returns a score for this trade
     
     '''
-    pdb.set_trace()
     score=0
     for a in attribs:
         attrb_name=a['attr']
@@ -214,7 +213,7 @@ if args.timeframe=='ALL':
         })
     attbs.append({
         'attr' : 'RSI bounces',
-        'cutoffs' : [(0,2),(3,3),(4,100000)],
+        'cutoffs' : [(0,2), (3,3), (4,100000)],
         'points' : [2,-1,-2]
         })
     attbs.append({
@@ -225,8 +224,8 @@ if args.timeframe=='ALL':
         })
     attbs.append({
         'attr' : 'length of trend (-1)',
-        'cutoffs' : [(0,25),(26,35),(36,60),(61,10000)],
-        'points' : [2,1,-1,-2]
+        'cutoffs' : [(0,10),(11,25),(26,35),(36,60),(61,10000)],
+        'points' : [-1,2,1,-1,-2]
         })
     attbs.append( {
         'attr' : 'inn_bounce',
@@ -245,14 +244,14 @@ if args.timeframe=='ALL':
         })
     attbs.append( {
         'attr' : 'norm_bounce_pips',
-        'cutoffs' : [(0,45),(46,1000)],
+        'cutoffs' : [(0,48),(49,1000)],
         'points' : [2,-2]
         })
     attbs.append( {
         'attr' : 'entry_aligned',
         'cutoffs' : 'bool',
         'rel' : 'is_true',
-        'points' : 3
+        'points' : 6
         })
     attbs.append( {
         'attr' : 'indecission',
@@ -267,7 +266,7 @@ if args.timeframe=='ALL':
 elif args.timeframe=='D':
     attbs.append({
         'attr' : 'diff',
-        'cutoffs' : [(0,500),(501,100000)],
+        'cutoffs' : [(0,300),(301,100000)],
         'points' : [2,-2]
         })
     attbs.append({
@@ -283,8 +282,8 @@ elif args.timeframe=='D':
         })
     attbs.append( {
         'attr' : 'length of trend (-1)',
-        'cutoffs' : [(0,14),(15,23),(24,50),(51,10000)],
-        'points' : [1,2,1,-2]
+        'cutoffs' : [(0,10),(11,14),(15,23),(24,50),(51,10000)],
+        'points' : [-1,1,2,1,-2]
         })
     attbs.append( {
         'attr' : 'inn_bounce',
@@ -303,29 +302,29 @@ elif args.timeframe=='D':
         })
     attbs.append( {
         'attr' : 'bounce (pips)',
-        'cutoffs' : [(0,1000),(1001,1000000)],
+        'cutoffs' : [(0,800),(801,1000000)],
         'points' : [2,-2]
         })
     attbs.append( {
         'attr' : 'entry_aligned',
         'cutoffs' : 'bool',
         'rel' : 'is_true',
-        'points' : 3
+        'points' : 6
         })
     attbs.append( {
         'attr' : 'indecission',
-        'cutoffs' : [(0,4),(5,20)],
+        'cutoffs' : [(0,3),(4,20)],
         'points' : [2,-2]
         })
     attbs.append( {
         'attr' : 'bounce_ratio',
-        'cutoffs' : [(0,5),(6,10000)],
+        'cutoffs' : [(0,4),(5,10000)],
         'points' : [-2,2]
         })
 elif args.timeframe=='H12':
     attbs.append({
         'attr' : 'diff',
-        'cutoffs' : [(0,500),(501,100000)],
+        'cutoffs' : [(0,600),(601,100000)],
         'points' : [2,-2]
         })
     attbs.append({
@@ -341,7 +340,7 @@ elif args.timeframe=='H12':
         })
     attbs.append( {
         'attr' : 'length of trend (-1)',
-        'cutoffs' : [(0,9),(10,99),(100,1000000)],
+        'cutoffs' : [(0,9), (10,99),(100,1000000)],
         'points' : [-1,1,-1]
         })
     attbs.append( {
@@ -351,12 +350,12 @@ elif args.timeframe=='H12':
         })
     attbs.append( {
         'attr' : 'pips_ratio',
-        'cutoffs' : [(0,70),(71,1000000000000)],
+        'cutoffs' : [(0,150),(151,1000000000000)],
         'points' : [-2,2]
         })
     attbs.append( {
         'attr' : 'sum_bounces',
-        'cutoffs' : [(0,7),(8,100000)],
+        'cutoffs' : [(0,4),(5,100000)],
         'points' : [2,-2]
         })
     attbs.append( {
@@ -368,22 +367,22 @@ elif args.timeframe=='H12':
         'attr' : 'entry_aligned',
         'cutoffs' : 'bool',
         'rel' : 'is_true',
-        'points' : 3
+        'points' : 6
         })
     attbs.append( {
         'attr' : 'indecission',
-        'cutoffs' : [(0,2),(3,7),(8,20)],
-        'points' : [2,-1,-2]
+        'cutoffs' : [(0,5),(6,20)],
+        'points' : [2,-2]
         })
     attbs.append( {
         'attr' : 'bounce_ratio',
-        'cutoffs' : [(0,3),(4,6),(7,10000)],
-        'points' : [-2,1,2]
+        'cutoffs' : [(0,6),(7,10000)],
+        'points' : [2,-2]
         })
 elif args.timeframe=='H6':
     attbs.append({
         'attr' : 'diff',
-        'cutoffs' : [(0,400),(401,1000000)],
+        'cutoffs' : [(0,350),(351,1000000)],
         'points' : [-2,2]
         })
     attbs.append({
@@ -404,7 +403,7 @@ elif args.timeframe=='H6':
         })
     attbs.append( {
         'attr' : 'pips_ratio',
-        'cutoffs' : [(0,150),(151,10000)],
+        'cutoffs' : [(0,100),(101,10000)],
         'points' : [-1,1]
         })
     attbs.append( {
@@ -421,7 +420,7 @@ elif args.timeframe=='H6':
         'attr' : 'entry_aligned',
         'cutoffs' : 'bool',
         'rel' : 'is_true',
-        'points' : 3
+        'points' : 6
         })
     attbs.append( {
         'attr' : 'indecission',
