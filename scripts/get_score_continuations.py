@@ -205,7 +205,44 @@ def calculate_points(row,attribs,verbose=verbose):
 
 attbs=[]
 
-if args.timeframe=='ALL':
+if args.timeframe='ALL_entry':
+    attbs.append({
+        'attr' : 'diff',
+        'cutoffs' : [(0,700),(701,100000)],
+        'points' : [1,-1]
+        })
+    attbs.append({
+        'attr' : 'RSI bounces',
+        'cutoffs' : [(0,0),(1,3),(4,100000)],
+        'points' : [1,2,-2]
+        })
+    attbs.append({
+        'attr' : 'entry on RSI',
+        'cutoffs' : 'bool',
+        'rel' : 'is_true',
+        'points' : 1
+        })
+    attbs.append({
+        'attr' : 'length of trend (-1)',
+        'cutoffs' : [(0,10),(11,40),(41,50),(51,120),(121,10000)],
+        'points' : [-1,2,1,-1,-2]
+        })
+    attbs.append( {
+        'attr' : 'sum_bounces',
+        'cutoffs' : [(0,3),(4,100000)],
+        'points' : [2,-2]
+        })
+    attbs.append( {
+        'attr' : 'norm_bounce_pips',
+        'cutoffs' : [(0,48),(49,1000)],
+        'points' : [2,-2]
+        })
+    attbs.append( {
+        'attr' : 'indecission',
+        'cutoffs' : [(0,1),(1,2),(3,3),(4,1000)],
+        'points' : [-1,2,-1,-2]
+        })
+elif args.timeframe=='ALL':
     attbs.append({
         'attr' : 'diff',
         'cutoffs' : [(0,700),(701,100000)],
