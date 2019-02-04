@@ -122,7 +122,7 @@ contDF['outcome']=contDF.apply(digit_binary,axis=1,transl_dict=transl_dict, name
 contDF['entry on RSI']=contDF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='entry on RSI')
 
 # selecting the desired dataframe
-if args.timeframe!='ALL':
+if args.timeframe!='ALL' and args.timeframe!='ALL_entry':
     contDF=contDF[contDF.timeframe == args.timeframe]
 
 outcome_ix=6 # 4=outcome and 5= ext_outcome
@@ -205,7 +205,7 @@ def calculate_points(row,attribs,verbose=verbose):
 
 attbs=[]
 
-if args.timeframe='ALL_entry':
+if args.timeframe=='ALL_entry':
     attbs.append({
         'attr' : 'diff',
         'cutoffs' : [(0,700),(701,100000)],
