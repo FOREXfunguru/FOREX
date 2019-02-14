@@ -180,6 +180,7 @@ def calculate_points(row,attribs,verbose=verbose):
     
     '''
     score=0
+
     for a in attribs:
         attrb_name=a['attr']
         value=row[a['attr']]
