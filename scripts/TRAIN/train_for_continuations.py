@@ -9,14 +9,21 @@ import re
 import argparse
 import os
 import pdb
+import math
+from tabulate import tabulate
 
 from sklearn.preprocessing import Imputer
+from prettytable import PrettyTable
+
 
 parser = argparse.ArgumentParser(description='This script is used with training data in order to assess the points assigned to each of the variables')
 
 parser.add_argument('--ifile', required=True, help='input file containing the training trades. Valid formats are .csv or .tsv')
 parser.add_argument('--timeframe', required=True, help='Input dataframe. Valid values are: ALL,D,H12,H6')
+parser.add_argument('--outcome', required=True, help='outcome type. Possible values are outcome or ext_outcome')
+parser.add_argument('--print_sorted', default=False, required=False, help='Print sorted (by date) .tsv')
 parser.add_argument('--verbose', required=True, help='Increase verbosity')
+
 args = parser.parse_args()
 
 ext=os.path.splitext(args.ifile)[1]
@@ -37,7 +44,8 @@ print("Total # of records: {0}; # of variables: {1}".format(DF.shape[0], DF.shap
 if not args.timeframe in ['ALL','D','H12','H8','H4']:
     raise Exception("{0} timeframe is not valid".format(args.timeframe))
 
-DF=DF[DF['timeframe']==args.timeframe]
+if args.timeframe != 'ALL':
+    DF=DF[DF['timeframe']==args.timeframe]
 
 print("Total # of records for desired timeframe: {0}; # of variables: {1}".format(DF.shape[0], DF.shape[1]))
 
@@ -105,8 +113,9 @@ def normalize(x, variable_name):
     else:
         raise("Error")
 
-for v in ['length in pips (-1)','bounce (pips)','retraced']:
-    DF[v]=DF.apply(normalize,axis=1, variable_name=v)
+DF['norm_length_pips']=DF.apply(normalize,axis=1, variable_name='length in pips (-1)')
+DF['norm_bounce_pips']=DF.apply(normalize,axis=1, variable_name='bounce (pips)')
+DF['norm_retraced']=DF.apply(normalize,axis=1, variable_name='retraced')
 
 #
 # Transforming categorical binary variables into 1s and 0s
@@ -153,7 +162,46 @@ if args.print_sorted==True:
     # Sort the trades by date to check if there are reduntant trades:
     sortedDF= DF.sort_values(by='start')
     sortedDF.to_csv('sorted_contDF.tsv',sep='\t')
-    
-pdb.set_trace()
+
+#
+# Calculate ext outcome
+#
+
+def calc_extoutcome(row,cutoff=20):
+    if not math.isnan(row['norm_retraced']):
+        if row['norm_retraced']<=cutoff:
+            return int(1)
+        else:
+            return int(0)
+    else:
+        return int(row['outcome'])
+
+DF['ext_outcome']=DF.apply(calc_extoutcome,axis=1)
+outcome_ix=DF.columns.values.tolist().index(args.outcome)
+
+def stats_table(var):
+
+    res_mean=DF.groupby(args.outcome).agg({ var : 'mean'})
+    res_mean.columns=['mean']
+
+    res_median=DF.groupby(args.outcome).agg({ var : 'median'})
+    res_median.columns=['median']
+
+    res_f=pd.merge(res_mean,res_median,left_index=True, right_index=True)
+
+    print("##\n## {0}:\n##".format(var))
+    print(tabulate(res_f, headers='keys', tablefmt='psql'))
+
+
+#
+# last time 
+# This datetime variable represents the last time the price was over/below the entry price level.
+# The first to do is to create a new datetime variable representing the difference (in days) between
+# the entry datetime (start column) and the last time datetime
+
+DF['diff']=(DF['start']-DF['last time'])
+DF['diff']=DF['diff'].apply(lambda x: x.days)
+
+stats_table('diff')
     
 print("h\n")
