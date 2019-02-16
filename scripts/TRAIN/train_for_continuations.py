@@ -165,7 +165,6 @@ def digit_binary(x,transl_dict,name):
     
     return transl_dict[x[name]]
 
-if "ext_outcome" in DF: DF['ext_outcome']=DF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='ext_outcome')
 DF['outcome']=DF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='outcome')
 DF['entry on RSI']=DF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='entry on RSI')
 if "strong_trend" in DF: DF['strong trend']=DF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='strong trend')
@@ -190,6 +189,10 @@ def calc_extoutcome(row,cutoff=20):
 
 DF['ext_outcome']=DF.apply(calc_extoutcome,axis=1)
 outcome_ix=DF.columns.values.tolist().index(args.outcome)
+
+# Calculate win-rate
+pdb.set_trace()
+print(DF[args.outcome].value_counts(normalize=True))
 
 def stats_table(var):
     '''
