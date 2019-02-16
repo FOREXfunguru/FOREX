@@ -10,6 +10,7 @@ import argparse
 import os
 import pdb
 import math
+import seaborn as sns
 from tabulate import tabulate
 
 from sklearn.preprocessing import Imputer
@@ -22,7 +23,7 @@ parser.add_argument('--ifile', required=True, help='input file containing the tr
 parser.add_argument('--timeframe', required=True, help='Input dataframe. Valid values are: ALL,D,H12,H6')
 parser.add_argument('--outcome', required=True, help='outcome type. Possible values are outcome or ext_outcome')
 parser.add_argument('--print_sorted', default=False, required=False, help='Print sorted (by date) .tsv')
-parser.add_argument('--verbose', required=True, help='Increase verbosity')
+parser.add_argument('--entry_aligned', default=False, required=False, help='If true, then consider only trades having entry_aligned=1')
 
 args = parser.parse_args()
 
@@ -35,6 +36,14 @@ elif ext == '.csv':
     separator=","
 else:
     raise Exception("Extension {0} is not recognized".format(ext))
+
+def str_to_bool(s):
+    if s == 'True':
+         return True
+    elif s == 'False' or s == False:
+         return False
+    else:
+         raise ValueError # evil ValueError that doesn't tell you what the wrong value was
 
 #read-in the data
 DF=pd.read_csv(args.ifile,sep=separator,na_values=["n.a.","n.a"])
@@ -49,6 +58,9 @@ if args.timeframe != 'ALL':
 
 print("Total # of records for desired timeframe: {0}; # of variables: {1}".format(DF.shape[0], DF.shape[1]))
 
+if str_to_bool(args.entry_aligned) is True:
+    DF=DF.loc[DF['entry_aligned']==1]
+    print("Total # of records after discarding entry_aligned=0: {0}; # of variables: {1}".format(DF.shape[0], DF.shape[1]))
 #
 # Convert to datetime the relevant variables
 #
@@ -180,7 +192,14 @@ DF['ext_outcome']=DF.apply(calc_extoutcome,axis=1)
 outcome_ix=DF.columns.values.tolist().index(args.outcome)
 
 def stats_table(var):
+    '''
+    Function to calculate the mean,median grouped by the outcome
 
+    Parameters
+    ----------
+    var : string
+          Variable name for calculating basic stats
+    '''
     res_mean=DF.groupby(args.outcome).agg({ var : 'mean'})
     res_mean.columns=['mean']
 
@@ -192,6 +211,72 @@ def stats_table(var):
     print("##\n## {0}:\n##".format(var))
     print(tabulate(res_f, headers='keys', tablefmt='psql'))
 
+def binning_plot(var,step):
+    '''
+    Function to bin the numerical variable and create a barplot
+    grouped by the outcome
+
+    Parameters
+    ----------
+    var : string
+           Variable name for calculating basic stats
+    step : integer
+           Step size for custom bins
+    '''
+    max_v=max(DF[var])
+
+    custom_bins_array = np.arange(0, max_v, step)
+
+    DF[var+"_cat"]=pd.cut(DF[var], np.around(custom_bins_array))
+
+    DF_counts = (DF.groupby([args.outcome])[var+'_cat']
+                 .value_counts(normalize=True)
+                 .rename('percentage')
+                 .mul(100)
+                 .reset_index()
+                 .sort_values(var+'_cat'))
+
+    sns.set(rc={'figure.figsize':(25,9)})
+
+    p = sns.barplot(x=var+"_cat", y="percentage", hue=args.outcome, data=DF_counts)
+
+    fig=p.get_figure()
+    fig.savefig(var+".png")
+
+def generate_barplot(var):
+    '''
+    Function to create a normalized barplot
+
+    Parameters
+    ----------
+    var : string
+           Variable name for calculating basic stats
+    '''
+    DF_counts = (DF.groupby([args.outcome])[var]
+                 .value_counts(normalize=True)
+                 .rename('percentage')
+                 .mul(100)
+                 .reset_index()
+                 .sort_values(var))
+
+    sns.set(rc={'figure.figsize':(25,9.27)})
+
+    p = sns.barplot(x=var, y="percentage", hue=args.outcome, data=DF_counts)
+
+    fig=p.get_figure()
+    fig.savefig(var+".png")
+
+def calc_proportions(var):
+    '''
+    Function to calculate percentages of 'var' grouped by outcome
+    '''
+    
+    DF[var].value_counts()
+
+    div_class=pd.crosstab(DF.iloc[:,outcome_ix], DF[var],margins=True)
+    prop=(div_class/div_class.loc["All"])*100
+    print("##\n## {0}:\n##".format(var))
+    print(tabulate(prop, headers='keys', tablefmt='psql'))
 
 #
 # last time 
@@ -202,6 +287,100 @@ def stats_table(var):
 DF['diff']=(DF['start']-DF['last time'])
 DF['diff']=DF['diff'].apply(lambda x: x.days)
 
-stats_table('diff')
+#
+# length_bounce_perc
+# This variable represents what % of the total length of the trend represents the inn_bounce
+DF['length_bounce_perc']=DF['inn_bounce'].astype(int)*100/DF['length of trend (-1)'].astype(int)
+
+# ### Pips_ratio
+# This variable contains the ratio between 'length in pips'/'length of trend (-1)'
+DF['pips_ratio']=DF['length in pips (-1)'].astype(int)/DF['length of trend (-1)'].astype(int)
+
+### Pips_ratio normalized
+DF['pips_ratio_norm']=DF['norm_length_pips'].astype(int)/DF['length of trend (-1)'].astype(int)
+
+### bounce length
+# This variable is a comma separated list of integers representing how wide (in number of candles) each of the RSI bounces is. This variable requires a little bit of preprocessing, and I will write a f# unction that calculates the total length (in number of candles) by adding the length of each of the bounces
+
+def sum_lengths(x):
+    '''
+    Function to calculate the sum (in number of candles)
+    of all the RSI bounces
     
-print("h\n")
+    Parameters
+    ----------
+    x = string with a comma separated list of numbers
+        i.e. 1,4,2,3
+        
+    Returns
+    -------
+    An integer representing the total bounce length
+    '''
+    
+    return sum([int(i) for i in x.split(",")])
+
+# Replace n.a. by 0s
+DF["bounce length"].fillna(0, inplace=True)
+DF['sum_bounces']=DF['bounce length'].astype(str).apply(sum_lengths)
+
+### bounce_bias
+# This is a derived categorical variable named `bounce_bias` that will be `P` if there are more peak bounces than S/R bounces,
+# `A` if there are more bounces at the S/R area than at the peak and `U` if there is the same number of bounces at the 2 areas. 
+
+def calc_bounce_bias(row):
+    '''
+    Function to calculate the value of bounce_bias
+    '''
+    s_r_bounces=row['s_r_bounces']
+    peak_bounces=row['peak_bounces']
+    
+    if s_r_bounces > peak_bounces:
+        return 'A'
+    elif s_r_bounces < peak_bounces:
+        return 'P'
+    elif s_r_bounces == peak_bounces:
+        return 'U'
+
+DF['bounce_bias']=DF.apply(calc_bounce_bias,axis=1)
+
+### Inn_bounce/Indecisison ratio
+# Float variable representing the ratio between the internal bounce divided by the indecission ratio
+DF['bounce_ratio']=DF['inn_bounce']/DF['indecission']
+
+#
+# Calculate basic stats and binning plots
+#
+
+step_s={
+    'diff' : 150,
+    'length of trend (-1)' : 10,
+    'length_bounce_perc' : 10,
+    'length in pips (-1)' :2000,
+    'pips_ratio' : 100,
+    'pips_ratio_norm' :2,
+    'inn_bounce' : 2,
+    'sum_bounces' : 2,
+    'bounce (pips)' : 500,
+    'norm_bounce_pips' : 10,
+    'bounce_ratio' : 2
+    }
+
+for v in ['diff','length of trend (-1)', 'length_bounce_perc', 'length in pips (-1)',
+          'pips_ratio', 'pips_ratio_norm', 'inn_bounce', 'sum_bounces', 'bounce (pips)',
+          'norm_bounce_pips','bounce_ratio']:
+    stats_table(v)
+    binning_plot(v, step_s[v])
+
+#
+# Generate Barplots
+#
+for v in ['RSI bounces','trend_bounces','s_r_bounces','peak_bounces','indecission']:
+    stats_table(v)
+    generate_barplot(v)
+
+#
+# Calculate proportions
+#
+for v in ['entry on RSI','entry_aligned','bounce_bias']:
+    calc_proportions(v)
+    
