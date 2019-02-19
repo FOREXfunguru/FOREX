@@ -191,7 +191,6 @@ DF['ext_outcome']=DF.apply(calc_extoutcome,axis=1)
 outcome_ix=DF.columns.values.tolist().index(args.outcome)
 
 # Calculate win-rate
-pdb.set_trace()
 print(DF[args.outcome].value_counts(normalize=True))
 
 def stats_table(var):
@@ -214,7 +213,7 @@ def stats_table(var):
     print("##\n## {0}:\n##".format(var))
     print(tabulate(res_f, headers='keys', tablefmt='psql'))
 
-def binning_plot(var,step):
+def binning_plot(var,step,cutoff=10,point_cutoff1=5,point_cutoff2=10):
     '''
     Function to bin the numerical variable and create a barplot
     grouped by the outcome
@@ -225,23 +224,83 @@ def binning_plot(var,step):
            Variable name for calculating basic stats
     step : integer
            Step size for custom bins
+    cutoff : integer
+             Only intervals for which either of the outcome percentanges is >=
+             this cutoff. Default = 10
+    point_cutoff1 : integer
+                   1st cutoff used for deciding the point assignation. Default=5
+    point_cutoff2 : integer
+                   2nd cutoff used for deciding the point assignation. Default=10
     '''
     max_v=max(DF[var])
 
     custom_bins_array = np.arange(0, max_v, step)
 
     DF[var+"_cat"]=pd.cut(DF[var], np.around(custom_bins_array))
-
+    
     DF_counts = (DF.groupby([args.outcome])[var+'_cat']
                  .value_counts(normalize=True)
                  .rename('percentage')
                  .mul(100)
                  .reset_index()
-                 .sort_values(var+'_cat'))
+                 .sort_values(by=[var+'_cat']))
 
+    print("##\n## {0}:\n##".format(var))
+    print(tabulate(DF_counts, headers='keys', tablefmt='psql'))
+
+    a = dict(DF_counts.set_index(var+'_cat').groupby(level = 0).\
+    apply(lambda x : x.to_dict(orient= 'records')))
+    intervals=[]
+    points=[]
+   
+    for k in sorted(a.keys()):
+        v=a[k]
+        intervals.append("{0}-{1}".format(k.left,k.right))
+        if len(v)<2:
+            points.append(0)
+            continue
+        outcomeA=v[0][args.outcome]
+        percA=v[0]['percentage']
+        outcomeB=v[1][args.outcome]
+        percB=v[1]['percentage']
+        print("PercA:{0};PercB:{1}".format(percA,percB))
+        if percA>=cutoff or percB>=cutoff:
+            diff=abs(percA-percB)
+            if outcomeA==1 and percA>percB:
+                if 0 <= diff <= point_cutoff1:
+                    points.append(1)
+                elif point_cutoff1 <= diff <= point_cutoff2:
+                    points.append(2)
+                elif diff > point_cutoff2:
+                    points.append(3)
+            elif outcomeA==1 and percA<percB:
+                if 0 <= diff <= point_cutoff1:
+                    points.append(-1)
+                elif point_cutoff1 <= diff <= point_cutoff2:
+                    points.append(-2)
+                elif diff > point_cutoff2:
+                    points.append(-3)
+            elif outcomeA==0 and percA>percB:
+                if 0 <= diff <= point_cutoff1:
+                    points.append(-1)
+                elif point_cutoff1 <= diff <= point_cutoff2:
+                    points.append(-2)
+                elif diff > point_cutoff2:
+                    points.append(-3)
+            elif outcomeA==0 and percA<percB:
+                if 0 <= diff <= point_cutoff1:
+                    points.append(1)
+                elif point_cutoff1 <= diff <= point_cutoff2:
+                    points.append(2)
+                elif diff > point_cutoff2:
+                    points.append(3)
+        else:
+            points.append(0)
+            
+            
     sns.set(rc={'figure.figsize':(25,9)})
-
-    p = sns.barplot(x=var+"_cat", y="percentage", hue=args.outcome, data=DF_counts)
+    pdb.set_trace()
+    p = sns.barplot(x=var+"_cat", y="percentage", data=DF_counts)
 
     fig=p.get_figure()
     fig.savefig(var+".png")
@@ -262,6 +321,9 @@ def generate_barplot(var):
                  .reset_index()
                  .sort_values(var))
 
+    print("##\n## {0}:\n##".format(var))
+    print(tabulate(DF_counts, headers='keys', tablefmt='psql'))
+    
     sns.set(rc={'figure.figsize':(25,9.27)})
 
     p = sns.barplot(x=var, y="percentage", hue=args.outcome, data=DF_counts)
@@ -358,7 +420,8 @@ step_s={
     'diff' : 150,
     'length of trend (-1)' : 10,
     'length_bounce_perc' : 10,
-    'length in pips (-1)' :2000,
+    'length in pips (-1)' : 2000,
+    'norm_length_pips' : 50,
     'pips_ratio' : 100,
     'pips_ratio_norm' :2,
     'inn_bounce' : 2,
@@ -369,7 +432,7 @@ step_s={
     }
 
 for v in ['diff','length of trend (-1)', 'length_bounce_perc', 'length in pips (-1)',
-          'pips_ratio', 'pips_ratio_norm', 'inn_bounce', 'sum_bounces', 'bounce (pips)',
+          'norm_length_pips','pips_ratio', 'pips_ratio_norm', 'inn_bounce', 'sum_bounces', 'bounce (pips)',
           'norm_bounce_pips','bounce_ratio']:
     stats_table(v)
     binning_plot(v, step_s[v])
