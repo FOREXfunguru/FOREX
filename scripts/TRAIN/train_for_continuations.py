@@ -2,6 +2,8 @@
 # author: ernesto lowy
 # email: ernestolowy@gmail.com
 
+import matplotlib
+matplotlib.use('PS')
 import pandas as pd
 import numpy as np
 import pdb
@@ -193,6 +195,70 @@ outcome_ix=DF.columns.values.tolist().index(args.outcome)
 # Calculate win-rate
 print(DF[args.outcome].value_counts(normalize=True))
 
+
+def calculate_points(v,cutoff,point_cutoff1,point_cutoff2):
+    '''
+    Function to calculate the number of points
+    assigned to a particular interval/value
+
+    Parameters
+    ----------
+    v: dict
+       Containing information on the percentage for the two outcome categories
+    cutoff : integer
+             Only intervals for which either of the outcome percentanges is >=
+             this cutoff
+    point_cutoff1 : integer
+                   1st cutoff used for deciding the point assignation. Default=5
+    point_cutoff2 : integer
+                   2nd cutoff used for deciding the point assignation. Default=10
+    
+
+    Returns
+    -------
+    integer representing the number of points
+    assigned
+    '''
+    
+    if len(v)<2:
+        return 0
+    outcomeA=v[0][args.outcome]
+    percA=v[0]['percentage']
+    outcomeB=v[1][args.outcome]
+    percB=v[1]['percentage']
+    if percA>=cutoff or percB>=cutoff:
+        diff=abs(percA-percB)
+        if outcomeA==1 and percA>percB:
+            if 0 <= diff <= point_cutoff1:
+                return 1
+            elif point_cutoff1 <= diff <= point_cutoff2:
+                return 2
+            elif diff > point_cutoff2:
+                return 3
+        elif outcomeA==1 and percA<percB:
+            if 0 <= diff <= point_cutoff1:
+                return -1
+            elif point_cutoff1 <= diff <= point_cutoff2:
+                return -2
+            elif diff > point_cutoff2:
+                return -3
+        elif outcomeA==0 and percA>percB:
+            if 0 <= diff <= point_cutoff1:
+                return -1
+            elif point_cutoff1 <= diff <= point_cutoff2:
+                return -2
+            elif diff > point_cutoff2:
+                return -3
+        elif outcomeA==0 and percA<percB:
+            if 0 <= diff <= point_cutoff1:
+                return 1
+            elif point_cutoff1 <= diff <= point_cutoff2:
+                return 2
+            elif diff > point_cutoff2:
+                return 3
+    else:
+        return 0
+
 def stats_table(var):
     '''
     Function to calculate the mean,median grouped by the outcome
@@ -256,56 +322,18 @@ def binning_plot(var,step,cutoff=10,point_cutoff1=5,point_cutoff2=10):
     for k in sorted(a.keys()):
         v=a[k]
         intervals.append("{0}-{1}".format(k.left,k.right))
-        if len(v)<2:
-            points.append(0)
-            continue
-        outcomeA=v[0][args.outcome]
-        percA=v[0]['percentage']
-        outcomeB=v[1][args.outcome]
-        percB=v[1]['percentage']
-        print("PercA:{0};PercB:{1}".format(percA,percB))
-        if percA>=cutoff or percB>=cutoff:
-            diff=abs(percA-percB)
-            if outcomeA==1 and percA>percB:
-                if 0 <= diff <= point_cutoff1:
-                    points.append(1)
-                elif point_cutoff1 <= diff <= point_cutoff2:
-                    points.append(2)
-                elif diff > point_cutoff2:
-                    points.append(3)
-            elif outcomeA==1 and percA<percB:
-                if 0 <= diff <= point_cutoff1:
-                    points.append(-1)
-                elif point_cutoff1 <= diff <= point_cutoff2:
-                    points.append(-2)
-                elif diff > point_cutoff2:
-                    points.append(-3)
-            elif outcomeA==0 and percA>percB:
-                if 0 <= diff <= point_cutoff1:
-                    points.append(-1)
-                elif point_cutoff1 <= diff <= point_cutoff2:
-                    points.append(-2)
-                elif diff > point_cutoff2:
-                    points.append(-3)
-            elif outcomeA==0 and percA<percB:
-                if 0 <= diff <= point_cutoff1:
-                    points.append(1)
-                elif point_cutoff1 <= diff <= point_cutoff2:
-                    points.append(2)
-                elif diff > point_cutoff2:
-                    points.append(3)
-        else:
-            points.append(0)
+        points.append(calculate_points(v,cutoff,point_cutoff1,point_cutoff2))
+      
             
-            
-    sns.set(rc={'figure.figsize':(25,9)})
-    pdb.set_trace()
-    p = sns.barplot(x=var+"_cat", y="percentage", data=DF_counts)
+    print("intervals: {0}".format(intervals))
+    print("points: {0}".format(points))
+#    sns.set(rc={'figure.figsize':(25,9)})
+#    p = sns.barplot(x=var+"_cat", y="percentage", data=DF_counts)
 
-    fig=p.get_figure()
-    fig.savefig(var+".png")
+#    fig=p.get_figure()
+#    fig.savefig(var+".png")
 
-def generate_barplot(var):
+def generate_barplot(var,cutoff=10,point_cutoff1=5,point_cutoff2=10):
     '''
     Function to create a normalized barplot
 
@@ -313,6 +341,13 @@ def generate_barplot(var):
     ----------
     var : string
            Variable name for calculating basic stats
+    cutoff : integer
+             Only intervals for which either of the outcome percentanges is >=
+             this cutoff. Default = 10
+    point_cutoff1 : integer
+                   1st cutoff used for deciding the point assignation. Default=5
+    point_cutoff2 : integer
+                   2nd cutoff used for deciding the point assignation. Default=10
     '''
     DF_counts = (DF.groupby([args.outcome])[var]
                  .value_counts(normalize=True)
@@ -323,13 +358,26 @@ def generate_barplot(var):
 
     print("##\n## {0}:\n##".format(var))
     print(tabulate(DF_counts, headers='keys', tablefmt='psql'))
-    
-    sns.set(rc={'figure.figsize':(25,9.27)})
 
-    p = sns.barplot(x=var, y="percentage", hue=args.outcome, data=DF_counts)
+    a = dict(DF_counts.set_index(var).groupby(level = 0).\
+    apply(lambda x : x.to_dict(orient= 'records')))
+        
+    intervals=[]
+    points=[]
+    for k in sorted(a.keys()):
+        v=a[k]
+        intervals.append("{0}-{1}".format(k,k))
+        points.append(calculate_points(v,cutoff,point_cutoff1,point_cutoff2))
 
-    fig=p.get_figure()
-    fig.savefig(var+".png")
+    print("intervals: {0}".format(intervals))
+    print("points: {0}".format(points))
+        
+#    sns.set(rc={'figure.figsize':(25,9.27)})
+
+#    p = sns.barplot(x=var, y="percentage", hue=args.outcome, data=DF_counts)
+
+#    fig=p.get_figure()
+#    fig.savefig(var+".png")
 
 def calc_proportions(var):
     '''
