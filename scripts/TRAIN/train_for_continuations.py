@@ -12,6 +12,7 @@ import argparse
 import os
 import pdb
 import math
+import json
 import seaborn as sns
 from tabulate import tabulate
 
@@ -26,6 +27,7 @@ parser.add_argument('--timeframe', required=True, help='Input dataframe. Valid v
 parser.add_argument('--outcome', required=True, help='outcome type. Possible values are outcome or ext_outcome')
 parser.add_argument('--print_sorted', default=False, required=False, help='Print sorted (by date) .tsv')
 parser.add_argument('--entry_aligned', default=False, required=False, help='If true, then consider only trades having entry_aligned=1')
+parser.add_argument('--prefix', default=False, required=True, help='Prefix for serialized JSON file')
 
 args = parser.parse_args()
 
@@ -297,6 +299,10 @@ def binning_plot(var,step,cutoff=10,point_cutoff1=5,point_cutoff2=10):
                    1st cutoff used for deciding the point assignation. Default=5
     point_cutoff2 : integer
                    2nd cutoff used for deciding the point assignation. Default=10
+
+    Returns
+    -------
+    dict   Dict containing the intervals and points for each interval
     '''
     max_v=max(DF[var])
 
@@ -323,10 +329,12 @@ def binning_plot(var,step,cutoff=10,point_cutoff1=5,point_cutoff2=10):
         v=a[k]
         intervals.append("{0}-{1}".format(k.left,k.right))
         points.append(calculate_points(v,cutoff,point_cutoff1,point_cutoff2))
-      
-            
-    print("intervals: {0}".format(intervals))
-    print("points: {0}".format(points))
+
+    a={'intervals': intervals,
+       'points' : points}
+        
+    return a
+
 #    sns.set(rc={'figure.figsize':(25,9)})
 #    p = sns.barplot(x=var+"_cat", y="percentage", data=DF_counts)
 
@@ -348,6 +356,10 @@ def generate_barplot(var,cutoff=10,point_cutoff1=5,point_cutoff2=10):
                    1st cutoff used for deciding the point assignation. Default=5
     point_cutoff2 : integer
                    2nd cutoff used for deciding the point assignation. Default=10
+
+    Returns
+    -------
+    dict   Dict containing the intervals and points for each interval
     '''
     DF_counts = (DF.groupby([args.outcome])[var]
                  .value_counts(normalize=True)
@@ -369,9 +381,10 @@ def generate_barplot(var,cutoff=10,point_cutoff1=5,point_cutoff2=10):
         intervals.append("{0}-{1}".format(k,k))
         points.append(calculate_points(v,cutoff,point_cutoff1,point_cutoff2))
 
-    print("intervals: {0}".format(intervals))
-    print("points: {0}".format(points))
-        
+    a={'intervals': intervals,
+       'points' : points}
+    
+    return a
 #    sns.set(rc={'figure.figsize':(25,9.27)})
 
 #    p = sns.barplot(x=var, y="percentage", hue=args.outcome, data=DF_counts)
@@ -379,17 +392,72 @@ def generate_barplot(var,cutoff=10,point_cutoff1=5,point_cutoff2=10):
 #    fig=p.get_figure()
 #    fig.savefig(var+".png")
 
-def calc_proportions(var):
+def calc_proportions(var,ref_cat,point_cutoff1=20, point_cutoff2=30):
     '''
     Function to calculate percentages of 'var' grouped by outcome
+
+    Parameters
+    ----------
+    ref_cat : str
+              Label for category that will be considered as the reference
+    point_cutoff1 : integer
+                   1st cutoff used for deciding the point assignation. Default=20
+    point_cutoff2 : integer
+                   2nd cutoff used for deciding the point assignation. Default=30
+
+    Returns
+    -------
+    dict   Dict containing an interval and its points
     '''
-    
     DF[var].value_counts()
 
     div_class=pd.crosstab(DF.iloc[:,outcome_ix], DF[var],margins=True)
     prop=(div_class/div_class.loc["All"])*100
+    # get a list of columns
+    cols = list(prop)
+
+    # move the column to head of list using index, pop and insert
+    cols.insert(0, cols.pop(cols.index(ref_cat)))
+
+    # use ix to reorder
+    prop = prop.ix[:, cols]
+
+        
     print("##\n## {0}:\n##".format(var))
     print(tabulate(prop, headers='keys', tablefmt='psql'))
+
+    diffs=[]
+    intervals=[]
+    prop_dict=prop.to_dict()
+    ref_seen=False
+    for k in cols:
+        if k=="All": continue
+        diffs.append(prop_dict[k][1]-prop_dict[k][0])
+        if ref_seen==False:
+            ref_seen=True
+            continue
+        else:
+            intervals.append([k,k])
+
+    ref=diffs[0]
+
+    final_diffs=[]
+    for i in range(1, len(diffs)):
+        final_diffs.append(diffs[i]-ref)
+
+    points=[]
+    for d in final_diffs:
+        if 0 <= d <= point_cutoff1:
+            points.append(2)
+        elif point_cutoff1 <= d <= point_cutoff2:
+            points.append(3)
+        elif d > point_cutoff2:
+            points.append(5)
+
+    a={'intervals': intervals,
+       'points' : points}
+    
+    return a
 
 #
 # last time 
@@ -479,22 +547,31 @@ step_s={
     'bounce_ratio' : 2
     }
 
+final_dict={}
 for v in ['diff','length of trend (-1)', 'length_bounce_perc', 'length in pips (-1)',
           'norm_length_pips','pips_ratio', 'pips_ratio_norm', 'inn_bounce', 'sum_bounces', 'bounce (pips)',
           'norm_bounce_pips','bounce_ratio']:
     stats_table(v)
-    binning_plot(v, step_s[v])
+    final_dict[v]=binning_plot(v, step_s[v])
 
 #
 # Generate Barplots
 #
 for v in ['RSI bounces','trend_bounces','s_r_bounces','peak_bounces','indecission']:
     stats_table(v)
-    generate_barplot(v)
+    final_dict[v]=generate_barplot(v)
 
 #
 # Calculate proportions
 #
 for v in ['entry on RSI','entry_aligned','bounce_bias']:
-    calc_proportions(v)
-    
+    if v=='bounce_bias':
+        final_dict[v]=calc_proportions(v,'P')
+    else:
+        final_dict[v]=calc_proportions(v,0)
+
+outfile="{0}.{1}.json".format(args.prefix,args.timeframe)
+
+with open(outfile, "w") as write_file:
+    json.dump(final_dict, write_file)    
+
