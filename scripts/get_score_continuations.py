@@ -6,40 +6,89 @@ import numpy as np
 import pdb
 import re
 import argparse
+import os
+import json
+
+from sklearn.preprocessing import Imputer
 
 parser = argparse.ArgumentParser(description='Script to calculate the score for continuation trades')
 
-parser.add_argument('--DF', required=True, help='input dataframe')
+parser.add_argument('--ifile', required=True, help='input file containing the training trades. Valid formats are .csv or .tsv')
 parser.add_argument('--timeframe', required=True, help='Input dataframe. Valid values are: ALL,D,H12,H6')
-parser.add_argument('--verbose', required=True, help='Increase verbosity')
+parser.add_argument('--attrbs', required=True, help='Json file calculated by train_for_continuations.py')
+parser.add_argument('--verbose', required=False, default=False, help='Increase verbosity')
 args = parser.parse_args()
 
+ext=os.path.splitext(args.ifile)[1]
+
+separator=None
+if ext == '.tsv':
+    separator="\t"
+elif ext == '.csv':
+    separator=","
+else:
+    raise Exception("Extension {0} is not recognized".format(ext))
+
 def str_to_bool(s):
-    if s == 'True' or s=='true':
+    if s == 'True':
          return True
-    elif s == 'False' or s== 'false':
+    elif s == 'False' or s == False:
          return False
     else:
-         raise ValueError
+         raise ValueError # evil ValueError that doesn't tell you what the wrong value was
 
-def read_tradedata(tradefile,sep,na_values):
+with open(args.attrbs, "r") as read_file:
+    data = json.load(read_file)
+         
+#read-in the data
+DF=pd.read_csv(args.ifile,sep=separator,na_values=["n.a.","n.a"])
+
+print("Total # of records: {0}; # of variables: {1}".format(DF.shape[0], DF.shape[1]))
+
+if not args.timeframe in ['ALL','D','H12','H8','H4']:
+    raise Exception("{0} timeframe is not valid".format(args.timeframe))
+
+if args.timeframe != 'ALL':
+    DF=DF[DF['timeframe']==args.timeframe]
+
+print("Total # of records for desired timeframe: {0}; # of variables: {1}".format(DF.shape[0], DF.shape[1]))
+
+#
+# Convert to datetime the relevant variables
+#
+for v in ['start','last time']:
+    DF[v]= pd.to_datetime(DF[v])
+
+#
+# Impute missing values for some variables
+#
+
+def impute_missing_values(data, strat):
     '''
+    Impute missing values with the strategy passed with 'strat'.
+
     Parameters
     ----------
-    tradefile : str, required
-                Path to file containing the trade data
-    sep : str, optionsl
-          Field separator used in the file. i.e. ',' (comma separated values), '\t' (tab-separated values)
-    na_values : list, optional
-                Additional list of strings to recognize as NA/NaN. i.e. ['n.a.']
-    
+    data : pandas series
+    strat : string
+            What strategy will the Imputer use. For example: 'mean','median'
+
     Returns
     -------
-    A Pandas dataframe
+    A Pandas DF that will have 'var' imputed
     '''
-    DF=pd.read_csv(tradefile,sep=sep,na_values=na_values)
     
-    return DF
+    imputer = Imputer(strategy=strat)
+    imputer.fit(data.values.reshape(-1, 1))
+    X = imputer.transform(data.values.reshape(-1,1))
+    
+    return X
+
+for v in ['length of trend (-1)', 'length in pips (-1)', 's_r_bounces', 'peak_bounces']:
+    DF[v]=impute_missing_values(DF[v],strat='median')
+
+#
+# Normalize the pips variables
 
 def normalize(x, variable_name):
     '''
@@ -67,98 +116,52 @@ def normalize(x, variable_name):
         return round(x[variable_name]/6,1)
     else:
         raise("Error")
-    
-transl_dict={
+
+DF['norm_length_pips']=DF.apply(normalize,axis=1, variable_name='length in pips (-1)')
+DF['norm_bounce_pips']=DF.apply(normalize,axis=1, variable_name='bounce (pips)')
+DF['norm_retraced']=DF.apply(normalize,axis=1, variable_name='retraced')
+
+#
+# Transforming categorical binary variables into 1s and 0s
+#
+
+transl_dict={ 
         'S':1,
-        'F':0,
-        True:1,
+        'F':0, 
+        True:1, 
         False:0
     }
-
 def digit_binary(x,transl_dict,name):
     '''
     This function will replace the values in categorical
     binary variables by 1 and 0
-
+    
     Parameters
     ----------
     transl_dict: dict
                  Keys will be the old categorical names and Values
                  will be 1 and 0. For example:
-                 transl_dict={
+                 transl_dict={ 
                             'S':1,
-                            'F':0,
-                            True:1,
+                            'F':0, 
+                            True:1, 
                             False:0
                             }
     name: str
           Name of the column to modify
-
+        
     Returns
     -------
     The new label for the categorical variable
     '''
-
+    
     return transl_dict[x[name]]
 
-# read-in the data
-contDF=read_tradedata(args.DF,sep="\t",na_values=["n.a.","n.a"])
+DF['outcome']=DF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='outcome')
+DF['entry on RSI']=DF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='entry on RSI')
+if "strong_trend" in DF: DF['strong trend']=DF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='strong trend')
 
-# convert to datetime
-contDF['start']= pd.to_datetime(contDF['start'])
-contDF['last time']= pd.to_datetime(contDF['last time'])
-
-# cleaning the n.a. values
-contDF["bounce length"].fillna(0, inplace=True)
-contDF["length of trend (-1)"].fillna(0, inplace=True)
-contDF["length in pips (-1)"].fillna(0, inplace=True)
-
-# normalizing the pips pased variables
-contDF['norm_length_pips']=contDF.apply(normalize,axis=1, variable_name='length in pips (-1)')
-contDF['norm_bounce_pips']=contDF.apply(normalize,axis=1, variable_name='bounce (pips)')
-
-# transforming categorical binary variables
-contDF['outcome']=contDF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='outcome')
-contDF['entry on RSI']=contDF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='entry on RSI')
-
-# selecting the desired dataframe
-if args.timeframe!='ALL' and args.timeframe!='ALL_entry':
-    contDF=contDF[contDF.timeframe == args.timeframe]
-
-outcome_ix=6 # 4=outcome and 5= ext_outcome
-outcome_lab="outcome"
-
-#calculating diff variable 
-contDF['diff']=(contDF['start']-contDF['last time'])
-contDF['diff']=contDF['diff'].apply(lambda x: x.days)
-
-def sum_lengths(x):
-    '''
-    Function to calculate the sum (in number of candles)
-    of all the RSI bounces
-    
-    Parameters
-    ----------
-    x = string with a comma separated list of numbers
-        i.e. 1,4,2,3
-        
-    Returns
-    -------
-    An integer representing the total bounce length
-    '''
-    if x=='0.0':
-        return 0
-    else:
-        return sum([int(i) for i in x.split(",")])
-    
-
-contDF['sum_bounces']=contDF['bounce length'].astype(str).apply(sum_lengths)
-contDF['pips_ratio']=contDF['length in pips (-1)'].astype(int)/contDF['length of trend (-1)'].astype(int)
-contDF['bounce_ratio']=contDF['inn_bounce']/contDF['indecission']
-verbose=str_to_bool(args.verbose)
-
-
-def calculate_points(row,attribs,verbose=verbose):
+def calculate_points(row,attribs,verbose=args.verbose):
     '''
     Function to calculate the points for a particular trade
     
@@ -180,7 +183,7 @@ def calculate_points(row,attribs,verbose=verbose):
     
     '''
     score=0
-
+    pdb.set_trace()
     for a in attribs:
         attrb_name=a['attr']
         value=row[a['attr']]
@@ -204,276 +207,8 @@ def calculate_points(row,attribs,verbose=verbose):
                 
     return score
 
-attbs=[]
-
-if args.timeframe=='ALL_entry':
-    attbs.append({
-        'attr' : 'diff',
-        'cutoffs' : [(0,700),(701,100000)],
-        'points' : [1,-1]
-        })
-    attbs.append({
-        'attr' : 'RSI bounces',
-        'cutoffs' : [(0,0),(1,3),(4,100000)],
-        'points' : [1,2,-2]
-        })
-    attbs.append({
-        'attr' : 'entry on RSI',
-        'cutoffs' : 'bool',
-        'rel' : 'is_true',
-        'points' : 1
-        })
-    attbs.append({
-        'attr' : 'length of trend (-1)',
-        'cutoffs' : [(0,10),(11,40),(41,50),(51,120),(121,10000)],
-        'points' : [-1,2,1,-1,-2]
-        })
-    attbs.append( {
-        'attr' : 'sum_bounces',
-        'cutoffs' : [(0,3),(4,100000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'norm_bounce_pips',
-        'cutoffs' : [(0,48),(49,1000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'indecission',
-        'cutoffs' : [(0,1),(1,2),(3,3),(4,1000)],
-        'points' : [-1,2,-1,-2]
-        })
-elif args.timeframe=='ALL':
-    attbs.append({
-        'attr' : 'diff',
-        'cutoffs' : [(0,700),(701,100000)],
-        'points' : [1,-1]
-        })
-    attbs.append({
-        'attr' : 'RSI bounces',
-        'cutoffs' : [(0,2), (3,3), (4,100000)],
-        'points' : [2,-1,-2]
-        })
-    attbs.append({
-        'attr' : 'entry on RSI',
-        'cutoffs' : 'bool',
-        'rel' : 'is_true',
-        'points' : 3
-        })
-    attbs.append({
-        'attr' : 'length of trend (-1)',
-        'cutoffs' : [(0,10),(11,25),(26,35),(36,60),(61,10000)],
-        'points' : [-1,2,1,-1,-2]
-        })
-    attbs.append( {
-        'attr' : 'inn_bounce',
-        'cutoffs' : [(0,7),(8,1000000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'pips_ratio_norm',
-        'cutoffs' : [(0,3),(4,30)],
-        'points' : [-2,2]
-        })
-    attbs.append( {
-        'attr' : 'sum_bounces',
-        'cutoffs' : [(0,7),(8,100000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'norm_bounce_pips',
-        'cutoffs' : [(0,48),(49,1000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'entry_aligned',
-        'cutoffs' : 'bool',
-        'rel' : 'is_true',
-        'points' : 6
-        })
-    attbs.append( {
-        'attr' : 'indecission',
-        'cutoffs' : [(0,3),(4,5),(6,100)],
-        'points' : [1,-1,-2]
-        })
-    attbs.append( {
-        'attr' : 'bounce_ratio',
-        'cutoffs' : [(0,3),(4,10000)],
-        'points' : [-2,2]
-        })
-elif args.timeframe=='D':
-    attbs.append({
-        'attr' : 'diff',
-        'cutoffs' : [(0,300),(301,100000)],
-        'points' : [2,-2]
-        })
-    attbs.append({
-        'attr' : 'RSI bounces',
-        'cutoffs' : [(0,2), (3,3), (4,100000)],
-        'points' : [2,-1,-2]
-        })
-    attbs.append({
-        'attr' : 'entry on RSI',
-        'cutoffs' : 'bool',
-        'rel' : 'is_true',
-        'points' : 3
-        })
-    attbs.append( {
-        'attr' : 'length of trend (-1)',
-        'cutoffs' : [(0,10),(11,14),(15,23),(24,50),(51,10000)],
-        'points' : [-1,1,2,1,-2]
-        })
-    attbs.append( {
-        'attr' : 'inn_bounce',
-        'cutoffs' : [(0,7),(8,1000000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'pips_ratio',
-        'cutoffs' : [(0,150),(151,220),(221,1000000000000)],
-        'points' : [-2,1,2]
-        })
-    attbs.append( {
-        'attr' : 'sum_bounces',
-        'cutoffs' : [(0,6),(7,1000000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'bounce (pips)',
-        'cutoffs' : [(0,800),(801,1000000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'entry_aligned',
-        'cutoffs' : 'bool',
-        'rel' : 'is_true',
-        'points' : 6
-        })
-    attbs.append( {
-        'attr' : 'indecission',
-        'cutoffs' : [(0,3),(4,20)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'bounce_ratio',
-        'cutoffs' : [(0,4),(5,10000)],
-        'points' : [-2,2]
-        })
-elif args.timeframe=='H12':
-    attbs.append({
-        'attr' : 'diff',
-        'cutoffs' : [(0,600),(601,100000)],
-        'points' : [2,-2]
-        })
-    attbs.append({
-        'attr' : 'RSI bounces',
-        'cutoffs' : [(0,1),(2,2),(3,6),(7,100000)],
-        'points' : [2,1,-1,-2]
-        })
-    attbs.append({
-        'attr' : 'entry on RSI',
-        'cutoffs' : 'bool',
-        'rel' : 'is_true',
-        'points' : 3
-        })
-    attbs.append( {
-        'attr' : 'length of trend (-1)',
-        'cutoffs' : [(0,9), (10,99),(100,1000000)],
-        'points' : [-1,1,-1]
-        })
-    attbs.append( {
-        'attr' : 'inn_bounce',
-        'cutoffs' : [(0,7),(8,1000000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'pips_ratio',
-        'cutoffs' : [(0,150),(151,1000000000000)],
-        'points' : [-2,2]
-        })
-    attbs.append( {
-        'attr' : 'sum_bounces',
-        'cutoffs' : [(0,4),(5,100000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'bounce (pips)',
-        'cutoffs' : [(0,900),(901,1000000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'entry_aligned',
-        'cutoffs' : 'bool',
-        'rel' : 'is_true',
-        'points' : 6
-        })
-    attbs.append( {
-        'attr' : 'indecission',
-        'cutoffs' : [(0,5),(6,20)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'bounce_ratio',
-        'cutoffs' : [(0,6),(7,10000)],
-        'points' : [2,-2]
-        })
-elif args.timeframe=='H6':
-    attbs.append({
-        'attr' : 'diff',
-        'cutoffs' : [(0,350),(351,1000000)],
-        'points' : [-2,2]
-        })
-    attbs.append({
-        'attr' : 'RSI bounces',
-        'cutoffs' : [(0,0),(1,3),(4,1000)],
-        'points' : [-1,2,-1]
-        })
-    attbs.append({
-        'attr' : 'entry on RSI',
-        'cutoffs' : 'bool',
-        'rel' : 'is_true',
-        'points' : 3
-        })
-    attbs.append( {
-        'attr' : 'inn_bounce',
-        'cutoffs' : [(0,5),(6,1000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'pips_ratio',
-        'cutoffs' : [(0,100),(101,10000)],
-        'points' : [-1,1]
-        })
-    attbs.append( {
-        'attr' : 'sum_bounces',
-        'cutoffs' : [(0,3),(4,100000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'bounce (pips)',
-        'cutoffs' : [(0,600),(601,1000000)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'entry_aligned',
-        'cutoffs' : 'bool',
-        'rel' : 'is_true',
-        'points' : 6
-        })
-    attbs.append( {
-        'attr' : 'indecission',
-        'cutoffs' : [(0,1),(2,10)],
-        'points' : [2,-2]
-        })
-    attbs.append( {
-        'attr' : 'bounce_ratio',
-        'cutoffs' : [(0,5),(6,1000)],
-        'points' : [-2,2]
-        })
-
 # Now, let's apply the calculate_points on each row for the training and the test set
-
-contDF['score']=contDF.apply(calculate_points, axis=1, attribs=attbs)
+DF['score']=DF.apply(calculate_points, axis=1, attribs=data)
 
 for index, row in contDF.iterrows():
    print(row['id']+"\t"+str(row['score']))

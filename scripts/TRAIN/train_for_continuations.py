@@ -573,5 +573,8 @@ for v in ['entry on RSI','entry_aligned','bounce_bias']:
 outfile="{0}.{1}.json".format(args.prefix,args.timeframe)
 
 with open(outfile, "w") as write_file:
-    json.dump(final_dict, write_file)    
+    json.dump(final_dict,
+              write_file,
+              sort_keys=True,
+              indent=4)    
 
