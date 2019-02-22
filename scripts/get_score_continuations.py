@@ -8,6 +8,7 @@ import re
 import argparse
 import os
 import json
+import numbers
 
 from sklearn.preprocessing import Imputer
 
@@ -122,6 +123,74 @@ DF['norm_bounce_pips']=DF.apply(normalize,axis=1, variable_name='bounce (pips)')
 DF['norm_retraced']=DF.apply(normalize,axis=1, variable_name='retraced')
 
 #
+# last time 
+# This datetime variable represents the last time the price was over/below the entry price level.
+# The first to do is to create a new datetime variable representing the difference (in days) between
+# the entry datetime (start column) and the last time datetime
+
+DF['diff']=(DF['start']-DF['last time'])
+DF['diff']=DF['diff'].apply(lambda x: x.days)
+
+# ### Pips_ratio
+# This variable contains the ratio between 'length in pips'/'length of trend (-1)'
+DF['pips_ratio']=DF['length in pips (-1)'].astype(int)/DF['length of trend (-1)'].astype(int)
+
+### Pips_ratio normalized
+DF['pips_ratio_norm']=DF['norm_length_pips'].astype(int)/DF['length of trend (-1)'].astype(int)
+
+# length_bounce_perc
+# This variable represents what % of the total length of the trend represents the inn_bounce
+DF['length_bounce_perc']=DF['inn_bounce'].astype(int)*100/DF['length of trend (-1)'].astype(int)
+
+### bounce_bias
+# This is a derived categorical variable named `bounce_bias` that will be `P` if there are more peak bounces than S/R bounces,
+# `A` if there are more bounces at the S/R area than at the peak and `U` if there is the same number of bounces at the 2 areas. 
+
+def calc_bounce_bias(row):
+    '''
+    Function to calculate the value of bounce_bias
+    '''
+    s_r_bounces=row['s_r_bounces']
+    peak_bounces=row['peak_bounces']
+    
+    if s_r_bounces > peak_bounces:
+        return 'A'
+    elif s_r_bounces < peak_bounces:
+        return 'P'
+    elif s_r_bounces == peak_bounces:
+        return 'U'
+
+DF['bounce_bias']=DF.apply(calc_bounce_bias,axis=1)
+
+### Inn_bounce/Indecisison ratio
+# Float variable representing the ratio between the internal bounce divided by the indecission ratio
+DF['bounce_ratio']=DF['inn_bounce']/DF['indecission']
+
+### bounce length
+# This variable is a comma separated list of integers representing how wide (in number of candles) each of the RSI bounces is. This variable requires a little bit of preprocessing, and I will write a f# unction that calculates the total length (in number of candles) by adding the length of each of the bounces
+
+def sum_lengths(x):
+    '''
+    Function to calculate the sum (in number of candles)
+    of all the RSI bounces
+    
+    Parameters
+    ----------
+    x = string with a comma separated list of numbers
+        i.e. 1,4,2,3
+        
+    Returns
+    -------
+    An integer representing the total bounce length
+    '''
+    
+    return sum([int(i) for i in x.split(",")])
+
+# Replace n.a. by 0s
+DF["bounce length"].fillna(0, inplace=True)
+DF['sum_bounces']=DF['bounce length'].astype(str).apply(sum_lengths)
+
+#
 # Transforming categorical binary variables into 1s and 0s
 #
 
@@ -183,27 +252,32 @@ def calculate_points(row,attribs,verbose=args.verbose):
     
     '''
     score=0
-    pdb.set_trace()
     for a in attribs:
-        attrb_name=a['attr']
-        value=row[a['attr']]
-        cutoffs=a['cutoffs']
-        points=a['points']
-        if cutoffs =='bool':
-            if a['rel'] == 'is_true':
-                if value == True or value == 1:
-                    if verbose is True: print("{0} contributes with {1} points".format(attrb_name,points))
-                    score+=points
-                if value == False  or value == 0:
-                    if verbose is True: print("{0} contributes with -{1} points".format(attrb_name,points))
-                    score+=-1*points
-        else:
-            if len(cutoffs)!= len(points):
+        if a=="bounce_bias":
+            print("h\n")
+            pdb.set_trace()
+        value=row[a]
+        cutoffs=attribs[a]['intervals']
+        points=attribs[a]['points']
+        if len(cutoffs)!= len(points):
                 raise Exception("Length of cutoffs is different to length of points")
-            for i, j in zip(cutoffs, points):
-                if value>=i[0] and value<=i[1]:
-                    if verbose is True: print("{0} with a value of {1}, contributes with {2} points".format(attrb_name,value,j))
+        for i, j in zip(cutoffs, points):
+            if isinstance(i[0], numbers.Number):
+                upper=int(float(i[0]))
+                lower=int(float(i[1]))
+            else:
+                upper=i[0]
+                lower=i[1]
+            if upper==lower:
+                if value ==upper:
+                    if verbose is True: print("{0} with a value of {1}, contributes with {2} points".format(a,value,j))
                     score+=j
+            else:
+                iv = pd.Interval(left=upper, right=lower)
+                if value in iv:
+                    if verbose is True: print("{0} with a value of {1}, contributes with {2} points".format(a,value,j))
+                    score+=j
+                
                 
     return score
 

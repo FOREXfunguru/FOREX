@@ -327,7 +327,7 @@ def binning_plot(var,step,cutoff=10,point_cutoff1=5,point_cutoff2=10):
    
     for k in sorted(a.keys()):
         v=a[k]
-        intervals.append("{0}-{1}".format(k.left,k.right))
+        intervals.append([k.left,k.right])
         points.append(calculate_points(v,cutoff,point_cutoff1,point_cutoff2))
 
     a={'intervals': intervals,
@@ -378,7 +378,7 @@ def generate_barplot(var,cutoff=10,point_cutoff1=5,point_cutoff2=10):
     points=[]
     for k in sorted(a.keys()):
         v=a[k]
-        intervals.append("{0}-{1}".format(k,k))
+        intervals.append([k,k])
         points.append(calculate_points(v,cutoff,point_cutoff1,point_cutoff2))
 
     a={'intervals': intervals,
