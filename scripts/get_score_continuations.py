@@ -17,6 +17,7 @@ parser = argparse.ArgumentParser(description='Script to calculate the score for 
 parser.add_argument('--ifile', required=True, help='input file containing the training trades. Valid formats are .csv or .tsv')
 parser.add_argument('--timeframe', required=True, help='Input dataframe. Valid values are: ALL,D,H12,H6')
 parser.add_argument('--attrbs', required=True, help='Json file calculated by train_for_continuations.py')
+parser.add_argument('--prefix', required=True, help='Prefix for .csv file with scores in it')
 parser.add_argument('--verbose', required=False, default=False, help='Increase verbosity')
 args = parser.parse_args()
 
@@ -230,7 +231,7 @@ DF['outcome']=DF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='outcom
 DF['entry on RSI']=DF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='entry on RSI')
 if "strong_trend" in DF: DF['strong trend']=DF.apply(digit_binary,axis=1,transl_dict=transl_dict, name='strong trend')
 
-def calculate_points(row,attribs,verbose=args.verbose):
+def calculate_points(row,attribs,verbose=str_to_bool(args.verbose)):
     '''
     Function to calculate the points for a particular trade
     
@@ -253,15 +254,14 @@ def calculate_points(row,attribs,verbose=args.verbose):
     '''
     score=0
     for a in attribs:
-        if a=="bounce_bias":
-            print("h\n")
-            pdb.set_trace()
+        print("Processing {0}".format(row['id']))
         value=row[a]
         cutoffs=attribs[a]['intervals']
         points=attribs[a]['points']
         if len(cutoffs)!= len(points):
                 raise Exception("Length of cutoffs is different to length of points")
         for i, j in zip(cutoffs, points):
+            if j is None: j=0
             if isinstance(i[0], numbers.Number):
                 upper=int(float(i[0]))
                 lower=int(float(i[1]))
@@ -272,17 +272,28 @@ def calculate_points(row,attribs,verbose=args.verbose):
                 if value ==upper:
                     if verbose is True: print("{0} with a value of {1}, contributes with {2} points".format(a,value,j))
                     score+=j
+                    continue
             else:
                 iv = pd.Interval(left=upper, right=lower)
                 if value in iv:
                     if verbose is True: print("{0} with a value of {1}, contributes with {2} points".format(a,value,j))
                     score+=j
+                    continue
                 
                 
     return score
 
+#remove normalized keys from data if timeframe!='ALL'
+if args.timeframe!='ALL':
+    norm_vars=['norm_bounce_pips', 'pips_ratio_norm','norm_length_pips']
+    for v in norm_vars:
+        del data[v]
+
 # Now, let's apply the calculate_points on each row for the training and the test set
 DF['score']=DF.apply(calculate_points, axis=1, attribs=data)
 
-for index, row in contDF.iterrows():
+outfile="{0}.{1}.tsv".format(args.prefix,args.timeframe)
+DF.to_csv(outfile, sep='\t')
+
+for index, row in DF.iterrows():
    print(row['id']+"\t"+str(row['score']))

@@ -1,37 +1,50 @@
 import pandas as pd
 import argparse
+import os
+import numpy as np
+
+from sklearn.metrics import confusion_matrix,precision_score
 
 parser = argparse.ArgumentParser(description='Script to crossvalidate and assess the Precission and Recall values of different slices of the data')
 
-parser.add_argument('--DF', required=True, help='input dataframe')
+parser.add_argument('--ifile', required=True, help='input dataframe with scores in it')
+parser.add_argument('--timeframe', required=True, help='Input dataframe. Valid values are: ALL,D,H12,H6')
+parser.add_argument('--outcome', required=True, help='outcome type. Possible values are outcome or ext_outcome')
 args = parser.parse_args()
 
-def normalize(x, variable_name):
-    '''
-    Function that will calculate the number of pips per hour
-    
-    Parameters
-    ----------
-    variable: str
-              Variable name that will be normalized
-    '''
-    
-    return round(x[variable_name]/48,2)
-    
-    if x['timeframe']=='2D':
-        return round(x[variable_name]/48,1)
-    elif x['timeframe']=='D':
-        return round(x[variable_name]/24,1)
-    elif x['timeframe']=='H12':
-        return round(x[variable_name]/12,1)
-    elif x['timeframe']=='H10':
-        return round(x[variable_name]/10,1)
-    elif x['timeframe']=='H8':
-        return round(x[variable_name]/8,1)
-    elif x['timeframe']=='H6':
-        return round(x[variable_name]/6,1)
+ext=os.path.splitext(args.ifile)[1]
+
+separator=None
+if ext == '.tsv':
+    separator="\t"
+elif ext == '.csv':
+    separator=","
+else:
+    raise Exception("Extension {0} is not recognized".format(ext))
+
+def str_to_bool(s):
+    if s == 'True':
+         return True
+    elif s == 'False' or s == False:
+         return False
     else:
-        raise("Error")
+         raise ValueError # evil ValueError that doesn't tell you what the wrong value was
+         
+#read-in the data
+DF=pd.read_csv(args.ifile,sep=separator,na_values=["n.a.","n.a"])
+
+if args.timeframe != 'ALL':
+    DF=DF[DF['timeframe']==args.timeframe]
+
+print("Total # of records for desired timeframe: {0}; # of variables: {1}".format(DF.shape[0], DF.shape[1]))
+
+def predictOutcome(row, cutoff):
+    pred=None
+    if row['score'] >cutoff:
+        pred=1
+    else:
+        pred=0
+    return pred
 
 def cross_validate(cutoff,iterations):
     '''
@@ -52,15 +65,9 @@ def cross_validate(cutoff,iterations):
     
     for i in range(0,iterations,1):
         #print("[WARN]: Iteration {0}".format(i))
-        train, test = train_test_split(contDF,
-                                       test_size=0.25)
-        train['score']=train.apply(calculate_points, axis=1, attribs=attbs)
-        test['score']=test.apply(calculate_points, axis=1, attribs=attbs)
-    
-        scoreDF=test.iloc[:,[outcome_ix,34]]
-        scoreDF['predict']=scoreDF.apply(predictOutcome,axis=1,cutoff=cutoff)
+        DF['predict']=DF.apply(predictOutcome,axis=1,cutoff=cutoff)
         # assess performance
-        (tn, fp, fn, tp)=confusion_matrix(scoreDF['outcome'], scoreDF['predict']).ravel()
+        (tn, fp, fn, tp)=confusion_matrix(DF[args.outcome], DF['predict']).ravel()
         precision_list.append(tp/(tp+fp))
         recall_list.append(tp/(tp+fn))
         tn_list.append(tn)
@@ -80,18 +87,5 @@ def cross_validate(cutoff,iterations):
     print("FN: AGV: {0},STD:{1},CUTOFF:{2}".format(np.average(fn_array),np.std(fn_array),cutoff))
     print("TP: AGV: {0},STD:{1},CUTOFF:{2}".format(np.average(tp_array),np.std(tp_array),cutoff))
 
-#read in the dataframe with the trades
-contDF=pd.read_csv(args.DF,sep="\t",na_values=["n.a.","n.a"])
-
-#convert start and last_time to datetime
-contDF['start']= pd.to_datetime(contDF['start'])
-contDF['last time']= pd.to_datetime(contDF['last time'])
-
-#replace n.a. values by 0
-contDF["bounce length"].fillna(0, inplace=True)
-contDF["length of trend (-1)"].fillna(0, inplace=True)
-contDF["length in pips (-1)"].fillna(0, inplace=True)
-
-#normalize the variables dealing with pips
-contDF['norm_length_pips']=contDF.apply(normalize,axis=1, variable_name='length in pips (-1)')
-contDF['norm_bounce_pips']=contDF.apply(normalize,axis=1, variable_name='bounce (pips)')
+for i in range(-10,20,1):
+    cross_validate(i,1)

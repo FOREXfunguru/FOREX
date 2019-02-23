@@ -1,1 +1,2 @@
-python train_for_continuations.py --ifile /Users/ernesto/Downloads/Screenshot\ analysis\ -\ train_continuations.tsv --timeframe ALL --outcome ext_outcome --prefix train
+python train_for_continuations.py --ifile /Users/ernesto/Downloads/Screenshot\ analysis\ -\ train_continuations.tsv --timeframe D --outcome ext_outcome --prefix training_files/training
+python train_for_continuations.py --ifile /Users/ernesto/Downloads/Screenshot\ analysis\ -\ train_continuations.tsv --timeframe H12 --outcome ext_outcome --prefix training_files/training

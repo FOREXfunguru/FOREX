@@ -429,15 +429,10 @@ def calc_proportions(var,ref_cat,point_cutoff1=20, point_cutoff2=30):
     diffs=[]
     intervals=[]
     prop_dict=prop.to_dict()
-    ref_seen=False
     for k in cols:
         if k=="All": continue
         diffs.append(prop_dict[k][1]-prop_dict[k][0])
-        if ref_seen==False:
-            ref_seen=True
-            continue
-        else:
-            intervals.append([k,k])
+        intervals.append([k,k])
 
     ref=diffs[0]
 
@@ -448,11 +443,14 @@ def calc_proportions(var,ref_cat,point_cutoff1=20, point_cutoff2=30):
     points=[]
     for d in final_diffs:
         if 0 <= d <= point_cutoff1:
-            points.append(2)
-        elif point_cutoff1 <= d <= point_cutoff2:
+            points.insert(0,-3)
             points.append(3)
-        elif d > point_cutoff2:
+        elif point_cutoff1 <= d <= point_cutoff2:
+            points.insert(0,-5)
             points.append(5)
+        elif d > point_cutoff2:
+            points.insert(0,-7)
+            points.append(7)
 
     a={'intervals': intervals,
        'points' : points}
