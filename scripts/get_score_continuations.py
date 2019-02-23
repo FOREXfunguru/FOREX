@@ -55,6 +55,10 @@ if args.timeframe != 'ALL':
 
 print("Total # of records for desired timeframe: {0}; # of variables: {1}".format(DF.shape[0], DF.shape[1]))
 
+# Calculate win-rate
+print("Win rate")
+print(DF['outcome'].value_counts(normalize=True))
+
 #
 # Convert to datetime the relevant variables
 #

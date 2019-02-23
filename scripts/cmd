@@ -3,3 +3,5 @@ python get_score_continuations.py --ifile /Users/ernesto/Downloads/Screenshot\ a
 python get_score_continuations.py --ifile /Users/ernesto/Downloads/Screenshot\ analysis\ -\ train_continuations.tsv --timeframe H12 --verbose True --attrbs TRAIN/training_files/training.H12.json --prefix out_scores > res.txt
 python crossvalidate.py --ifile out_scores.D.tsv --outcom outcome --timeframe D
 python crossvalidate.py --ifile out_scores.H12.tsv --outcom outcome --timeframe H12
+
+python get_score_continuations.py --ifile /Users/ernesto/Downloads/Screenshot\ analysis\ -\ backtesting-cont_dbpt.tsv -timeframe D --verbose True --attrbs TRAIN/training_files/training.D.json --prefix out_backtesting

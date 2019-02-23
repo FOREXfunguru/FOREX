@@ -452,8 +452,21 @@ def calc_proportions(var,ref_cat,point_cutoff1=20, point_cutoff2=30):
             points.insert(0,-7)
             points.append(7)
 
+    f_points=[]
+    least=None
+    for i in points:
+        if i<0:
+            if least is None:
+                least=i
+            else:
+                if i<least: least=i
+        else:
+            f_points.append(i)
+
+    f_points.insert(0,least)
+                
     a={'intervals': intervals,
-       'points' : points}
+       'points' : f_points}
     
     return a
 
