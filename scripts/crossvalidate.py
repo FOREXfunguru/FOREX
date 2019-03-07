@@ -87,5 +87,5 @@ def cross_validate(cutoff,iterations):
     print("FN: AGV: {0},STD:{1},CUTOFF:{2}".format(np.average(fn_array),np.std(fn_array),cutoff))
     print("TP: AGV: {0},STD:{1},CUTOFF:{2}".format(np.average(tp_array),np.std(tp_array),cutoff))
 
-for i in range(-10,20,1):
+for i in range(0,6,1):
     cross_validate(i,1)

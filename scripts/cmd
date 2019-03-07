@@ -1,7 +1,11 @@
-python get_current_trend.py --instrument USD_CHF --granularity D --start 2018-03-01T22:58:00 --trade_type short
-python get_score_continuations.py --ifile /Users/ernesto/Downloads/Screenshot\ analysis\ -\ train_continuations.tsv --timeframe D --verbose True --attrbs TRAIN/training_files/training.D.json --prefix out_scores > res.txt
+qpython get_current_trend.py --instrument USD_CHF --granularity D --start 2018-03-01T22:58:00 --trade_type short
+python get_score_continuations.py --ifile /Users/ernesto/Downloads/Screenshot\ analysis\ -\ train_continuations.tsv --timeframe ALL --verbose True --attrbs TRAIN/training_files/training.ALL.json --prefix out_scores > res.txt
+python get_score_continuations.py --ifile /Users/ernesto/Downloads/Screenshot\ analysis\ -\ train_continuations.tsv --timeframe D --verbose True --attrbs ../data/training.D.json --prefix out_scores > res.txt
 python get_score_continuations.py --ifile /Users/ernesto/Downloads/Screenshot\ analysis\ -\ train_continuations.tsv --timeframe H12 --verbose True --attrbs TRAIN/training_files/training.H12.json --prefix out_scores > res.txt
 python crossvalidate.py --ifile out_scores.D.tsv --outcom outcome --timeframe D
 python crossvalidate.py --ifile out_scores.H12.tsv --outcom outcome --timeframe H12
+python crossvalidate.py --ifile out_scores.ALL.tsv --outcom outcome --timeframe ALL
 
-python get_score_continuations.py --ifile /Users/ernesto/Downloads/Screenshot\ analysis\ -\ backtesting-cont_dbpt.tsv -timeframe D --verbose True --attrbs TRAIN/training_files/training.D.json --prefix out_backtesting
+##counter doubletop
+python get_score_counterdbtp.py --ifile /Users/ernesto/Downloads/Screenshot analysis - train_counter_doubletop.tsv --timeframe ALL --verbose True --attrbs ../data/counter_dbptp/training.dbtp.27022019.json --prefix out_scores
+python crossvalidate.py --ifile out_scores_dbptpcont.ALL.tsv --outcom 'outcome 2nd peak' --timeframe ALL

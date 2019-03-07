@@ -543,6 +543,7 @@ DF['bounce_ratio']=DF['inn_bounce']/DF['indecission']
 # Calculate basic stats and binning plots
 #
 
+
 step_s={
     'diff' : 150,
     'length of trend (-1)' : 10,

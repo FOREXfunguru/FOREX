@@ -1,0 +1,98 @@
+{
+    "RSI bounces 1st peak": {
+        "intervals": [
+            [
+                0,
+                2
+            ],
+            [
+                3,
+                100000
+            ]
+        ],
+        "points": [
+            0,
+            1
+        ]
+    },
+    "rsi_inarea_1st": {
+        "intervals": [
+            [
+                0,
+                0
+            ],
+	    [
+		1,
+		1
+	    ]
+        ],
+        "points": [
+            0,
+            1
+        ]
+    },
+    "sum_bounces": {
+        "intervals": [
+            [
+                0,
+                10
+            ],
+            [
+                11,
+                20
+            ]
+        ],
+        "points": [
+	    0,
+	    1
+        ]
+    },
+    "divergence 1st peak": {
+        "intervals": [
+            [
+                0,
+                0
+            ],
+	    [
+		1,
+		1
+	    ]
+        ],
+        "points": [
+            0,
+            1
+        ]
+    },
+    "length of trend 1st peak": {
+        "intervals": [
+            [
+		0,
+                80
+            ],
+            [
+                81,
+                1000
+            ]
+        ],
+        "points": [
+            0,
+            1
+        ]
+    },
+    "bounces 1st peak": {
+        "intervals": [
+            [
+                0,
+                3
+            ],
+            [
+                4,
+                10000
+            ]
+        ],
+        "points": [
+            0,
+            1
+        ]
+    }
+}

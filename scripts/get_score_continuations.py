@@ -173,6 +173,8 @@ DF['bounce_ratio']=DF['inn_bounce']/DF['indecission']
 
 ### bounce length
 # This variable is a comma separated list of integers representing how wide (in number of candles) each of the RSI bounces is. This variable requires a little bit of preprocessing, and I will write a f# unction that calculates the total length (in number of candles) by adding the length of each of the bounces
+DF["bounce length"].fillna('0', inplace=True)
+
 
 def sum_lengths(x):
     '''
@@ -188,12 +190,11 @@ def sum_lengths(x):
     -------
     An integer representing the total bounce length
     '''
-    
-    return sum([int(i) for i in x.split(",")])
+    return sum([float(i) for i in x.split(",")])
 
 # Replace n.a. by 0s
-DF["bounce length"].fillna(0, inplace=True)
 DF['sum_bounces']=DF['bounce length'].astype(str).apply(sum_lengths)
+
 
 #
 # Transforming categorical binary variables into 1s and 0s
@@ -292,6 +293,10 @@ if args.timeframe!='ALL':
     norm_vars=['norm_bounce_pips', 'pips_ratio_norm','norm_length_pips']
     for v in norm_vars:
         del data[v]
+else:
+    pips_vars=['bounce (pips)', 'length in pips (-1)', 'pips_ratio']
+    for v in pips_vars:
+        del data[v] 
 
 # Now, let's apply the calculate_points on each row for the training and the test set
 DF['score']=DF.apply(calculate_points, axis=1, attribs=data)
