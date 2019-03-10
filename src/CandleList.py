@@ -1,4 +1,3 @@
-from OandaAPI import Candle
 from scipy import stats
 import pandas as pd
 import pdb
@@ -13,7 +12,7 @@ class CandleList(object):
     ---------------
     clist : list, Required
             List of Candle objects
-    type : str, Required
+    type : str, Optional
            Type of this CandleList. Possible values are 'long'/'short'
     seq : dict, Optional
           Dictionary containing the binary seq for the different candle portions
@@ -31,7 +30,7 @@ class CandleList(object):
           Entropy for each of the sequences in self.seq 
     '''
 
-    def __init__(self, clist,type,seq=None, number_of_0s=None,
+    def __init__(self, clist,type=None,seq=None, number_of_0s=None,
                  longest_stretch=None, highlow_double0s=None, 
                  openclose_double0s=None, entropy=None):
         self.clist=clist
@@ -229,7 +228,6 @@ class CandleList(object):
         else:
             return number_of_double0s
 
-
     def calc_number_of_doubles0s(self,norm=True):
         '''
         This function will set the 'highlow_double0s' and 'openclose_double0s'
@@ -263,3 +261,76 @@ class CandleList(object):
 
         self.longest_stretch=a_dict
 
+    def calc_rsi(self):
+        '''
+        Calculate the RSI for a certain candle list
+
+        Returns
+        -------
+        Nothing
+        '''
+
+        series=[]
+        for c in self.clist:
+            series.append(c.closeAsk)
+
+        df = pd.DataFrame({'close': series})
+        chg = df['close'].diff(1)
+
+        gain = chg.mask(chg < 0, 0)
+        loss = chg.mask(chg > 0, 0)
+
+        rsi_period = 14
+        avg_gain = gain.ewm(com=rsi_period - 1, min_periods=rsi_period).mean()
+        avg_loss = loss.ewm(com=rsi_period - 1, min_periods=rsi_period).mean()
+
+        rs = abs(avg_gain / avg_loss)
+
+        rsi = 100 - (100 / (1 + rs))
+
+        ix=0
+        for c,v in zip(self.clist,rsi):
+            self.clist[ix].rsi=v
+            ix+=1
+
+    def calc_rsi_bounces(self):
+        '''
+        Calculate the number of times that the
+        price has been in overbought (>70) or
+        oversold(<30) regions
+
+        Returns
+        -------
+        dict
+             {number: 3
+             lengths: [4,5,6]}
+        Where number is the number of times price
+        has been in overbought/oversold and lengths list
+        is formed by the number of candles that the price
+        has been in overbought/oversold each of the times
+
+        '''
+
+        adj=False
+        init=False
+        num_times=0
+        length=0
+        lengths=[]
+
+        for c in self.clist:
+            if c.rsi is None: raise Exception("RSI values are not defined for this Candlelist, "
+                                              "run calc_rsi first")
+            print(c.rsi)
+            if (c.rsi==41.29603413309367):
+                print(pdb.set_trace())
+
+            if (c.rsi>70 or c.rsi<30) and adj is False:
+                num_times+=1
+                length+=1
+                adj=True
+            elif (c.rsi>70 or c.rsi<30) and adj is True:
+                length+=1
+            elif (c.rsi<70 and c.rsi>30):
+                if adj is True: lengths.append(length)
+                length=0
+                adj=False

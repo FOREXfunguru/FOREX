@@ -9,9 +9,8 @@ import re
 import os
 import requests,json
 import pandas as pd
-from datetime import datetime,timedelta
-import datetime
-import pytz
+
+from Candle import BidAskCandle
 
 class OandaAPI(object):
     '''
@@ -66,7 +65,6 @@ class OandaAPI(object):
         
         '''
         candlelist=[]
-        
         for c in self.data['candles']:
             
             if "openBid" in c:

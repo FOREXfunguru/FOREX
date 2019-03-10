@@ -89,7 +89,6 @@ def test_calc_binary_seq_withmerge(oanda_object):
 
     assert len(shared_items) == 6
 
-
 def test_number_of_0s(oanda_object):
   
     candle_list=oanda_object.fetch_candleset()
@@ -153,3 +152,38 @@ def test_get_entropy(oanda_object):
     shared_items = set(dict1.items()) & set(dict2.items())
 
     assert len(shared_items) == 5
+
+def test_calc_rsi():
+
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='AUD_USD',
+                     granularity='H8',
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22,
+                     start='2015-01-15T22:00:00',
+                     end='2015-01-29T22:00:00')
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list)
+
+    cl.calc_rsi()
+
+    assert cl.clist[14].rsi == 26.990852985062773
+
+def test_rsibounces():
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='AUD_USD',
+                     granularity='H8',
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22,
+                     start='2015-01-15T22:00:00',
+                     end='2015-01-29T22:00:00')
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list)
+
+    cl.calc_rsi()
+
+    cl.calc_rsi_bounces()

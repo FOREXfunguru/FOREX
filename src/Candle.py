@@ -28,7 +28,7 @@ class Candle(object):
         self.volume=volume
         if complete not in [True, False] : raise Exception(("complete %s is not valid. Complete should be True or False")) % complete
         self.complete=complete
-        self.formation=format
+        self.formation=formation
 
 
 class BidAskCandle(Candle):
