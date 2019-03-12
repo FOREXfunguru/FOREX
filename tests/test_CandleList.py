@@ -18,7 +18,7 @@ def oanda_object():
 
     return oanda
 
-
+"""
 def test_CandleList():
     '''
     Test the creation of a CandleList object
@@ -152,38 +152,45 @@ def test_get_entropy(oanda_object):
     shared_items = set(dict1.items()) & set(dict2.items())
 
     assert len(shared_items) == 5
-
+"""
 def test_calc_rsi():
 
     oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                      instrument='AUD_USD',
-                     granularity='H8',
+                     granularity='D',
                      alignmentTimezone='Europe/London',
                      dailyAlignment=22,
-                     start='2015-01-15T22:00:00',
+                     start='2015-01-20T22:00:00',
                      end='2015-01-29T22:00:00')
 
     candle_list = oanda.fetch_candleset()
 
-    cl = CandleList(candle_list)
+    cl = CandleList(candle_list,instrument='AUD_USD', granularity='D')
 
-    cl.calc_rsi()
+    cl.calc_rsi(period=365)
 
-    assert cl.clist[14].rsi == 26.990852985062773
+    assert cl.clist[4].rsi == 27.840910453271775
 
 def test_rsibounces():
+
+
     oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                     instrument='AUD_USD',
-                     granularity='H8',
+                     instrument='CAD_JPY',
+                     granularity='D',
                      alignmentTimezone='Europe/London',
                      dailyAlignment=22,
-                     start='2015-01-15T22:00:00',
-                     end='2015-01-29T22:00:00')
+                     start='2012-01-31T23:00:00',
+                     end='2012-03-23T23:00:00')
 
     candle_list = oanda.fetch_candleset()
 
-    cl = CandleList(candle_list)
+    cl = CandleList(candle_list, instrument='CAD_JPY', granularity='D')
 
-    cl.calc_rsi()
+    cl.calc_rsi(period=1000)
 
-    cl.calc_rsi_bounces()
+    dict1=cl.calc_rsi_bounces()
+
+    dict2 = {'number': 3,
+             'lengths': [10,5,6]}
+
+    assert dict1==dict2

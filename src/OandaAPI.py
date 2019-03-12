@@ -35,7 +35,7 @@ class OandaAPI(object):
         '''
         if url:
             resp = requests.get(url=url,params=params)
-        
+
             self.resp=resp
         
             if resp.status_code != 200:

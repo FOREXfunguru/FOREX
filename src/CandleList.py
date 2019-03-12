@@ -1,6 +1,8 @@
 from scipy import stats
+from OandaAPI import OandaAPI
 import pandas as pd
 import pdb
+import datetime
 import re
 
 
@@ -12,6 +14,10 @@ class CandleList(object):
     ---------------
     clist : list, Required
             List of Candle objects
+    instrument : str, Optional
+                 Instrument for this CandleList (i.e. AUD_USD or EUR_USD etc...)
+    granularity : str, Optional
+                Granularity for this CandleList (i.e. D, H12, H8 etc...)
     type : str, Optional
            Type of this CandleList. Possible values are 'long'/'short'
     seq : dict, Optional
@@ -30,10 +36,12 @@ class CandleList(object):
           Entropy for each of the sequences in self.seq 
     '''
 
-    def __init__(self, clist,type=None,seq=None, number_of_0s=None,
+    def __init__(self, clist,instrument=None, granularity=None, type=None,seq=None, number_of_0s=None,
                  longest_stretch=None, highlow_double0s=None, 
                  openclose_double0s=None, entropy=None):
         self.clist=clist
+        self.instrument=instrument
+        self.granularity=granularity
         self.type=type
         self.len=len(clist)
         self.seq=seq
@@ -261,18 +269,45 @@ class CandleList(object):
 
         self.longest_stretch=a_dict
 
-    def calc_rsi(self):
+    def calc_rsi(self, period, rsi_period=14):
         '''
         Calculate the RSI for a certain candle list
+
+        Parameters
+        ----------
+        period : int
+                 Number of days for which close price data will be fetched. The larger the
+                 number of days the more accurate the ewm calculation will be, as the exponential
+                 moving average calculated for each of the windows (of size=rsi_period) will be
+                 directly affected by the previous windows in the series
+        rsi_period : int
+                     Number of candles used for calculating the RSI. Default=14
 
         Returns
         -------
         Nothing
         '''
 
+
+        start_time=self.clist[0].time
+        end_time=self.clist[-1].time
+
+        period_delta = datetime.timedelta(days=period)
+        start_calc_time = start_time - period_delta
+
+        #fetch candle set from start_calc_time
+        oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                         instrument=self.instrument,
+                         granularity=self.granularity,
+                         alignmentTimezone='Europe/London',
+                         dailyAlignment=22,
+                         start=start_calc_time.isoformat(),
+                         end=end_time.isoformat())
+
+        candle_list = oanda.fetch_candleset()
+
         series=[]
-        for c in self.clist:
-            series.append(c.closeAsk)
+        series = [c.closeAsk for c in candle_list]
 
         df = pd.DataFrame({'close': series})
         chg = df['close'].diff(1)
@@ -280,7 +315,6 @@ class CandleList(object):
         gain = chg.mask(chg < 0, 0)
         loss = chg.mask(chg > 0, 0)
 
-        rsi_period = 14
         avg_gain = gain.ewm(com=rsi_period - 1, min_periods=rsi_period).mean()
         avg_loss = loss.ewm(com=rsi_period - 1, min_periods=rsi_period).mean()
 
@@ -288,8 +322,10 @@ class CandleList(object):
 
         rsi = 100 - (100 / (1 + rs))
 
+        rsi4cl=rsi[-len(self.clist):]
+        # set rsi attribute in each candle of the CandleList
         ix=0
-        for c,v in zip(self.clist,rsi):
+        for c,v in zip(self.clist,rsi4cl):
             self.clist[ix].rsi=v
             ix+=1
 
@@ -308,7 +344,7 @@ class CandleList(object):
         has been in overbought/oversold and lengths list
         is formed by the number of candles that the price
         has been in overbought/oversold each of the times
-
+        sorted from older to newer
         '''
 
         adj=False
@@ -320,17 +356,32 @@ class CandleList(object):
         for c in self.clist:
             if c.rsi is None: raise Exception("RSI values are not defined for this Candlelist, "
                                               "run calc_rsi first")
-            print(c.rsi)
-            if (c.rsi==41.29603413309367):
-                print(pdb.set_trace())
 
             if (c.rsi>70 or c.rsi<30) and adj is False:
                 num_times+=1
-                length+=1
+                length=1
                 adj=True
             elif (c.rsi>70 or c.rsi<30) and adj is True:
                 length+=1
             elif (c.rsi<70 and c.rsi>30):
                 if adj is True: lengths.append(length)
-                length=0
                 adj=False
+
+        if adj is True and length>0: lengths.append(length)
+
+        if num_times != len(lengths): raise Exception("Number of times" \
+                                                      "and lengths do not" \
+                                                      "match")
+        return { 'number' : num_times,
+                 'lengths' : lengths}
+
+    def entry_on_rsi(self):
+        '''
+        Function to check if entry candle is in overbought/oversold region
+
+        Returns
+        -------
+        bool True if candle's close is in overbought/oversold. False otherwise
+        '''
+
+        if self.clist:[-1]
