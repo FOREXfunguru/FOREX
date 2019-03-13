@@ -152,7 +152,7 @@ def test_get_entropy(oanda_object):
     shared_items = set(dict1.items()) & set(dict2.items())
 
     assert len(shared_items) == 5
-"""
+
 def test_calc_rsi():
 
     oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
@@ -194,3 +194,55 @@ def test_rsibounces():
              'lengths': [10,5,6]}
 
     assert dict1==dict2
+
+def test_entryonrsi():
+
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='CAD_JPY',
+                     granularity='D',
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22,
+                     start='2012-01-31T23:00:00',
+                     end='2012-03-23T23:00:00')
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list, instrument='CAD_JPY', granularity='D')
+
+    cl.calc_rsi(period=1000)
+
+    assert cl.entry_on_rsi()==False
+"""
+def test_get_length_candles():
+
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='USD_CAD',
+                     granularity='D',
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22,
+                     start='2018-02-01T23:00:00',
+                     end='2018-03-12T23:00:00')
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list, instrument='USD_CAD', granularity='D')
+
+    assert cl.get_length_candles()==29
+
+def test_get_length_pips():
+
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='USD_CAD',
+                     granularity='D',
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22,
+                     start='2018-02-01T23:00:00',
+                     end='2018-03-12T23:00:00')
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list, instrument='USD_CAD', granularity='D')
+
+    no_pips=cl.get_length_pips()
+
+    assert no_pips==571

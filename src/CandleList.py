@@ -384,4 +384,54 @@ class CandleList(object):
         bool True if candle's close is in overbought/oversold. False otherwise
         '''
 
-        if self.clist:[-1]
+        if self.clist[-1].rsi is None: raise Exception("RSI values are not defined for this Entry candle, "
+                                                        "run calc_rsi first")
+
+        if self.clist[-1].rsi>70 or self.clist[-1].rsi<30:
+            return True
+        else:
+            return False
+
+    def get_length_candles(self):
+        '''
+        Function to calculate the length of CandleList in number of candles
+
+        Returns
+        -------
+        int Length in number of candles
+        '''
+
+        return len(self.clist)
+
+    def get_length_pips(self, part='openAsk'):
+        '''
+        Function to calculate the length of CandleList in number of pips
+
+        Parameters
+        ----------
+        part : str
+               What part of the candle will be used for calculating the length in pips
+               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid'
+
+        Returns
+        -------
+        int Length in number of pips
+        '''
+
+
+        start_cl=self.clist[0]
+        end_cl=self.clist[-1]
+
+        (first,second)=self.instrument.split("_")
+        round_number=None
+        if first=='JPY' or second=='JPY':
+            round_number=2
+        else:
+            round_number=4
+
+        start_price=round(getattr(start_cl,part),round_number)
+        end_price=round(getattr(end_cl,part),round_number)
+
+        diff=(start_price-end_price)*10**round_number
+
+        return abs(int(round(diff,0)))
