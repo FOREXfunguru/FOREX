@@ -244,5 +244,6 @@ def test_get_length_pips():
     cl = CandleList(candle_list, instrument='USD_CAD', granularity='D')
 
     no_pips=cl.get_length_pips()
+pwd
 
     assert no_pips==571
