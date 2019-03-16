@@ -18,7 +18,6 @@ def oanda_object():
 
     return oanda
 
-"""
 def test_CandleList():
     '''
     Test the creation of a CandleList object
@@ -56,7 +55,6 @@ def get_dictionary(k, v):
     d[k] = v
     return d
 
-'''
 def test_calc_binary_seq(oanda_object):
     
     candle_list=oanda_object.fetch_candleset()
@@ -70,7 +68,6 @@ def test_calc_binary_seq(oanda_object):
     shared_items = set(dict1.items()) & set(dict2.items())
 
     assert len(shared_items) == 5
-'''
 
 def test_calc_binary_seq_withmerge(oanda_object):
     '''
@@ -212,7 +209,7 @@ def test_entryonrsi():
     cl.calc_rsi(period=1000)
 
     assert cl.entry_on_rsi()==False
-"""
+
 def test_get_length_candles():
 
     oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
@@ -244,6 +241,5 @@ def test_get_length_pips():
     cl = CandleList(candle_list, instrument='USD_CAD', granularity='D')
 
     no_pips=cl.get_length_pips()
-pwd
 
     assert no_pips==571
