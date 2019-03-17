@@ -8,7 +8,7 @@ import re
 
 class CandleList(object):
     '''
-    Constructor
+    Class that represents a list of candles
 
     Class variables
     ---------------
