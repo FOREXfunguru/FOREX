@@ -1,4 +1,5 @@
 import pytest
+import pdb
 
 from OandaAPI import OandaAPI
 from HArea import HArea
@@ -9,10 +10,10 @@ def oanda_object():
 
     oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                      instrument='AUD_USD',
-                     granularity='D',
+                     granularity='H12',
                      alignmentTimezone='Europe/London',
-                     start='2015-03-12T22:00:00',
-                     end='2019-03-12T22:00:00')
+                     start='2012-01-01T22:00:00',
+                     end='2019-03-15T22:00:00')
 
     return oanda
 
@@ -30,4 +31,9 @@ def test_number_bounces(oanda_object):
         close_prices.append(c.closeAsk)
         datetimes.append(c.time)
 
-    resist=HArea(price=0.81173,pips=10)
+    resist=HArea(price=0.74873,pips=100, instrument='AUD_USD', granularity='H12')
+
+    bounces_dict=resist.number_bounces(datetimes=datetimes,
+                                       prices=close_prices,
+                                       smooth=False)
+    pdb.set_trace()
