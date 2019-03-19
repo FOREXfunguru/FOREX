@@ -1,12 +1,9 @@
 import numpy as np
 import pdb
 import matplotlib
-import operator
+import peakutils
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
-from scipy.signal import savgol_filter
-from scipy.signal import argrelextrema
-
 
 class HArea(object):
     '''
@@ -48,83 +45,47 @@ class HArea(object):
         self.upper=price+(pips/divisor)
         self.lower=price-(pips/divisor)
 
-    def number_bounces(self, datetimes, prices, smooth=False, outfile='bounces.png'):
+    def number_bounces(self, datetimes, prices, threshold=0.60, min_dist=10, outfile='bounces.png'):
         '''
         Function used to calculate the datetime for previous bounces in this area
 
         Parameters
         ----------
         datetimes : list
-                    Lisf of datetimes associated to each of the prices
+                Lisf of datetimes associated to each of the prices
         prices : list
-                 List of prices used to calculate the bounces
-        smooth : bool
-                 Smooth the numerical data using savitzky_folay
+                List of prices used to calculate the bounces
+        threshold : float
+                    Threshold for detecting peaks. Default : 0.60
+        min_dist : float
+                   Threshold for minimum distance for detecting peaks. Default : 10
         outfile : file
-                  Filename for output
+                Filename for output
 
         Returns
         -------
         file : png file with identified bounces
+        list : list of tuples containing datetime and value for each peak/bounce
         '''
-
-        data=None
-        if smooth is True:
-            data=savgol_filter(prices, 31, 3)
-        else:
-            data=np.array(prices)
-
-        # for local maxima
-        max = argrelextrema(data, np.greater)
-        min = argrelextrema(data, np.less)
+        cb = np.array(prices)
+        max = peakutils.indexes(cb, thres=threshold, min_dist=min_dist)
+        min = peakutils.indexes(-cb, thres=threshold, min_dist=min_dist)
 
         fig = plt.figure(figsize=(20, 10))
         ax = plt.axes()
-        ax.plot(datetimes, data,color="black")
+        ax.plot(datetimes, prices, color="black")
 
         bounces=[]
-        for ix in max[0]:
-            if data[ix]>=self.lower and data[ix]<=self.upper:
-                bounces.append((datetimes[ix],data[ix]))
-                plt.scatter(datetimes[ix], data[ix], s=50)
+        for ix in max:
+            if prices[ix]>=self.lower and prices[ix]<=self.upper:
+                bounces.append((datetimes[ix],prices[ix]))
+                plt.scatter(datetimes[ix], prices[ix], s=50)
 
-        for ix in min[0]:
-            if data[ix] <= self.upper and data[ix] >= self.lower:
-                bounces.append((datetimes[ix], data[ix]))
-                plt.scatter(datetimes[ix], data[ix], s=50)
+        for ix in min:
+            if prices[ix] <= self.upper and prices[ix] >= self.lower:
+                bounces.append((datetimes[ix], prices[ix]))
+                plt.scatter(datetimes[ix], prices[ix], s=50)
 
         fig.savefig(outfile, format='png')
 
-        pr_date=None
-        f_bounces=[]
-        bounces.sort(key=operator.itemgetter(0))
-        for d in bounces:
-            if pr_date is None:
-                f_bounces.append(d)
-                pr_date=d[0]
-                continue
-            else:
-                diff=d[0]-pr_date
-                hours=diff.days*24
-                hr_divisor=None
-                if self.granularity=='D':
-                    hr_divisor=24
-                else:
-                    hr_divisor=int(self.granularity.replace('H',''))
-                number_of_candles=hours/hr_divisor
-                if number_of_candles<=10:
-                    pr_date = d[0]
-                    continue
-                else:
-                    f_bounces.append(d)
-                pr_date=d[0]
-
-        fig = plt.figure(figsize=(20, 10))
-        ax = plt.axes()
-        ax.plot(datetimes, data, color="blue")
-        for d in f_bounces:
-            plt.scatter(d[0], d[1], s=50)
-
-        fig.savefig(outfile+"filt.png", format='png')
-        pdb.set_trace()
-        return f_bounces
+        return bounces,outfile

@@ -4,7 +4,8 @@ import pandas as pd
 import pdb
 import datetime
 import re
-
+import peakutils
+import numpy as np
 
 class CandleList(object):
     '''
@@ -435,3 +436,44 @@ class CandleList(object):
         diff=(start_price-end_price)*10**round_number
 
         return abs(int(round(diff,0)))
+
+    def __get_slope(self,data):
+        cb = np.array(data)
+        max = peakutils.indexes(cb, thres=0.60, min_dist=10)
+        min = peakutils.indexes(-cb, thres=0.60, min_dist=10)
+
+        bounces = []
+        for ix in max:
+            bounces.append(data[ix])
+
+        for ix in min:
+            bounces.append(data[ix])
+        pdb.set_trace()
+
+    def check_if_divergence(self,part='openAsk'):
+        '''
+        Function to check if there is divergence between prices
+        and RSI indicator
+
+        Parameters
+        ----------
+        part : str
+               What part of the candle to use for the calculation
+               Default: 'openAsk'
+
+        Returns
+        -------
+        bool True if there is divergence
+        '''
+
+        rsi_values=[]
+        prices=[]
+        for c in self.clist:
+            if c.rsi is None: raise Exception("RSI values are not defined for this Candlelist, "
+                                              "run calc_rsi first")
+            prices.append(getattr(c, part))
+            rsi_values.append(getattr(c, 'rsi'))
+
+        self.__get_slope(prices)
+
+

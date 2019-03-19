@@ -18,6 +18,7 @@ def oanda_object():
 
     return oanda
 
+""""
 def test_CandleList():
     '''
     Test the creation of a CandleList object
@@ -243,3 +244,21 @@ def test_get_length_pips():
     no_pips=cl.get_length_pips()
 
     assert no_pips==571
+"""
+def test_check_if_divergence():
+
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='EUR_AUD',
+                     granularity='D',
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22,
+                     start='2016-05-23T23:00:00',
+                     end='2016-07-19T23:00:00')
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list, instrument='EUR_AUD', granularity='D')
+
+    cl.calc_rsi(period=1000)
+
+    cl.check_if_divergence()
