@@ -18,6 +18,19 @@ def oanda_object():
 
     return oanda
 
+@pytest.fixture
+def trend_oanda_object():
+    '''Returns an oanda object for a candlelist representing a trend'''
+
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='AUD_USD',
+                     granularity='D',
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22,
+                     start='2017-12-08T22:00:00',
+                     end='2018-01-29T22:00:00')
+    return oanda
+
 """"
 def test_CandleList():
     '''
@@ -261,4 +274,21 @@ def test_check_if_divergence():
 
     cl.calc_rsi(period=1000)
 
-    cl.check_if_divergence()
+    (model,outfile)=cl.fit_reg_line()
+
+    direction=None
+    if model.coef_[0, 0]>0:
+        direction='up'
+    else:
+        direction='down'
+
+    assert cl.check_if_divergence(direction=direction)==True
+"""
+def test_fit_reg_line(trend_oanda_object):
+
+    candle_list = trend_oanda_object.fetch_candleset()
+
+    cl = CandleList(candle_list, instrument='AUD_USD', granularity='D')
+
+    (model,outfile)=cl.fit_reg_line()
+"""

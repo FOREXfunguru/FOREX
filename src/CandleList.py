@@ -1,11 +1,15 @@
 from scipy import stats
 from OandaAPI import OandaAPI
+from sklearn.linear_model import LinearRegression
 import pandas as pd
 import pdb
 import datetime
 import re
 import peakutils
 import numpy as np
+import matplotlib
+matplotlib.use('PS')
+import matplotlib.pyplot as plt
 
 class CandleList(object):
     '''
@@ -437,20 +441,61 @@ class CandleList(object):
 
         return abs(int(round(diff,0)))
 
-    def __get_slope(self,data):
+    def __get_bounces(self, data, direction):
+
         cb = np.array(data)
-        max = peakutils.indexes(cb, thres=0.60, min_dist=10)
-        min = peakutils.indexes(-cb, thres=0.60, min_dist=10)
+
+        ixs=None
+        if direction=='up':
+            ixs = peakutils.indexes(cb, thres=0.60, min_dist=10)
+        elif direction=='down':
+            ixs = peakutils.indexes(-cb, thres=0.60, min_dist=10)
 
         bounces = []
-        for ix in max:
+        for ix in ixs:
             bounces.append(data[ix])
 
-        for ix in min:
-            bounces.append(data[ix])
-        pdb.set_trace()
+        return bounces
 
-    def check_if_divergence(self,part='openAsk'):
+
+    def fit_reg_line(self, part='openAsk', outfile='regression_line.png'):
+        '''
+        Function to fit a linear regression
+        line on candle list. This can be used in order to assess the direction of
+        the trend (upward, downward)
+
+        Parameters
+        ----------
+        part : str
+               What part of the candle will be used for calculating the length in pips
+               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid'
+               Default: openAsk
+        outfile : FILE
+                  Path to output .png file that will show the fitted regression line
+
+        Returns
+        -------
+        Fitted model, png_file
+        '''
+
+        prices=[]
+        x=[]
+        for i in range(len(self.clist)):
+            x.append(i)
+            prices.append(getattr(self.clist[i],part))
+
+        model = LinearRegression(fit_intercept=True)
+        model.fit(np.array(x).reshape(-1,1), np.array(prices).reshape(-1,1))
+
+        y_pred = model.predict(np.array(x).reshape(-1,1))
+        fig = plt.figure(figsize=(20, 10))
+        plt.scatter(x, prices)
+        plt.plot(x, y_pred, color='red')
+        fig.savefig(outfile, format='png')
+
+        return model, outfile
+
+    def check_if_divergence(self,part='openAsk',direction='up'):
         '''
         Function to check if there is divergence between prices
         and RSI indicator
@@ -460,6 +505,8 @@ class CandleList(object):
         part : str
                What part of the candle to use for the calculation
                Default: 'openAsk'
+        direction : str
+                    Direction of the trend. Possible values are 'up'/'down'
 
         Returns
         -------
@@ -474,6 +521,18 @@ class CandleList(object):
             prices.append(getattr(c, part))
             rsi_values.append(getattr(c, 'rsi'))
 
-        self.__get_slope(prices)
 
+        bounces_prices=self.__get_bounces(prices,direction=direction)
+        bounces_rsi = self.__get_bounces(rsi_values, direction=direction)
+
+        pdb.set_trace()
+        diff_prices=bounces_prices[-1]-bounces_prices[-2]
+        diff_rsi=bounces_rsi[-1]-bounces_rsi[-2]
+
+        if np.sign(diff_prices) == np.sign(diff_rsi):
+            return False
+        else:
+            return True
+
+        pdb.set_trace()
 
