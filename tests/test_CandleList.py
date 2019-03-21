@@ -31,7 +31,6 @@ def trend_oanda_object():
                      end='2018-01-29T22:00:00')
     return oanda
 
-""""
 def test_CandleList():
     '''
     Test the creation of a CandleList object
@@ -257,7 +256,7 @@ def test_get_length_pips():
     no_pips=cl.get_length_pips()
 
     assert no_pips==571
-"""
+
 def test_check_if_divergence():
 
     oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
@@ -270,7 +269,7 @@ def test_check_if_divergence():
 
     candle_list = oanda.fetch_candleset()
 
-    cl = CandleList(candle_list, instrument='EUR_AUD', granularity='D')
+    cl = CandleList(candle_list, instrument='CAD_JPY', granularity='D')
 
     cl.calc_rsi(period=1000)
 
@@ -283,7 +282,7 @@ def test_check_if_divergence():
         direction='down'
 
     assert cl.check_if_divergence(direction=direction)==True
-"""
+
 def test_fit_reg_line(trend_oanda_object):
 
     candle_list = trend_oanda_object.fetch_candleset()
@@ -291,4 +290,3 @@ def test_fit_reg_line(trend_oanda_object):
     cl = CandleList(candle_list, instrument='AUD_USD', granularity='D')
 
     (model,outfile)=cl.fit_reg_line()
-"""

@@ -525,7 +525,6 @@ class CandleList(object):
         bounces_prices=self.__get_bounces(prices,direction=direction)
         bounces_rsi = self.__get_bounces(rsi_values, direction=direction)
 
-        pdb.set_trace()
         diff_prices=bounces_prices[-1]-bounces_prices[-2]
         diff_rsi=bounces_rsi[-1]-bounces_rsi[-2]
 
@@ -533,6 +532,4 @@ class CandleList(object):
             return False
         else:
             return True
-
-        pdb.set_trace()
 

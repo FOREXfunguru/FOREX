@@ -5,6 +5,7 @@ import peakutils
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 
+
 class HArea(object):
     '''
     Class to represent a horizontal area in the chart
@@ -89,3 +90,55 @@ class HArea(object):
         fig.savefig(outfile, format='png')
 
         return bounces,outfile
+
+    def last_time(self, clist, position, part='openAsk'):
+        '''
+        Function that returns the datetime of the moment where prices were over/below this HArea
+
+        Parameters
+        ----------
+        clist   CandleList object
+                List with Candles
+        position    This parameter controls if price should cross the HArea.upper for 'above'
+                    or HArea.lower for 'below'
+                    Possible values are: 'above' or 'below'
+        part : str
+               What part of the candle will be used for calculating the length in pips
+               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid'.
+               Default: openAsk
+
+        Return
+        ------
+        datetime object of the moment that the price crosses the HArea
+        '''
+
+        for c in reversed(clist.clist):
+            price=getattr(c, part)
+            if position == 'above':
+                if price > self.upper:
+                    pdb.set_trace()
+                    return c.time
+            elif position == 'below':
+                if price < self.below:
+                    return c.time
+
+    def get_bounce_feats(self, clist, direction, part='openAsk'):
+        '''
+        This function is used to calculate some bounce
+        features, where bounce is defined with respect
+        to the HArea
+
+        Parameters
+        ----------
+        clist :   CandleList object
+                  List with Candles
+        direction : str
+                    Direction of the trend. Possible values are 'up'/'down'
+        part : str
+               What part of the candle will be used for calculating the length in pips
+               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid'.
+               Default: openAsk
+
+        Return
+        ------
+        '''
