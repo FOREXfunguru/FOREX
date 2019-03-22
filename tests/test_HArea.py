@@ -61,8 +61,9 @@ def test_get_bounce_feats():
                      instrument='CAD_JPY',
                      granularity='H12',
                      alignmentTimezone='Europe/London',
-                     start='2015-12-03T22:00:00',
-                     end='2015-12-16T10:00:00')
+                     dailyAlignment=22,
+                     start='2014-12-26T22:00:00',
+                     end='2015-01-08T23:00:00')
 
     candle_list = oanda.fetch_candleset()
 
@@ -76,4 +77,9 @@ def test_get_bounce_feats():
     else:
         direction = 'down'
 
-    resist = HArea(price=88.608, pips=20, instrument='CAAD_JPY', granularity='H12')
+    resist = HArea(price=101.318, pips=20, instrument='CAD_JPY', granularity='H12')
+
+    (inn_bounce, bounce_pips)=resist.get_bounce_feats(clist=cl, direction=direction)
+
+    assert inn_bounce == 5
+    assert bounce_pips == 139
