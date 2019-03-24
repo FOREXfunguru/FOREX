@@ -37,7 +37,6 @@ class OandaAPI(object):
             resp = requests.get(url=url,params=params)
 
             self.resp=resp
-        
             if resp.status_code != 200:
                  # This means something went wrong.
                  print("Something went wrong. url used was:\n{0}".format(resp.url))

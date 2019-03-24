@@ -4,7 +4,9 @@
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/HArea.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/HArea.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/OandaAPI.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OandaAPI.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_HArea.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_HArea.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_OandaAPI.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_OandaAPI.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -18,10 +20,34 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/OandaAPI.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-396">
+              <caret line="56" column="23" lean-forward="true" selection-start-line="56" selection-start-column="8" selection-end-line="56" selection-end-column="23" />
+              <folding>
+                <element signature="e#55#65#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Candle.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="266">
+              <caret line="175" column="15" lean-forward="true" selection-start-line="175" selection-start-column="15" selection-end-line="175" selection-end-column="15" />
+              <folding>
+                <element signature="e#882#5729#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/CandleList.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-694">
-              <caret line="429" column="49" lean-forward="true" selection-start-line="429" selection-start-column="8" selection-end-line="429" selection-end-column="49" />
+            <state relative-caret-position="153">
+              <caret line="308" column="58" lean-forward="true" selection-start-line="308" selection-start-column="46" selection-end-line="308" selection-end-column="58" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
                 <element signature="e#2288#5193#0" />
@@ -30,9 +56,9 @@
                 <element signature="e#6972#8015#0" />
                 <element signature="e#8075#8473#0" />
                 <element signature="e#8527#8978#0" />
-                <element signature="e#9035#11017#0" />
                 <element signature="e#12578#13090#0" />
                 <element signature="e#13134#13330#0" />
+                <element signature="e#13424#14286#0" />
                 <element signature="e#14870#15957#0" />
               </folding>
             </state>
@@ -42,8 +68,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/HArea.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="68">
-              <caret line="146" selection-start-line="146" selection-end-line="146" />
+            <state relative-caret-position="369">
+              <caret line="216" column="46" lean-forward="true" selection-start-line="216" selection-start-column="46" selection-end-line="216" selection-end-column="46" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -54,10 +80,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/test_HArea.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="414">
-              <caret line="84" column="29" selection-start-line="84" selection-start-column="29" selection-end-line="84" selection-end-column="29" />
+            <state relative-caret-position="-664">
+              <caret line="3" selection-start-line="3" selection-end-line="3" selection-end-column="29" />
               <folding>
-                <element signature="e#0#13#0" expanded="true" />
+                <element signature="e#121#475#0" />
                 <element signature="e#1096#1550#0" />
               </folding>
             </state>
@@ -67,8 +93,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_CandleList.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-6">
-              <caret line="265" column="39" lean-forward="true" selection-start-line="265" selection-start-column="20" selection-end-line="265" selection-end-column="39" />
+            <state relative-caret-position="26">
+              <caret line="269" column="41" lean-forward="true" selection-start-line="269" selection-start-column="4" selection-end-line="269" selection-end-column="41" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
                 <element signature="e#2117#2438#0" />
@@ -77,6 +103,18 @@
                 <element signature="e#3424#3657#0" />
                 <element signature="e#3704#4042#0" />
                 <element signature="e#4089#4468#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="-169">
+              <caret line="34" column="25" selection-start-line="34" selection-start-column="23" selection-end-line="34" selection-end-column="25" />
+              <folding>
+                <element signature="e#0#13#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -99,6 +137,9 @@
       <find>JPY</find>
       <find>get</find>
       <find>round</find>
+      <find>iso</find>
+      <find>OandaAPI</find>
+      <find>isoformat</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -112,15 +153,15 @@
         <option value="$PROJECT_DIR$/src/Reversal.py" />
         <option value="$PROJECT_DIR$/src/Candle.py" />
         <option value="$PROJECT_DIR$/tests/test_Candle.py" />
-        <option value="$PROJECT_DIR$/tests/test_OandaAPI.py" />
         <option value="$PROJECT_DIR$/src/scripts/calculate_rsi.py" />
-        <option value="$PROJECT_DIR$/src/OandaAPI.py" />
         <option value="$PROJECT_DIR$/src/Area.py" />
         <option value="$PROJECT_DIR$/src/VArea.py" />
         <option value="$PROJECT_DIR$/src/CandleList.py" />
         <option value="$PROJECT_DIR$/tests/test_CandleList.py" />
-        <option value="$PROJECT_DIR$/src/HArea.py" />
+        <option value="$PROJECT_DIR$/src/OandaAPI.py" />
+        <option value="$PROJECT_DIR$/tests/test_OandaAPI.py" />
         <option value="$PROJECT_DIR$/tests/test_HArea.py" />
+        <option value="$PROJECT_DIR$/src/HArea.py" />
       </list>
     </option>
   </component>
@@ -331,7 +372,21 @@
       <option name="project" value="LOCAL" />
       <updated>1553210379705</updated>
     </task>
-    <option name="localTasksCounter" value="12" />
+    <task id="LOCAL-00012" summary="adding bounce feats code">
+      <created>1553298091901</created>
+      <option name="number" value="00012" />
+      <option name="presentableId" value="LOCAL-00012" />
+      <option name="project" value="LOCAL" />
+      <updated>1553298091901</updated>
+    </task>
+    <task id="LOCAL-00013" summary="adding bounce feats code">
+      <created>1553298154866</created>
+      <option name="number" value="00013" />
+      <option name="presentableId" value="LOCAL-00013" />
+      <option name="project" value="LOCAL" />
+      <updated>1553298154866</updated>
+    </task>
+    <option name="localTasksCounter" value="14" />
     <servers />
   </component>
   <component name="TodoView">
@@ -345,10 +400,11 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.49813432" visible="true" weight="0.12825933" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.7257463" visible="true" weight="0.12825933" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" sideWeight="0.5018657" side_tool="true" visible="true" weight="0.12825933" />
+      <window_info id="Favorites" order="2" sideWeight="0.27425373" side_tool="true" visible="true" weight="0.12825933" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.3290735" />
@@ -356,8 +412,8 @@
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
-      <window_info anchor="bottom" id="Version Control" order="7" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4989429" visible="true" weight="0.35421687" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32891566" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.4989429" visible="true" weight="0.35421687" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5010571" side_tool="true" weight="0.35421687" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.3298722" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -377,7 +433,8 @@
     <MESSAGE value="adding divergence feature" />
     <MESSAGE value="finalising divergence feature" />
     <MESSAGE value="adding new feat for calculating bounce characteristics" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding new feat for calculating bounce characteristics" />
+    <MESSAGE value="adding bounce feats code" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding bounce feats code" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Untitled.ipynb" />
@@ -436,16 +493,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="478">
-          <caret line="39" column="5" selection-start-line="39" selection-start-column="5" selection-end-line="39" selection-end-column="48" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/scripts/calculate_rsi.py" />
     <entry file="file://$PROJECT_DIR$/src/scripts/analyze_reversal.py">
       <provider selected="true" editor-type-id="text-editor">
@@ -456,27 +503,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Candle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="495">
-          <caret line="33" column="18" selection-start-line="33" selection-start-column="6" selection-end-line="33" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Reversal.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="736">
           <caret line="207" column="48" selection-start-line="207" selection-start-column="36" selection-end-line="207" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/OandaAPI.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="54" selection-start-line="18" selection-start-column="4" selection-end-line="19" selection-end-column="54" />
-          <folding>
-            <element signature="e#55#65#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -487,10 +517,30 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Candle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="266">
+          <caret line="175" column="15" lean-forward="true" selection-start-line="175" selection-start-column="15" selection-end-line="175" selection-end-column="15" />
+          <folding>
+            <element signature="e#882#5729#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/OandaAPI.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-396">
+          <caret line="56" column="23" lean-forward="true" selection-start-line="56" selection-start-column="8" selection-end-line="56" selection-end-column="23" />
+          <folding>
+            <element signature="e#55#65#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/CandleList.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-694">
-          <caret line="429" column="49" lean-forward="true" selection-start-line="429" selection-start-column="8" selection-end-line="429" selection-end-column="49" />
+        <state relative-caret-position="153">
+          <caret line="308" column="58" lean-forward="true" selection-start-line="308" selection-start-column="46" selection-end-line="308" selection-end-column="58" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
             <element signature="e#2288#5193#0" />
@@ -499,18 +549,38 @@
             <element signature="e#6972#8015#0" />
             <element signature="e#8075#8473#0" />
             <element signature="e#8527#8978#0" />
-            <element signature="e#9035#11017#0" />
             <element signature="e#12578#13090#0" />
             <element signature="e#13134#13330#0" />
+            <element signature="e#13424#14286#0" />
             <element signature="e#14870#15957#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/HArea.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="369">
+          <caret line="216" column="46" lean-forward="true" selection-start-line="216" selection-start-column="46" selection-end-line="216" selection-end-column="46" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-169">
+          <caret line="34" column="25" selection-start-line="34" selection-start-column="23" selection-end-line="34" selection-end-column="25" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_CandleList.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-6">
-          <caret line="265" column="39" lean-forward="true" selection-start-line="265" selection-start-column="20" selection-end-line="265" selection-end-column="39" />
+        <state relative-caret-position="26">
+          <caret line="269" column="41" lean-forward="true" selection-start-line="269" selection-start-column="4" selection-end-line="269" selection-end-column="41" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
             <element signature="e#2117#2438#0" />
@@ -523,22 +593,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/HArea.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="68">
-          <caret line="146" selection-start-line="146" selection-end-line="146" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_HArea.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="414">
-          <caret line="84" column="29" selection-start-line="84" selection-start-column="29" selection-end-line="84" selection-end-column="29" />
+        <state relative-caret-position="-664">
+          <caret line="3" selection-start-line="3" selection-end-line="3" selection-end-column="29" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#121#475#0" />
             <element signature="e#1096#1550#0" />
           </folding>
         </state>

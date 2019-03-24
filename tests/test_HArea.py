@@ -83,3 +83,17 @@ def test_get_bounce_feats():
 
     assert inn_bounce == 5
     assert bounce_pips == 139
+
+def test_get_cross_time():
+
+    resist = HArea(price=94.431, pips=20, instrument='CAD_JPY', granularity='H12')
+
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='CAD_JPY',
+                     granularity='H12',
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22,
+                     start='2015-01-25T22:00:00',
+                     count=1)
+
+    candle = resist.get_cross_time(candle=oanda.fetch_candleset()[0])

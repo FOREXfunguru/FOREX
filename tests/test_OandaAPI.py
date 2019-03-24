@@ -1,4 +1,5 @@
 import pytest
+import pdb
 
 from OandaAPI import OandaAPI
 
@@ -26,7 +27,6 @@ def test_OandaAPI():
                    alignmentTimezone='Europe/London',
                    start='2015-01-25T22:00:00',
                    end='2015-01-26T22:00:00')
-
     assert 1
 
 
@@ -52,3 +52,20 @@ def test_fetch_candleset(oanda_object):
     assert candle_list[0].closeAsk == 0.79335
     assert candle_list[0].openBid == 0.7873
 
+def test_fetch_one_candle():
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='AUD_USD',
+                     granularity='D',
+                     dailyAlignment=22,
+                     alignmentTimezone='Europe/London',
+                     start='2015-01-25T22:00:00',
+                     count=1)
+
+    candle_list=oanda.fetch_candleset()
+    assert candle_list[0].highBid == 0.79329
+    assert candle_list[0].openBid == 0.7873
+    assert candle_list[0].lowBid == 0.7857
+    assert candle_list[0].representation == 'bidask'
+    assert candle_list[0].lowAsk == 0.786
+    assert candle_list[0].complete == True
+    assert candle_list[0].openAsk == 0.7889

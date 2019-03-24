@@ -2,6 +2,8 @@ import numpy as np
 import pdb
 import matplotlib
 import peakutils
+import datetime
+from OandaAPI import OandaAPI
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 
@@ -176,3 +178,44 @@ class HArea(object):
         diff = (highest - s_rprice) * 10 ** round_number
 
         return (inn_bounce,abs(int(round(diff, 0))))
+
+    def get_cross_time(self, candle, granularity='M30'):
+        '''
+        This function is used get the time that the candle
+        crosses (go through) HArea
+
+        Parameters
+        ----------
+        candle :   Candle object that crosses the HArea
+        granularity : To what granularity we should descend
+
+        Returns
+        ------
+        datetime
+        '''
+
+
+        if candle.lowAsk <= self.price <= candle.highAsk:
+            delta=None
+            if self.granularity=="D":
+                delta = datetime.timedelta(days=self.granularity)
+            else:
+                fgran=self.granularity.replace('H','')
+                delta=datetime.timedelta(hours=int(fgran))
+
+            cstart=candle.time
+            cend=cstart+delta
+            oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                             instrument=self.instrument,
+                             granularity=granularity,
+                             dailyAlignment=22,
+                             alignmentTimezone='Europe/London',
+                             start=cstart.isoformat(),
+                             end=cend.isoformat())
+            candle_list = oanda.fetch_candleset()
+            for c in candle_list:
+                if c.lowAsk <= self.price <= c.highAsk:
+                    pdb.set_trace()
+                    return c.time
+
+        print("h")
