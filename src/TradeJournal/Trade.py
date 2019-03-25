@@ -1,5 +1,5 @@
 from __future__ import division
-import pandas as pd
+import datetime
 import pdb
 import re
 from OandaAPI import OandaAPI
@@ -14,20 +14,24 @@ class Trade(object):
     ---------------
     
     start: datetime, Required
-           Time/date when the trade was taken. i.e. 20-03-2017 08:20:00
-    end: datetime, Required
-         Time/date when the trade ended. i.e. 20-03-2017 08:20:00
+           Time/date when the trade was taken. i.e. 20-03-2017 08:20:00s
     pair: str, Required
           Currency pair used in the trade. i.e. AUD_USD
     type: str, Required
           Type of trade. Possible values are 'long'/'short'
     timeframe: str, Required
                Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
-    outcome: str, Required
+    outcome: str, Optional
              Outcome of the trade. Possible values are: success, failure, breakeven
+    end: datetime, Optional
+         Time/date when the trade ended. i.e. 20-03-2017 08:20:00
+    SL:  float, Optional
+         Stop/Loss price
+    TP:  float, Optional
+         Take profit price
     '''
 
-    def __init__(self, start, end, pair, type, timeframe, outcome):
+    def __init__(self, start, pair, type, timeframe, outcome=None, end=None, SL=None, TP=None):
         self.start=start
         self.end=end
         self.pair=re.sub('/','_',pair)
@@ -39,6 +43,8 @@ class Trade(object):
             raise Exception("{0} is not a valid Trade type".format(type))
         self.timeframe=timeframe
         self.outcome=outcome
+        self.SL=SL
+        self.TP=TP
 
     def fetch_candlelist(self):
         '''
@@ -54,14 +60,40 @@ class Trade(object):
                        instrument=self.pair,
                        granularity=self.timeframe,
                        alignmentTimezone='Europe/London',
-                       start=self.start.strftime('%Y-%m-%dT%H:%M:%S'),
+                       start=datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S').isoformat(),
                        dailyAlignment=22,
-                       end=self.end.strftime('%Y-%m-%dT%H:%M:%S'))
+                       end=datetime.datetime.strptime(self.end,'%Y-%m-%dT%H:%M:%S').isoformat())
 
         candle_list=oanda.fetch_candleset()
         cl=CandleList(candle_list, type=self.type)
 
         return cl
+
+    def run_trade(self):
+        '''
+        Run the trade until conclusion from a start date
+        '''
+
+        pdb.set_trace()
+        SL = HArea(price=self.SL,pips=1, instrument=self.pair, granularity=self.timeframe)
+        TP = HArea(price=self.TP, pips=1, instrument=self.pair, granularity=self.timeframe)
+
+        numdays=100
+        date_list = [datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S') - datetime.timedelta(days=x) for x in range(0, numdays)]
+
+        for d in date_list:
+            oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                             instrument=self.pair,
+                             granularity=self.timeframe,
+                             dailyAlignment=22,
+                             alignmentTimezone='Europe/London',
+                             start=d.isoformat(),
+                             count=1)
+            cl=oanda.fetch_candleset()[0]
+            failure_time = SL.get_cross_time(candle=cl)
+            success_time = TP.get_cross_time(candle=cl)
+            print("h")
+
 
     def __str__(self):
         sb = []

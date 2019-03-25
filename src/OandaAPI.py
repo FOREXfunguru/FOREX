@@ -107,3 +107,12 @@ class OandaAPI(object):
                             setattr(ba, l[0], l[1])
                     candlelist.append(ba)
         return candlelist
+
+    def __repr__(self):
+        return "BidAskCandle"
+
+    def __str__(self):
+        out_str = ""
+        for attr, value in self.__dict__.items():
+            out_str += "%s:%s " % (attr, value)
+        return out_str

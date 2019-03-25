@@ -191,7 +191,7 @@ class HArea(object):
 
         Returns
         ------
-        datetime
+        datetime object with crossing time
         '''
 
 
@@ -215,7 +215,5 @@ class HArea(object):
             candle_list = oanda.fetch_candleset()
             for c in candle_list:
                 if c.lowAsk <= self.price <= c.highAsk:
-                    pdb.set_trace()
                     return c.time
 
-        print("h")

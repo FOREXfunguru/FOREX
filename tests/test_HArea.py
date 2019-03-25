@@ -96,4 +96,6 @@ def test_get_cross_time():
                      start='2015-01-25T22:00:00',
                      count=1)
 
-    candle = resist.get_cross_time(candle=oanda.fetch_candleset()[0])
+    cross_time = resist.get_cross_time(candle=oanda.fetch_candleset()[0])
+
+    pdb.set_trace()
