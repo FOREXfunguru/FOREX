@@ -4,7 +4,7 @@ import pdb
 import re
 from OandaAPI import OandaAPI
 from CandleList import CandleList
-
+from HArea import HArea
 
 class Trade(object):
     '''
@@ -25,13 +25,16 @@ class Trade(object):
              Outcome of the trade. Possible values are: success, failure, breakeven
     end: datetime, Optional
          Time/date when the trade ended. i.e. 20-03-2017 08:20:00
+    entry: float, Optional
+           entry price
     SL:  float, Optional
          Stop/Loss price
     TP:  float, Optional
          Take profit price
     '''
 
-    def __init__(self, start, pair, type, timeframe, outcome=None, end=None, SL=None, TP=None):
+    def __init__(self, start, pair, type, timeframe, outcome=None, end=None, entry=None,
+                 SL=None, TP=None):
         self.start=start
         self.end=end
         self.pair=re.sub('/','_',pair)
@@ -43,6 +46,7 @@ class Trade(object):
             raise Exception("{0} is not a valid Trade type".format(type))
         self.timeframe=timeframe
         self.outcome=outcome
+        self.entry=entry
         self.SL=SL
         self.TP=TP
 
@@ -74,13 +78,20 @@ class Trade(object):
         Run the trade until conclusion from a start date
         '''
 
-        pdb.set_trace()
+        entry = HArea(price=self.entry,pips=1, instrument=self.pair, granularity=self.timeframe)
         SL = HArea(price=self.SL,pips=1, instrument=self.pair, granularity=self.timeframe)
         TP = HArea(price=self.TP, pips=1, instrument=self.pair, granularity=self.timeframe)
 
-        numdays=100
-        date_list = [datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S') - datetime.timedelta(days=x) for x in range(0, numdays)]
+        period=None
+        if self.timeframe == "D":
+            period=24
+        else:
+            period = int(self.timeframe.replace('H', ''))
 
+        numperiods=100
+        date_list = [datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S') + datetime.timedelta(hours=x*period) for x in range(0, numperiods)]
+
+        entered=False
         for d in date_list:
             oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                              instrument=self.pair,
@@ -90,10 +101,22 @@ class Trade(object):
                              start=d.isoformat(),
                              count=1)
             cl=oanda.fetch_candleset()[0]
-            failure_time = SL.get_cross_time(candle=cl)
-            success_time = TP.get_cross_time(candle=cl)
-            print("h")
 
+            entry_time = entry.get_cross_time(candle=cl)
+            if entry_time is not None:
+                entered=True
+            if entered is True:
+                failure_time = SL.get_cross_time(candle=cl)
+                if failure_time is not None:
+                    self.outcome='failure'
+                    self.end = failure_time
+                    break
+            if entered is True:
+                success_time = TP.get_cross_time(candle=cl)
+                if success_time is not None:
+                    self.outcome = 'success'
+                    self.end=success_time
+                    break
 
     def __str__(self):
         sb = []

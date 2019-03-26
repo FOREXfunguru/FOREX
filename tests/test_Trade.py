@@ -19,11 +19,25 @@ def t_object():
 @pytest.fixture
 def unfisished_t_object():
     ''' Returns a Trade object without the end defined'''
+    '''
     td = Trade(
-        start="2017-04-20T14:30:00",
-        pair="AUD/USD",
+        start="2018-12-12T10:00:00",
+        entry=1.57488,
+        SL=1.56685,
+        TP=1.58724,
+        pair="EUR/AUD",
         type="bullish",
-        timeframe="D"
+        timeframe="H12"
+    )
+    '''
+    td = Trade(
+        start="2018-07-26T09:00:00",
+        entry=1.57935,
+        SL=1.56934,
+        TP=1.59451,
+        pair="EUR/AUD",
+        type="bullish",
+        timeframe="H12"
     )
     return td
 
@@ -46,5 +60,5 @@ def test_run_trade(unfisished_t_object):
     '''
 
     unfisished_t_object.run_trade()
-
+    assert unfisished_t_object.outcome=='success'
 
