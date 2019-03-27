@@ -24,20 +24,25 @@ class TradeJournal(object):
         self.worksheet=worksheet
         #read-in the 'trading_journal' worksheet from a .xlsx file into a pandas dataframe
         xls_file = pd.ExcelFile(url)
-        df = xls_file.parse(worksheet,converters={'Start of trade': str, 'End of trade': str})
+        df = xls_file.parse(worksheet,converters={'start': str, 'end': str})
         self.df=df
 
     def fetch_trades(self):
 
+        pdb.set_trace()
         trade_list=[]
         for index,row in self.df.iterrows():
+            #get pair from id
+            pair=row['id'].split(' ')[0].replace('_','')
             t=Trade(
-                start=datetime.strptime(row['Start of trade'], '%Y-%m-%d %H:%M:%S'),
-                end=datetime.strptime(row['End of trade'], '%Y-%m-%d %H:%M:%S'),
-                pair=row['Currency Pair'],
-                type=row['Type'],
-                timeframe=row['Entry Time-frame'],
-                outcome=row['outcome']
+                strat=row['strat'],
+                start=datetime.strptime(row['start'], '%Y-%m-%d %H:%M:%S'),
+                pair=pair,
+                timeframe=row['timeframe'],
+                SL=row['SL'],
+                TP=row['TP'],
+                entry=row['entry'],
+                SR=row['SR']
                 )
             trade_list.append(t)
 

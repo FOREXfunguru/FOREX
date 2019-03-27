@@ -12,13 +12,11 @@ class Trade(object):
 
     Class variables
     ---------------
-    
+
     start: datetime, Required
            Time/date when the trade was taken. i.e. 20-03-2017 08:20:00s
     pair: str, Required
           Currency pair used in the trade. i.e. AUD_USD
-    type: str, Required
-          Type of trade. Possible values are 'long'/'short'
     timeframe: str, Required
                Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
     outcome: str, Optional
@@ -27,28 +25,32 @@ class Trade(object):
          Time/date when the trade ended. i.e. 20-03-2017 08:20:00
     entry: float, Optional
            entry price
+    type: str, Optional
+          What is the type of the trade (long,short)
     SL:  float, Optional
          Stop/Loss price
     TP:  float, Optional
          Take profit price
+    SR:  float, Optional
+         Support/Resistance area
+    strat: string, Required
+           What strategy was used for this trade. Possible values are: 'counter','cont','ctdbtp'
     '''
 
-    def __init__(self, start, pair, type, timeframe, outcome=None, end=None, entry=None,
-                 SL=None, TP=None):
+    def __init__(self, start, pair, timeframe, outcome=None, type=None, end=None, entry=None,
+                 SL=None, TP=None, SR=None, strat=None):
         self.start=start
         self.end=end
         self.pair=re.sub('/','_',pair)
-        if type=='bearish':
-            self.type='short'
-        elif type=='bullish':
-            self.type='long'
-        else:
-            raise Exception("{0} is not a valid Trade type".format(type))
+        self.type=type
         self.timeframe=timeframe
         self.outcome=outcome
         self.entry=entry
         self.SL=SL
         self.TP=TP
+        self.SR=SR
+        self.strat=strat
+
 
     def fetch_candlelist(self):
         '''
