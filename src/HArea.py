@@ -63,7 +63,7 @@ class HArea(object):
         min_dist : float
                    Threshold for minimum distance for detecting peaks. Default : 10
         outfile : file
-                Filename for output
+                Filename for output .png file
 
         Returns
         -------

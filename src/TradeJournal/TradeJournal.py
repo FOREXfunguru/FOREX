@@ -29,11 +29,10 @@ class TradeJournal(object):
 
     def fetch_trades(self):
 
-        pdb.set_trace()
         trade_list=[]
         for index,row in self.df.iterrows():
             #get pair from id
-            pair=row['id'].split(' ')[0].replace('_','')
+            pair=row['id'].split(' ')[0]
             t=Trade(
                 strat=row['strat'],
                 start=datetime.strptime(row['start'], '%Y-%m-%d %H:%M:%S'),

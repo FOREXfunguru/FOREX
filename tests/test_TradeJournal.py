@@ -1,4 +1,5 @@
 import pytest
+import pdb
 
 from TradeJournal.TradeJournal import TradeJournal
 
@@ -13,13 +14,11 @@ def tj_object():
 def test_fetch_trades(tj_object):
 
     trade_list=tj_object.fetch_trades()
-    
+
     assert len(trade_list)==1
-    assert trade_list[0].start.strftime('%Y-%m-%d')=='2017-04-20'
-    assert trade_list[0].end.strftime('%Y-%m-%d')=='2017-04-26'
-    assert trade_list[0].pair=='AUD_USD'
-    assert trade_list[0].timeframe=='H8'
-    assert trade_list[0].type=='long'
+    assert trade_list[0].start.strftime('%Y-%m-%d')=='2019-02-24'
+    assert trade_list[0].pair=='GBP_AUD'
+    assert trade_list[0].timeframe=='D'
 
 def test_add_trend_momentum(tj_object):
 
