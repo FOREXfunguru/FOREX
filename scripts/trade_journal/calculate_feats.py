@@ -2,6 +2,7 @@ import argparse
 import pdb
 import datetime
 
+from CandleList import CandleList
 from OandaAPI import OandaAPI
 from TradeJournal.TradeJournal import TradeJournal
 from HArea import HArea
@@ -55,8 +56,6 @@ def process_counter_dbtp(t,period=1000):
         close_prices.append(c.closeAsk)
         datetimes.append(c.time)
 
-    pdb.set_trace()
-
     resist = HArea(price=t.SR, pips=100, instrument=t.pair, granularity=t.timeframe)
 
     (bounces, outfile) = resist.number_bounces(datetimes=datetimes,
@@ -64,6 +63,13 @@ def process_counter_dbtp(t,period=1000):
                                                min_dist=5
                                                )
 
+    if t.type=="short": position='above'
+    if t.type=="long": position = 'below'
+
+    cl = CandleList(candle_list, instrument=t.pair, granularity=t.timeframe)
+
+    last_time=resist.last_time(clist=cl, position=position)
+    pdb.set_trace()
     print("h")
 
 
