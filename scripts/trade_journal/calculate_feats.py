@@ -58,6 +58,7 @@ def process_counter_dbtp(t,period=1000):
 
     resist = HArea(price=t.SR, pips=100, instrument=t.pair, granularity=t.timeframe)
 
+    pdb.set_trace()
     (bounces, outfile) = resist.number_bounces(datetimes=datetimes,
                                                prices=close_prices,
                                                min_dist=5
@@ -69,7 +70,23 @@ def process_counter_dbtp(t,period=1000):
     cl = CandleList(candle_list, instrument=t.pair, granularity=t.timeframe)
 
     last_time=resist.last_time(clist=cl, position=position)
-    pdb.set_trace()
+
+    bounces=[n for n in bounces if n[0] >= last_time]
+
+    #checking for feats in trend before 1st bounce
+    oanda_1st_bounce=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument=t.pair,
+                     granularity=t.timeframe,
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22,
+                     start=t.trend_i.isoformat(),
+                     end=bounce[-1][0].isoformat())
+    candle_list = oanda_1st_bounce.fetch_candleset()
+
+    cl = CandleList(candle_list, instrument=t.pair, granularity=t.timeframe)
+
+    (model, outfile) = cl.fit_reg_line()
+
     print("h")
 
 

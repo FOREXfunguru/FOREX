@@ -2,11 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/scripts/trade_journal/calculate_feats.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/trade_journal/calculate_feats.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/trade_journal/calculate_feats.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/HArea.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/HArea.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TradeJournal/Trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/Trade.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/TradeJournal/TradeJournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/TradeJournal.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_TradeJournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_TradeJournal.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/data/test.xlsx" beforeDir="false" afterPath="$PROJECT_DIR$/tests/data/test.xlsx" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -31,11 +32,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/trade_journal/calculate_feats.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="368">
-              <caret line="63" column="57" selection-start-line="63" selection-start-column="57" selection-end-line="63" selection-end-column="57" />
+            <state relative-caret-position="621">
+              <caret line="60" column="19" selection-start-line="60" selection-start-column="19" selection-end-line="60" selection-end-column="19" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -58,17 +59,20 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_HArea.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" column="23" lean-forward="true" selection-start-line="4" selection-end-line="4" selection-end-column="23" />
+            <state relative-caret-position="-892">
+              <caret line="5" column="33" lean-forward="true" selection-start-line="5" selection-end-line="5" selection-end-column="33" />
+              <folding>
+                <element signature="e#0#13#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/HArea.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="208">
-              <caret line="50" column="72" lean-forward="true" selection-start-line="50" selection-start-column="64" selection-end-line="50" selection-end-column="72" />
+            <state relative-caret-position="393">
+              <caret line="84" column="41" selection-start-line="84" selection-start-column="32" selection-end-line="84" selection-end-column="41" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -79,8 +83,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/TradeJournal/Trade.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="184">
-              <caret line="28" column="51" selection-start-line="28" selection-start-column="51" selection-end-line="28" selection-end-column="51" />
+            <state relative-caret-position="474">
+              <caret line="40" column="66" selection-start-line="40" selection-start-column="66" selection-end-line="40" selection-end-column="66" />
               <folding>
                 <element signature="e#0#31#0" expanded="true" />
               </folding>
@@ -91,8 +95,29 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/TradeJournal/TradeJournal.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" column="29" lean-forward="true" selection-start-line="4" selection-end-line="4" selection-end-column="29" />
+            <state relative-caret-position="412">
+              <caret line="45" column="23" selection-start-line="45" selection-start-column="23" selection-end-line="45" selection-end-column="23" />
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/test_CandleList.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="518">
+              <caret line="291" column="37" lean-forward="true" selection-start-line="287" selection-start-column="3" selection-end-line="291" selection-end-column="37" />
+              <folding>
+                <element signature="e#0#13#0" expanded="true" />
+                <element signature="e#2117#2438#0" />
+                <element signature="e#2494#2920#0" />
+                <element signature="e#2966#3364#0" />
+                <element signature="e#3424#3657#0" />
+                <element signature="e#3704#4042#0" />
+                <element signature="e#4089#4468#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -120,6 +145,7 @@
       <find>split</find>
       <find>isoformat</find>
       <find>days</find>
+      <find>pdb.</find>
       <find>hours</find>
     </findStrings>
   </component>
@@ -143,11 +169,11 @@
         <option value="$PROJECT_DIR$/tests/test_HArea.py" />
         <option value="$PROJECT_DIR$/src/OandaAPI.py" />
         <option value="$PROJECT_DIR$/tests/test_Trade.py" />
-        <option value="$PROJECT_DIR$/src/TradeJournal/Trade.py" />
-        <option value="$PROJECT_DIR$/src/HArea.py" />
-        <option value="$PROJECT_DIR$/src/TradeJournal/TradeJournal.py" />
         <option value="$PROJECT_DIR$/tests/test_TradeJournal.py" />
+        <option value="$PROJECT_DIR$/src/TradeJournal/Trade.py" />
+        <option value="$PROJECT_DIR$/src/TradeJournal/TradeJournal.py" />
         <option value="$PROJECT_DIR$/scripts/trade_journal/calculate_feats.py" />
+        <option value="$PROJECT_DIR$/src/HArea.py" />
       </list>
     </option>
   </component>
@@ -400,7 +426,21 @@
       <option name="project" value="LOCAL" />
       <updated>1553729437348</updated>
     </task>
-    <option name="localTasksCounter" value="18" />
+    <task id="LOCAL-00018" summary="writing script to calc dbpt feats">
+      <created>1553814870084</created>
+      <option name="number" value="00018" />
+      <option name="presentableId" value="LOCAL-00018" />
+      <option name="project" value="LOCAL" />
+      <updated>1553814870085</updated>
+    </task>
+    <task id="LOCAL-00019" summary="writing script to calc dbpt feats-continuation">
+      <created>1553904763771</created>
+      <option name="number" value="00019" />
+      <option name="presentableId" value="LOCAL-00019" />
+      <option name="project" value="LOCAL" />
+      <updated>1553904763776</updated>
+    </task>
+    <option name="localTasksCounter" value="20" />
     <servers />
   </component>
   <component name="TodoView">
@@ -415,7 +455,7 @@
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.72537315" visible="true" weight="0.15715292" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.72537315" visible="true" weight="0.15715292" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.27462685" side_tool="true" visible="true" weight="0.15715292" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -426,7 +466,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32891566" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.4989429" visible="true" weight="0.19277108" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4989429" visible="true" weight="0.19277108" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5010571" side_tool="true" weight="0.22650602" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.3298722" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -451,7 +491,9 @@
     <MESSAGE value="working in run_trade" />
     <MESSAGE value="adding run_trade code" />
     <MESSAGE value="adding changes in Trade" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding changes in Trade" />
+    <MESSAGE value="writing script to calc dbpt feats" />
+    <MESSAGE value="writing script to calc dbpt feats-continuation" />
+    <option name="LAST_COMMIT_MESSAGE" value="writing script to calc dbpt feats-continuation" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Untitled.ipynb" />
@@ -544,22 +586,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_CandleList.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="132">
-          <caret line="269" column="41" lean-forward="true" selection-start-line="269" selection-start-column="4" selection-end-line="269" selection-end-column="41" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-            <element signature="e#2117#2438#0" />
-            <element signature="e#2494#2920#0" />
-            <element signature="e#2966#3364#0" />
-            <element signature="e#3424#3657#0" />
-            <element signature="e#3704#4042#0" />
-            <element signature="e#4089#4468#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_Trade.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="465">
@@ -577,26 +603,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/TradeJournal/Trade.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="184">
-          <caret line="28" column="51" selection-start-line="28" selection-start-column="51" selection-end-line="28" selection-end-column="51" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_TradeJournal.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="285">
-          <caret line="19" column="36" selection-start-line="19" selection-start-column="36" selection-end-line="19" selection-end-column="36" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/get_score_continuations.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-672">
@@ -604,13 +610,6 @@
           <folding>
             <element signature="e#18#37#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/TradeJournal/TradeJournal.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="29" lean-forward="true" selection-start-line="4" selection-end-line="4" selection-end-column="29" />
         </state>
       </provider>
     </entry>
@@ -624,29 +623,85 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_HArea.py">
+    <entry file="file://$USER_HOME$/bin/anaconda/envs/python3/lib/python3.5/bdb.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="23" lean-forward="true" selection-start-line="4" selection-end-line="4" selection-end-column="23" />
+        <state relative-caret-position="1230">
+          <caret line="85" column="42" lean-forward="true" selection-start-line="85" selection-start-column="42" selection-end-line="85" selection-end-column="42" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/HArea.py">
+    <entry file="file://$PROJECT_DIR$/tests/test_TradeJournal.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="208">
-          <caret line="50" column="72" lean-forward="true" selection-start-line="50" selection-start-column="64" selection-end-line="50" selection-end-column="72" />
+        <state relative-caret-position="285">
+          <caret line="19" column="36" selection-start-line="19" selection-start-column="36" selection-end-line="19" selection-end-column="36" />
           <folding>
-            <element signature="e#0#18#0" expanded="true" />
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_HArea.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-892">
+          <caret line="5" column="33" lean-forward="true" selection-start-line="5" selection-end-line="5" selection-end-column="33" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/Trade.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="474">
+          <caret line="40" column="66" selection-start-line="40" selection-start-column="66" selection-end-line="40" selection-end-column="66" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/TradeJournal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="412">
+          <caret line="45" column="23" selection-start-line="45" selection-start-column="23" selection-end-line="45" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_CandleList.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="518">
+          <caret line="291" column="37" lean-forward="true" selection-start-line="287" selection-start-column="3" selection-end-line="291" selection-end-column="37" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#2117#2438#0" />
+            <element signature="e#2494#2920#0" />
+            <element signature="e#2966#3364#0" />
+            <element signature="e#3424#3657#0" />
+            <element signature="e#3704#4042#0" />
+            <element signature="e#4089#4468#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/trade_journal/calculate_feats.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="368">
-          <caret line="63" column="57" selection-start-line="63" selection-start-column="57" selection-end-line="63" selection-end-column="57" />
+        <state relative-caret-position="621">
+          <caret line="60" column="19" selection-start-line="60" selection-start-column="19" selection-end-line="60" selection-end-column="19" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/HArea.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="393">
+          <caret line="84" column="41" selection-start-line="84" selection-start-column="32" selection-end-line="84" selection-end-column="41" />
+          <folding>
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>

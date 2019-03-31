@@ -13,6 +13,7 @@ class Trade(object):
     Class variables
     ---------------
 
+    trend_i: start of the trend conducting to the entry of 1st peak
     start: datetime, Required
            Time/date when the trade was taken. i.e. 20-03-2017 08:20:00s
     pair: str, Required
@@ -37,19 +38,21 @@ class Trade(object):
            What strategy was used for this trade. Possible values are: 'counter','cont','ctdbtp'
     '''
 
-    def __init__(self, start, pair, timeframe, outcome=None, type=None, end=None, entry=None,
-                 SL=None, TP=None, SR=None, strat=None):
+    def __init__(self, start, pair, timeframe, type=None, end=None, outcome=None, entry=None,
+                 SL=None, TP=None, SR=None, strat=None, trend_i=None):
+        self.trend_i = trend_i
         self.start=start
-        self.end=end
         self.pair=re.sub('/','_',pair)
+        self.timeframe = timeframe
         self.type=type
-        self.timeframe=timeframe
+        self.end = end
         self.outcome=outcome
         self.entry=entry
         self.SL=SL
         self.TP=TP
         self.SR=SR
         self.strat=strat
+
 
 
     def fetch_candlelist(self):

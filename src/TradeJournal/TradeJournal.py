@@ -42,7 +42,8 @@ class TradeJournal(object):
                 TP=row['TP'],
                 entry=row['entry'],
                 SR=row['SR'],
-                type=row['type']
+                type=row['type'],
+                trend_i=row['trend_i']
                 )
             trade_list.append(t)
 
