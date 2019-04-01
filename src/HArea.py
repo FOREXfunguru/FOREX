@@ -78,7 +78,6 @@ class HArea(object):
         ax = plt.axes()
         ax.plot(datetimes, prices, color="black")
 
-        pdb.set_trace()
         bounces=[]
         for ix in max:
             if prices[ix]>=self.lower and prices[ix]<=self.upper:

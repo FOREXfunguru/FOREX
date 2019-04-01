@@ -202,6 +202,25 @@ class CandleList(object):
         
         self.entropy=a_dict
 
+    def fetch_by_time(self, datetime):
+        '''
+        Function to get a candle using its datetime
+
+        Parameters
+        ----------
+        datetime    datetime object for candle that wants
+                    to be fetched
+
+        Returns
+        -------
+        Candle object
+        '''
+
+        for c in self.clist:
+            if c.time==datetime:
+                return c
+
+
     def __get_number_of_double0s(self,seq1,seq2,norm=True):
         '''
         This function will detect the columns having 2 0s in an alignment.

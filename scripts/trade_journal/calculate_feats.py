@@ -30,10 +30,10 @@ def process_counter_dbtp(t,period=1000):
     delta=None
     delta_1=None
     if t.timeframe == "D":
-        delta_period = datetime.timedelta(days=period)
-        delta_1 = datetime.timedelta(days=1)
+        delta_period = datetime.timedelta(hours=24*period)
+        delta_1 = datetime.timedelta(hours=24)
     else:
-        fgran = self.granularity.replace('H', '')
+        fgran = t.timeframe.replace('H', '')
         delta_period = datetime.timedelta(hours=int(fgran)*period)
         delta_1 = datetime.timedelta(hours=int(fgran))
 
@@ -50,15 +50,17 @@ def process_counter_dbtp(t,period=1000):
 
     candle_list = oanda.fetch_candleset()
 
+    cl = CandleList(candle_list, t.pair, granularity=t.timeframe)
+    cl.calc_rsi(period=1000)
+
     close_prices = []
     datetimes = []
-    for c in oanda.fetch_candleset():
+    for c in candle_list:
         close_prices.append(c.closeAsk)
         datetimes.append(c.time)
 
     resist = HArea(price=t.SR, pips=100, instrument=t.pair, granularity=t.timeframe)
 
-    pdb.set_trace()
     (bounces, outfile) = resist.number_bounces(datetimes=datetimes,
                                                prices=close_prices,
                                                min_dist=5
@@ -73,6 +75,23 @@ def process_counter_dbtp(t,period=1000):
 
     bounces=[n for n in bounces if n[0] >= last_time]
 
+    pdb.set_trace()
+
+    #calc RSI for 1st and 2nd bounces
+
+    inrsi_1st_bounce = False
+    inrsi_2nd_bounce = False
+
+    # 1st bounce
+    cl_1st=cl.fetch_by_time((bounces[-2][0])
+    if cl_1st.rsi>=70 or cl_1st.rsi<=70:
+        inrsi_1st_bounce=True
+
+    # 2nd bounce
+    cl_2nd= cl.fetch_by_time(bounces[-1][0])
+    if cl_2nd.rsi >= 70 or cl_2nd.rsi <= 70:
+        inrsi_2nd_bounce = True
+
     #checking for feats in trend before 1st bounce
     oanda_1st_bounce=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                      instrument=t.pair,
@@ -80,12 +99,19 @@ def process_counter_dbtp(t,period=1000):
                      alignmentTimezone='Europe/London',
                      dailyAlignment=22,
                      start=t.trend_i.isoformat(),
-                     end=bounce[-1][0].isoformat())
-    candle_list = oanda_1st_bounce.fetch_candleset()
+                     end=bounces[-2][0].isoformat())
 
-    cl = CandleList(candle_list, instrument=t.pair, granularity=t.timeframe)
+    candle_list1 = oanda_1st_bounce.fetch_candleset()
 
-    (model, outfile) = cl.fit_reg_line()
+    cl1 = CandleList(candle_list1, instrument=t.pair, granularity=t.timeframe)
+
+    (model, outfile) = cl1.fit_reg_line()
+
+    direction = None
+    if model.coef_[0, 0] > 0:
+        direction = 'up'
+    else:
+        direction = 'down'
 
     print("h")
 

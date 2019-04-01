@@ -3,6 +3,7 @@ import pdb
 
 from OandaAPI import OandaAPI
 from CandleList import CandleList
+import datetime
 
 @pytest.fixture
 def oanda_object():
@@ -290,3 +291,14 @@ def test_fit_reg_line(trend_oanda_object):
     cl = CandleList(candle_list, instrument='AUD_USD', granularity='D')
 
     (model,outfile)=cl.fit_reg_line()
+
+def test_fetch_by_time(trend_oanda_object):
+
+    candle_list = trend_oanda_object.fetch_candleset()
+
+    cl = CandleList(candle_list, instrument='AUD_USD', granularity='D')
+
+    adatetime=datetime.datetime(2017,12,10,22,0)
+
+    c=cl.fetch_by_time(adatetime)
+
