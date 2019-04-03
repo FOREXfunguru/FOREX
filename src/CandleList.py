@@ -380,16 +380,28 @@ class CandleList(object):
         for c in self.clist:
             if c.rsi is None: raise Exception("RSI values are not defined for this Candlelist, "
                                               "run calc_rsi first")
+            if self.type is None: raise Exception("type is not defined for this Candlelist")
 
-            if (c.rsi>70 or c.rsi<30) and adj is False:
-                num_times+=1
-                length=1
-                adj=True
-            elif (c.rsi>70 or c.rsi<30) and adj is True:
-                length+=1
-            elif (c.rsi<70 and c.rsi>30):
-                if adj is True: lengths.append(length)
-                adj=False
+            if self.type=='long':
+                if c.rsi > 70 and adj is False:
+                    num_times += 1
+                    length = 1
+                    adj = True
+                elif c.rsi > 70 and adj is True:
+                    length += 1
+                elif c.rsi < 70:
+                    if adj is True: lengths.append(length)
+                    adj = False
+            elif self.type=='short':
+                if c.rsi<30 and adj is False:
+                    num_times+=1
+                    length=1
+                    adj=True
+                elif c.rsi<30 and adj is True:
+                    length+=1
+                elif c.rsi>30:
+                    if adj is True: lengths.append(length)
+                    adj=False
 
         if adj is True and length>0: lengths.append(length)
 

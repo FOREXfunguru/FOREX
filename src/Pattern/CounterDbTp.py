@@ -1,8 +1,8 @@
 
 
-class CounterDbTp(object):
+class CounterDbTp(Counter):
     '''
-    This class represents a trade showing Counter doubletop pattern
+    This class represents a trade showing Counter doubletop pattern (inherits from Counter)
 
     Class variables
     ---------------
@@ -13,6 +13,8 @@ class CounterDbTp(object):
           Currency pair used in the trade. i.e. AUD_USD
     timeframe: str, Required
                Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
+    type: str, Optional
+          What is the type of the trade (long,short)
     SL:  float, Optional
          Stop/Loss price
     TP:  float, Optional
@@ -35,6 +37,7 @@ class CounterDbTp(object):
                  start,
                  pair,
                  timeframe,
+                 type=None,
                  SL=None,
                  TP=None,
                  SR=None,
@@ -42,12 +45,7 @@ class CounterDbTp(object):
                  bounce_2nd=None,
                  rsi_1st=None,
                  rsi_2nd=None):
-        self.start = start
-        self.pair = pair
-        self.timeframe = timeframe
-        self.SL = SL
-        self.TP = TP
-        self.SR = SR
+        super().__init__(start,pair,timeframe,type,SL,TP,SR)
         self.bounce_1st = bounce_1st
         self.bounce_2nd = bounce_2nd
         self.rsi_1st = rsi_1st

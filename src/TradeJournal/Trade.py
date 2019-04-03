@@ -13,7 +13,8 @@ class Trade(object):
     Class variables
     ---------------
 
-    trend_i: start of the trend conducting to the entry of 1st peak
+    trend_i: datetime, Optional
+             start of the trend
     start: datetime, Required
            Time/date when the trade was taken. i.e. 20-03-2017 08:20:00s
     pair: str, Required
