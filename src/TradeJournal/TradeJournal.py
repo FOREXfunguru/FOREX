@@ -2,9 +2,9 @@ import pandas as pd
 import pdb
 import re
 import warnings
-from datetime import datetime
 from TradeJournal.Trade import Trade
 from openpyxl import load_workbook
+from Pattern.Counter import Counter
 
 
 class TradeJournal(object):
@@ -24,15 +24,46 @@ class TradeJournal(object):
         self.worksheet=worksheet
         #read-in the 'trading_journal' worksheet from a .xlsx file into a pandas dataframe
         xls_file = pd.ExcelFile(url)
-        df = xls_file.parse(worksheet,converters={'start': str, 'end': str})
+        df = xls_file.parse(worksheet,converters={'start': str, 'end': str, 'trend_i': str})
         self.df=df
 
-    def fetch_trades(self):
+    def fetch_trades(self,strat=None):
+        '''
+        This function will fetch the trades that are in this TradingJournal and will create an independent
+        Trade object for each record
+
+        Parameters
+        ----------
+        strat : String, Optional
+                If defined, then select all trades of a certain type.
+                Possible values are: 'counter'
+
+        Returns
+        ------
+        Nothing
+
+        '''
 
         trade_list=[]
         for index,row in self.df.iterrows():
+            if strat is not None:
+                if strat!=row['strat']:
+                    continue
             #get pair from id
             pair=row['id'].split(' ')[0]
+            c = Counter(
+                start=row['start'],
+                pair=pair,
+                timeframe=row['timeframe'],
+                type=row['type'],
+                period=1000,
+                SR=row['SR'],
+                SL=row['SL'],
+                TP=row['TP'],
+                trend_i=row['trend_i']
+            )
+            c.init_feats()
+            '''
             t=Trade(
                 strat=row['strat'],
                 start=datetime.strptime(row['start'], '%Y-%m-%d %H:%M:%S'),
@@ -45,6 +76,7 @@ class TradeJournal(object):
                 type=row['type'],
                 trend_i=row['trend_i']
                 )
+            '''
             trade_list.append(t)
 
         return trade_list

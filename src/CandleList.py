@@ -411,23 +411,6 @@ class CandleList(object):
         return { 'number' : num_times,
                  'lengths' : lengths}
 
-    def entry_on_rsi(self):
-        '''
-        Function to check if entry candle is in overbought/oversold region
-
-        Returns
-        -------
-        bool True if candle's close is in overbought/oversold. False otherwise
-        '''
-
-        if self.clist[-1].rsi is None: raise Exception("RSI values are not defined for this Entry candle, "
-                                                        "run calc_rsi first")
-
-        if self.clist[-1].rsi>70 or self.clist[-1].rsi<30:
-            return True
-        else:
-            return False
-
     def get_length_candles(self):
         '''
         Function to calculate the length of CandleList in number of candles
@@ -478,9 +461,9 @@ class CandleList(object):
 
         ixs=None
         if direction=='up':
-            ixs = peakutils.indexes(cb, thres=0.60, min_dist=10)
+            ixs = peakutils.indexes(cb, thres=0.60, min_dist=5)
         elif direction=='down':
-            ixs = peakutils.indexes(-cb, thres=0.60, min_dist=10)
+            ixs = peakutils.indexes(-cb, thres=0.60, min_dist=5)
 
         bounces = []
         for ix in ixs:
@@ -551,7 +534,6 @@ class CandleList(object):
                                               "run calc_rsi first")
             prices.append(getattr(c, part))
             rsi_values.append(getattr(c, 'rsi'))
-
 
         bounces_prices=self.__get_bounces(prices,direction=direction)
         bounces_rsi = self.__get_bounces(rsi_values, direction=direction)

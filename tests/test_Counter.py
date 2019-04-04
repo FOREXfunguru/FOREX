@@ -18,7 +18,7 @@ def counter_object():
                 TP=1.83942,
                 trend_i='2018-08-08 21:00:00')
     return c
-'''
+
 def test_get_bounces(counter_object):
 
     counter_object.set_bounces()
@@ -44,7 +44,6 @@ def test_set_slope(counter_object):
     counter_object.set_slope()
 
     assert counter_object.slope==0.0012079965476318906
-'''
 
 def test_set_n_rsibounces(counter_object):
 
@@ -54,3 +53,28 @@ def test_set_n_rsibounces(counter_object):
     assert counter_object.n_rsibounces==4
     assert counter_object.rsibounces_lengths[0]== 3
     assert counter_object.rsibounces_lengths[1]== 6
+
+def test_set_divergence(counter_object):
+
+    counter_object.set_slope()
+    counter_object.set_divergence()
+
+    assert counter_object.divergence==True
+
+def test_set_entry_onrsi(counter_object):
+
+    counter_object.set_entry_onrsi()
+
+    assert counter_object.entry_onrsi==False
+
+def test_set_length_candles(counter_object):
+
+    counter_object.set_length_candles()
+
+    assert counter_object.length_candles == 92
+
+def test_set_length_pips(counter_object):
+
+    counter_object.set_length_pips()
+
+    assert counter_object.length_pips == 1259

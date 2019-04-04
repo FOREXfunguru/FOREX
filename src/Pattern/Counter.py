@@ -50,6 +50,12 @@ class Counter(object):
                         List with lengths for each rsi bounce
     divergence: bool, Optional
                 True is there is RSI divergence
+    entry_onrsi: bool, Optional
+                 Is entry candle on rsi territory
+    length_candles: int, Optional
+                    Number of candles in self.clist_trend
+    length_pips: int, Optional
+                 Length in number of pips for self.clist_trend
     '''
 
     def __init__(self,
@@ -70,7 +76,10 @@ class Counter(object):
                  slope=None,
                  n_rsibounces=None,
                  rsibounces_lengths=None,
-                 divergence=None
+                 divergence=None,
+                 entry_onrsi=None,
+                 length_candles=None,
+                 length_pips=None
                  ):
         self.start = datetime.datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
         self.pair = pair
@@ -90,6 +99,9 @@ class Counter(object):
         self.n_rsibounces=n_rsibounces
         self.rsibounces_lengths= rsibounces_lengths
         self.divergence=divergence
+        self.entry_onrsi=entry_onrsi
+        self.length_candles=length_candles
+        self.length_pips=length_pips
 
         self.__init_clist_period()
         self.__init_clist_trend()
@@ -150,6 +162,27 @@ class Counter(object):
         cl.calc_rsi(period=self.period)
 
         self.clist_period = cl
+
+
+    def init_feats(self):
+        '''
+        Function to initialise all object features
+
+        Returns
+        -------
+        It will initialise all object's features
+        '''
+
+        pdb.set_trace()
+        self.set_bounces()
+        self.set_lasttime()
+        self.bounces_fromlasttime()
+        self.set_slope()
+        self.set_rsibounces_feats()
+        self.set_divergence()
+        self.set_entry_onrsi()
+        self.set_length_candles()
+        self.set_length_pips()
 
 
     def set_bounces(self):
@@ -266,3 +299,47 @@ class Counter(object):
             direction = 'down'
 
         res=self.clist_trend.check_if_divergence(direction=direction)
+
+        self.divergence=res
+
+    def set_entry_onrsi(self):
+        '''
+        Function to check if entry candle is on rsi territory
+
+        Returns
+        -------
+        Will set the entry_onrsi class attribute
+        '''
+
+        entry_c=self.clist_period.fetch_by_time(self.start)
+
+        isonrsi=False
+
+        if entry_c.rsi>=70 or entry_c.rsi<=30:
+            isonrsi=True
+
+        self.entry_onrsi=isonrsi
+
+    def set_length_candles(self):
+        '''
+        Function to get the length in number of candles
+        for self.clist_trend
+
+        Returns
+        -------
+        Will set the length_candles class attribute
+        '''
+
+        self.length_candles=self.clist_trend.get_length_candles()
+
+    def set_length_pips(self):
+        '''
+        Function to get the length in number of candles
+        for self.clist_trend
+
+        Returns
+        -------
+        Will set the length_pips class attribute
+        '''
+
+        self.length_pips = self.clist_trend.get_length_pips()
