@@ -1,6 +1,7 @@
 import pandas as pd
 import pdb
 import re
+import datetime
 import warnings
 from TradeJournal.Trade import Trade
 from openpyxl import load_workbook
@@ -51,32 +52,26 @@ class TradeJournal(object):
                     continue
             #get pair from id
             pair=row['id'].split(' ')[0]
-            c = Counter(
-                start=row['start'],
-                pair=pair,
-                timeframe=row['timeframe'],
-                type=row['type'],
-                period=1000,
-                SR=row['SR'],
-                SL=row['SL'],
-                TP=row['TP'],
-                trend_i=row['trend_i']
-            )
+
+            attrbs={}
+            for items in row.iteritems():
+                attrbs[items[0]]=items[1]
+
+            c =Counter(pair=pair,**attrbs)
+
             c.init_feats()
-            '''
-            t=Trade(
-                strat=row['strat'],
-                start=datetime.strptime(row['start'], '%Y-%m-%d %H:%M:%S'),
-                pair=pair,
-                timeframe=row['timeframe'],
-                SL=row['SL'],
-                TP=row['TP'],
-                entry=row['entry'],
-                SR=row['SR'],
-                type=row['type'],
-                trend_i=row['trend_i']
-                )
-            '''
+
+            p = re.compile('clist_')
+            attrbs1={}
+
+            for attr, value in c.__dict__.items():
+                if p.match(attr):continue
+                if type(value) is list:
+                    attrbs1[attr]=len(value)
+                else:
+                    attrbs1[attr] = value
+
+            t=Trade(strat=row['strat'],**attrbs1)
             trade_list.append(t)
 
         return trade_list

@@ -58,50 +58,19 @@ class Counter(object):
                  Length in number of pips for self.clist_trend
     '''
 
-    def __init__(self,
-                 start,
-                 pair,
-                 timeframe,
-                 period=1000,
-                 trend_i=None,
-                 type=None,
-                 SL=None,
-                 TP=None,
-                 SR=None,
-                 bounces=None,
-                 clist_period=None,
-                 clist_trend=None,
-                 last_time=None,
-                 bounces_lasttime=None,
-                 slope=None,
-                 n_rsibounces=None,
-                 rsibounces_lengths=None,
-                 divergence=None,
-                 entry_onrsi=None,
-                 length_candles=None,
-                 length_pips=None
-                 ):
-        self.start = datetime.datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
-        self.pair = pair
-        self.timeframe = timeframe
-        self.period = period
-        self.trend_i = datetime.datetime.strptime(trend_i, '%Y-%m-%d %H:%M:%S')
-        self.type = type
-        self.SL = SL
-        self.TP = TP
-        self.SR = SR
-        self.bounces = bounces
-        self.clist_period = clist_period
-        self.clist_trend = clist_trend
-        self.last_time = last_time
-        self.bounces_lasttime = bounces_lasttime
-        self.slope = slope
-        self.n_rsibounces=n_rsibounces
-        self.rsibounces_lengths= rsibounces_lengths
-        self.divergence=divergence
-        self.entry_onrsi=entry_onrsi
-        self.length_candles=length_candles
-        self.length_pips=length_pips
+    def __init__(self, pair, period=1000, **kwargs):
+
+        allowed_keys = [ 'start','timeframe','period','trend_i', 'type', 'SL',
+                        'TP','SR','bounces','clist_period','clist_trend','last_time',
+                        'bounces_lasttime','slope','n_rsibounces','rsibounces_lengths',
+                        'divergence','entry_onrsi','length_candles','length_pips']
+
+        self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
+
+        self.pair=pair
+        self.period=period
+        self.start = datetime.datetime.strptime(self.start, '%Y-%m-%d %H:%M:%S')
+        self.trend_i = datetime.datetime.strptime(self.trend_i, '%Y-%m-%d %H:%M:%S')
 
         self.__init_clist_period()
         self.__init_clist_trend()
@@ -173,7 +142,6 @@ class Counter(object):
         It will initialise all object's features
         '''
 
-        pdb.set_trace()
         self.set_bounces()
         self.set_lasttime()
         self.bounces_fromlasttime()
@@ -343,3 +311,13 @@ class Counter(object):
         '''
 
         self.length_pips = self.clist_trend.get_length_pips()
+
+    def __str__(self):
+        sb = []
+        for key in self.__dict__:
+            sb.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
+
+        return ', '.join(sb)
+
+    def __repr__(self):
+        return self.__str__()

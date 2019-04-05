@@ -39,22 +39,11 @@ class Trade(object):
            What strategy was used for this trade. Possible values are: 'counter','cont','ctdbtp'
     '''
 
-    def __init__(self, start, pair, timeframe, type=None, end=None, outcome=None, entry=None,
-                 SL=None, TP=None, SR=None, strat=None, trend_i=None):
-        self.trend_i = trend_i
-        self.start=start
-        self.pair=re.sub('/','_',pair)
-        self.timeframe = timeframe
-        self.type=type
-        self.end = end
-        self.outcome=outcome
-        self.entry=entry
-        self.SL=SL
-        self.TP=TP
-        self.SR=SR
+    def __init__(self, strat, **kwargs):
+
+        self.__dict__.update(kwargs)
         self.strat=strat
-
-
+        self.pair=re.sub('/','_',self.pair)
 
     def fetch_candlelist(self):
         '''
