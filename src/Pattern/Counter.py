@@ -17,11 +17,11 @@ class Counter(object):
           Currency pair used in the trade. i.e. AUD_USD
     timeframe: str, Required
                Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
+    trend_i: datetime, Required
+             start of the trend
     period: int, Optional
             Period that will be checked back in time. Units used will be the ones dictated by self.timeframe.
             Default : 1000
-    trend_i: datetime, Optional
-             start of the trend
     type: str, Optional
           What is the type of the trade (long,short)
     SL:  float, Optional
@@ -153,25 +153,30 @@ class Counter(object):
         self.set_length_pips()
 
 
-    def set_bounces(self):
+    def set_bounces(self, part='closeAsk'):
         '''
         Function to calculate previous bounces at self.SR
+
+        Parameters
+        ----------
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
 
         Returns
         -------
         Will set the class 'bounces' attribute
         '''
 
-        close_prices = []
+        prices = []
         datetimes = []
         for c in self.clist_period:
-            close_prices.append(c.closeAsk)
+            prices.append(getattr(c, part))
             datetimes.append(c.time)
 
         resist = HArea(price=self.SR, pips=50, instrument=self.pair, granularity=self.timeframe)
 
         (bounces, outfile) = resist.number_bounces(datetimes=datetimes,
-                                                   prices=close_prices,
+                                                   prices=prices,
                                                    min_dist=5)
 
         self.bounces=bounces

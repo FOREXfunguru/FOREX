@@ -28,11 +28,13 @@ def test_fetch_trades(tj_object):
     assert trade_list[0].start.strftime('%Y-%m-%d')=='2019-02-24'
     assert trade_list[0].pair=='GBP_AUD'
     assert trade_list[0].timeframe=='D'
-'''
+
 def test_fetch_counter_trades(tj_counter_object):
     trade_list = tj_counter_object.fetch_trades(strat='counter')
 
-'''
+    assert len(trade_list) == 1
+    assert trade_list[0].start.strftime('%Y-%m-%d') == '2018-10-11'
+
 def test_add_trend_momentum(tj_object):
 
     tj_object.add_trend_momentum()
@@ -40,3 +42,13 @@ def test_add_trend_momentum(tj_object):
     assert 1
 '''
 
+def test_write_trades(tj_counter_object):
+    trade_list = tj_counter_object.fetch_trades(strat='counter')
+
+    tj_counter_object.write_trades(trade_list, colnames=['id','start','strat','trend_i','type','timeframe',
+                                                         'SR','TP','SR','length_candles','length_pips',
+                                                         'n_rsibounces','rsibounces_lengths','bounces',
+                                                         'bounces_lasttime','entry_onrsi','last_time',
+                                                         'slope','divergence'])
+
+    assert 1

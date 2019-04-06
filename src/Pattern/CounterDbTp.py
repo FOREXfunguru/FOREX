@@ -1,3 +1,6 @@
+import pdb
+
+from Pattern.Counter import Counter
 
 
 class CounterDbTp(Counter):
@@ -13,6 +16,8 @@ class CounterDbTp(Counter):
           Currency pair used in the trade. i.e. AUD_USD
     timeframe: str, Required
                Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
+    trend_i: datetime, Required
+             start of the trend
     type: str, Optional
           What is the type of the trade (long,short)
     SL:  float, Optional
@@ -21,10 +26,10 @@ class CounterDbTp(Counter):
          Take profit price
     SR:  float, Optional
          Support/Resistance area
-    bounce_1st : datetime. Optional
-                 Datetime for first bounce
-    bounce_2nd : datetime. Optional
-                 Datetime for second bounce
+    bounce_1st : with tuple (datetime,price) containing the datetime
+                 and price for this bounce
+    bounce_2nd : with tuple (datetime,price) containing the datetime
+                 and price for this bounce
     rsi_1st : bool, Optional
               Is price in overbought/oversold
               area in first peak
@@ -33,20 +38,36 @@ class CounterDbTp(Counter):
               area in second peak
     '''
 
-    def __init__(self,
-                 start,
-                 pair,
-                 timeframe,
-                 type=None,
-                 SL=None,
-                 TP=None,
-                 SR=None,
-                 bounce_1st=None,
-                 bounce_2nd=None,
-                 rsi_1st=None,
-                 rsi_2nd=None):
-        super().__init__(start,pair,timeframe,type,SL,TP,SR)
-        self.bounce_1st = bounce_1st
-        self.bounce_2nd = bounce_2nd
-        self.rsi_1st = rsi_1st
-        self.rsi_2nd = rsi_2nd
+    def __init__(self, pair, start, **kwargs):
+
+        self.start = start
+
+        allowed_keys = ['timeframe', 'period', 'trend_i', 'type', 'SL',
+                        'TP', 'SR']
+        self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
+        super().__init__(pair)
+
+    def set_2ndbounce(self):
+        '''
+        Function to set bounce_2nd (the one that is the most recent)
+        and rsi_2nd class attributes
+
+        Returns
+        -------
+        Nothing
+        '''
+
+        self.set_bounces(part='openAsk')
+        self.bounce_2nd=self.bounces[-1]
+
+        pdb.set_trace()
+
+        # now check rsi for this bounce
+        candle = self.clist_period.fetch_by_time(self.bounce_2nd[0])
+
+        isonrsi = False
+
+        if candle.rsi >= 70 or candle.rsi <= 30:
+            isonrsi = True
+
+        self.rsi_2nd = isonrsi

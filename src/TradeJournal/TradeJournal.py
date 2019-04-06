@@ -71,11 +71,44 @@ class TradeJournal(object):
                 else:
                     attrbs1[attr] = value
 
-            t=Trade(strat=row['strat'],**attrbs1)
+            t=Trade(id=row['id'], strat=row['strat'],**attrbs1)
             trade_list.append(t)
 
         return trade_list
 
+    def write_trades(self, trade_list, colnames):
+        '''
+        Write the trade_list to the Excel spreadsheet
+        pointed by the TradeJournal
+
+        Parameters
+        ----------
+        trade_list : list, Required
+                     List with Trade objects
+        colnames : list, Required
+                    Column names that will control the order
+                    of the columns
+
+        Returns
+        -------
+        Nothing
+        '''
+
+        data=[]
+        for t in trade_list:
+            row=[]
+            for a in colnames:
+                row.append(getattr(t, a))
+            data.append(row)
+
+        df = pd.DataFrame(data, columns=col_names)
+
+        book = load_workbook(self.url)
+        writer = pd.ExcelWriter(self.url, engine='openpyxl')
+        writer.book = book
+        writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
+        df.to_excel(writer, 'calculated_trades')
+        writer.save()
 
     def add_trend_momentum(self):
         '''
