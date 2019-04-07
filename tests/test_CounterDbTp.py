@@ -17,13 +17,22 @@ def ctdbptp_object():
                         type='short')
 
     return c
-
 '''
-def test_set_1stbounce(ctdbtp_object):
+def test_set_1stbounce(ctdbptp_object):
 
-    ctdbtp_object.set_1stbounce()
-'''
+    ctdbptp_object.set_1stbounce()
+
 
 def test_set_2ndbounce(ctdbptp_object):
 
     ctdbptp_object.set_2ndbounce()
+'''
+
+def test_init_feats(ctdbptp_object):
+
+    ctdbptp_object.init_feats()
+
+def test_init_trend_feats(ctdbptp_object):
+
+    ctdbptp_object.set_1stbounce()
+    ctdbptp_object.init_trend_feats()
