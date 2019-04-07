@@ -3,11 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pattern/Counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/Counter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Pattern/CounterDbTp.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/CounterDbTp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TradeJournal/TradeJournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/TradeJournal.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_CounterDbTp.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_CounterDbTp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_TradeJournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_TradeJournal.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -21,19 +18,10 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_Counter.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-678">
-              <caret column="35" lean-forward="true" selection-end-column="35" />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_CounterDbTp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="420">
-              <caret line="28" column="34" lean-forward="true" selection-start-line="28" selection-start-column="34" selection-end-line="28" selection-end-column="34" />
+            <state relative-caret-position="545">
+              <caret line="57" column="36" selection-start-line="57" selection-start-column="36" selection-end-line="57" selection-end-column="36" />
               <folding>
                 <element signature="e#0#43#0" expanded="true" />
               </folding>
@@ -56,36 +44,10 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Pattern/CounterDbTp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="245">
-              <caret line="54" selection-start-line="54" selection-end-line="54" />
+            <state relative-caret-position="468">
+              <caret line="42" column="65" selection-start-line="42" selection-start-column="65" selection-end-line="42" selection-end-column="65" />
               <folding>
-                <element signature="e#1#11#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/CandleList.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="359">
-              <caret line="80" column="30" lean-forward="true" selection-start-line="80" selection-start-column="15" selection-end-line="80" selection-end-column="30" />
-              <folding>
-                <element signature="e#0#23#0" expanded="true" />
-                <element signature="e#5431#6195#0" />
-                <element signature="e#6243#7086#0" />
-                <element signature="e#6243#6550#1" />
-                <element signature="e#7135#7476#0" />
-                <element signature="e#7156#8199#0" />
-                <element signature="e#8259#8657#0" />
-                <element signature="e#8711#9162#0" />
-                <element signature="e#9219#11201#0" />
-                <element signature="e#11634#13613#0" />
-                <element signature="e#13318#13514#0" />
-                <element signature="e#13571#14433#0" />
-                <element signature="e#14490#14824#0" />
-                <element signature="e#14910#16059#0" />
-                <element signature="e#16134#17271#0" />
+                <element signature="e#0#10#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -94,8 +56,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_CandleList.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="995">
-              <caret line="300" column="47" selection-start-line="300" selection-start-column="32" selection-end-line="300" selection-end-column="47" />
+            <state relative-caret-position="-1753">
+              <caret line="47" column="39" lean-forward="true" selection-start-line="47" selection-start-column="4" selection-end-line="47" selection-end-column="39" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -106,13 +68,12 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Pattern/Counter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="293">
-              <caret line="178" column="58" lean-forward="true" selection-start-line="178" selection-start-column="58" selection-end-line="178" selection-end-column="58" />
+            <state relative-caret-position="158">
+              <caret line="65" column="35" selection-start-line="65" selection-start-column="25" selection-end-line="65" selection-end-column="35" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
                 <element signature="e#7143#7417#0" />
                 <element signature="e#6910#7379#0" />
-                <element signature="e#7621#7998#0" />
                 <element signature="e#8186#8648#0" />
                 <element signature="e#9552#9821#0" />
                 <element signature="e#9870#10179#0" />
@@ -124,12 +85,12 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/TradeJournal/Trade.py">
+        <entry file="file://$PROJECT_DIR$/tests/test_Counter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="204">
-              <caret line="44" column="24" selection-start-line="44" selection-start-column="24" selection-end-line="44" selection-end-column="24" />
+            <state relative-caret-position="450">
+              <caret line="52" column="41" lean-forward="true" selection-start-line="52" selection-start-column="4" selection-end-line="52" selection-end-column="41" />
               <folding>
-                <element signature="e#0#31#0" expanded="true" />
+                <element signature="e#0#35#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -163,8 +124,10 @@
       <find>pdb.set</find>
       <find>rsi</find>
       <find>datetime</find>
-      <find>strptime</find>
       <find>bounces_lasttime</find>
+      <find>rsibounces_lengths:</find>
+      <find>strptime</find>
+      <find>Oanda</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -194,8 +157,8 @@
         <option value="$PROJECT_DIR$/src/TradeJournal/TradeJournal.py" />
         <option value="$PROJECT_DIR$/tests/test_TradeJournal.py" />
         <option value="$PROJECT_DIR$/tests/test_Counter.py" />
-        <option value="$PROJECT_DIR$/tests/test_CounterDbTp.py" />
         <option value="$PROJECT_DIR$/src/Pattern/Counter.py" />
+        <option value="$PROJECT_DIR$/tests/test_CounterDbTp.py" />
         <option value="$PROJECT_DIR$/src/Pattern/CounterDbTp.py" />
       </list>
     </option>
@@ -505,7 +468,21 @@
       <option name="project" value="LOCAL" />
       <updated>1554504486034</updated>
     </task>
-    <option name="localTasksCounter" value="25" />
+    <task id="LOCAL-00025" summary="adding work for CounterDbtp">
+      <created>1554581843042</created>
+      <option name="number" value="00025" />
+      <option name="presentableId" value="LOCAL-00025" />
+      <option name="project" value="LOCAL" />
+      <updated>1554581843042</updated>
+    </task>
+    <task id="LOCAL-00026" summary="adding more feats to CounterDbtp">
+      <created>1554601191065</created>
+      <option name="number" value="00026" />
+      <option name="presentableId" value="LOCAL-00026" />
+      <option name="project" value="LOCAL" />
+      <updated>1554601191066</updated>
+    </task>
+    <option name="localTasksCounter" value="27" />
     <servers />
   </component>
   <component name="TodoView">
@@ -563,7 +540,9 @@
     <MESSAGE value="adding different functions to counter class" />
     <MESSAGE value="addint Trade Counter feats" />
     <MESSAGE value="adding different initialization" />
-    <option name="LAST_COMMIT_MESSAGE" value="adding different initialization" />
+    <MESSAGE value="adding work for CounterDbtp" />
+    <MESSAGE value="adding more feats to CounterDbtp" />
+    <option name="LAST_COMMIT_MESSAGE" value="adding more feats to CounterDbtp" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Untitled.ipynb" />
@@ -626,13 +605,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="736">
           <caret line="207" column="48" selection-start-line="207" selection-start-column="36" selection-end-line="207" selection-end-column="48" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/bin/anaconda/envs/python3/lib/python3.5/site-packages/pandas/plotting/_converter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="335">
-          <caret line="127" selection-start-line="127" selection-end-line="127" />
         </state>
       </provider>
     </entry>
@@ -706,16 +678,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_CandleList.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="995">
-          <caret line="300" column="47" selection-start-line="300" selection-start-column="32" selection-end-line="300" selection-end-column="47" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Candle.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="596">
@@ -766,37 +728,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_Counter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-678">
-          <caret column="35" lean-forward="true" selection-end-column="35" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/CandleList.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="359">
-          <caret line="80" column="30" lean-forward="true" selection-start-line="80" selection-start-column="15" selection-end-line="80" selection-end-column="30" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-            <element signature="e#5431#6195#0" />
-            <element signature="e#6243#7086#0" />
-            <element signature="e#6243#6550#1" />
-            <element signature="e#7135#7476#0" />
-            <element signature="e#7156#8199#0" />
-            <element signature="e#8259#8657#0" />
-            <element signature="e#8711#9162#0" />
-            <element signature="e#9219#11201#0" />
-            <element signature="e#11634#13613#0" />
-            <element signature="e#13318#13514#0" />
-            <element signature="e#13571#14433#0" />
-            <element signature="e#14490#14824#0" />
-            <element signature="e#14910#16059#0" />
-            <element signature="e#16134#17271#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/TradeJournal/Trade.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="204">
@@ -807,25 +738,21 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_CounterDbTp.py">
+    <entry file="file://$USER_HOME$/bin/anaconda/envs/python3/lib/python3.5/site-packages/pandas/plotting/_converter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="420">
-          <caret line="28" column="34" lean-forward="true" selection-start-line="28" selection-start-column="34" selection-end-line="28" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#43#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="209">
+          <caret line="128" selection-start-line="128" selection-end-line="128" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Pattern/Counter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="293">
-          <caret line="178" column="58" lean-forward="true" selection-start-line="178" selection-start-column="58" selection-end-line="178" selection-end-column="58" />
+        <state relative-caret-position="158">
+          <caret line="65" column="35" selection-start-line="65" selection-start-column="25" selection-end-line="65" selection-end-column="35" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
             <element signature="e#7143#7417#0" />
             <element signature="e#6910#7379#0" />
-            <element signature="e#7621#7998#0" />
             <element signature="e#8186#8648#0" />
             <element signature="e#9552#9821#0" />
             <element signature="e#9870#10179#0" />
@@ -835,12 +762,65 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_Counter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="450">
+          <caret line="52" column="41" lean-forward="true" selection-start-line="52" selection-start-column="4" selection-end-line="52" selection-end-column="41" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_CandleList.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1753">
+          <caret line="47" column="39" lean-forward="true" selection-start-line="47" selection-start-column="4" selection-end-line="47" selection-end-column="39" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_CounterDbTp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="545">
+          <caret line="57" column="36" selection-start-line="57" selection-start-column="36" selection-end-line="57" selection-end-column="36" />
+          <folding>
+            <element signature="e#0#43#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CandleList.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2720">
+          <caret line="327" column="59" lean-forward="true" selection-start-line="327" selection-start-column="46" selection-end-line="327" selection-end-column="59" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+            <element signature="e#5431#6195#0" />
+            <element signature="e#6243#7086#0" />
+            <element signature="e#6243#6550#1" />
+            <element signature="e#7135#7476#0" />
+            <element signature="e#7156#8199#0" />
+            <element signature="e#8259#8657#0" />
+            <element signature="e#8711#9162#0" />
+            <element signature="e#11634#13613#0" />
+            <element signature="e#13318#13514#0" />
+            <element signature="e#13571#14433#0" />
+            <element signature="e#14490#14824#0" />
+            <element signature="e#14910#16059#0" />
+            <element signature="e#16134#17271#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Pattern/CounterDbTp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="245">
-          <caret line="54" selection-start-line="54" selection-end-line="54" />
+        <state relative-caret-position="468">
+          <caret line="42" column="65" selection-start-line="42" selection-start-column="65" selection-end-line="42" selection-end-column="65" />
           <folding>
-            <element signature="e#1#11#0" expanded="true" />
+            <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>

@@ -1,6 +1,7 @@
 import pdb
 
 from Pattern.Counter import Counter
+from OandaAPI import OandaAPI
 
 
 class CounterDbTp(Counter):
@@ -36,6 +37,10 @@ class CounterDbTp(Counter):
     rsi_2nd : bool, Optional
               Is price in overbought/oversold
               area in second peak
+    diff : float. Optional
+           Variable containing the difference between rsi_1st and rsi_2nd
+    valley : int Optional
+             Length in number of candles between  bounce_1st and bounce_2nd
     n_rsibounces : int, Optional
                   Number of rsi bounces for trend conducting to 1st bounce
     slope: float, Optional
@@ -84,7 +89,6 @@ class CounterDbTp(Counter):
         Nothing
         '''
 
-        self.set_bounces(part='openAsk')
         self.bounce_2nd=self.bounces[-1]
 
         # now check rsi for this bounce
@@ -133,7 +137,45 @@ class CounterDbTp(Counter):
 
         c.init_feats()
 
-        self.n_rsibounces=c.n_rsibounces
         self.slope=c.slope
-        pdb.set_trace()
-        print("h")
+        self.n_rsibounces = c.n_rsibounces
+        self.rsibounces_lengths=c.rsibounces_lengths
+        self.divergence=c.divergence
+        self.length_candles=c.length_candles
+        self.length_pips=c.length_pips
+
+    def set_diff(self):
+        '''
+        Function to calculate the diff between rsi_1st & rsi_2nd
+
+        Returns
+        -------
+        It will set the 'diff' attribute of the class
+        '''
+
+        rsi1st_val = self.clist_period.fetch_by_time(self.bounce_1st[0]).rsi
+        rsi2nd_val = self.clist_period.fetch_by_time(self.bounce_2nd[0]).rsi
+
+        self.diff=rsi1st_val-rsi2nd_val
+
+    def set_valley(self):
+        '''
+        Function to calculate the length of the valley
+        between bounce_1st & bounce_2nd
+
+        Returns
+        -------
+        It will set the 'valley' attribute of the class
+        '''
+
+        oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                         instrument=self.pair,
+                         granularity=self.timeframe,
+                         alignmentTimezone='Europe/London',
+                         dailyAlignment=22,
+                         start=self.bounce_1st[0].isoformat(),
+                         end=self.bounce_2nd[0].isoformat())
+
+        candle_list = oanda.fetch_candleset()
+
+        self.valley=len(candle_list)

@@ -1,6 +1,7 @@
 from Pattern.CounterDbTp import CounterDbTp
 
 import pytest
+import pdb
 
 @pytest.fixture
 def ctdbptp_object():
@@ -26,7 +27,6 @@ def test_set_1stbounce(ctdbptp_object):
 def test_set_2ndbounce(ctdbptp_object):
 
     ctdbptp_object.set_2ndbounce()
-'''
 
 def test_init_feats(ctdbptp_object):
 
@@ -36,3 +36,26 @@ def test_init_trend_feats(ctdbptp_object):
 
     ctdbptp_object.set_1stbounce()
     ctdbptp_object.init_trend_feats()
+
+    assert ctdbptp_object.n_rsibounces == 3
+    assert ctdbptp_object.length_candles == 61
+'''
+
+def test_set_diff(ctdbptp_object):
+
+    ctdbptp_object.set_1stbounce()
+    ctdbptp_object.set_2ndbounce()
+    ctdbptp_object.set_diff()
+
+    assert ctdbptp_object.diff==8.643089131783825
+
+def test_set_valley(ctdbptp_object):
+
+    ctdbptp_object.set_1stbounce()
+    ctdbptp_object.set_2ndbounce()
+    ctdbptp_object.set_valley()
+
+    assert ctdbptp_object.valley==38
+
+
+
