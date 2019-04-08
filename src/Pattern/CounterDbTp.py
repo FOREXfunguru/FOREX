@@ -110,9 +110,12 @@ class CounterDbTp(Counter):
         It will initialise all object's features
         '''
         self.set_lasttime()
-        self.set_bounces()
-        self.bounces_fromlasttime()
         self.set_entry_onrsi()
+        self.set_1stbounce()
+        self.set_2ndbounce()
+        self.bounces_fromlasttime()
+        self.set_diff()
+        self.set_valley()
 
     def init_trend_feats(self):
         '''

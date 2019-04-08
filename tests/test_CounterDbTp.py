@@ -18,7 +18,7 @@ def ctdbptp_object():
                         type='short')
 
     return c
-'''
+
 def test_set_1stbounce(ctdbptp_object):
 
     ctdbptp_object.set_1stbounce()
@@ -39,7 +39,6 @@ def test_init_trend_feats(ctdbptp_object):
 
     assert ctdbptp_object.n_rsibounces == 3
     assert ctdbptp_object.length_candles == 61
-'''
 
 def test_set_diff(ctdbptp_object):
 

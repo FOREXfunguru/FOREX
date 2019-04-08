@@ -6,7 +6,7 @@ import warnings
 from TradeJournal.Trade import Trade
 from openpyxl import load_workbook
 from Pattern.Counter import Counter
-
+from Pattern.CounterDbTp import CounterDbTp
 
 class TradeJournal(object):
     '''
@@ -56,10 +56,14 @@ class TradeJournal(object):
             attrbs={}
             for items in row.iteritems():
                 attrbs[items[0]]=items[1]
-
-            c =Counter(pair=pair,**attrbs)
-
-            c.init_feats()
+            c=None
+            if strat=="counter":
+                c=Counter(pair=pair,**attrbs)
+                c.init_feats()
+            elif strat=="counter_doubletop":
+                c=CounterDbTp(pair=pair,**attrbs)
+                c.init_feats()
+                c.init_trend_feats()
 
             p = re.compile('clist_')
             attrbs1={}
@@ -98,10 +102,11 @@ class TradeJournal(object):
         for t in trade_list:
             row=[]
             for a in colnames:
+                if getattr(t, a) is None: raise Exception("{0} attribute does not exist".format(a))
                 row.append(getattr(t, a))
             data.append(row)
 
-        df = pd.DataFrame(data, columns=col_names)
+        df = pd.DataFrame(data, columns=colnames)
 
         book = load_workbook(self.url)
         writer = pd.ExcelWriter(self.url, engine='openpyxl')
