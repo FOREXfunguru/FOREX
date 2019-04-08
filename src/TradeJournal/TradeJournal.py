@@ -71,7 +71,10 @@ class TradeJournal(object):
             for attr, value in c.__dict__.items():
                 if p.match(attr):continue
                 if type(value) is list:
-                    attrbs1[attr]=len(value)
+                    if attr == 'rsibounces_lengths':
+                        attrbs1[attr] = value
+                    else:
+                        attrbs1[attr]=len(value)
                 else:
                     attrbs1[attr] = value
 
@@ -98,12 +101,16 @@ class TradeJournal(object):
         Nothing
         '''
 
+        p = re.compile('bounce_')
         data=[]
         for t in trade_list:
             row=[]
             for a in colnames:
-                if getattr(t, a) is None: raise Exception("{0} attribute does not exist".format(a))
-                row.append(getattr(t, a))
+                value=getattr(t, a)
+                if value is None: raise Exception("{0} attribute does not exist".format(a))
+                if p.match(a):
+                    value=value[0]
+                row.append(value)
             data.append(row)
 
         df = pd.DataFrame(data, columns=colnames)
