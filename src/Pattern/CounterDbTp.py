@@ -17,6 +17,8 @@ class CounterDbTp(Counter):
           Currency pair used in the trade. i.e. AUD_USD
     timeframe: str, Required
                Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
+    entry: float, Optional
+           entry price
     trend_i: datetime, Required
              start of the trend
     type: str, Optional
@@ -51,7 +53,7 @@ class CounterDbTp(Counter):
 
         self.start = start
 
-        allowed_keys = ['timeframe', 'period', 'trend_i', 'type', 'SL',
+        allowed_keys = ['timeframe','entry','period', 'trend_i', 'type', 'SL',
                         'TP', 'SR']
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         super().__init__(pair)

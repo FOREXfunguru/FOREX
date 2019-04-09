@@ -17,6 +17,8 @@ class Counter(object):
           Currency pair used in the trade. i.e. AUD_USD
     timeframe: str, Required
                Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
+    entry: float, Optional
+           entry price
     trend_i: datetime, Required
              start of the trend
     period: int, Optional
@@ -60,7 +62,7 @@ class Counter(object):
 
     def __init__(self, pair, period=1000, **kwargs):
 
-        allowed_keys = [ 'start','timeframe','period','trend_i', 'type', 'SL',
+        allowed_keys = [ 'start','timeframe','period','entry','trend_i', 'type', 'SL',
                         'TP','SR','bounces','clist_period','clist_trend','last_time',
                         'bounces_lasttime','slope','n_rsibounces','rsibounces_lengths',
                         'divergence','entry_onrsi','length_candles','length_pips']

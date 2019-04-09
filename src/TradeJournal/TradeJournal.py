@@ -28,13 +28,15 @@ class TradeJournal(object):
         df = xls_file.parse(worksheet,converters={'start': str, 'end': str, 'trend_i': str})
         self.df=df
 
-    def fetch_trades(self,strat=None):
+    def fetch_trades(self,run=False, strat=None):
         '''
         This function will fetch the trades that are in this TradingJournal and will create an independent
         Trade object for each record
 
         Parameters
         ----------
+        run : bool, Optional
+              Execute trade. Default=False
         strat : String, Optional
                 If defined, then select all trades of a certain type.
                 Possible values are: 'counter'
@@ -79,6 +81,9 @@ class TradeJournal(object):
                     attrbs1[attr] = value
 
             t=Trade(id=row['id'], strat=row['strat'],**attrbs1)
+
+            if run is True:
+                t.run_trade()
             trade_list.append(t)
 
         return trade_list

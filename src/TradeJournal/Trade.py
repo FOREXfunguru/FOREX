@@ -84,7 +84,7 @@ class Trade(object):
             period = int(self.timeframe.replace('H', ''))
 
         numperiods=100
-        date_list = [datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S') + datetime.timedelta(hours=x*period) for x in range(0, numperiods)]
+        date_list = [datetime.datetime.strptime(str(self.start.isoformat()),'%Y-%m-%dT%H:%M:%S') + datetime.timedelta(hours=x*period) for x in range(0, numperiods)]
 
         entered=False
         for d in date_list:
