@@ -19,6 +19,27 @@ def counter_object():
                 trend_i='2018-08-08 21:00:00')
     return c
 
+@pytest.fixture
+def counter_object_notrendi():
+    '''Returns Counter object without the 'trend_i' initialised'''
+
+    c = Counter(
+                start='2018-10-11 21:00:00',
+                pair='GBP_AUD',
+                timeframe='H12',
+                type='short',
+                period=1000,
+                entry=1.85929,
+                SR=1.87074,
+                SL=1.87384,
+                RR=1.5)
+    return c
+
+def test_calc_itrend(counter_object_notrendi):
+
+    counter_object_notrendi.calc_itrend()
+
+'''
 def test_get_bounces(counter_object):
 
     counter_object.set_bounces()
@@ -78,3 +99,4 @@ def test_set_length_pips(counter_object):
     counter_object.set_length_pips()
 
     assert counter_object.length_pips == 1259
+'''

@@ -54,7 +54,7 @@ class CounterDbTp(Counter):
         self.start = start
 
         allowed_keys = ['timeframe','entry','period', 'trend_i', 'type', 'SL',
-                        'TP', 'SR']
+                        'TP', 'SR', 'RR']
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         super().__init__(pair)
 

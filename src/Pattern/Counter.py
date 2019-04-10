@@ -30,6 +30,8 @@ class Counter(object):
          Stop/Loss price
     TP:  float, Optional
          Take profit price
+    RR:  float, Optional
+         Risk ratio of the trade
     SR:  float, Optional
          Support/Resistance area
     bounces: list, Optional
@@ -63,18 +65,25 @@ class Counter(object):
     def __init__(self, pair, period=1000, **kwargs):
 
         allowed_keys = [ 'start','timeframe','period','entry','trend_i', 'type', 'SL',
-                        'TP','SR','bounces','clist_period','clist_trend','last_time',
+                        'TP','SR','RR','bounces','clist_period','clist_trend','last_time',
                         'bounces_lasttime','slope','n_rsibounces','rsibounces_lengths',
                         'divergence','entry_onrsi','length_candles','length_pips']
 
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
-
         self.pair=pair
         self.period=period
         self.start = datetime.datetime.strptime(self.start, '%Y-%m-%d %H:%M:%S')
-        self.trend_i = datetime.datetime.strptime(self.trend_i, '%Y-%m-%d %H:%M:%S')
-
         self.__init_clist_period()
+
+        if not hasattr(self, 'TP'):
+            if not hasattr(self, 'RR'): raise Exception("Neither the RR not the TP is defined. Please provide RR")
+            diff=(self.entry-self.SL)*self.RR
+            self.TP=round(self.entry+diff,4)
+
+        if hasattr(self, 'trend_i'):
+            self.trend_i = datetime.datetime.strptime(self.trend_i, '%Y-%m-%d %H:%M:%S')
+        else:
+            self.calc_itrend()
         self.__init_clist_trend()
 
     def __init_clist_trend(self):
@@ -154,6 +163,26 @@ class Counter(object):
         self.set_length_candles()
         self.set_length_pips()
 
+    def calc_itrend(self):
+        '''
+        Function to calculate the datetime for the start of the trend conducting to entry
+        The start of the trend will be defined by the first time the price is on RSI on the
+        other end of the RSI spectrum, i.e. if the trade type if short it will look for the
+        first time the price rsi is <=30. If the trade type is long, it will look for the
+        price rsi >=70
+
+        Returns
+        -------
+        Will set the class 'trend_i' attribute and will return the datetime for this 'trend_i'
+        '''
+
+        for c in reversed(self.clist_period.clist):
+            if self.type == 'long' and c.rsi>=70:
+                self.trend_i=c.time
+                return c.time
+            elif self.type == 'short' and c.rsi<=30:
+                self.trend_i = c.time
+                return c.time
 
     def set_bounces(self, part='closeAsk'):
         '''
