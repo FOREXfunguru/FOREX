@@ -120,7 +120,7 @@ class HArea(object):
                 if price > self.upper:
                     return c.time
             elif position == 'below':
-                if price < self.below:
+                if price < self.lower:
                     return c.time
 
     def get_bounce_feats(self, clist, direction):
