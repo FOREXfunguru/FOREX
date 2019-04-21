@@ -3,7 +3,7 @@ from OandaAPI import OandaAPI
 from sklearn.linear_model import LinearRegression
 import pandas as pd
 import pdb
-import datetime
+from datetime import timedelta,datetime
 import re
 import peakutils
 import numpy as np
@@ -216,9 +216,23 @@ class CandleList(object):
         Candle object
         '''
 
+        delta = None
+        if self.granularity == "D":
+            delta = timedelta(hours=24)
+        else:
+            fgran = self.timeframe.replace('H', '')
+            delta = timedelta(hours=int(fgran))
+
+        sel_c=None
+
         for c in self.clist:
-            if c.time==datetime:
-                return c
+            start=c.time
+            end=start+delta
+            if datetime>=start and datetime < end:
+                sel_c=c
+
+        if sel_c is None: raise Exception("No candle was selected with time: {0}".format(datetime))
+        return sel_c
 
 
     def __get_number_of_double0s(self,seq1,seq2,norm=True):
@@ -316,7 +330,7 @@ class CandleList(object):
         start_time=self.clist[0].time
         end_time=self.clist[-1].time
 
-        period_delta = datetime.timedelta(days=period)
+        period_delta = timedelta(days=period)
         start_calc_time = start_time - period_delta
 
         #fetch candle set from start_calc_time

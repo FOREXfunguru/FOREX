@@ -35,12 +35,11 @@ def ctdbptp_object_notrendi():
                         type='short')
 
     return c
-
+'''
 def test_calc_itrend(ctdbptp_object_notrendi):
 
     ctdbptp_object_notrendi.calc_itrend()
 
-'''
 def test_set_1stbounce(ctdbptp_object):
 
     ctdbptp_object.set_1stbounce()
@@ -49,11 +48,11 @@ def test_set_1stbounce(ctdbptp_object):
 def test_set_2ndbounce(ctdbptp_object):
 
     ctdbptp_object.set_2ndbounce()
-
+'''
 def test_init_feats(ctdbptp_object):
 
     ctdbptp_object.init_feats()
-
+'''
 def test_init_trend_feats(ctdbptp_object):
 
     ctdbptp_object.set_1stbounce()

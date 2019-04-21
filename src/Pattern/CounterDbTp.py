@@ -52,7 +52,6 @@ class CounterDbTp(Counter):
     def __init__(self, pair, start, **kwargs):
 
         self.start = start
-        pdb.set_trace()
         allowed_keys = ['timeframe','entry','period', 'trend_i', 'type', 'SL',
                         'TP', 'SR', 'RR']
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
@@ -111,6 +110,7 @@ class CounterDbTp(Counter):
         -------
         It will initialise all object's features
         '''
+
         self.set_lasttime()
         self.set_entry_onrsi()
         self.set_1stbounce()
