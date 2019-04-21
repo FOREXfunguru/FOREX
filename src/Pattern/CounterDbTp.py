@@ -67,8 +67,10 @@ class CounterDbTp(Counter):
         Nothing
         '''
 
-        self.set_bounces(part='openAsk')
+        self.set_bounces(part='openAsk',pips=100)
         self.bounce_1st=self.bounces[-2]
+        if self.trend_i>self.bounce_1st[0]:
+            raise Exception("Error in the definition of the 1st bounce, it is older than the trend_start")
 
         # now check rsi for this bounce
         candle = self.clist_period.fetch_by_time(self.bounce_1st[0])
@@ -129,6 +131,7 @@ class CounterDbTp(Counter):
         Nothing
         '''
 
+        pdb.set_trace()
         c = Counter(
             start=str(self.bounce_1st[0]),
             pair=self.pair,

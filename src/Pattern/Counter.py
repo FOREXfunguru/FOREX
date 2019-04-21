@@ -184,7 +184,7 @@ class Counter(object):
                 self.trend_i = c.time
                 return c.time
 
-    def set_bounces(self, part='closeAsk'):
+    def set_bounces(self, part='closeAsk',pips=50):
         '''
         Function to calculate previous bounces at self.SR
 
@@ -192,6 +192,8 @@ class Counter(object):
         ----------
         part: str
               Candle part used for the calculation. Default='closeAsk'
+        pips: int
+              Number of pips around self.SR to extend the area. Default=50
 
         Returns
         -------
@@ -204,7 +206,7 @@ class Counter(object):
             prices.append(getattr(c, part))
             datetimes.append(c.time)
 
-        resist = HArea(price=self.SR, pips=50, instrument=self.pair, granularity=self.timeframe)
+        resist = HArea(price=self.SR, pips=pips, instrument=self.pair, granularity=self.timeframe)
 
         (bounces, outfile) = resist.number_bounces(datetimes=datetimes,
                                                    prices=prices,
