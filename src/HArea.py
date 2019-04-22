@@ -2,7 +2,7 @@ import numpy as np
 import pdb
 import matplotlib
 import peakutils
-import datetime
+from datetime import timedelta,datetime
 from OandaAPI import OandaAPI
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
@@ -84,7 +84,9 @@ class HArea(object):
                 bounces.append((datetimes[ix],prices[ix]))
                 plt.scatter(datetimes[ix], prices[ix], s=50)
 
+        pdb.set_trace()
         for ix in min:
+            print(datetimes[ix])
             if prices[ix] <= self.upper and prices[ix] >= self.lower:
                 bounces.append((datetimes[ix], prices[ix]))
                 plt.scatter(datetimes[ix], prices[ix], s=50)
@@ -194,14 +196,13 @@ class HArea(object):
         datetime object with crossing time
         '''
 
-
         if candle.lowAsk <= self.price <= candle.highAsk:
             delta=None
             if self.granularity=="D":
-                delta = datetime.timedelta(days=self.granularity)
+                delta = timedelta(hours=24)
             else:
                 fgran=self.granularity.replace('H','')
-                delta=datetime.timedelta(hours=int(fgran))
+                delta = timedelta(hours=int(fgran))
 
             cstart=candle.time
             cend=cstart+delta

@@ -3,7 +3,7 @@ from OandaAPI import OandaAPI
 from sklearn.linear_model import LinearRegression
 import pandas as pd
 import pdb
-from datetime import timedelta,datetime
+from datetime import timedelta,datetime,time
 import re
 import peakutils
 import numpy as np
@@ -216,11 +216,15 @@ class CandleList(object):
         Candle object
         '''
 
+        d=datetime
         delta = None
         if self.granularity == "D":
             delta = timedelta(hours=24)
+            #if Friday and later then 22:00 then go forward 1 day
+            if d.weekday() == 4 and d.time() >= time(23, 0, 0):
+                d=d+delta
         else:
-            fgran = self.timeframe.replace('H', '')
+            fgran = self.granularity.replace('H', '')
             delta = timedelta(hours=int(fgran))
 
         sel_c=None
@@ -228,7 +232,7 @@ class CandleList(object):
         for c in self.clist:
             start=c.time
             end=start+delta
-            if datetime>=start and datetime < end:
+            if d>=start and d < end:
                 sel_c=c
 
         if sel_c is None: raise Exception("No candle was selected with time: {0}".format(datetime))
@@ -538,7 +542,7 @@ class CandleList(object):
 
         Returns
         -------
-        bool True if there is divergence
+        bool True if there is divergence. "n.a." if the divergence was not calculated
         '''
 
         rsi_values=[]
@@ -551,6 +555,10 @@ class CandleList(object):
 
         bounces_prices=self.__get_bounces(prices,direction=direction)
         bounces_rsi = self.__get_bounces(rsi_values, direction=direction)
+
+        if len(bounces_prices)<2 or len(bounces_rsi)<2:
+            print("WARN: No enough bounces after the trend start were found. Divergence assessment will be skipped")
+            return "n.a."
 
         diff_prices=bounces_prices[-1]-bounces_prices[-2]
         diff_rsi=bounces_rsi[-1]-bounces_rsi[-2]

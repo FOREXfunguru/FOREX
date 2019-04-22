@@ -67,7 +67,9 @@ class CounterDbTp(Counter):
         Nothing
         '''
 
+        pdb.set_trace()
         self.set_bounces(part='openAsk',pips=100)
+        if len(self.bounces)<2: raise Exception("Less than 2 bounces were found for this trade")
         self.bounce_1st=self.bounces[-2]
         if self.trend_i>self.bounce_1st[0]:
             raise Exception("Error in the definition of the 1st bounce, it is older than the trend_start")
@@ -131,7 +133,6 @@ class CounterDbTp(Counter):
         Nothing
         '''
 
-        pdb.set_trace()
         c = Counter(
             start=str(self.bounce_1st[0]),
             pair=self.pair,

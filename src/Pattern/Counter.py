@@ -210,7 +210,7 @@ class Counter(object):
 
         (bounces, outfile) = resist.number_bounces(datetimes=datetimes,
                                                    prices=prices,
-                                                   min_dist=5)
+                                                   min_dist=3)
 
         self.bounces=bounces
 
