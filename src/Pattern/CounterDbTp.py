@@ -67,12 +67,15 @@ class CounterDbTp(Counter):
         Nothing
         '''
 
-        pdb.set_trace()
-        self.set_bounces(part='openAsk',pips=100)
-        if len(self.bounces)<2: raise Exception("Less than 2 bounces were found for this trade")
+        self.set_bounces(part='openAsk',pips=75)
+        if len(self.bounces)<2: raise Exception("Less than 2 bounces were found for this trade."
+                                                "Perphaps you can try to run peakutils with lower threshold "
+                                                "or min_dist parameters")
         self.bounce_1st=self.bounces[-2]
         if self.trend_i>self.bounce_1st[0]:
-            raise Exception("Error in the definition of the 1st bounce, it is older than the trend_start")
+            raise Exception("Error in the definition of the 1st bounce, it is older than the trend_start."
+                            "Perphaps you can try to run peakutils with lower threshold or min_dist "
+                            "parameters")
 
         # now check rsi for this bounce
         candle = self.clist_period.fetch_by_time(self.bounce_1st[0])

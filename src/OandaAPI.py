@@ -9,6 +9,7 @@ import re
 import os
 import requests,json
 import pandas as pd
+from datetime import timedelta
 
 from Candle import BidAskCandle
 
@@ -29,10 +30,25 @@ class OandaAPI(object):
                Deserialized content returned by requests' 'get'
         params : dict
                Dictionary with parameters to pass to requests
+               Including the:
+               start: Time for first candle
+               end: Time for last candle
+               dailyAlignment: int
+               instrument: AUD_USD
+               granularity: 'D'
+               alignmentTimezone: 'Europe/London'
         resp : object
                returned by requests module
         instrument: str
         '''
+
+        #Increase end time by one minute to make the last candle end time match the params['end']
+        min = timedelta(minutes=1)
+        endI=params['end']
+        endO = pd.datetime.strptime(endI, '%Y-%m-%dT%H:%M:%S')
+        endO=endO+min
+        params['end']=endO.isoformat()
+        pdb.set_trace()
         if url:
             resp = requests.get(url=url,params=params)
 
@@ -45,8 +61,28 @@ class OandaAPI(object):
             if data:
                 self.data=data
             else:
-                 self.data = json.loads(resp.content.decode("utf-8"))
-            
+                self.data = json.loads(resp.content.decode("utf-8"))
+                self.__validate_end(end=endI)
+
+    def __validate_end(self,end):
+        '''
+        Private method to check that last candle time matches the 'end' time provided
+        within params
+
+        Paramters
+        ---------
+        end :   Datetime in isoformat
+
+        Returns
+        -------
+        Nothing
+        '''
+
+        endO=pd.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
+        endFetched=pd.datetime.strptime(self.data['candles'][-1]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        if endO != endFetched:
+            raise Exception("Last candle time does not match the provided end time")
+
     def print_url(self):
         '''
         Print url from requests module

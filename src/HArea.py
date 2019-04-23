@@ -84,9 +84,7 @@ class HArea(object):
                 bounces.append((datetimes[ix],prices[ix]))
                 plt.scatter(datetimes[ix], prices[ix], s=50)
 
-        pdb.set_trace()
         for ix in min:
-            print(datetimes[ix])
             if prices[ix] <= self.upper and prices[ix] >= self.lower:
                 bounces.append((datetimes[ix], prices[ix]))
                 plt.scatter(datetimes[ix], prices[ix], s=50)

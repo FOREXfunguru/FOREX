@@ -15,21 +15,21 @@ def oanda_object():
                    end='2015-01-26T22:00:00')
     return oanda
 
-def test_OandaAPI():
+def test_OandaAPI1():
     '''
     Test a simple query to Oanda's REST API using range of datetime
-
     '''
     # time must be in a valid datetime format
     oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                    instrument='AUD_USD',
                    granularity='D',
                    alignmentTimezone='Europe/London',
+                   dailyAlignment=22,
                    start='2015-01-25T22:00:00',
                    end='2015-01-26T22:00:00')
     assert 1
 
-
+"""
 def test_fetch_candleset(oanda_object):
     '''
     Test how a Candle list is retrieved
@@ -69,3 +69,4 @@ def test_fetch_one_candle():
     assert candle_list[0].lowAsk == 0.786
     assert candle_list[0].complete == True
     assert candle_list[0].openAsk == 0.7889
+"""
