@@ -29,6 +29,47 @@ def test_OandaAPI1():
                    end='2015-01-26T22:00:00')
     assert 1
 
+def test_OandaAPI2():
+    '''
+    Test a simple query to Oanda's REST API using range of datetime where start time
+    falls on Friday at 22:00:00 (when market has just closed) and code raises an Exception
+    '''
+    with pytest.raises(Exception):
+        oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                       instrument='AUD_USD',
+                       granularity='D',
+                       alignmentTimezone='Europe/London',
+                       dailyAlignment=22,
+                       start='2018-11-16T22:00:00',
+                       end='2018-11-20T22:00:00')
+
+def test_OandaAPI3():
+    '''
+    Test a simple query to Oanda's REST API using a H12 timeframe
+    '''
+    oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                   instrument='AUD_USD',
+                   granularity='H12',
+                   alignmentTimezone='Europe/London',
+                   dailyAlignment=22,
+                   start='2018-11-12T10:00:00',
+                   end='2018-11-14T10:00:00')
+    assert 1
+
+def test_OandaAPI4():
+    '''
+    Test a simple query to Oanda's REST API using a H12 timeframe and a
+    non conventional time that will raise an Exception
+    '''
+    with pytest.raises(Exception):
+        oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                       instrument='AUD_USD',
+                       granularity='H12',
+                       alignmentTimezone='Europe/London',
+                       dailyAlignment=22,
+                       start='2018-11-12T10:00:00',
+                       end='2018-11-14T11:00:00')
+
 """
 def test_fetch_candleset(oanda_object):
     '''

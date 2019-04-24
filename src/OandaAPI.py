@@ -9,7 +9,7 @@ import re
 import os
 import requests,json
 import pandas as pd
-from datetime import timedelta
+import datetime
 
 from Candle import BidAskCandle
 
@@ -42,13 +42,15 @@ class OandaAPI(object):
         instrument: str
         '''
 
+        startObj=self.validate_datetime(params['start'], params['granularity'])
+        endObj = self.validate_datetime(params['end'], params['granularity'])
+
         #Increase end time by one minute to make the last candle end time match the params['end']
-        min = timedelta(minutes=1)
+        min = datetime.timedelta(minutes=1)
         endI=params['end']
-        endO = pd.datetime.strptime(endI, '%Y-%m-%dT%H:%M:%S')
-        endO=endO+min
-        params['end']=endO.isoformat()
-        pdb.set_trace()
+        endObj=endObj+min
+        params['end']=endObj.isoformat()
+
         if url:
             resp = requests.get(url=url,params=params)
 
@@ -64,12 +66,47 @@ class OandaAPI(object):
                 self.data = json.loads(resp.content.decode("utf-8"))
                 self.__validate_end(end=endI)
 
+    def validate_datetime(self,datestr,granularity):
+        '''
+
+        Parameters
+        ----------
+        datestr : string
+                  String representing a date
+        granularity : string
+                      Timeframe
+        '''
+        # Generate a datetime object from string
+        dateObj = None
+        try:
+            dateObj = pd.datetime.strptime(datestr, '%Y-%m-%dT%H:%M:%S')
+        except ValueError:
+            raise ValueError("Incorrect date format, should be %Y-%m-%dT%H:%M:%S")
+
+        # check if datetime falls on close market
+        if dateObj.weekday() == 4 and dateObj.time() >= time(22, 0, 0):
+            raise Exception("Date {0} is not valid and falls on closed market".format(datestr))
+
+        nhours=None
+        if granularity == "D":
+           nhours=24
+        else:
+            nhours = int(granularity.replace('H', ''))
+
+        base= datetime.time(22, 00, 00)
+        valid_time = [(datetime.datetime.combine(datetime.date(1, 1, 1), base) + datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
+
+        if dateObj.time() not in valid_time:
+            raise Exception("Time not valid. Valid times for {0} granularity are: {1}".format(granularity, valid_time))
+        return dateObj
+
+
     def __validate_end(self,end):
         '''
         Private method to check that last candle time matches the 'end' time provided
         within params
 
-        Paramters
+        Parameters
         ---------
         end :   Datetime in isoformat
 
