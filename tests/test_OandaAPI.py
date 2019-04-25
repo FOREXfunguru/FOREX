@@ -14,7 +14,7 @@ def oanda_object():
                    start='2015-01-25T22:00:00',
                    end='2015-01-26T22:00:00')
     return oanda
-
+"""
 def test_OandaAPI1():
     '''
     Test a simple query to Oanda's REST API using range of datetime
@@ -70,6 +70,81 @@ def test_OandaAPI4():
                        start='2018-11-12T10:00:00',
                        end='2018-11-14T11:00:00')
 
+def test_OandaAPI5():
+    '''
+    Test a simple query to Oanda's REST API using a H8 timeframe and a
+    non conventional time that will raise an Exception
+    '''
+    with pytest.raises(Exception):
+        oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                       instrument='AUD_USD',
+                       granularity='H8',
+                       alignmentTimezone='Europe/London',
+                       dailyAlignment=22,
+                       start='2018-11-12T10:00:00',
+                       end='2018-11-14T11:00:00')
+
+def test_OandaAPI6():
+    '''
+    Test a simple query to Oanda's REST API using a H12 timeframe and a
+    end date falling in the daylight savings discrepancy(US/EU) period
+    '''
+
+    oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                   instrument='AUD_USD',
+                   granularity='D',
+                   alignmentTimezone='Europe/London',
+                   dailyAlignment=22,
+                   start='2018-03-26T22:00:00',
+                   end='2018-03-29T22:00:00')
+    assert 1
+
+
+def test_OandaAPI7():
+    '''
+    Test a simple query to Oanda's REST API using a D timeframe and a
+    end date falling in Saturday at 22h
+    '''
+
+    with pytest.raises(Exception):
+        oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                       instrument='AUD_USD',
+                       granularity='D',
+                       alignmentTimezone='Europe/London',
+                       dailyAlignment=22,
+                       start='2018-05-21T22:00:00',
+                       end='2018-05-26T22:00:00')
+    assert 1
+
+
+def test_OandaAPI8():
+    '''
+    Test a simple query to Oanda's REST API using a D timeframe and using
+    the 'count' parameter instead of 'end'
+    '''
+
+    oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                   instrument='AUD_USD',
+                   granularity='D',
+                   alignmentTimezone='Europe/London',
+                   dailyAlignment=22,
+                   start='2018-05-21T22:00:00',
+                   count=1)
+    assert 1
+"""
+def test_OandaAPI10():
+    '''
+    Test a simple query to Oanda's REST API using a D timeframe and using
+    the 'count' parameter instead of 'end'
+    '''
+
+    oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                   instrument='AUD_USD',
+                   granularity='D',
+                   alignmentTimezone='Europe/London',
+                   dailyAlignment=22,
+                   start='2018-04-27T21:00:00',
+                   end='2018-04-28T21:00:00')
 """
 def test_fetch_candleset(oanda_object):
     '''

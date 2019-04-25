@@ -220,9 +220,6 @@ class CandleList(object):
         delta = None
         if self.granularity == "D":
             delta = timedelta(hours=24)
-            #if Friday and later then 22:00 then go forward 1 day
-            if d.weekday() == 4 and d.time() >= time(23, 0, 0):
-                d=d+delta
         else:
             fgran = self.granularity.replace('H', '')
             delta = timedelta(hours=int(fgran))
@@ -333,15 +330,6 @@ class CandleList(object):
         start_time=self.clist[0].time
         end_time=self.clist[-1].time
 
-        delta_timeframe = self.clist[1].time - self.clist[0].time
-        if end_time.weekday() == 5:
-            end_time = end_time + delta_timeframe
-
-       # if end_time.time() == time(21, 0, 0):
-       #     anhour=timedelta(hours=1)
-       #     end_time=end_time+anhour
-       #     pdb.set_trace()
-
         period_delta = timedelta(days=period)
         start_calc_time = start_time - period_delta
 
@@ -355,14 +343,6 @@ class CandleList(object):
                          end=end_time.isoformat())
 
         candle_list = oanda.fetch_candleset()
-
-        #check if there is any discrepancy between returned candle_list to calculate the rsi
-        #and the end_time. This discrepancy will induce that there are some candles without
-        #the rsi calculated
-        if candle_list[-1].time != end_time-delta_timeframe:
-            pdb.set_trace()
-            raise Exception("Discrepancy in candlelist used for rsi calculation. Check that the end time "
-                            "matches the time for the last candle in the candlelist")
 
         series=[]
         series = [c.closeAsk for c in candle_list]

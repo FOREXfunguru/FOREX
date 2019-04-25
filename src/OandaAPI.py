@@ -43,13 +43,14 @@ class OandaAPI(object):
         '''
 
         startObj=self.validate_datetime(params['start'], params['granularity'])
-        endObj = self.validate_datetime(params['end'], params['granularity'])
+        endObj=None
+        if 'end' in params:
+            endObj = self.validate_datetime(params['end'], params['granularity'])
 
-        #Increase end time by one minute to make the last candle end time match the params['end']
-        min = datetime.timedelta(minutes=1)
-        endI=params['end']
-        endObj=endObj+min
-        params['end']=endObj.isoformat()
+            #Increase end time by one minute to make the last candle end time match the params['end']
+            min = datetime.timedelta(minutes=1)
+            endObj=endObj+min
+            params['end']=endObj.isoformat()
 
         if url:
             resp = requests.get(url=url,params=params)
@@ -64,7 +65,7 @@ class OandaAPI(object):
                 self.data=data
             else:
                 self.data = json.loads(resp.content.decode("utf-8"))
-                self.__validate_end(end=endI)
+                if 'end' in params:self.__validate_end(endObj-min)
 
     def validate_datetime(self,datestr,granularity):
         '''
@@ -84,41 +85,58 @@ class OandaAPI(object):
             raise ValueError("Incorrect date format, should be %Y-%m-%dT%H:%M:%S")
 
         # check if datetime falls on close market
-        if dateObj.weekday() == 4 and dateObj.time() >= time(22, 0, 0):
+        if (dateObj.weekday() == 4 or dateObj.weekday() == 5) and dateObj.time() >= datetime.time(22, 0, 0):
             raise Exception("Date {0} is not valid and falls on closed market".format(datestr))
 
         nhours=None
         if granularity == "D":
            nhours=24
         else:
-            nhours = int(granularity.replace('H', ''))
+            p = re.compile('^H')
+            m = p.match(granularity)
+            if m:
+                nhours = int(granularity.replace('H', ''))
 
-        base= datetime.time(22, 00, 00)
-        valid_time = [(datetime.datetime.combine(datetime.date(1, 1, 1), base) + datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
+        if nhours is not None:
+            base= datetime.time(22, 00, 00)
+            valid_time = [(datetime.datetime.combine(datetime.date(1, 1, 1), base) + datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
 
-        if dateObj.time() not in valid_time:
-            raise Exception("Time not valid. Valid times for {0} granularity are: {1}".format(granularity, valid_time))
+            # daylightime saving discrepancy
+            base1 = datetime.time(21, 00, 00)
+            valid_time1 = [(datetime.datetime.combine(datetime.date(1, 1, 1), base1) + datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
+
+            if (dateObj.time() not in valid_time) and (dateObj.time() not in valid_time1):
+                raise Exception("Time {0} not valid. Valid times for {1} granularity are: {2} or are: {3}".format(dateObj.time(),
+                                                                                                                  granularity, valid_time,
+                                                                                                                  valid_time1))
         return dateObj
 
 
-    def __validate_end(self,end):
+    def __validate_end(self,endObj):
         '''
         Private method to check that last candle time matches the 'end' time provided
         within params
 
         Parameters
         ---------
-        end :   Datetime in isoformat
+        endObj :   Datetime object
 
         Returns
         -------
-        Nothing
+        1 if it validates
         '''
 
-        endO=pd.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
         endFetched=pd.datetime.strptime(self.data['candles'][-1]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
-        if endO != endFetched:
-            raise Exception("Last candle time does not match the provided end time")
+        if endObj!= endFetched:
+            #check if discrepancy is not in the daylight savings period
+            if endFetched.date()==endObj.date() and endFetched.time()==datetime.time(21,0):
+                return 1
+            else:
+                pdb.set_trace()
+                raise Exception("Last candle time does not match the provided end time")
+        else:
+            return 1
+
 
     def print_url(self):
         '''

@@ -204,6 +204,7 @@ class HArea(object):
 
             cstart=candle.time
             cend=cstart+delta
+            pdb.set_trace()
             oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                              instrument=self.instrument,
                              granularity=granularity,

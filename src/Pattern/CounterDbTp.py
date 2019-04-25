@@ -91,7 +91,6 @@ class CounterDbTp(Counter):
         '''
         Function to set bounce_2nd (the one that is the most recent)
         and rsi_2nd class attributes
-
         Returns
         -------
         Nothing
