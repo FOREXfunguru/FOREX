@@ -18,7 +18,7 @@ class OandaAPI(object):
     Class representing the content returned by a GET request to Oanda's REST API
     '''
     
-    def __init__(self, url=None, data=None, **params):
+    def __init__(self, url=None, data=None, roll=False, **params):
         '''
         Constructor
 
@@ -28,6 +28,9 @@ class OandaAPI(object):
               Oanda's REST service url
         data : object
                Deserialized content returned by requests' 'get'
+        roll : bool
+               If True, then extend the end date, which falls on close market, to the next period for which
+               the market is open. Default=False
         params : dict
                Dictionary with parameters to pass to requests
                Including the:
@@ -42,10 +45,12 @@ class OandaAPI(object):
         instrument: str
         '''
 
-        startObj=self.validate_datetime(params['start'], params['granularity'])
+        self.roll=roll
+        startObj=self.validate_datetime(params['start'], params['granularity'], roll=roll)
+        params['start']=startObj.isoformat()
         endObj=None
         if 'end' in params:
-            endObj = self.validate_datetime(params['end'], params['granularity'])
+            endObj = self.validate_datetime(params['end'], params['granularity'], roll=roll)
 
             #Increase end time by one minute to make the last candle end time match the params['end']
             min = datetime.timedelta(minutes=1)
@@ -67,8 +72,9 @@ class OandaAPI(object):
                 self.data = json.loads(resp.content.decode("utf-8"))
                 if 'end' in params:self.__validate_end(endObj-min)
 
-    def validate_datetime(self,datestr,granularity):
+    def validate_datetime(self,datestr,granularity,roll=False):
         '''
+        Function to parse a string datetime to return a datetime object and to validate the datetime
 
         Parameters
         ----------
@@ -76,6 +82,9 @@ class OandaAPI(object):
                   String representing a date
         granularity : string
                       Timeframe
+        roll : bool
+               If True, then extend the end date, which falls on close market, to the next period for which
+               the market is open. Default=False
         '''
         # Generate a datetime object from string
         dateObj = None
@@ -85,8 +94,11 @@ class OandaAPI(object):
             raise ValueError("Incorrect date format, should be %Y-%m-%dT%H:%M:%S")
 
         # check if datetime falls on close market
-        if (dateObj.weekday() == 4 or dateObj.weekday() == 5) and dateObj.time() >= datetime.time(22, 0, 0):
-            raise Exception("Date {0} is not valid and falls on closed market".format(datestr))
+        if (dateObj.weekday() == 4 or dateObj.weekday() == 5) and dateObj.time() >= datetime.time(21, 0, 0):
+            if roll is True:
+                dateObj=self.__roll_datetime(dateObj,granularity)
+            else:
+                raise Exception("Date {0} is not valid and falls on closed market".format(datestr))
 
         nhours=None
         if granularity == "D":
@@ -111,6 +123,51 @@ class OandaAPI(object):
                                                                                                                   valid_time1))
         return dateObj
 
+
+    def __roll_datetime(self,dateObj,granularity):
+        '''
+        Private function to roll the datetime, which falls on a closed market to the next period (set by granularity)
+        with open market
+
+        Parameters
+        ----------
+        dateObj : datetime object
+
+        Returns
+        -------
+        datetime object
+                 Returns the rolled datetime object
+        '''
+
+        delta = None
+        if granularity == "D":
+            delta = datetime.timedelta(hours=24)
+        else:
+            nhours=None
+            p1 = re.compile('^H')
+            m1 = p1.match(granularity)
+            if m1:
+                nhours = int(granularity.replace('H', ''))
+                delta = datetime.timedelta(hours=int(nhours))
+            nmins = None
+            p2 = re.compile('^M')
+            m2 = p2.match(granularity)
+            if m2:
+                nmins = int(granularity.replace('M', ''))
+                delta = datetime.timedelta(minutes=int(nmins))
+
+
+        while (dateObj.weekday() >=4 and dateObj.weekday()<=6):
+            if dateObj.weekday() ==4 and dateObj.time()>=datetime.time(21,0):
+                dateObj=dateObj+delta
+            elif dateObj.weekday() == 5:
+                dateObj = dateObj + delta
+            elif dateObj.weekday() ==6 and dateObj.time()<datetime.time(21,0):
+                dateObj = dateObj + delta
+            else:
+                break
+
+        return dateObj
 
     def __validate_end(self,endObj):
         '''

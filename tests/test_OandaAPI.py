@@ -131,21 +131,58 @@ def test_OandaAPI8():
                    start='2018-05-21T22:00:00',
                    count=1)
     assert 1
-"""
+
 def test_OandaAPI10():
     '''
     Test a simple query to Oanda's REST API using a D timeframe and using
-    the 'count' parameter instead of 'end'
+    a start and end date falling on closed market
+    '''
+
+    with pytest.raises(Exception):
+        oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                       instrument='AUD_USD',
+                       granularity='D',
+                       alignmentTimezone='Europe/London',
+                       dailyAlignment=22,
+                       start='2018-04-27T21:00:00',
+                       end='2018-04-28T21:00:00')
+
+def test_OandaAPI11():
+    '''
+    Test a simple query to Oanda's REST API using a H12 timeframe and using
+    an end date falling on closed market and the roll option=True
     '''
 
     oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                    instrument='AUD_USD',
-                   granularity='D',
+                   granularity='H12',
+                   roll=True,
                    alignmentTimezone='Europe/London',
                    dailyAlignment=22,
-                   start='2018-04-27T21:00:00',
+                   start='2018-04-23T21:00:00',
                    end='2018-04-28T21:00:00')
+    
+    assert 1
 """
+
+def test_OandaAPI12():
+    '''
+    Test a simple query to Oanda's REST API using a H12 timeframe and using
+    an end date (with 22h) falling on closed market and the roll option=True
+    '''
+
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='AUD_USD',
+                     granularity='H12',
+                     roll=True,
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22,
+                     start='2018-11-21T22:00:00',
+                     end='2018-11-24T22:00:00')
+
+    assert 1
+"""
+
 def test_fetch_candleset(oanda_object):
     '''
     Test how a Candle list is retrieved

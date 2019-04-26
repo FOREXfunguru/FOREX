@@ -1,6 +1,8 @@
 from scipy import stats
 from OandaAPI import OandaAPI
 from sklearn.linear_model import LinearRegression
+from pandas.plotting import register_matplotlib_converters
+register_matplotlib_converters()
 import pandas as pd
 import pdb
 from datetime import timedelta,datetime,time
@@ -8,6 +10,7 @@ import re
 import peakutils
 import numpy as np
 import matplotlib
+
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 
@@ -337,6 +340,7 @@ class CandleList(object):
         oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                          instrument=self.instrument,
                          granularity=self.granularity,
+                         roll=True,
                          alignmentTimezone='Europe/London',
                          dailyAlignment=22,
                          start=start_calc_time.isoformat(),

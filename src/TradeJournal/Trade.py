@@ -92,6 +92,7 @@ class Trade(object):
                              instrument=self.pair,
                              granularity=self.timeframe,
                              dailyAlignment=22,
+                             roll=True,
                              alignmentTimezone='Europe/London',
                              start=d.isoformat(),
                              count=1)

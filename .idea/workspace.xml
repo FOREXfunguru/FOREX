@@ -6,7 +6,7 @@
       <change beforePath="$PROJECT_DIR$/src/CandleList.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/CandleList.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/HArea.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/HArea.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OandaAPI.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OandaAPI.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pattern/CounterDbTp.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/CounterDbTp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TradeJournal/Trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/Trade.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_OandaAPI.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_OandaAPI.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -56,8 +56,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/TradeJournal/Trade.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-948">
-              <caret line="5" selection-start-line="5" selection-end-line="5" />
+            <state relative-caret-position="88">
+              <caret line="89" column="27" selection-start-line="89" selection-start-column="27" selection-end-line="89" selection-end-column="27" />
+              <folding>
+                <element signature="e#0#31#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -77,8 +80,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Pattern/Counter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="10" selection-start-column="10" selection-end-column="10" />
+            <state relative-caret-position="1875">
+              <caret line="125" lean-forward="true" selection-start-line="117" selection-start-column="7" selection-end-line="125" />
+              <folding>
+                <element signature="e#0#10#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -86,8 +92,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/HArea.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="498">
-              <caret line="206" column="27" selection-start-line="206" selection-start-column="27" selection-end-line="206" selection-end-column="27" />
+            <state relative-caret-position="458">
+              <caret line="217" column="55" selection-start-line="217" selection-start-column="55" selection-end-line="217" selection-end-column="55" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -99,16 +105,19 @@
         <entry file="file://$PROJECT_DIR$/src/CandleList.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="60">
-              <caret line="4" column="10" selection-start-line="4" selection-start-column="7" selection-end-line="4" selection-end-column="10" />
+              <caret line="4" column="32" lean-forward="true" selection-start-line="3" selection-end-line="4" selection-end-column="32" />
+              <folding>
+                <element signature="e#0#23#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="480">
-              <caret line="145" column="39" selection-start-line="145" selection-start-column="39" selection-end-line="145" selection-end-column="39" />
+            <state relative-caret-position="181">
+              <caret line="166" lean-forward="true" selection-start-line="166" selection-end-line="166" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -116,11 +125,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/OandaAPI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1068">
-              <caret line="128" column="18" lean-forward="true" selection-start-line="128" selection-start-column="8" selection-end-line="128" selection-end-column="18" />
+            <state relative-caret-position="-326">
+              <caret line="154" column="18" selection-start-line="154" selection-start-column="18" selection-end-line="154" selection-end-column="18" />
               <folding>
                 <element signature="e#55#65#0" expanded="true" />
               </folding>
@@ -139,8 +148,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>get</find>
-      <find>reversed</find>
       <find>fit</find>
       <find>lastime</find>
       <find>set_en</find>
@@ -165,8 +172,10 @@
       <find>calc_rsi</find>
       <find>pips</find>
       <find>week</find>
-      <find>pdb.</find>
       <find>pdb.s</find>
+      <find>Oanda</find>
+      <find>pdb.</find>
+      <find>replc</find>
       <find>number_bounce</find>
       <find>timedel</find>
     </findStrings>
@@ -190,7 +199,6 @@
         <option value="$PROJECT_DIR$/scripts/trade_journal/calculate_feats.py" />
         <option value="$PROJECT_DIR$/src/Candle.py" />
         <option value="$PROJECT_DIR$/src/TradeJournal/CounterTrade.py" />
-        <option value="$PROJECT_DIR$/src/TradeJournal/Trade.py" />
         <option value="$PROJECT_DIR$/tests/test_TradeJournal.py" />
         <option value="$PROJECT_DIR$/tests/test_Counter.py" />
         <option value="$PROJECT_DIR$/scripts/TRAIN/calculate_ctdbtp.py" />
@@ -198,11 +206,12 @@
         <option value="$PROJECT_DIR$/scripts/calculate_ctdbtp.py" />
         <option value="$PROJECT_DIR$/src/Pattern/CounterDbTp.py" />
         <option value="$PROJECT_DIR$/src/Pattern/Counter.py" />
-        <option value="$PROJECT_DIR$/src/CandleList.py" />
         <option value="$PROJECT_DIR$/src/TradeJournal/TradeJournal.py" />
-        <option value="$PROJECT_DIR$/src/OandaAPI.py" />
-        <option value="$PROJECT_DIR$/src/HArea.py" />
         <option value="$PROJECT_DIR$/tests/test_OandaAPI.py" />
+        <option value="$PROJECT_DIR$/src/CandleList.py" />
+        <option value="$PROJECT_DIR$/src/HArea.py" />
+        <option value="$PROJECT_DIR$/src/OandaAPI.py" />
+        <option value="$PROJECT_DIR$/src/TradeJournal/Trade.py" />
       </list>
     </option>
   </component>
@@ -605,7 +614,14 @@
       <option name="project" value="LOCAL" />
       <updated>1556141576528</updated>
     </task>
-    <option name="localTasksCounter" value="38" />
+    <task id="LOCAL-00038" summary="Changes in OandaApi validation">
+      <created>1556230588161</created>
+      <option name="number" value="00038" />
+      <option name="presentableId" value="LOCAL-00038" />
+      <option name="project" value="LOCAL" />
+      <updated>1556230588161</updated>
+    </task>
+    <option name="localTasksCounter" value="39" />
     <servers />
   </component>
   <component name="TodoView">
@@ -659,7 +675,6 @@
     </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="adding bounce feats code" />
     <MESSAGE value="adding get cross time" />
     <MESSAGE value="working in run_trade" />
     <MESSAGE value="adding run_trade code" />
@@ -684,7 +699,8 @@
     <MESSAGE value="solving different bugs" />
     <MESSAGE value="working on validation on OandaAPI class" />
     <MESSAGE value="validation of dateime on OandaAPI" />
-    <option name="LAST_COMMIT_MESSAGE" value="validation of dateime on OandaAPI" />
+    <MESSAGE value="Changes in OandaApi validation" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes in OandaApi validation" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Untitled.ipynb" />
@@ -850,12 +866,42 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/TradeJournal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="422">
+          <caret line="85" column="27" selection-start-line="85" selection-start-column="27" selection-end-line="85" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/calculate_ctdbtp.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="330">
           <caret line="22" column="38" selection-start-line="22" selection-start-column="38" selection-end-line="22" selection-end-column="38" />
           <folding>
             <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="181">
+          <caret line="166" lean-forward="true" selection-start-line="166" selection-end-line="166" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/CandleList.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="60">
+          <caret line="4" column="32" lean-forward="true" selection-start-line="3" selection-end-line="4" selection-end-column="32" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -869,61 +915,40 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Pattern/Counter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="10" selection-start-column="10" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/CandleList.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="10" selection-start-line="4" selection-start-column="7" selection-end-line="4" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/TradeJournal/Trade.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-948">
-          <caret line="5" selection-start-line="5" selection-end-line="5" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/TradeJournal/TradeJournal.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="422">
-          <caret line="85" column="27" selection-start-line="85" selection-start-column="27" selection-end-line="85" selection-end-column="27" />
+        <state relative-caret-position="1875">
+          <caret line="125" lean-forward="true" selection-start-line="117" selection-start-column="7" selection-end-line="125" />
           <folding>
-            <element signature="e#0#19#0" expanded="true" />
+            <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/HArea.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="498">
-          <caret line="206" column="27" selection-start-line="206" selection-start-column="27" selection-end-line="206" selection-end-column="27" />
+        <state relative-caret-position="458">
+          <caret line="217" column="55" selection-start-line="217" selection-start-column="55" selection-end-line="217" selection-end-column="55" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/OandaAPI.py">
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/Trade.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1068">
-          <caret line="128" column="18" lean-forward="true" selection-start-line="128" selection-start-column="8" selection-end-line="128" selection-end-column="18" />
+        <state relative-caret-position="88">
+          <caret line="89" column="27" selection-start-line="89" selection-start-column="27" selection-end-line="89" selection-end-column="27" />
           <folding>
-            <element signature="e#55#65#0" expanded="true" />
+            <element signature="e#0#31#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
+    <entry file="file://$PROJECT_DIR$/src/OandaAPI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="480">
-          <caret line="145" column="39" selection-start-line="145" selection-start-column="39" selection-end-line="145" selection-end-column="39" />
+        <state relative-caret-position="-326">
+          <caret line="154" column="18" selection-start-line="154" selection-start-column="18" selection-end-line="154" selection-end-column="18" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
+            <element signature="e#55#65#0" expanded="true" />
           </folding>
         </state>
       </provider>
