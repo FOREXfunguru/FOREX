@@ -185,8 +185,15 @@ class OandaAPI(object):
 
         endFetched=pd.datetime.strptime(self.data['candles'][-1]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
         if endObj!= endFetched:
+            pdb.set_trace()
             #check if discrepancy is not in the daylight savings period
-            if endFetched.date()==endObj.date() and endFetched.time()==datetime.time(21,0):
+            fetched_time=endFetched.time()
+            passed_time=endObj.time()
+            dateTimefetched = datetime.datetime.combine(datetime.date.today(), fetched_time)
+            dateTimepassed = datetime.datetime.combine(datetime.date.today(), passed_time)
+            dateTimeDifference = dateTimefetched - dateTimepassed
+            dateTimeDifferenceInHours = dateTimeDifference.total_seconds() / 3600
+            if endFetched.date()==endObj.date() and abs(dateTimeDifferenceInHours)<=1:
                 return 1
             else:
                 pdb.set_trace()

@@ -3,11 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/CandleList.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/CandleList.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/HArea.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/HArea.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OandaAPI.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OandaAPI.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TradeJournal/Trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/Trade.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_OandaAPI.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_OandaAPI.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -128,8 +124,8 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/OandaAPI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-326">
-              <caret line="154" column="18" selection-start-line="154" selection-start-column="18" selection-end-line="154" selection-end-column="18" />
+            <state relative-caret-position="379">
+              <caret line="195" column="82" selection-start-line="195" selection-start-column="82" selection-end-line="195" selection-end-column="82" />
               <folding>
                 <element signature="e#55#65#0" expanded="true" />
               </folding>
@@ -210,8 +206,8 @@
         <option value="$PROJECT_DIR$/tests/test_OandaAPI.py" />
         <option value="$PROJECT_DIR$/src/CandleList.py" />
         <option value="$PROJECT_DIR$/src/HArea.py" />
-        <option value="$PROJECT_DIR$/src/OandaAPI.py" />
         <option value="$PROJECT_DIR$/src/TradeJournal/Trade.py" />
+        <option value="$PROJECT_DIR$/src/OandaAPI.py" />
       </list>
     </option>
   </component>
@@ -621,7 +617,14 @@
       <option name="project" value="LOCAL" />
       <updated>1556230588161</updated>
     </task>
-    <option name="localTasksCounter" value="39" />
+    <task id="LOCAL-00039" summary="Changes in OandaApi validation1">
+      <created>1556319783007</created>
+      <option name="number" value="00039" />
+      <option name="presentableId" value="LOCAL-00039" />
+      <option name="project" value="LOCAL" />
+      <updated>1556319783007</updated>
+    </task>
+    <option name="localTasksCounter" value="40" />
     <servers />
   </component>
   <component name="TodoView">
@@ -675,7 +678,6 @@
     </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="adding get cross time" />
     <MESSAGE value="working in run_trade" />
     <MESSAGE value="adding run_trade code" />
     <MESSAGE value="adding changes in Trade" />
@@ -700,7 +702,8 @@
     <MESSAGE value="working on validation on OandaAPI class" />
     <MESSAGE value="validation of dateime on OandaAPI" />
     <MESSAGE value="Changes in OandaApi validation" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes in OandaApi validation" />
+    <MESSAGE value="Changes in OandaApi validation1" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes in OandaApi validation1" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Untitled.ipynb" />
@@ -945,8 +948,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/OandaAPI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-326">
-          <caret line="154" column="18" selection-start-line="154" selection-start-column="18" selection-end-line="154" selection-end-column="18" />
+        <state relative-caret-position="379">
+          <caret line="195" column="82" selection-start-line="195" selection-start-column="82" selection-end-line="195" selection-end-column="82" />
           <folding>
             <element signature="e#55#65#0" expanded="true" />
           </folding>
