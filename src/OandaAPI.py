@@ -18,59 +18,84 @@ class OandaAPI(object):
     Class representing the content returned by a GET request to Oanda's REST API
     '''
     
-    def __init__(self, url=None, data=None, roll=False, **params):
+    def __init__(self, instrument, granularity, url=None, data=None, roll=False, **kwargs):
         '''
         Constructor
 
          Class variables
         ---------------
+        instrument: AUD_USD. Required
+        granularity: 'D'. Required
         url : string
               Oanda's REST service url
         data : object
                Deserialized content returned by requests' 'get'
-        roll : bool
-               If True, then extend the end date, which falls on close market, to the next period for which
-               the market is open. Default=False
-        params : dict
-               Dictionary with parameters to pass to requests
-               Including the:
-               start: Time for first candle
-               end: Time for last candle
-               dailyAlignment: int
-               instrument: AUD_USD
-               granularity: 'D'
-               alignmentTimezone: 'Europe/London'
-        resp : object
-               returned by requests module
-        instrument: str
+        dailyAlignment: int
+        alignmentTimezone: 'Europe/London'
         '''
 
+        self.instrument=instrument
+        self.granularity=granularity
+        self.url=url
         self.roll=roll
-        startObj=self.validate_datetime(params['start'], params['granularity'], roll=roll)
-        params['start']=startObj.isoformat()
-        endObj=None
-        if 'end' in params:
-            endObj = self.validate_datetime(params['end'], params['granularity'], roll=roll)
+        self.data=data
 
-            #Increase end time by one minute to make the last candle end time match the params['end']
+        allowed_keys = ['dailyAlignment','granularity',
+                        'alignmentTimezone']
+        self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
+
+    def run(self, start, end=None, count=None,roll=False):
+        '''
+        Function to run a particular REST query. It will set self.data with the data response
+
+        Parameters
+        ----------
+
+        start: Datetime object
+               Date and time for first candle. Required
+        end:   Datetime object
+               Date and time for last candle. Optional
+        count: int
+               If end is not defined, then this controls the number of candles from the start
+               that will be retrieved
+        roll: bool
+               If True, then extend the end date, which falls on close market, to the next period for which
+               the market is open. Default=False
+
+        Returns
+        -------
+        int: Response code of the REST query
+        '''
+        startObj = self.validate_datetime(start, self.granularity, roll=roll)
+        start = startObj.isoformat()
+        params={}
+        params['instrument'] = self.instrument
+        params['granularity'] = self.granularity
+        params['start'] = start
+        endObj = None
+        if end is not None and count is None:
+            endObj = self.validate_datetime(end, self.granularity, roll=roll)
+
+            # Increase end time by one minute to make the last candle end time match the params['end']
             min = datetime.timedelta(minutes=1)
-            endObj=endObj+min
-            params['end']=endObj.isoformat()
+            endObj = endObj + min
+            end = endObj.isoformat()
+            params['end']=end
+        elif count is not None:
+            params['count'] = count
+        elif end is None and count is None:
+            raise Exception("You need to set at least the 'end' or the 'count' attribute")
 
-        if url:
-            resp = requests.get(url=url,params=params)
+        if self.url:
+            resp = requests.get(url=self.url, params=params)
 
-            self.resp=resp
             if resp.status_code != 200:
-                 # This means something went wrong.
-                 print("Something went wrong. url used was:\n{0}".format(resp.url))
-                 raise Exception('GET /candles {}'.format(resp.status_code))
-    
-            if data:
-                self.data=data
-            else:
+                # This means something went wrong.
+                print("Something went wrong. url used was:\n{0}".format(resp.url))
+                raise Exception('GET /candles {}'.format(resp.status_code))
+
                 self.data = json.loads(resp.content.decode("utf-8"))
-                if 'end' in params:self.__validate_end(endObj-min)
+                if 'end' in params: self.__validate_end(endObj - min)
 
     def validate_datetime(self,datestr,granularity,roll=False):
         '''
@@ -93,8 +118,16 @@ class OandaAPI(object):
         except ValueError:
             raise ValueError("Incorrect date format, should be %Y-%m-%dT%H:%M:%S")
 
-        # check if datetime falls on close market
-        if (dateObj.weekday() == 4 or dateObj.weekday() == 5) and dateObj.time() >= datetime.time(21, 0, 0):
+        #check if datestr returns a candle
+        params = {}
+        params['instrument'] = self.instrument
+        params['granularity'] = self.granularity
+        params['start'] = datestr
+        params['count'] = 1
+
+        resp = requests.get(url=self.url, params=params)
+
+        if resp.ok is not True:
             if roll is True:
                 dateObj=self.__roll_datetime(dateObj,granularity)
             else:
