@@ -2,6 +2,7 @@ from __future__ import division
 import datetime
 import pdb
 import re
+import warnings
 from OandaAPI import OandaAPI
 from CandleList import CandleList
 from HArea import HArea
@@ -73,6 +74,8 @@ class Trade(object):
         Run the trade until conclusion from a start date
         '''
 
+        warnings.warn("[INFO] Run run_trade")
+
         entry = HArea(price=self.entry,pips=1, instrument=self.pair, granularity=self.timeframe)
         SL = HArea(price=self.SL,pips=1, instrument=self.pair, granularity=self.timeframe)
         TP = HArea(price=self.TP, pips=1, instrument=self.pair, granularity=self.timeframe)
@@ -92,10 +95,12 @@ class Trade(object):
                              instrument=self.pair,
                              granularity=self.timeframe,
                              dailyAlignment=22,
-                             roll=True,
-                             alignmentTimezone='Europe/London',
-                             start=d.isoformat(),
-                             count=1)
+                             alignmentTimezone='Europe/London')
+
+            oanda.run(start=d.isoformat(),
+                      count=1,
+                      roll=True)
+
             cl=oanda.fetch_candleset()[0]
 
             entry_time = entry.get_cross_time(candle=cl)
@@ -113,6 +118,9 @@ class Trade(object):
                     self.outcome = 'success'
                     self.end=success_time
                     break
+
+        warnings.warn("[INFO] Done run_trade")
+        pdb.set_trace()
 
     def __str__(self):
         sb = []

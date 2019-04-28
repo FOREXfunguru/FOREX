@@ -181,7 +181,7 @@ def test_OandaAPI11():
               roll=True)
 
     assert 1
-"""
+
 def test_fetch_candleset(oanda_object):
     '''
     Test how a Candle list is retrieved
@@ -189,20 +189,24 @@ def test_fetch_candleset(oanda_object):
 
     '''
 
+    oanda_object.run(start='2018-11-04T22:00:00',
+                    end='2018-11-08T22:00:00',
+                    roll=True)
+
     candle_list = oanda_object.fetch_candleset()
-    assert candle_list[0].highBid == 0.79328
-    assert candle_list[0].openBid == 0.7873
-    assert candle_list[0].lowBid == 0.7857
+    assert candle_list[0].highBid == 0.7217
+    assert candle_list[0].openBid == 0.71896
+    assert candle_list[0].lowBid == 0.71821
     assert candle_list[0].representation == 'bidask'
-    assert candle_list[0].lowAsk == 0.786
+    assert candle_list[0].lowAsk == 0.71835
     assert candle_list[0].complete == True
-    assert candle_list[0].openAsk == 0.7889
-    assert candle_list[0].highAsk == 0.79345
-    assert candle_list[0].highBid == 0.79328
-    assert candle_list[0].volume == 11612
-    assert candle_list[0].closeBid == 0.79316
-    assert candle_list[0].closeAsk == 0.79335
-    assert candle_list[0].openBid == 0.7873
+    assert candle_list[0].openAsk == 0.71958
+    assert candle_list[0].highAsk == 0.72187
+    assert candle_list[0].highBid == 0.7217
+    assert candle_list[0].volume == 8476
+    assert candle_list[0].closeBid == 0.72084
+    assert candle_list[0].closeAsk == 0.72118
+    assert candle_list[0].openBid == 0.71896
 
 def test_fetch_one_candle():
     oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
@@ -213,6 +217,9 @@ def test_fetch_one_candle():
                      start='2015-01-25T22:00:00',
                      count=1)
 
+    oanda.run(start='2015-01-25T22:00:00',
+              count=1)
+
     candle_list=oanda.fetch_candleset()
     assert candle_list[0].highBid == 0.79329
     assert candle_list[0].openBid == 0.7873
@@ -221,4 +228,3 @@ def test_fetch_one_candle():
     assert candle_list[0].lowAsk == 0.786
     assert candle_list[0].complete == True
     assert candle_list[0].openAsk == 0.7889
-"""

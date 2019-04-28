@@ -93,8 +93,8 @@ class OandaAPI(object):
                 print("Something went wrong. url used was:\n{0}".format(resp.url))
                 raise Exception('GET /candles {}'.format(resp.status_code))
 
-                self.data = json.loads(resp.content.decode("utf-8"))
-                if 'end' in params: self.__validate_end(endObj - min)
+            self.data = json.loads(resp.content.decode("utf-8"))
+            if 'end' in params: self.__validate_end(endObj - min)
 
     def validate_datetime(self,datestr,granularity,roll=False):
         '''
@@ -118,15 +118,24 @@ class OandaAPI(object):
         except ValueError:
             raise ValueError("Incorrect date format, should be %Y-%m-%dT%H:%M:%S")
 
-        nhours = None
+        nhours=None
+        delta = None
         if granularity == "D":
-            nhours = 24
+            nhours=24
+            delta = datetime.timedelta(hours=24)
         else:
-            p = re.compile('^H')
-            m = p.match(granularity)
-            if m:
+            p1 = re.compile('^H')
+            m1 = p1.match(granularity)
+            if m1:
                 nhours = int(granularity.replace('H', ''))
-        delta=datetime.timedelta(hours=nhours)
+                delta = datetime.timedelta(hours=int(nhours))
+            nmins = None
+            p2 = re.compile('^M')
+            m2 = p2.match(granularity)
+            if m2:
+                nmins = int(granularity.replace('M', ''))
+                delta = datetime.timedelta(minutes=int(nmins))
+
         endObj=dateObj+delta
 
         #check if datestr returns a candle
@@ -207,6 +216,7 @@ class OandaAPI(object):
             resp = requests.get(url=self.url, params=params)
             resp_code=resp.status_code
 
+        print("Time was rolled from {0} to {1}".format(dateObj,startObj))
         return startObj
 
     def __validate_end(self,endObj):

@@ -1,4 +1,5 @@
 import pdb
+import warnings
 
 from Pattern.Counter import Counter
 from OandaAPI import OandaAPI
@@ -117,6 +118,8 @@ class CounterDbTp(Counter):
         It will initialise all object's features
         '''
 
+        warnings.warn("[INFO] Run init_feats")
+
         self.set_lasttime()
         self.set_entry_onrsi()
         self.set_1stbounce()
@@ -124,6 +127,8 @@ class CounterDbTp(Counter):
         self.bounces_fromlasttime()
         self.set_diff()
         self.set_valley()
+
+        warnings.warn("[INFO] Done init_feats")
 
     def init_trend_feats(self):
         '''
@@ -134,6 +139,8 @@ class CounterDbTp(Counter):
         -------
         Nothing
         '''
+
+        warnings.warn("[INFO] Run init_trend_feats")
 
         c = Counter(
             start=str(self.bounce_1st[0]),
@@ -154,6 +161,8 @@ class CounterDbTp(Counter):
         self.divergence=c.divergence
         self.length_candles=c.length_candles
         self.length_pips=c.length_pips
+
+        warnings.warn("[INFO] Done init_trend_feats")
 
     def set_diff(self):
         '''
@@ -183,9 +192,10 @@ class CounterDbTp(Counter):
                          instrument=self.pair,
                          granularity=self.timeframe,
                          alignmentTimezone='Europe/London',
-                         dailyAlignment=22,
-                         start=self.bounce_1st[0].isoformat(),
-                         end=self.bounce_2nd[0].isoformat())
+                         dailyAlignment=22)
+
+        oanda.run(start=self.bounce_1st[0].isoformat(),
+                  end=self.bounce_2nd[0].isoformat())
 
         candle_list = oanda.fetch_candleset()
 

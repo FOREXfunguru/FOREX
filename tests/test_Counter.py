@@ -39,7 +39,7 @@ def test_calc_itrend(counter_object_notrendi):
 
     counter_object_notrendi.calc_itrend()
 
-'''
+
 def test_get_bounces(counter_object):
 
     counter_object.set_bounces()
@@ -64,7 +64,7 @@ def test_set_slope(counter_object):
 
     counter_object.set_slope()
 
-    assert counter_object.slope==0.0012079965476318906
+    assert counter_object.slope==0.0012117685237683143
 
 def test_set_n_rsibounces(counter_object):
 
@@ -99,4 +99,3 @@ def test_set_length_pips(counter_object):
     counter_object.set_length_pips()
 
     assert counter_object.length_pips == 1259
-'''

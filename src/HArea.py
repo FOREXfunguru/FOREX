@@ -209,10 +209,12 @@ class HArea(object):
                              instrument=self.instrument,
                              granularity=granularity,
                              dailyAlignment=22,
-                             roll=True,
-                             alignmentTimezone='Europe/London',
-                             start=cstart.isoformat(),
-                             end=cend.isoformat())
+                             alignmentTimezone='Europe/London')
+
+            oanda.run(start=cstart.isoformat(),
+                      end=cend.isoformat(),
+                      roll=True)
+
             candle_list = oanda.fetch_candleset()
             for c in candle_list:
                 if c.lowAsk <= self.price <= c.highAsk:

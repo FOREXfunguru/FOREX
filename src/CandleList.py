@@ -340,11 +340,12 @@ class CandleList(object):
         oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                          instrument=self.instrument,
                          granularity=self.granularity,
-                         roll=True,
                          alignmentTimezone='Europe/London',
-                         dailyAlignment=22,
-                         start=start_calc_time.isoformat(),
-                         end=end_time.isoformat())
+                         dailyAlignment=22)
+
+        oanda.run(start=start_calc_time.isoformat(),
+                  end=end_time.isoformat(),
+                  roll=True)
 
         candle_list = oanda.fetch_candleset()
 

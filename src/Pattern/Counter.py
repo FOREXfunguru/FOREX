@@ -1,5 +1,6 @@
 import pdb
 import datetime
+import warnings
 from OandaAPI import OandaAPI
 from CandleList import CandleList
 from HArea import HArea
@@ -91,20 +92,27 @@ class Counter(object):
         Private function to initialise self.clist_trend class attribute
         '''
 
+        warnings.warn("[INFO] Run __init_clist_trend")
+
         # checking for feats in trend before 1st bounce
         oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                          instrument=self.pair,
                          granularity=self.timeframe,
                          alignmentTimezone='Europe/London',
-                         dailyAlignment=22,
-                         start=self.trend_i.isoformat(),
-                         end=self.start.isoformat())
+                         dailyAlignment=22)
+
+        oanda.run(start=self.trend_i.isoformat(),
+                  end=self.start.isoformat())
 
         candle_list = oanda.fetch_candleset()
 
         cl = CandleList(candle_list, self.pair, granularity=self.timeframe)
 
+        warnings.warn("[INFO] Run cl.calc_rsi")
+
         cl.calc_rsi(period=self.period)
+
+        warnings.warn("[INFO] Done cl.calc_rsi")
 
         self.clist_trend = cl
 
@@ -113,6 +121,8 @@ class Counter(object):
         '''
         Private function to initialise self.clist_period class attribute
         '''
+
+        warnings.warn("[INFO] Run __init_clist_period")
 
         delta = None
         delta_1 = None
@@ -131,15 +141,20 @@ class Counter(object):
                          instrument=self.pair,
                          granularity=self.timeframe,
                          alignmentTimezone='Europe/London',
-                         dailyAlignment=22,
-                         start=start.isoformat(),
-                         end=end.isoformat())
+                         dailyAlignment=22)
+
+        oanda.run(start=start.isoformat(),
+                  end=end.isoformat())
 
         candle_list = oanda.fetch_candleset()
 
         cl = CandleList(candle_list, self.pair, granularity=self.timeframe)
 
+        warnings.warn("[INFO] Run cl.calc_rsi")
+
         cl.calc_rsi(period=self.period)
+
+        warnings.warn("[INFO] Done cl.calc_rsi")
 
         self.clist_period = cl
 
