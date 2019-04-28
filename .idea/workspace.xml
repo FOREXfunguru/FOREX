@@ -4,6 +4,7 @@
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OandaAPI.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OandaAPI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_OandaAPI.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_OandaAPI.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -43,8 +44,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Pattern/CounterDbTp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state>
-              <caret column="10" selection-start-column="10" selection-end-column="10" />
+            <state relative-caret-position="229">
+              <caret line="56" column="84" lean-forward="true" selection-start-line="54" selection-start-column="9" selection-end-line="56" selection-end-column="84" />
+              <folding>
+                <element signature="e#0#10#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -76,8 +80,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Pattern/Counter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1875">
-              <caret line="125" lean-forward="true" selection-start-line="117" selection-start-column="7" selection-end-line="125" />
+            <state relative-caret-position="357">
+              <caret line="64" column="50" lean-forward="true" selection-start-line="64" selection-start-column="42" selection-end-line="64" selection-end-column="50" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -109,11 +113,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="181">
-              <caret line="166" lean-forward="true" selection-start-line="166" selection-end-line="166" />
+            <state relative-caret-position="192">
+              <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
               <folding>
                 <element signature="e#0#13#0" expanded="true" />
               </folding>
@@ -121,13 +125,18 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/OandaAPI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="379">
-              <caret line="195" column="82" selection-start-line="195" selection-start-column="82" selection-end-line="195" selection-end-column="82" />
+            <state relative-caret-position="181">
+              <caret line="193" selection-start-line="193" selection-end-line="193" />
               <folding>
                 <element signature="e#55#65#0" expanded="true" />
+                <element signature="e#7602#7706#0" />
+                <element signature="e#7755#8431#0" />
+                <element signature="e#8490#9327#0" />
+                <element signature="e#9361#9382#0" />
+                <element signature="e#9415#9548#0" />
               </folding>
             </state>
           </provider>
@@ -144,8 +153,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>fit</find>
-      <find>lastime</find>
       <find>set_en</find>
       <find>fetch</find>
       <find>hours</find>
@@ -170,10 +177,12 @@
       <find>week</find>
       <find>pdb.s</find>
       <find>Oanda</find>
-      <find>pdb.</find>
-      <find>replc</find>
       <find>number_bounce</find>
       <find>timedel</find>
+      <find>replc</find>
+      <find>combine</find>
+      <find>iso</find>
+      <find>pdb.</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -203,11 +212,11 @@
         <option value="$PROJECT_DIR$/src/Pattern/CounterDbTp.py" />
         <option value="$PROJECT_DIR$/src/Pattern/Counter.py" />
         <option value="$PROJECT_DIR$/src/TradeJournal/TradeJournal.py" />
-        <option value="$PROJECT_DIR$/tests/test_OandaAPI.py" />
         <option value="$PROJECT_DIR$/src/CandleList.py" />
         <option value="$PROJECT_DIR$/src/HArea.py" />
         <option value="$PROJECT_DIR$/src/TradeJournal/Trade.py" />
         <option value="$PROJECT_DIR$/src/OandaAPI.py" />
+        <option value="$PROJECT_DIR$/tests/test_OandaAPI.py" />
       </list>
     </option>
   </component>
@@ -624,7 +633,21 @@
       <option name="project" value="LOCAL" />
       <updated>1556319783007</updated>
     </task>
-    <option name="localTasksCounter" value="40" />
+    <task id="LOCAL-00040" summary="solving time discrepancy in daylight savings">
+      <created>1556350701887</created>
+      <option name="number" value="00040" />
+      <option name="presentableId" value="LOCAL-00040" />
+      <option name="project" value="LOCAL" />
+      <updated>1556350701887</updated>
+    </task>
+    <task id="LOCAL-00041" summary="solving time discrepancy in daylight savings">
+      <created>1556407219946</created>
+      <option name="number" value="00041" />
+      <option name="presentableId" value="LOCAL-00041" />
+      <option name="project" value="LOCAL" />
+      <updated>1556407219946</updated>
+    </task>
+    <option name="localTasksCounter" value="42" />
     <servers />
   </component>
   <component name="TodoView">
@@ -650,7 +673,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32891566" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4986215" visible="true" weight="0.22891566" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4986215" visible="true" weight="0.23012048" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5013785" side_tool="true" weight="0.12992701" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32891566" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -678,7 +701,6 @@
     </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="working in run_trade" />
     <MESSAGE value="adding run_trade code" />
     <MESSAGE value="adding changes in Trade" />
     <MESSAGE value="writing script to calc dbpt feats" />
@@ -703,7 +725,8 @@
     <MESSAGE value="validation of dateime on OandaAPI" />
     <MESSAGE value="Changes in OandaApi validation" />
     <MESSAGE value="Changes in OandaApi validation1" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes in OandaApi validation1" />
+    <MESSAGE value="solving time discrepancy in daylight savings" />
+    <option name="LAST_COMMIT_MESSAGE" value="solving time discrepancy in daylight savings" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Untitled.ipynb" />
@@ -889,39 +912,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="181">
-          <caret line="166" lean-forward="true" selection-start-line="166" selection-end-line="166" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/CandleList.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="60">
           <caret line="4" column="32" lean-forward="true" selection-start-line="3" selection-end-line="4" selection-end-column="32" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Pattern/CounterDbTp.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <caret column="10" selection-start-column="10" selection-end-column="10" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Pattern/Counter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1875">
-          <caret line="125" lean-forward="true" selection-start-line="117" selection-start-column="7" selection-end-line="125" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -946,12 +942,47 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/Pattern/Counter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="357">
+          <caret line="64" column="50" lean-forward="true" selection-start-line="64" selection-start-column="42" selection-end-line="64" selection-end-column="50" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Pattern/CounterDbTp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="229">
+          <caret line="56" column="84" lean-forward="true" selection-start-line="54" selection-start-column="9" selection-end-line="56" selection-end-column="84" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/OandaAPI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="379">
-          <caret line="195" column="82" selection-start-line="195" selection-start-column="82" selection-end-line="195" selection-end-column="82" />
+        <state relative-caret-position="181">
+          <caret line="193" selection-start-line="193" selection-end-line="193" />
           <folding>
             <element signature="e#55#65#0" expanded="true" />
+            <element signature="e#7602#7706#0" />
+            <element signature="e#7755#8431#0" />
+            <element signature="e#8490#9327#0" />
+            <element signature="e#9361#9382#0" />
+            <element signature="e#9415#9548#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="192">
+          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
           </folding>
         </state>
       </provider>

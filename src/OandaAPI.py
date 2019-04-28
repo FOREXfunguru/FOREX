@@ -18,7 +18,7 @@ class OandaAPI(object):
     Class representing the content returned by a GET request to Oanda's REST API
     '''
     
-    def __init__(self, instrument, granularity, url=None, data=None, roll=False, **kwargs):
+    def __init__(self, instrument, granularity, url=None, data=None, **kwargs):
         '''
         Constructor
 
@@ -37,7 +37,6 @@ class OandaAPI(object):
         self.instrument=instrument
         self.granularity=granularity
         self.url=url
-        self.roll=roll
         self.data=data
 
         allowed_keys = ['dailyAlignment','granularity',
@@ -111,6 +110,7 @@ class OandaAPI(object):
                If True, then extend the end date, which falls on close market, to the next period for which
                the market is open. Default=False
         '''
+
         # Generate a datetime object from string
         dateObj = None
         try:
@@ -118,29 +118,31 @@ class OandaAPI(object):
         except ValueError:
             raise ValueError("Incorrect date format, should be %Y-%m-%dT%H:%M:%S")
 
-        #check if datestr returns a candle
-        params = {}
-        params['instrument'] = self.instrument
-        params['granularity'] = self.granularity
-        params['start'] = datestr
-        params['count'] = 1
-
-        resp = requests.get(url=self.url, params=params)
-
-        if resp.ok is not True:
-            if roll is True:
-                dateObj=self.__roll_datetime(dateObj,granularity)
-            else:
-                raise Exception("Date {0} is not valid and falls on closed market".format(datestr))
-
-        nhours=None
+        nhours = None
         if granularity == "D":
-           nhours=24
+            nhours = 24
         else:
             p = re.compile('^H')
             m = p.match(granularity)
             if m:
                 nhours = int(granularity.replace('H', ''))
+        delta=datetime.timedelta(hours=nhours)
+        endObj=dateObj+delta
+
+        #check if datestr returns a candle
+        params = {}
+        params['instrument'] = self.instrument
+        params['granularity'] = self.granularity
+        params['start'] = datestr
+        params['end'] = endObj.isoformat()
+
+        resp = requests.get(url=self.url, params=params)
+        # 204 code means 'no_content'
+        if resp.status_code==204:
+            if roll is True:
+                dateObj=self.__roll_datetime(dateObj,granularity)
+            else:
+                raise Exception("Date {0} is not valid and falls on closed market".format(datestr))
 
         if nhours is not None:
             base= datetime.time(22, 00, 00)
@@ -189,18 +191,23 @@ class OandaAPI(object):
                 nmins = int(granularity.replace('M', ''))
                 delta = datetime.timedelta(minutes=int(nmins))
 
+        resp_code=204
+        startObj=dateObj
+        endObj=None
+        while resp_code==204:
+            startObj=startObj+delta
+            endObj=startObj+delta
+            #check if datestr returns a candle
+            params = {}
+            params['instrument'] = self.instrument
+            params['granularity'] = self.granularity
+            params['start'] = dateObj.isoformat()
+            params['end'] = endObj.isoformat()
 
-        while (dateObj.weekday() >=4 and dateObj.weekday()<=6):
-            if dateObj.weekday() ==4 and dateObj.time()>=datetime.time(21,0):
-                dateObj=dateObj+delta
-            elif dateObj.weekday() == 5:
-                dateObj = dateObj + delta
-            elif dateObj.weekday() ==6 and dateObj.time()<datetime.time(21,0):
-                dateObj = dateObj + delta
-            else:
-                break
+            resp = requests.get(url=self.url, params=params)
+            resp_code=resp.status_code
 
-        return dateObj
+        return startObj
 
     def __validate_end(self,endObj):
         '''
@@ -218,7 +225,6 @@ class OandaAPI(object):
 
         endFetched=pd.datetime.strptime(self.data['candles'][-1]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
         if endObj!= endFetched:
-            pdb.set_trace()
             #check if discrepancy is not in the daylight savings period
             fetched_time=endFetched.time()
             passed_time=endObj.time()
@@ -229,7 +235,6 @@ class OandaAPI(object):
             if endFetched.date()==endObj.date() and abs(dateTimeDifferenceInHours)<=1:
                 return 1
             else:
-                pdb.set_trace()
                 raise Exception("Last candle time does not match the provided end time")
         else:
             return 1

@@ -25,20 +25,15 @@ def test_OandaAPI1(oanda_object):
                       end='2015-01-26T22:00:00')
 
     assert 1
-"""
-def test_OandaAPI2():
+
+def test_OandaAPI2(oanda_object):
     '''
     Test a simple query to Oanda's REST API using range of datetime where start time
     falls on Friday at 22:00:00 (when market has just closed) and code raises an Exception
     '''
     with pytest.raises(Exception):
-        oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                       instrument='AUD_USD',
-                       granularity='D',
-                       alignmentTimezone='Europe/London',
-                       dailyAlignment=22,
-                       start='2018-11-16T22:00:00',
-                       end='2018-11-20T22:00:00')
+        oanda_object.run(start='2018-11-16T22:00:00',
+                         end='2018-11-20T22:00:00')
 
 def test_OandaAPI3():
     '''
@@ -48,9 +43,11 @@ def test_OandaAPI3():
                    instrument='AUD_USD',
                    granularity='H12',
                    alignmentTimezone='Europe/London',
-                   dailyAlignment=22,
-                   start='2018-11-12T10:00:00',
-                   end='2018-11-14T10:00:00')
+                   dailyAlignment=22)
+
+    oanda.run(start='2018-11-12T10:00:00',
+              end='2018-11-14T10:00:00')
+
     assert 1
 
 def test_OandaAPI4():
@@ -63,9 +60,10 @@ def test_OandaAPI4():
                        instrument='AUD_USD',
                        granularity='H12',
                        alignmentTimezone='Europe/London',
-                       dailyAlignment=22,
-                       start='2018-11-12T10:00:00',
-                       end='2018-11-14T11:00:00')
+                       dailyAlignment=22)
+
+        oanda.run(start='2018-11-12T10:00:00',
+                  end='2018-11-14T11:00:00')
 
 def test_OandaAPI5():
     '''
@@ -77,9 +75,10 @@ def test_OandaAPI5():
                        instrument='AUD_USD',
                        granularity='H8',
                        alignmentTimezone='Europe/London',
-                       dailyAlignment=22,
-                       start='2018-11-12T10:00:00',
-                       end='2018-11-14T11:00:00')
+                       dailyAlignment=22)
+
+        oanda.run(start='2018-11-12T10:00:00',
+                  end='2018-11-14T11:00:00')
 
 def test_OandaAPI6():
     '''
@@ -91,11 +90,11 @@ def test_OandaAPI6():
                    instrument='AUD_USD',
                    granularity='D',
                    alignmentTimezone='Europe/London',
-                   dailyAlignment=22,
-                   start='2018-03-26T22:00:00',
-                   end='2018-03-29T22:00:00')
-    assert 1
+                   dailyAlignment=22)
 
+    oanda.run(start='2018-03-26T22:00:00',
+              end='2018-03-29T22:00:00')
+    assert 1
 
 def test_OandaAPI7():
     '''
@@ -108,9 +107,10 @@ def test_OandaAPI7():
                        instrument='AUD_USD',
                        granularity='D',
                        alignmentTimezone='Europe/London',
-                       dailyAlignment=22,
-                       start='2018-05-21T22:00:00',
-                       end='2018-05-26T22:00:00')
+                       dailyAlignment=22)
+
+        oanda.run(start='2018-05-21T21:00:00',
+                  end='2018-05-26T21:00:00')
     assert 1
 
 
@@ -124,12 +124,12 @@ def test_OandaAPI8():
                    instrument='AUD_USD',
                    granularity='D',
                    alignmentTimezone='Europe/London',
-                   dailyAlignment=22,
-                   start='2018-05-21T22:00:00',
-                   count=1)
+                   dailyAlignment=22)
+    oanda.run(start='2018-05-21T22:00:00',
+              count=1)
     assert 1
 
-def test_OandaAPI10():
+def test_OandaAPI9():
     '''
     Test a simple query to Oanda's REST API using a D timeframe and using
     a start and end date falling on closed market
@@ -140,11 +140,12 @@ def test_OandaAPI10():
                        instrument='AUD_USD',
                        granularity='D',
                        alignmentTimezone='Europe/London',
-                       dailyAlignment=22,
-                       start='2018-04-27T21:00:00',
-                       end='2018-04-28T21:00:00')
+                       dailyAlignment=22)
 
-def test_OandaAPI11():
+        oanda.run(start='2018-04-27T21:00:00',
+                  end='2018-04-28T21:00:00')
+
+def test_OandaAPI10():
     '''
     Test a simple query to Oanda's REST API using a H12 timeframe and using
     an end date falling on closed market and the roll option=True
@@ -153,16 +154,16 @@ def test_OandaAPI11():
     oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                    instrument='AUD_USD',
                    granularity='H12',
-                   roll=True,
                    alignmentTimezone='Europe/London',
-                   dailyAlignment=22,
-                   start='2018-04-23T21:00:00',
-                   end='2018-04-28T21:00:00')
+                   dailyAlignment=22)
+
+    oanda.run(start='2018-04-23T21:00:00',
+              end='2018-04-28T21:00:00',
+              roll=True)
     
     assert 1
 
-
-def test_OandaAPI12():
+def test_OandaAPI11():
     '''
     Test a simple query to Oanda's REST API using a H12 timeframe and using
     an end date (with 22h) falling on closed market and the roll option=True
@@ -173,12 +174,14 @@ def test_OandaAPI12():
                      granularity='H12',
                      roll=True,
                      alignmentTimezone='Europe/London',
-                     dailyAlignment=22,
-                     start='2018-11-21T22:00:00',
-                     end='2018-11-24T22:00:00')
+                     dailyAlignment=22)
+
+    oanda.run(start='2018-11-21T22:00:00',
+              end='2018-11-24T22:00:00',
+              roll=True)
 
     assert 1
-
+"""
 def test_fetch_candleset(oanda_object):
     '''
     Test how a Candle list is retrieved
