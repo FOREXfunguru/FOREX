@@ -3,7 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/calculate_ctdbtp.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/calculate_ctdbtp.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/OandaAPI.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/OandaAPI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Pattern/Counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/Counter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TradeJournal/Trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/Trade.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_OandaAPI.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_OandaAPI.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -20,8 +23,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/calculate_ctdbtp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="330">
-              <caret line="22" column="38" selection-start-line="22" selection-start-column="38" selection-end-line="22" selection-end-column="38" />
+            <state relative-caret-position="240">
+              <caret line="16" column="75" selection-start-line="16" selection-start-column="75" selection-end-line="16" selection-end-column="75" />
               <folding>
                 <element signature="e#0#15#0" expanded="true" />
               </folding>
@@ -30,22 +33,10 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/tests/test_CounterDbTp.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="765">
-              <caret line="54" column="3" selection-start-line="54" selection-start-column="3" selection-end-line="54" selection-end-column="3" />
-              <folding>
-                <element signature="e#0#43#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Pattern/CounterDbTp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="229">
-              <caret line="56" column="84" lean-forward="true" selection-start-line="54" selection-start-column="9" selection-end-line="56" selection-end-column="84" />
+            <state relative-caret-position="114">
+              <caret line="141" lean-forward="true" selection-start-line="141" selection-end-line="141" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -53,22 +44,10 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/TradeJournal/Trade.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="88">
-              <caret line="89" column="27" selection-start-line="89" selection-start-column="27" selection-end-line="89" selection-end-column="27" />
-              <folding>
-                <element signature="e#0#31#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/TradeJournal/TradeJournal.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="422">
+            <state relative-caret-position="373">
               <caret line="85" column="27" selection-start-line="85" selection-start-column="27" selection-end-line="85" selection-end-column="27" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
@@ -78,10 +57,34 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/TradeJournal/Trade.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="749">
+              <caret line="112" selection-start-line="112" selection-end-line="112" />
+              <folding>
+                <element signature="e#0#31#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/CandleList.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="683">
+              <caret line="336" column="23" selection-start-line="336" selection-start-column="8" selection-end-line="336" selection-end-column="23" />
+              <folding>
+                <element signature="e#0#23#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Pattern/Counter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="357">
-              <caret line="64" column="50" lean-forward="true" selection-start-line="64" selection-start-column="42" selection-end-line="64" selection-end-column="50" />
+            <state relative-caret-position="2205">
+              <caret line="147" column="22" selection-start-line="147" selection-start-column="22" selection-end-line="147" selection-end-column="22" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -92,8 +95,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/HArea.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="458">
-              <caret line="217" column="55" selection-start-line="217" selection-start-column="55" selection-end-line="217" selection-end-column="55" />
+            <state relative-caret-position="774">
+              <caret line="206" selection-start-line="206" selection-end-line="206" />
               <folding>
                 <element signature="e#0#18#0" expanded="true" />
               </folding>
@@ -102,41 +105,28 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/CandleList.py">
+        <entry file="file://$PROJECT_DIR$/src/OandaAPI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="60">
-              <caret line="4" column="32" lean-forward="true" selection-start-line="3" selection-end-line="4" selection-end-column="32" />
+            <state relative-caret-position="-758">
+              <caret line="117" column="12" selection-start-line="117" selection-start-column="12" selection-end-line="117" selection-end-column="12" />
               <folding>
-                <element signature="e#0#23#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="192">
-              <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
-              <folding>
-                <element signature="e#0#13#0" expanded="true" />
+                <element signature="e#55#65#0" expanded="true" />
+                <element signature="e#7602#7706#0" />
+                <element signature="e#8490#9327#0" />
+                <element signature="e#9361#9382#0" />
+                <element signature="e#9415#9548#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/OandaAPI.py">
+        <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="181">
-              <caret line="193" selection-start-line="193" selection-end-line="193" />
+            <state relative-caret-position="365">
+              <caret line="190" selection-start-line="190" selection-end-line="190" />
               <folding>
-                <element signature="e#55#65#0" expanded="true" />
-                <element signature="e#7602#7706#0" />
-                <element signature="e#7755#8431#0" />
-                <element signature="e#8490#9327#0" />
-                <element signature="e#9361#9382#0" />
-                <element signature="e#9415#9548#0" />
+                <element signature="e#0#13#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -165,7 +155,6 @@
       <find>__get_bounces</find>
       <find>diver</find>
       <find>isof</find>
-      <find>oanda</find>
       <find>set_bounces</find>
       <find>min_dist</find>
       <find>time.</find>
@@ -177,12 +166,13 @@
       <find>week</find>
       <find>pdb.s</find>
       <find>Oanda</find>
-      <find>number_bounce</find>
       <find>timedel</find>
-      <find>replc</find>
       <find>combine</find>
       <find>iso</find>
+      <find>number_bounce</find>
       <find>pdb.</find>
+      <find>replc</find>
+      <find>oanda</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -205,24 +195,24 @@
         <option value="$PROJECT_DIR$/src/Candle.py" />
         <option value="$PROJECT_DIR$/src/TradeJournal/CounterTrade.py" />
         <option value="$PROJECT_DIR$/tests/test_TradeJournal.py" />
-        <option value="$PROJECT_DIR$/tests/test_Counter.py" />
         <option value="$PROJECT_DIR$/scripts/TRAIN/calculate_ctdbtp.py" />
-        <option value="$PROJECT_DIR$/tests/test_CounterDbTp.py" />
-        <option value="$PROJECT_DIR$/scripts/calculate_ctdbtp.py" />
-        <option value="$PROJECT_DIR$/src/Pattern/CounterDbTp.py" />
-        <option value="$PROJECT_DIR$/src/Pattern/Counter.py" />
         <option value="$PROJECT_DIR$/src/TradeJournal/TradeJournal.py" />
         <option value="$PROJECT_DIR$/src/CandleList.py" />
+        <option value="$PROJECT_DIR$/tests/test_CounterDbTp.py" />
+        <option value="$PROJECT_DIR$/tests/test_Counter.py" />
         <option value="$PROJECT_DIR$/src/HArea.py" />
         <option value="$PROJECT_DIR$/src/TradeJournal/Trade.py" />
         <option value="$PROJECT_DIR$/src/OandaAPI.py" />
         <option value="$PROJECT_DIR$/tests/test_OandaAPI.py" />
+        <option value="$PROJECT_DIR$/src/Pattern/Counter.py" />
+        <option value="$PROJECT_DIR$/src/Pattern/CounterDbTp.py" />
+        <option value="$PROJECT_DIR$/scripts/calculate_ctdbtp.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" fullScreen="true">
-    <option name="width" value="2560" />
-    <option name="height" value="1440" />
+    <option name="width" value="1440" />
+    <option name="height" value="900" />
   </component>
   <component name="ProjectView">
     <navigator proportions="" version="1">
@@ -239,18 +229,12 @@
             <path>
               <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
               <item name="FOREX" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="scripts" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
               <item name="FOREX" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="TradeJournal" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
-              <item name="FOREX" type="462c0819:PsiDirectoryNode" />
-              <item name="tests" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -647,7 +631,21 @@
       <option name="project" value="LOCAL" />
       <updated>1556407219946</updated>
     </task>
-    <option name="localTasksCounter" value="42" />
+    <task id="LOCAL-00042" summary="finishing the roll new process">
+      <created>1556466607262</created>
+      <option name="number" value="00042" />
+      <option name="presentableId" value="LOCAL-00042" />
+      <option name="project" value="LOCAL" />
+      <updated>1556466607262</updated>
+    </task>
+    <task id="LOCAL-00043" summary="changing oanda calls">
+      <created>1556491702843</created>
+      <option name="number" value="00043" />
+      <option name="presentableId" value="LOCAL-00043" />
+      <option name="project" value="LOCAL" />
+      <updated>1556491702843</updated>
+    </task>
+    <option name="localTasksCounter" value="44" />
     <servers />
   </component>
   <component name="TodoView">
@@ -660,11 +658,11 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.72537315" visible="true" weight="0.205074" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.72434264" visible="true" weight="0.11461205" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" sideWeight="0.27462685" side_tool="true" weight="0.15715292" />
+      <window_info id="Favorites" order="2" sideWeight="0.27565733" side_tool="true" visible="true" weight="0.11461205" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.5421687" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.3290735" />
@@ -673,7 +671,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32891566" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4986215" visible="true" weight="0.23012048" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.4986215" visible="true" weight="0.13941605" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5013785" side_tool="true" weight="0.12992701" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32891566" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -701,8 +699,6 @@
     </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="adding run_trade code" />
-    <MESSAGE value="adding changes in Trade" />
     <MESSAGE value="writing script to calc dbpt feats" />
     <MESSAGE value="writing script to calc dbpt feats-continuation" />
     <MESSAGE value="dbtp continuation" />
@@ -726,7 +722,9 @@
     <MESSAGE value="Changes in OandaApi validation" />
     <MESSAGE value="Changes in OandaApi validation1" />
     <MESSAGE value="solving time discrepancy in daylight savings" />
-    <option name="LAST_COMMIT_MESSAGE" value="solving time discrepancy in daylight savings" />
+    <MESSAGE value="finishing the roll new process" />
+    <MESSAGE value="changing oanda calls" />
+    <option name="LAST_COMMIT_MESSAGE" value="changing oanda calls" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Untitled.ipynb" />
@@ -812,26 +810,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_Trade.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="615">
-          <caret line="44" column="18" selection-start-line="44" selection-start-column="9" selection-end-line="44" selection-end-column="18" />
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_Counter.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="39" column="41" lean-forward="true" selection-start-line="37" selection-end-line="39" selection-end-column="41" />
-          <folding>
-            <element signature="e#0#35#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_CandleList.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="15">
@@ -865,13 +843,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/bin/anaconda/envs/python3/lib/python3.5/bdb.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="204">
-          <caret line="66" selection-start-line="66" selection-end-line="66" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_TradeJournal.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="870">
@@ -884,92 +855,68 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_CounterDbTp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="765">
-          <caret line="54" column="3" selection-start-line="54" selection-start-column="3" selection-end-line="54" selection-end-column="3" />
+        <state relative-caret-position="889">
+          <caret line="79" column="3" selection-start-line="79" selection-start-column="3" selection-end-line="79" selection-end-column="3" />
           <folding>
             <element signature="e#0#43#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/TradeJournal/TradeJournal.py">
+    <entry file="file://$PROJECT_DIR$/tests/test_Counter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="422">
-          <caret line="85" column="27" selection-start-line="85" selection-start-column="27" selection-end-line="85" selection-end-column="27" />
+        <state relative-caret-position="-28">
+          <caret line="64" column="30" selection-start-line="64" selection-start-column="30" selection-end-line="64" selection-end-column="30" />
           <folding>
-            <element signature="e#0#19#0" expanded="true" />
+            <element signature="e#0#35#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/calculate_ctdbtp.py">
+    <entry file="file://$PROJECT_DIR$/tests/test_Trade.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="330">
-          <caret line="22" column="38" selection-start-line="22" selection-start-column="38" selection-end-line="22" selection-end-column="38" />
+        <state relative-caret-position="367">
+          <caret line="44" column="18" selection-start-line="44" selection-start-column="9" selection-end-line="44" selection-end-column="18" />
           <folding>
-            <element signature="e#0#15#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/CandleList.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="60">
-          <caret line="4" column="32" lean-forward="true" selection-start-line="3" selection-end-line="4" selection-end-column="32" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
+            <element signature="e#0#13#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/HArea.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="458">
-          <caret line="217" column="55" selection-start-line="217" selection-start-column="55" selection-end-line="217" selection-end-column="55" />
+        <state relative-caret-position="774">
+          <caret line="206" selection-start-line="206" selection-end-line="206" />
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/TradeJournal/Trade.py">
+    <entry file="file://$USER_HOME$/bin/anaconda/envs/python3/lib/python3.5/bdb.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="88">
-          <caret line="89" column="27" selection-start-line="89" selection-start-column="27" selection-end-line="89" selection-end-column="27" />
-          <folding>
-            <element signature="e#0#31#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="204">
+          <caret line="95" selection-start-line="95" selection-end-line="95" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Pattern/Counter.py">
+    <entry file="file://$PROJECT_DIR$/src/CandleList.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="357">
-          <caret line="64" column="50" lean-forward="true" selection-start-line="64" selection-start-column="42" selection-end-line="64" selection-end-column="50" />
+        <state relative-caret-position="683">
+          <caret line="336" column="23" selection-start-line="336" selection-start-column="8" selection-end-line="336" selection-end-column="23" />
           <folding>
-            <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/Pattern/CounterDbTp.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="229">
-          <caret line="56" column="84" lean-forward="true" selection-start-line="54" selection-start-column="9" selection-end-line="56" selection-end-column="84" />
-          <folding>
-            <element signature="e#0#10#0" expanded="true" />
+            <element signature="e#0#23#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/OandaAPI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="181">
-          <caret line="193" selection-start-line="193" selection-end-line="193" />
+        <state relative-caret-position="-758">
+          <caret line="117" column="12" selection-start-line="117" selection-start-column="12" selection-end-line="117" selection-end-column="12" />
           <folding>
             <element signature="e#55#65#0" expanded="true" />
             <element signature="e#7602#7706#0" />
-            <element signature="e#7755#8431#0" />
             <element signature="e#8490#9327#0" />
             <element signature="e#9361#9382#0" />
             <element signature="e#9415#9548#0" />
@@ -979,10 +926,67 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="17" lean-forward="true" selection-start-line="17" selection-end-line="17" />
+        <state relative-caret-position="365">
+          <caret line="190" selection-start-line="190" selection-end-line="190" />
           <folding>
             <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Pattern/Counter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2205">
+          <caret line="147" column="22" selection-start-line="147" selection-start-column="22" selection-end-line="147" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Pattern/CounterDbTp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="114">
+          <caret line="141" lean-forward="true" selection-start-line="141" selection-end-line="141" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/calculate_ctdbtp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="240">
+          <caret line="16" column="75" selection-start-line="16" selection-start-column="75" selection-end-line="16" selection-end-column="75" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/Trade.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="749">
+          <caret line="112" selection-start-line="112" selection-end-line="112" />
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/bin/anaconda/envs/python3/lib/python3.5/site-packages/OpenSSL/SSL.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="384">
+          <caret line="1913" selection-start-line="1913" selection-end-line="1913" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/TradeJournal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="373">
+          <caret line="85" column="27" selection-start-line="85" selection-start-column="27" selection-end-line="85" selection-end-column="27" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
           </folding>
         </state>
       </provider>

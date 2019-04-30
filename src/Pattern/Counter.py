@@ -144,7 +144,9 @@ class Counter(object):
                          dailyAlignment=22)
 
         oanda.run(start=start.isoformat(),
-                  end=end.isoformat())
+                  end=end.isoformat(),
+                  roll=True
+                  )
 
         candle_list = oanda.fetch_candleset()
 

@@ -28,6 +28,8 @@ class Trade(object):
          Time/date when the trade ended. i.e. 20-03-2017 08:20:00
     entry: float, Optional
            entry price
+    entry_time: datetime.optional
+                Datetime for price reaching the entry price
     type: str, Optional
           What is the type of the trade (long,short)
     SL:  float, Optional
@@ -86,6 +88,9 @@ class Trade(object):
         else:
             period = int(self.timeframe.replace('H', ''))
 
+        # generate a range of dates starting at self.start and ending numperiods later in order to assess the outcome
+        # of trade and also the entry time
+
         numperiods=100
         date_list = [datetime.datetime.strptime(str(self.start.isoformat()),'%Y-%m-%dT%H:%M:%S') + datetime.timedelta(hours=x*period) for x in range(0, numperiods)]
 
@@ -103,7 +108,10 @@ class Trade(object):
 
             cl=oanda.fetch_candleset()[0]
 
-            entry_time = entry.get_cross_time(candle=cl)
+            if entered is False:
+                entry_time = entry.get_cross_time(candle=cl)
+                warnings.warn("\t[INFO] Trade entered")
+                self.entry_time = entry_time.isoformat()
             if entry_time is not None:
                 entered=True
             if entered is True:
@@ -111,16 +119,16 @@ class Trade(object):
                 if failure_time is not None:
                     self.outcome='failure'
                     self.end = failure_time
+                    warnings.warn("\t[INFO] S/L was hit")
                     break
             if entered is True:
                 success_time = TP.get_cross_time(candle=cl)
                 if success_time is not None:
                     self.outcome = 'success'
+                    warnings.warn("\t[INFO] T/P was hit")
                     self.end=success_time
                     break
-
         warnings.warn("[INFO] Done run_trade")
-        pdb.set_trace()
 
     def __str__(self):
         sb = []

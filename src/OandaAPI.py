@@ -17,7 +17,28 @@ class OandaAPI(object):
     '''
     Class representing the content returned by a GET request to Oanda's REST API
     '''
-    
+
+    # static dictionary with start date for historical data on each of the instruments
+    start_hist_data={
+        'AUD_CAD': datetime.datetime(2004, 6, 5, 22, 0),
+        'AUD_JPY': datetime.datetime(2004, 6, 5, 22, 0),
+        'AUD_NZD': datetime.datetime(2004, 6, 5, 22, 0),
+        'AUD_USD': datetime.datetime(2002, 6, 5, 22, 0),
+        'EUR_AUD': datetime.datetime(2004, 6, 5, 22, 0),
+        'EUR_CHF': datetime.datetime(2002, 6, 5, 22, 0),
+        'EUR_GBP': datetime.datetime(2002, 6, 5, 22, 0),
+        'EUR_JPY': datetime.datetime(2002, 6, 5, 22, 0),
+        'EUR_USD': datetime.datetime(2002, 6, 5, 22, 0),
+        'GBP_AUD': datetime.datetime(2004, 6, 5, 22, 0),
+        'GBP_JPY': datetime.datetime(2002, 6, 5, 22, 0),
+        'GBP_USD': datetime.datetime(2002, 6, 5, 22, 0),
+        'NZD_JPY': datetime.datetime(2004, 6, 5, 22, 0),
+        'NZD_USD': datetime.datetime(2002, 9, 5, 22, 0),
+        'USD_CAD': datetime.datetime(2002, 6, 5, 22, 0),
+        'USD_CHF': datetime.datetime(2002, 6, 5, 22, 0),
+        'USD_JPY': datetime.datetime(2002, 6, 5, 22, 0)
+    }
+
     def __init__(self, instrument, granularity, url=None, data=None, **kwargs):
         '''
         Constructor
@@ -94,7 +115,7 @@ class OandaAPI(object):
                 raise Exception('GET /candles {}'.format(resp.status_code))
 
             self.data = json.loads(resp.content.decode("utf-8"))
-            if 'end' in params: self.__validate_end(endObj - min)
+           # if 'end' in params: self.__validate_end(endObj - min)
 
     def validate_datetime(self,datestr,granularity,roll=False):
         '''
@@ -173,6 +194,9 @@ class OandaAPI(object):
         Private function to roll the datetime, which falls on a closed market to the next period (set by granularity)
         with open market
 
+        If dateObj falls before the start of the historical data record for self.instrument then roll to the start
+        of the historical record
+
         Parameters
         ----------
         dateObj : datetime object
@@ -182,6 +206,16 @@ class OandaAPI(object):
         datetime object
                  Returns the rolled datetime object
         '''
+
+        # check if dateObj is previous to the start of historical data for self.instrument
+        if self.instrument not in self.start_hist_data:
+            raise Exception("Inexistent start of historical record info for {0}".format(self.instrument))
+
+        if dateObj< self.start_hist_data[self.instrument]:
+            rolledateObj= self.start_hist_data[self.instrument]
+            print("Date precedes the start of the historical record.\n"
+                  "Time was rolled from {0} to {1}".format(dateObj, rolledateObj))
+            return rolledateObj
 
         delta = None
         if granularity == "D":
@@ -233,6 +267,7 @@ class OandaAPI(object):
         1 if it validates
         '''
 
+        pdb.set_trace()
         endFetched=pd.datetime.strptime(self.data['candles'][-1]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
         if endObj!= endFetched:
             #check if discrepancy is not in the daylight savings period

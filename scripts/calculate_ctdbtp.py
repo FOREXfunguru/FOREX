@@ -14,7 +14,7 @@ td = TradeJournal(url=args.ifile, worksheet='counter_doubletop')
 
 trade_list = td.fetch_trades(strat='counter_doubletop',run=True)
 
-td.write_trades(trade_list, colnames=['id', 'start', 'strat', 'entry', 'outcome',
+td.write_trades(trade_list, colnames=['id', 'start', 'strat', 'entry', 'entry_time','outcome',
                                       'trend_i', 'type', 'timeframe', 'SR', 'TP',
                                       'SR', 'length_candles', 'length_pips',
                                       'n_rsibounces', 'rsibounces_lengths', 'bounces',
