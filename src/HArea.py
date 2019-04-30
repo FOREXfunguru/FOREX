@@ -191,7 +191,9 @@ class HArea(object):
 
         Returns
         ------
-        datetime object with crossing time
+        datetime object with crossing time.
+                 n.a. if crossing time could not retrieved. This can happens
+                 when there is an artifactual jump in the Oanda data
         '''
 
         if candle.lowAsk <= self.price <= candle.highAsk:
@@ -219,4 +221,6 @@ class HArea(object):
             for c in candle_list:
                 if c.lowAsk <= self.price <= c.highAsk:
                     return c.time
+        else:
+            return 'n.a.'
 

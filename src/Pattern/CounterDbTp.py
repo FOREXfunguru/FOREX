@@ -48,11 +48,15 @@ class CounterDbTp(Counter):
                   Number of rsi bounces for trend conducting to 1st bounce
     slope: float, Optional
            Float with the slope of trend conducting to 1st bounce
+    HR_pips: int, Optional
+             Number of pips over/below S/R used for trying to identify bounces
+             Default: 200
     '''
 
-    def __init__(self, pair, start, **kwargs):
+    def __init__(self, pair, start, HR_pips=200, **kwargs):
 
         self.start = start
+        self.HR_pips = HR_pips
         allowed_keys = ['timeframe','entry','period', 'trend_i', 'type', 'SL',
                         'TP', 'SR', 'RR']
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
@@ -68,7 +72,7 @@ class CounterDbTp(Counter):
         Nothing
         '''
 
-        self.set_bounces(part='openAsk',pips=75)
+        self.set_bounces(part='openAsk',pips=self.HR_pips)
         if len(self.bounces)<2: raise Exception("Less than 2 bounces were found for this trade."
                                                 "Perphaps you can try to run peakutils with lower threshold "
                                                 "or min_dist parameters")

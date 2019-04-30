@@ -20,6 +20,6 @@ td.write_trades(trade_list, colnames=['id', 'start', 'strat', 'entry', 'entry_ti
                                       'n_rsibounces', 'rsibounces_lengths', 'bounces',
                                       'bounces_lasttime', 'entry_onrsi', 'last_time',
                                       'slope', 'divergence', 'bounce_1st', 'bounce_2nd',
-                                      'rsi_1st', 'rsi_2nd', 'diff', 'valley'])
+                                      'rsi_1st', 'rsi_2nd', 'diff', 'valley','HR_pips'])
 
 print("h")

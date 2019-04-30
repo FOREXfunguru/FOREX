@@ -491,7 +491,7 @@ class CandleList(object):
         return bounces
 
 
-    def fit_reg_line(self, part='openAsk', outfile='regression_line.png'):
+    def fit_reg_line(self, part='openAsk', smooth='rolling_average', outfile='regression_line.png'):
         '''
         Function to fit a linear regression
         line on candle list. This can be used in order to assess the direction of
@@ -503,6 +503,11 @@ class CandleList(object):
                What part of the candle will be used for calculating the length in pips
                Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid'
                Default: openAsk
+        smooth : str
+                 What method will be used in order to smooth the data
+                 Possible values are: 'rolling_average'
+        k : int
+            Window size used for calculating the rolling average. Default: 12
         outfile : FILE
                   Path to output .png file that will show the fitted regression line
 

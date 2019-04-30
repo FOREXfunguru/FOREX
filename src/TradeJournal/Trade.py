@@ -111,7 +111,10 @@ class Trade(object):
             if entered is False:
                 entry_time = entry.get_cross_time(candle=cl)
                 warnings.warn("\t[INFO] Trade entered")
-                self.entry_time = entry_time.isoformat()
+                if entry_time!='n.a.':
+                    self.entry_time = entry_time.isoformat()
+                else:
+                    self.entry_time = entry_time
             if entry_time is not None:
                 entered=True
             if entered is True:
