@@ -48,7 +48,7 @@ class HArea(object):
         self.upper=price+(pips/divisor)
         self.lower=price-(pips/divisor)
 
-    def number_bounces(self, datetimes, prices, threshold=0.60, min_dist=10, outfile='bounces.png'):
+    def number_bounces(self, datetimes, prices, threshold=0.50, min_dist=10, outfile='bounces.png'):
         '''
         Function used to calculate the datetime for previous bounces in this area
 
@@ -59,7 +59,7 @@ class HArea(object):
         prices : list
                 List of prices used to calculate the bounces
         threshold : float
-                    Threshold for detecting peaks. Default : 0.60
+                    Threshold for detecting peaks. Default : 0.50
         min_dist : float
                    Threshold for minimum distance for detecting peaks. Default : 10
         outfile : file

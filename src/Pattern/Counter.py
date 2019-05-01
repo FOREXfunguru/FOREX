@@ -201,7 +201,7 @@ class Counter(object):
                 self.trend_i = c.time
                 return c.time
 
-    def set_bounces(self, part='closeAsk',pips=50):
+    def set_bounces(self, part='closeAsk',HR_pips=50, threshold=0.50):
         '''
         Function to calculate previous bounces at self.SR
 
@@ -209,8 +209,11 @@ class Counter(object):
         ----------
         part: str
               Candle part used for the calculation. Default='closeAsk'
-        pips: int
+        HR_pips: int
               Number of pips around self.SR to extend the area. Default=50
+        threshold: float
+                   Threshold for detecting peaks. Default : 0.50
+
 
         Returns
         -------
@@ -223,11 +226,21 @@ class Counter(object):
             prices.append(getattr(c, part))
             datetimes.append(c.time)
 
-        resist = HArea(price=self.SR, pips=pips, instrument=self.pair, granularity=self.timeframe)
+        resist = HArea(price=self.SR, pips=HR_pips, instrument=self.pair, granularity=self.timeframe)
 
-        (bounces, outfile) = resist.number_bounces(datetimes=datetimes,
-                                                   prices=prices,
-                                                   min_dist=5)
+        pdb.set_trace()
+        if hasattr(self, 'id'):
+            (bounces, outfile) = resist.number_bounces( outfile="{0}.png".format(self.id),
+                                                        datetimes=datetimes,
+                                                        prices=prices,
+                                                        threshold=threshold,
+                                                        min_dist=5)
+        else:
+            (bounces, outfile) = resist.number_bounces(
+                                                       datetimes=datetimes,
+                                                       prices=prices,
+                                                       threshold=threshold,
+                                                       min_dist=5)
 
         self.bounces=bounces
 
@@ -268,9 +281,16 @@ class Counter(object):
 
         self.bounces_lasttime=bounces
 
-    def set_slope(self):
+    def set_slope(self,k_perc=None):
         '''
         Function to set the slope for trend conducting to entry
+
+        Parameters
+        ----------
+        k_perc : int
+                % of CandleList length that will be used as window size used for calculating the rolling average.
+                For example, if CandleList length = 20 Candles. Then the k=25% will be a window_size of 5
+                Default: None
 
         Returns
         -------
@@ -278,8 +298,10 @@ class Counter(object):
         in self.clist_trend CandleList
         '''
 
-
-        (model, outfile) = self.clist_trend.fit_reg_line()
+        if k_perc is not None:
+            (model, outfile, mse) = self.clist_trend.fit_reg_line(k_perc=k_perc)
+        else:
+            (model, outfile, mse) = self.clist_trend.fit_reg_line()
 
         self.slope=model.coef_[0, 0]
 

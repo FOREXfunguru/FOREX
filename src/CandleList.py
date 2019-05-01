@@ -1,6 +1,7 @@
 from scipy import stats
 from OandaAPI import OandaAPI
 from sklearn.linear_model import LinearRegression
+from sklearn.metrics import mean_squared_error
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 import pandas as pd
@@ -491,7 +492,7 @@ class CandleList(object):
         return bounces
 
 
-    def fit_reg_line(self, part='openAsk', smooth='rolling_average', outfile='regression_line.png'):
+    def fit_reg_line(self, part='openAsk', smooth='rolling_average', k_perc=25, outfile='regression_line.png'):
         '''
         Function to fit a linear regression
         line on candle list. This can be used in order to assess the direction of
@@ -506,14 +507,16 @@ class CandleList(object):
         smooth : str
                  What method will be used in order to smooth the data
                  Possible values are: 'rolling_average'
-        k : int
-            Window size used for calculating the rolling average. Default: 12
+        k_perc : int
+            % of CandleList length that will be used as window size used for calculating the rolling average.
+            For example, if CandleList length = 20 Candles. Then the k=25% will be a window_size of 5
+            Default: 25
         outfile : FILE
                   Path to output .png file that will show the fitted regression line
 
         Returns
         -------
-        Fitted model, png_file
+        Fitted model, png_file, regression_model_mse
         '''
 
         prices=[]
@@ -523,15 +526,29 @@ class CandleList(object):
             prices.append(getattr(self.clist[i],part))
 
         model = LinearRegression(fit_intercept=True)
+
+        if smooth=='rolling_average':
+            k=int(abs((k_perc*len(self.clist)/100)))
+            d = {'x': x, 'prices': prices}
+            df = pd.DataFrame(data=d)
+            df['prices_norm'] = df[['prices']].rolling(k).mean()
+            df = df.dropna()
+            prices=df['prices_norm']
+            x=df['x']
+
         model.fit(np.array(x).reshape(-1,1), np.array(prices).reshape(-1,1))
 
         y_pred = model.predict(np.array(x).reshape(-1,1))
+
+        # Evaluation of the model with MSE
+        regression_model_mse = mean_squared_error(y_pred, np.array(prices).reshape(-1, 1))
+
         fig = plt.figure(figsize=(20, 10))
         plt.scatter(x, prices)
         plt.plot(x, y_pred, color='red')
         fig.savefig(outfile, format='png')
 
-        return model, outfile
+        return model, outfile, regression_model_mse
 
     def check_if_divergence(self,part='openAsk',direction='up'):
         '''
