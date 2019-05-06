@@ -481,9 +481,9 @@ class CandleList(object):
 
         ixs=None
         if direction=='up':
-            ixs = peakutils.indexes(cb, thres=0.60, min_dist=5)
+            ixs = peakutils.indexes(cb, thres=0.50, min_dist=10)
         elif direction=='down':
-            ixs = peakutils.indexes(-cb, thres=0.60, min_dist=5)
+            ixs = peakutils.indexes(-cb, thres=0.50, min_dist=10)
 
         bounces = []
         for ix in ixs:

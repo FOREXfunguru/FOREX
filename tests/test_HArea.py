@@ -10,15 +10,16 @@ def oanda_object():
     '''Returns an  oanda object'''
 
     oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                     instrument='GBP_USD',
+                     instrument='EUR_AUD',
                      granularity='D',
-                     alignmentTimezone='Europe/London',
-                     start='2014-01-01T22:00:00',
-                     end='2019-03-15T22:00:00')
+                     dailyAlignment=22,
+                     alignmentTimezone='Europe/London')
+    oanda.run(start='2015-08-26T22:00:00',
+              end='2016-08-15T22:00:00')
 
     return oanda
 
-def test_number_bounces(oanda_object):
+def test_get_bounces(oanda_object):
     '''
     Test function to set basic candle features based on price
     i.e. self.colour, upper_wick, etc...
@@ -32,11 +33,12 @@ def test_number_bounces(oanda_object):
         close_prices.append(c.closeAsk)
         datetimes.append(c.time)
 
-    resist=HArea(price=1.71690,pips=100, instrument='GBP_USD', granularity='D')
+    resist=HArea(price=1.15212,pips=100, instrument='EUR_AUD', granularity='D')
 
-    (bounces,outfile)=resist.number_bounces(datetimes=datetimes,
-                                            prices=close_prices)
-
+    (bounces,outfile)=resist.get_bounces(datetimes=datetimes,
+                                         prices=close_prices,
+                                         type='long')
+"""
 def test_last_time(oanda_object):
 
     oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
@@ -98,4 +100,4 @@ def test_get_cross_time():
 
     cross_time = resist.get_cross_time(candle=oanda.fetch_candleset()[0])
 
-    pdb.set_trace()
+"""

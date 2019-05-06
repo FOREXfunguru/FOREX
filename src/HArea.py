@@ -48,7 +48,8 @@ class HArea(object):
         self.upper=price+(pips/divisor)
         self.lower=price-(pips/divisor)
 
-    def number_bounces(self, datetimes, prices, threshold=0.50, min_dist=10, outfile='bounces.png'):
+    def get_bounces(self, datetimes, prices, threshold=0.50, min_dist=10,
+                       outfile='bounces.png'):
         '''
         Function used to calculate the datetime for previous bounces in this area
 
@@ -78,17 +79,23 @@ class HArea(object):
         ax = plt.axes()
         ax.plot(datetimes, prices, color="black")
 
+        in_area_ix=[]
+
         bounces=[]
         for ix in max:
             if prices[ix]>=self.lower and prices[ix]<=self.upper:
+                in_area_ix.append(ix)
                 bounces.append((datetimes[ix],prices[ix]))
                 plt.scatter(datetimes[ix], prices[ix], s=50)
 
         for ix in min:
             if prices[ix] <= self.upper and prices[ix] >= self.lower:
+                in_area_ix.append(ix)
                 bounces.append((datetimes[ix], prices[ix]))
                 plt.scatter(datetimes[ix], prices[ix], s=50)
 
+        pdb.set_trace()
+        res = [x - y for x, y in zip(in_area_ix, in_area_ix[1:])]
         fig.savefig(outfile, format='png')
 
         return bounces,outfile

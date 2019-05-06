@@ -77,7 +77,9 @@ class CounterDbTp(Counter):
         Nothing
         '''
 
-        self.set_bounces(part='openAsk',HR_pips=self.HR_pips, threshold=self.threshold)
+        pdb.set_trace()
+        #relax parameters to detect first and second bounces
+        self.set_bounces(part='openAsk',HR_pips=100, threshold=0.5,min_dist=5)
         if len(self.bounces)<2: raise Exception("Less than 2 bounces were found for this trade."
                                                 "Perphaps you can try to run peakutils with lower threshold "
                                                 "or min_dist parameters")
@@ -124,7 +126,7 @@ class CounterDbTp(Counter):
 
         Returns
         -------
-q        It will initialise all object's features
+        It will initialise all object's features
         '''
 
         warnings.warn("[INFO] Run init_feats")

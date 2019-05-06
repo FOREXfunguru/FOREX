@@ -201,7 +201,7 @@ class Counter(object):
                 self.trend_i = c.time
                 return c.time
 
-    def set_bounces(self, part='closeAsk',HR_pips=50, threshold=0.50):
+    def set_bounces(self, part='closeAsk',HR_pips=50, threshold=0.50, min_dist=10):
         '''
         Function to calculate previous bounces at self.SR
 
@@ -213,7 +213,8 @@ class Counter(object):
               Number of pips around self.SR to extend the area. Default=50
         threshold: float
                    Threshold for detecting peaks. Default : 0.50
-
+        min_dist: int
+                  Minimum distance to detect bounces. Default : 10
 
         Returns
         -------
@@ -228,19 +229,18 @@ class Counter(object):
 
         resist = HArea(price=self.SR, pips=HR_pips, instrument=self.pair, granularity=self.timeframe)
 
-        pdb.set_trace()
         if hasattr(self, 'id'):
-            (bounces, outfile) = resist.number_bounces( outfile="{0}.png".format(self.id),
-                                                        datetimes=datetimes,
-                                                        prices=prices,
-                                                        threshold=threshold,
-                                                        min_dist=5)
+            (bounces, outfile) = resist.get_bounces(outfile="{0}.png".format(self.id),
+                                                    datetimes=datetimes,
+                                                    prices=prices,
+                                                    threshold=threshold,
+                                                    min_dist=min_dist)
         else:
-            (bounces, outfile) = resist.number_bounces(
-                                                       datetimes=datetimes,
-                                                       prices=prices,
-                                                       threshold=threshold,
-                                                       min_dist=5)
+            (bounces, outfile) = resist.get_bounces(
+                                                    datetimes=datetimes,
+                                                    prices=prices,
+                                                    threshold=threshold,
+                                                    min_dist=min_dist)
 
         self.bounces=bounces
 

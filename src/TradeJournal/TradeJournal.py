@@ -81,7 +81,7 @@ class TradeJournal(object):
                 else:
                     attrbs1[attr] = value
 
-            t=Trade(id=row['id'], strat=row['strat'],**attrbs1)
+            t=Trade(strat=row['strat'],**attrbs1)
 
             if run is True:
                 t.run_trade()
