@@ -3,6 +3,9 @@ import warnings
 
 from Pattern.Counter import Counter
 from OandaAPI import OandaAPI
+import matplotlib
+matplotlib.use('PS')
+import matplotlib.pyplot as plt
 
 
 class CounterDbTp(Counter):
@@ -67,6 +70,63 @@ class CounterDbTp(Counter):
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         super().__init__(pair)
 
+    def get_bounces(self, plot=False, part='closeAsk'):
+        '''
+        Function to identify all bounces
+
+        Parameters
+        ----------
+        plot: bool
+              If true, then produce a plot displaying
+              the location of the bounces. Default: false
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
+
+        Returns
+        -------
+        It will set the self.bounces attribute
+        '''
+
+        # relax parameters to detect first and second bounces
+        self.set_bounces(part=part, HR_pips=100, threshold=0.5, min_dist=5)
+
+        if len(self.bounces) < 2: raise Exception("Less than 2 bounces were found for this trade."
+                                                  "Perphaps you can try to run peakutils with lower threshold "
+                                                  "or min_dist parameters")
+
+        final_bounces = [self.bounces[-2], self.bounces[-1]]
+
+        # check bounces from the second bounce with a stricter parameter set
+        self.set_bounces(part=part, HR_pips=100, threshold=0.5, min_dist=10, end=self.bounces[-2])
+
+        if self.bounces is not None:
+            # append the self.bounces at the beginning of final_bounces
+            final_bounces[0:0] = self.bounces
+
+        self.bounces = final_bounces
+
+        if plot is True:
+
+            prices = []
+            datetimes = []
+            for c in self.clist_period.clist:
+                prices.append(getattr(c, part))
+                datetimes.append(c.time)
+
+            pdb.set_trace()
+            fig = plt.figure(figsize=(20, 10))
+            ax = plt.axes()
+            ax.plot(datetimes, prices, color="black")
+
+            for b in final_bounces:
+                dt=b[0]
+                ix=datetimes.index(dt)
+                plt.scatter(datetimes[ix], prices[ix], s=50)
+
+            outfile = "{0}.png".format(self.id)
+
+            fig.savefig(outfile, format='png')
+
     def set_1stbounce(self):
         '''
         Function to set bounce_1st (the one that is before the most recent)
@@ -77,14 +137,9 @@ class CounterDbTp(Counter):
         Nothing
         '''
 
-        pdb.set_trace()
-        #relax parameters to detect first and second bounces
-        self.set_bounces(part='openAsk',HR_pips=100, threshold=0.5,min_dist=5)
-        if len(self.bounces)<2: raise Exception("Less than 2 bounces were found for this trade."
-                                                "Perphaps you can try to run peakutils with lower threshold "
-                                                "or min_dist parameters")
-        self.bounce_1st=self.bounces[-2]
-        if self.trend_i>self.bounce_1st[0]:
+
+        self.bounce_1st = self.bounces[-2]
+        if self.trend_i > self.bounce_1st[0]:
             raise Exception("Error in the definition of the 1st bounce, it is older than the trend_start."
                             "Perphaps you can try to run peakutils with lower threshold or min_dist "
                             "parameters")
@@ -98,6 +153,7 @@ class CounterDbTp(Counter):
             isonrsi = True
 
         self.rsi_1st = isonrsi
+
 
     def set_2ndbounce(self):
         '''
@@ -133,6 +189,7 @@ class CounterDbTp(Counter):
 
         self.set_lasttime()
         self.set_entry_onrsi()
+        self.get_bounces(plot=True)
         self.set_1stbounce()
         self.set_2ndbounce()
         self.bounces_fromlasttime()

@@ -201,7 +201,8 @@ class Counter(object):
                 self.trend_i = c.time
                 return c.time
 
-    def set_bounces(self, part='closeAsk',HR_pips=50, threshold=0.50, min_dist=10):
+    def set_bounces(self, part='closeAsk',HR_pips=50, threshold=0.50,
+                    end=None, min_dist=10):
         '''
         Function to calculate previous bounces at self.SR
 
@@ -213,6 +214,8 @@ class Counter(object):
               Number of pips around self.SR to extend the area. Default=50
         threshold: float
                    Threshold for detecting peaks. Default : 0.50
+        end: datetime
+             Do not identify bounces from this datetime
         min_dist: int
                   Minimum distance to detect bounces. Default : 10
 
@@ -223,26 +226,31 @@ class Counter(object):
 
         prices = []
         datetimes = []
-        for c in self.clist_period:
+        for c in self.clist_period.clist:
             prices.append(getattr(c, part))
             datetimes.append(c.time)
 
         resist = HArea(price=self.SR, pips=HR_pips, instrument=self.pair, granularity=self.timeframe)
 
         if hasattr(self, 'id'):
-            (bounces, outfile) = resist.get_bounces(outfile="{0}.png".format(self.id),
-                                                    datetimes=datetimes,
-                                                    prices=prices,
-                                                    threshold=threshold,
-                                                    min_dist=min_dist)
+            bounces = resist.get_bounces(datetimes=datetimes,
+                                         prices=prices,
+                                         threshold=threshold,
+                                         min_dist=min_dist)
         else:
-            (bounces, outfile) = resist.get_bounces(
-                                                    datetimes=datetimes,
-                                                    prices=prices,
-                                                    threshold=threshold,
-                                                    min_dist=min_dist)
+            bounces = resist.get_bounces(datetimes=datetimes,
+                                         prices=prices,
+                                         threshold=threshold,
+                                         min_dist=min_dist)
 
-        self.bounces=bounces
+        if end is not None:
+            bounces_new = [d for d in bounces if d[0]<end[0]]
+            if len(bounces_new)>1:
+                self.bounces=bounces_new
+            else:
+                self.bounces=None
+        else:
+            self.bounces=bounces
 
     def set_lasttime(self):
         '''

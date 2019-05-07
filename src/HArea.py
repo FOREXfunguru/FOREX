@@ -2,6 +2,9 @@ import numpy as np
 import pdb
 import matplotlib
 import peakutils
+import string
+import random
+import os
 from datetime import timedelta,datetime
 from OandaAPI import OandaAPI
 matplotlib.use('PS')
@@ -48,8 +51,7 @@ class HArea(object):
         self.upper=price+(pips/divisor)
         self.lower=price-(pips/divisor)
 
-    def get_bounces(self, datetimes, prices, threshold=0.50, min_dist=10,
-                       outfile='bounces.png'):
+    def get_bounces(self, datetimes, prices, threshold=0.50, min_dist=10):
         '''
         Function used to calculate the datetime for previous bounces in this area
 
@@ -63,8 +65,6 @@ class HArea(object):
                     Threshold for detecting peaks. Default : 0.50
         min_dist : float
                    Threshold for minimum distance for detecting peaks. Default : 10
-        outfile : file
-                Filename for output .png file
 
         Returns
         -------
@@ -75,10 +75,6 @@ class HArea(object):
         max = peakutils.indexes(cb, thres=threshold, min_dist=min_dist)
         min = peakutils.indexes(-cb, thres=threshold, min_dist=min_dist)
 
-        fig = plt.figure(figsize=(20, 10))
-        ax = plt.axes()
-        ax.plot(datetimes, prices, color="black")
-
         in_area_ix=[]
 
         bounces=[]
@@ -86,19 +82,15 @@ class HArea(object):
             if prices[ix]>=self.lower and prices[ix]<=self.upper:
                 in_area_ix.append(ix)
                 bounces.append((datetimes[ix],prices[ix]))
-                plt.scatter(datetimes[ix], prices[ix], s=50)
 
         for ix in min:
             if prices[ix] <= self.upper and prices[ix] >= self.lower:
                 in_area_ix.append(ix)
                 bounces.append((datetimes[ix], prices[ix]))
-                plt.scatter(datetimes[ix], prices[ix], s=50)
 
-        pdb.set_trace()
         res = [x - y for x, y in zip(in_area_ix, in_area_ix[1:])]
-        fig.savefig(outfile, format='png')
 
-        return bounces,outfile
+        return bounces
 
     def last_time(self, clist, position, part='openAsk'):
         '''
