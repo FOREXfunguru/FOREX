@@ -236,11 +236,13 @@ class Counter(object):
             bounces = resist.get_bounces(datetimes=datetimes,
                                          prices=prices,
                                          threshold=threshold,
+                                         type=self.type,
                                          min_dist=min_dist)
         else:
             bounces = resist.get_bounces(datetimes=datetimes,
                                          prices=prices,
                                          threshold=threshold,
+                                         type=self.type,
                                          min_dist=min_dist)
 
         if end is not None:

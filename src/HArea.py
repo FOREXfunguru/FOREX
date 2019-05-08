@@ -51,7 +51,69 @@ class HArea(object):
         self.upper=price+(pips/divisor)
         self.lower=price-(pips/divisor)
 
-    def get_bounces(self, datetimes, prices, threshold=0.50, min_dist=10):
+    def __improve_resolution(self,x,y,indexes,type,min_dist=5):
+        '''
+        Function used to improve the resolution of the identified maxima/minima.
+        This will rely on peakutils function named 'interpolate' that will basically
+        calculate the centroid for the identified maxima/minima. This function can
+        be used along with the minimum distance parameter ('min_dist')
+        in order to select the maxima/minima that is the highest/lowest from the cluster
+        of points that are not separated by more than 'min_dist'
+
+        Parameters
+        ----------
+        x : Numpy array
+            X values, Required
+        y : Numpy array
+            Y values, Required
+        indexes : list
+                  Indexes for which the resolution will be improved
+                  Required
+        type : str
+               Type of trade. Possible values are: 'long','short'
+        min_dist : int
+                   minimum distance between the identified max/min. Default=5
+
+        Returns
+        -------
+        int : X index/es that need to be removed
+        '''
+
+        peaks_x = peakutils.interpolate(x, y, ind=indexes)
+        res = [x - y for x, y in zip(peaks_x, peaks_x[1:])]
+
+        below=[]
+        ix=0
+        for i in res:
+            i=abs(i)
+            if i<min_dist:
+                below.append(ix)
+                below.append(ix+1)
+            ix+=1
+
+        pdb.set_trace()
+        sel_y=0
+        sel_i=None
+        below=set(below)
+        for i in below:
+            if type=='short':
+                if y[indexes[i]]>sel_y:
+                    sel_y=y[indexes[i]]
+                    sel_i=i
+            elif type=='long':
+                if y[indexes[i]]<sel_y:
+                    sel_y=y[indexes[i]]
+                    sel_i=i
+
+        del below[sel_i]
+
+        remove_x=[]
+        for i in below:
+            remove_x.append(x[i])
+
+        remove_x
+
+    def get_bounces(self, datetimes, prices, type, threshold=0.50, min_dist=10):
         '''
         Function used to calculate the datetime for previous bounces in this area
 
@@ -61,6 +123,8 @@ class HArea(object):
                 Lisf of datetimes associated to each of the prices
         prices : list
                 List of prices used to calculate the bounces
+        type : str
+               Type of trade ('long' or 'short')
         threshold : float
                     Threshold for detecting peaks. Default : 0.50
         min_dist : float
@@ -88,7 +152,14 @@ class HArea(object):
                 in_area_ix.append(ix)
                 bounces.append((datetimes[ix], prices[ix]))
 
-        res = [x - y for x, y in zip(in_area_ix, in_area_ix[1:])]
+        y=None
+        if type=='long':
+            y=-cb
+        elif type=='short':
+            y=cb
+
+        self.__improve_resolution(x=np.array(list(range(0,len(datetimes),1))),
+                                  y=y,type=type,indexes=in_area_ix)
 
         return bounces
 
