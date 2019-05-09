@@ -2,9 +2,7 @@ import numpy as np
 import pdb
 import matplotlib
 import peakutils
-import string
-import random
-import os
+import warnings
 from datetime import timedelta,datetime
 from OandaAPI import OandaAPI
 matplotlib.use('PS')
@@ -76,10 +74,11 @@ class HArea(object):
 
         Returns
         -------
-        int : X index/es that need to be removed
+        int : X index/es that need to be removed. None if none index needs to be removed
         '''
 
         peaks_x = peakutils.interpolate(x, y, ind=indexes)
+
         res = [x - y for x, y in zip(peaks_x, peaks_x[1:])]
 
         below=[]
@@ -91,27 +90,30 @@ class HArea(object):
                 below.append(ix+1)
             ix+=1
 
-        pdb.set_trace()
         sel_y=0
         sel_i=None
-        below=set(below)
-        for i in below:
-            if type=='short':
-                if y[indexes[i]]>sel_y:
-                    sel_y=y[indexes[i]]
-                    sel_i=i
-            elif type=='long':
-                if y[indexes[i]]<sel_y:
-                    sel_y=y[indexes[i]]
-                    sel_i=i
+        below=list(set(below))
+        if below:
+            for i in below:
+                if type=='short':
+                    if y[indexes[i]]>sel_y:
+                        sel_y=y[indexes[i]]
+                        sel_i=i
+                elif type=='long':
+                    if y[indexes[i]]<sel_y:
+                        sel_y=y[indexes[i]]
+                        sel_i=i
+                ix=+ix
 
-        del below[sel_i]
+            below.remove(sel_i)
 
-        remove_x=[]
-        for i in below:
-            remove_x.append(x[i])
+            remove_x=[]
+            for i in below:
+                remove_x.append(x[indexes[i]])
 
-        remove_x
+            return remove_x
+        else:
+            return None
 
     def get_bounces(self, datetimes, prices, type, threshold=0.50, min_dist=10):
         '''
@@ -151,17 +153,28 @@ class HArea(object):
             if prices[ix] <= self.upper and prices[ix] >= self.lower:
                 in_area_ix.append(ix)
                 bounces.append((datetimes[ix], prices[ix]))
-
+        pdb.set_trace()
         y=None
         if type=='long':
             y=-cb
         elif type=='short':
             y=cb
 
-        self.__improve_resolution(x=np.array(list(range(0,len(datetimes),1))),
-                                  y=y,type=type,indexes=in_area_ix)
+        datetimes_ix=self.__improve_resolution(x=np.array(list(range(0,len(datetimes),1))),
+                                               y=y,type=type,indexes=in_area_ix)
 
-        return bounces
+        if datetimes_ix:
+            final_bounces=[]
+            for d in datetimes_ix:
+                dt=datetimes[d]
+                for b in bounces:
+                    b_d=b[0]
+                    if dt!=b_d:
+                        final_bounces.append(b)
+
+            return final_bounces
+        else:
+            return bounces
 
     def last_time(self, clist, position, part='openAsk'):
         '''

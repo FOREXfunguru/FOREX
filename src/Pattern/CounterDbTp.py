@@ -87,6 +87,7 @@ class CounterDbTp(Counter):
         It will set the self.bounces attribute
         '''
 
+        pdb.set_trace()
         # relax parameters to detect first and second bounces
         self.set_bounces(part=part, HR_pips=100, threshold=0.5, min_dist=5)
 
@@ -97,7 +98,7 @@ class CounterDbTp(Counter):
         final_bounces = [self.bounces[-2], self.bounces[-1]]
 
         # check bounces from the second bounce with a stricter parameter set
-        self.set_bounces(part=part, HR_pips=100, threshold=0.5, min_dist=10, end=self.bounces[-2])
+        self.set_bounces(part=part, HR_pips=80, threshold=0.5, min_dist=10, end=self.bounces[-2])
 
         if self.bounces is not None:
             # append the self.bounces at the beginning of final_bounces
@@ -113,7 +114,6 @@ class CounterDbTp(Counter):
                 prices.append(getattr(c, part))
                 datetimes.append(c.time)
 
-            pdb.set_trace()
             fig = plt.figure(figsize=(20, 10))
             ax = plt.axes()
             ax.plot(datetimes, prices, color="black")
@@ -126,6 +126,7 @@ class CounterDbTp(Counter):
             outfile = "{0}.png".format(self.id)
 
             fig.savefig(outfile, format='png')
+            pdb.set_trace()
 
     def set_1stbounce(self):
         '''
