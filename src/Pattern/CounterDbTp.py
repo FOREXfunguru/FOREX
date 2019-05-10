@@ -87,9 +87,8 @@ class CounterDbTp(Counter):
         It will set the self.bounces attribute
         '''
 
-        pdb.set_trace()
         # relax parameters to detect first and second bounces
-        self.set_bounces(part=part, HR_pips=100, threshold=0.5, min_dist=5)
+        self.set_bounces(part=part, HR_pips=100, threshold=0.5, min_dist=1)
 
         if len(self.bounces) < 2: raise Exception("Less than 2 bounces were found for this trade."
                                                   "Perphaps you can try to run peakutils with lower threshold "
@@ -98,7 +97,7 @@ class CounterDbTp(Counter):
         final_bounces = [self.bounces[-2], self.bounces[-1]]
 
         # check bounces from the second bounce with a stricter parameter set
-        self.set_bounces(part=part, HR_pips=80, threshold=0.5, min_dist=10, end=self.bounces[-2])
+        self.set_bounces(part=part, HR_pips=60, threshold=0.5, min_dist=5, end=self.bounces[-2])
 
         if self.bounces is not None:
             # append the self.bounces at the beginning of final_bounces

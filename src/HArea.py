@@ -77,41 +77,44 @@ class HArea(object):
         int : X index/es that need to be removed. None if none index needs to be removed
         '''
 
-        peaks_x = peakutils.interpolate(x, y, ind=indexes)
-
-        res = [x - y for x, y in zip(peaks_x, peaks_x[1:])]
-
-        below=[]
-        ix=0
+        res = [x - y for x, y in zip(indexes, indexes[1:])]
+        below = []
+        ix = 0
         for i in res:
-            i=abs(i)
-            if i<min_dist:
-                below.append(ix)
-                below.append(ix+1)
-            ix+=1
+            i = abs(i)
+            if i < min_dist:
+                below.append((ix, ix + 1))
+            ix += 1
 
-        sel_y=0
-        sel_i=None
-        below=list(set(below))
+        remove_l = []
+        below = list(set(below))
         if below:
             for i in below:
-                if type=='short':
-                    if y[indexes[i]]>sel_y:
-                        sel_y=y[indexes[i]]
-                        sel_i=i
-                elif type=='long':
-                    if y[indexes[i]]<sel_y:
-                        sel_y=y[indexes[i]]
-                        sel_i=i
-                ix=+ix
-
-            below.remove(sel_i)
-
-            remove_x=[]
-            for i in below:
+                x0 = i[0]
+                x1 = i[1]
+                y0 = y[x0]
+                y1 = y[x1]
+                if type == 'short':
+                    #remove the smallest
+                    if y0 > y1:
+                        remove_l.append(x1)
+                    elif y0 < y1:
+                        remove_l.append(x0)
+                    else:
+                        raise Exception("No selection was done!")
+                elif type == 'long':
+                    if y0 < y1:
+                        remove_l.append(x1)
+                    elif y0 > y1:
+                        remove_l.append(x0)
+                    else:
+                        raise Exception("No selection was done!")
+                ix = +ix
+            remove_x = []
+            for i in sorted(remove_l):
                 remove_x.append(x[indexes[i]])
-
-            return remove_x
+            pdb.set_trace()
+            return sorted(list(set(remove_x)))
         else:
             return None
 
@@ -153,19 +156,29 @@ class HArea(object):
             if prices[ix] <= self.upper and prices[ix] >= self.lower:
                 in_area_ix.append(ix)
                 bounces.append((datetimes[ix], prices[ix]))
-        pdb.set_trace()
+
         y=None
         if type=='long':
             y=-cb
         elif type=='short':
             y=cb
 
-        datetimes_ix=self.__improve_resolution(x=np.array(list(range(0,len(datetimes),1))),
-                                               y=y,type=type,indexes=in_area_ix)
+        repeat = True
+        datetimes_ix=in_area_ix
+        fdatetimes_ix=[]
+        pdb.set_trace()
+        while repeat is True:
+            datetimes_ix = self.__improve_resolution(x=np.array(list(range(0, len(datetimes), 1))),
+                                                     y=y, type=type, indexes=in_area_ix, min_dist=10)
+            if datetimes_ix is not None:
+                fdatetimes_ix.append(datetimes_ix)
+                in_area_ix=datetimes_ix
+            else:
+                repeat = False
 
-        if datetimes_ix:
+        if fdatetimes_ix:
             final_bounces=[]
-            for d in datetimes_ix:
+            for d in fdatetimes_ix:
                 dt=datetimes[d]
                 for b in bounces:
                     b_d=b[0]
