@@ -49,7 +49,7 @@ class HArea(object):
         self.upper=price+(pips/divisor)
         self.lower=price-(pips/divisor)
 
-    def __improve_resolution(self,x,y,indexes,type,min_dist=5):
+    def __improve_resolution(self,x,y,indexes,bounces,min_dist=5):
         '''
         Function used to improve the resolution of the identified maxima/minima.
         This will rely on peakutils function named 'interpolate' that will basically
@@ -67,6 +67,7 @@ class HArea(object):
         indexes : list
                   Indexes for which the resolution will be improved
                   Required
+        bounces :
         type : str
                Type of trade. Possible values are: 'long','short'
         min_dist : int
@@ -86,39 +87,38 @@ class HArea(object):
                 below.append((ix, ix + 1))
             ix += 1
 
-        remove_l = []
-        below = list(set(below))
+        remove_l = [] #list with the indexes to remove
         if below:
             for i in below:
-                x0 = i[0]
-                x1 = i[1]
+                x0 = indexes[i[0]]
+                t0 = bounces[i[0]][2]
+                x1 = indexes[i[1]]
+                t1 = bounces[i[1]][2]
                 y0 = y[x0]
                 y1 = y[x1]
-                if type == 'short':
-                    #remove the smallest
+                if t0 and t1 == 'max':
+                    #ix to be removed: the smaller
                     if y0 > y1:
                         remove_l.append(x1)
                     elif y0 < y1:
                         remove_l.append(x0)
                     else:
                         raise Exception("No selection was done!")
-                elif type == 'long':
+                elif t0 and t1 == 'min':
+                    #ix to be removed: the greater
                     if y0 < y1:
                         remove_l.append(x1)
                     elif y0 > y1:
                         remove_l.append(x0)
-                    else:
-                        raise Exception("No selection was done!")
+                else:
+                    raise Exception("Both bounces do not match")
                 ix = +ix
-            remove_x = []
-            for i in sorted(remove_l):
-                remove_x.append(x[indexes[i]])
-            pdb.set_trace()
-            return sorted(list(set(remove_x)))
+        if remove_l:
+            return sorted(list(set(remove_l)))
         else:
             return None
 
-    def get_bounces(self, datetimes, prices, type, threshold=0.50, min_dist=10):
+    def get_bounces(self, datetimes, prices, type, threshold=0.50, min_dist=10,min_dist_res=10):
         '''
         Function used to calculate the datetime for previous bounces in this area
 
@@ -150,44 +150,42 @@ class HArea(object):
         for ix in max:
             if prices[ix]>=self.lower and prices[ix]<=self.upper:
                 in_area_ix.append(ix)
-                bounces.append((datetimes[ix],prices[ix]))
+                bounces.append((datetimes[ix],prices[ix],'max'))
 
         for ix in min:
             if prices[ix] <= self.upper and prices[ix] >= self.lower:
                 in_area_ix.append(ix)
-                bounces.append((datetimes[ix], prices[ix]))
+                bounces.append((datetimes[ix], prices[ix],'min'))
 
         y=None
         if type=='long':
             y=-cb
         elif type=='short':
             y=cb
+        elif type is None:
+            raise Exception('Type is not defined')
 
         repeat = True
-        datetimes_ix=in_area_ix
-        fdatetimes_ix=[]
-        pdb.set_trace()
+        datetimes_ix=[]
+
         while repeat is True:
             datetimes_ix = self.__improve_resolution(x=np.array(list(range(0, len(datetimes), 1))),
-                                                     y=y, type=type, indexes=in_area_ix, min_dist=10)
+                                                     y=y, bounces=bounces, indexes=in_area_ix,
+                                                     min_dist=min_dist_res)
             if datetimes_ix is not None:
-                fdatetimes_ix.append(datetimes_ix)
-                in_area_ix=datetimes_ix
+                #removing the indexes in 'fdatetimes_ix'
+                in_area_ix = [e for e in in_area_ix if e not in datetimes_ix]
             else:
                 repeat = False
 
-        if fdatetimes_ix:
-            final_bounces=[]
-            for d in fdatetimes_ix:
-                dt=datetimes[d]
-                for b in bounces:
-                    b_d=b[0]
-                    if dt!=b_d:
-                        final_bounces.append(b)
+        in_area_dates=[datetimes[i] for i in in_area_ix]
+        final_bounces=[]
+        for b in bounces:
+            b_d=b[0]
+            if b_d in in_area_dates:
+                final_bounces.append(b)
 
-            return final_bounces
-        else:
-            return bounces
+        return final_bounces
 
     def last_time(self, clist, position, part='openAsk'):
         '''

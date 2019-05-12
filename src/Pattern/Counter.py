@@ -202,7 +202,7 @@ class Counter(object):
                 return c.time
 
     def set_bounces(self, part='closeAsk',HR_pips=50, threshold=0.50,
-                    end=None, min_dist=10):
+                    end=None, min_dist=10,min_dist_res=10):
         '''
         Function to calculate previous bounces at self.SR
 
@@ -237,13 +237,15 @@ class Counter(object):
                                          prices=prices,
                                          threshold=threshold,
                                          type=self.type,
-                                         min_dist=min_dist)
+                                         min_dist=min_dist,
+                                         min_dist_res=min_dist_res)
         else:
             bounces = resist.get_bounces(datetimes=datetimes,
                                          prices=prices,
                                          threshold=threshold,
                                          type=self.type,
-                                         min_dist=min_dist)
+                                         min_dist=min_dist,
+                                         min_dist_res=min_dist_res)
 
         if end is not None:
             bounces_new = [d for d in bounces if d[0]<end[0]]
