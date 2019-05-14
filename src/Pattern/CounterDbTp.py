@@ -6,6 +6,7 @@ from OandaAPI import OandaAPI
 import matplotlib
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
+import datetime
 
 
 class CounterDbTp(Counter):
@@ -70,7 +71,7 @@ class CounterDbTp(Counter):
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         super().__init__(pair)
 
-    def get_bounces(self, plot=False, part='closeAsk'):
+    def get_bounces(self, plot=False, part='closeAsk', period=150):
         '''
         Function to identify all bounces
 
@@ -81,24 +82,52 @@ class CounterDbTp(Counter):
               the location of the bounces. Default: false
         part: str
               Candle part used for the calculation. Default='closeAsk'
+        period: int
+                Number of candles for which the 2 peaks characteristic of the
+                counterdoubletop will be searched for. Default: 150
 
         Returns
         -------
         It will set the self.bounces attribute
         '''
 
-        # relax parameters to detect first and second bounces
-        self.set_bounces(part=part, HR_pips=100, threshold=0.5, min_dist=1,min_dist_res=7)
+        delta_period = None
+        if self.timeframe == "D":
+            delta_period = datetime.timedelta(hours=24 * period)
+        else:
+            fgran = self.timeframe.replace('H', '')
+            delta_period = datetime.timedelta(hours=int(fgran) * period)
 
-        if len(self.bounces) < 2: raise Exception("Less than 2 bounces were found for this trade."
-                                                  "Perphaps you can try to run peakutils with lower threshold "
-                                                  "or min_dist parameters")
+        start = self.start - delta_period
+        min_dist_res = 10
+
+        # relax parameters to detect first and second bounces
+        self.set_bounces(part=part, HR_pips=100, threshold=0.5, min_dist=5,min_dist_res=min_dist_res,start=start)
+
+        pdb.set_trace()
+        # Will check if there are at least 2 bounces within 'period', if not then it will try iteratively decreasing
+        # first the threshold and then the min_dist_res
+        threshold_res=0.5
+        while len(self.bounces) < 2 and threshold_res > 0.0:
+            threshold_res -= 0.1
+            warnings.warn("Less than 2 bounces identified. Will try with 'threshold_res'={0}".format(threshold_res))
+            self.set_bounces(part=part, HR_pips=100, threshold=threshold_res, min_dist=5, min_dist_res=min_dist_res, start=start)
+
+        while len(self.bounces) < 2 and min_dist_res>1:
+            min_dist_res -= 1
+            warnings.warn("Less than 2 bounces identified. Will try with 'min_dist_res'={0}".format(min_dist_res))
+            self.set_bounces(part=part, HR_pips=100, threshold=0.5, min_dist=1, min_dist_res=min_dist_res,start=start)
+
+        if len(self.bounces) < 2:
+            raise Exception("Less than 2 bounces were found for this trade."
+                            "Perphaps you can try to run peakutils with lower threshold "
+                            "or min_dist parameters")
 
         final_bounces = [self.bounces[-2], self.bounces[-1]]
 
         # check bounces from the second bounce with a stricter parameter set
         self.set_bounces(part=part, HR_pips=60, threshold=0.5, min_dist=1, min_dist_res=5,
-                         end=self.bounces[-2])
+                         end=self.bounces[-2][0])
 
         if self.bounces is not None:
             # append the self.bounces at the beginning of final_bounces
@@ -126,7 +155,6 @@ class CounterDbTp(Counter):
             outfile = "{0}.png".format(self.id)
 
             fig.savefig(outfile, format='png')
-            pdb.set_trace()
 
     def set_1stbounce(self):
         '''

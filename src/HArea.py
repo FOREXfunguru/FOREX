@@ -49,7 +49,7 @@ class HArea(object):
         self.upper=price+(pips/divisor)
         self.lower=price-(pips/divisor)
 
-    def __improve_resolution(self,x,y,indexes,bounces,min_dist=5):
+    def __improve_resolution(self,x,y,indexes,min_dist=5):
         '''
         Function used to improve the resolution of the identified maxima/minima.
         This will rely on peakutils function named 'interpolate' that will basically
@@ -67,9 +67,6 @@ class HArea(object):
         indexes : list
                   Indexes for which the resolution will be improved
                   Required
-        bounces :
-        type : str
-               Type of trade. Possible values are: 'long','short'
         min_dist : int
                    minimum distance between the identified max/min. Default=5
 
@@ -91,28 +88,19 @@ class HArea(object):
         if below:
             for i in below:
                 x0 = indexes[i[0]]
-                t0 = bounces[i[0]][2]
                 x1 = indexes[i[1]]
-                t1 = bounces[i[1]][2]
                 y0 = y[x0]
+                diff0=abs(y[x0]-self.price)
                 y1 = y[x1]
-                if t0 and t1 == 'max':
-                    #ix to be removed: the smaller
-                    if y0 > y1:
-                        remove_l.append(x1)
-                    elif y0 < y1:
-                        remove_l.append(x0)
-                    else:
-                        raise Exception("No selection was done!")
-                elif t0 and t1 == 'min':
-                    #ix to be removed: the greater
-                    if y0 < y1:
-                        remove_l.append(x1)
-                    elif y0 > y1:
-                        remove_l.append(x0)
-                else:
-                    raise Exception("Both bounces do not match")
+                diff1=abs(y[x1]-self.price)
+                #ix to be removed: the furthest
+                # from self.price
+                if diff0>diff1:
+                    remove_l.append(x0)
+                elif diff1>diff0:
+                    remove_l.append(x1)
                 ix = +ix
+
         if remove_l:
             return sorted(list(set(remove_l)))
         else:
@@ -157,20 +145,13 @@ class HArea(object):
                 in_area_ix.append(ix)
                 bounces.append((datetimes[ix], prices[ix],'min'))
 
-        y=None
-        if type=='long':
-            y=-cb
-        elif type=='short':
-            y=cb
-        elif type is None:
-            raise Exception('Type is not defined')
-
+        in_area_ix=sorted(in_area_ix)
         repeat = True
         datetimes_ix=[]
 
         while repeat is True:
             datetimes_ix = self.__improve_resolution(x=np.array(list(range(0, len(datetimes), 1))),
-                                                     y=y, bounces=bounces, indexes=in_area_ix,
+                                                     y=cb, indexes=in_area_ix,
                                                      min_dist=min_dist_res)
             if datetimes_ix is not None:
                 #removing the indexes in 'fdatetimes_ix'

@@ -202,7 +202,7 @@ class Counter(object):
                 return c.time
 
     def set_bounces(self, part='closeAsk',HR_pips=50, threshold=0.50,
-                    end=None, min_dist=10,min_dist_res=10):
+                    start=None, end=None, min_dist=10,min_dist_res=10):
         '''
         Function to calculate previous bounces at self.SR
 
@@ -214,6 +214,8 @@ class Counter(object):
               Number of pips around self.SR to extend the area. Default=50
         threshold: float
                    Threshold for detecting peaks. Default : 0.50
+        start: datetime
+               Identify bounces only from this start datetime
         end: datetime
              Do not identify bounces from this datetime
         min_dist: int
@@ -248,11 +250,17 @@ class Counter(object):
                                          min_dist_res=min_dist_res)
 
         if end is not None:
-            bounces_new = [d for d in bounces if d[0]<end[0]]
+            bounces_new = [d for d in bounces if d[0]<end]
             if len(bounces_new)>1:
                 self.bounces=bounces_new
             else:
                 self.bounces=None
+        elif start is not None:
+            bounces_new = [d for d in bounces if d[0] >= start]
+            if len(bounces_new) >0:
+                self.bounces = bounces_new
+            else:
+                self.bounces = []
         else:
             self.bounces=bounces
 
