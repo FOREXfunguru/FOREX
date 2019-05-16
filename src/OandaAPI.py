@@ -269,7 +269,6 @@ class OandaAPI(object):
         1 if it validates
         '''
 
-        pdb.set_trace()
         endFetched=pd.datetime.strptime(self.data['candles'][-1]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
         if endObj!= endFetched:
             #check if discrepancy is not in the daylight savings period

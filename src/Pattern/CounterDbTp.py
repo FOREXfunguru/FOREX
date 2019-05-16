@@ -108,24 +108,32 @@ class CounterDbTp(Counter):
         start = self.start - delta_period
         start_st = self.start - delta_from_start
         min_dist_res = 10
+        HR_pips_res=100
         # relax parameters to detect first and second bounces
         self.set_bounces(part=part, HR_pips=100, threshold=0.5, min_dist=5,min_dist_res=min_dist_res,start=start)
 
         # Will check if there are at least 2 bounces within 'period' or there are a maximum of period_first_bounce
         # candles between self.start and self.bounces[-1], if not then it will try iteratively decreasing
-        # first the threshold and then the min_dist_res
+        # first the threshold, then the min_dist_res and finally the HR_pips
         threshold_res=0.5
-        while (len(self.bounces) < 2) or (self.bounces[-1][0] < start_st) and (threshold_res > 0.0):
+        while ((len(self.bounces) < 2) or (self.bounces[-1][0] < start_st)) and (threshold_res > 0.0):
             threshold_res -= 0.1
             warnings.warn("Less than 2 bounces identified or last bounce is not correct."
                           " Will try with 'threshold_res'={0}".format(threshold_res))
-            self.set_bounces(part=part, HR_pips=100, threshold=threshold_res, min_dist=5, min_dist_res=min_dist_res, start=start)
+            self.set_bounces(part=part, HR_pips=100, threshold=threshold_res, min_dist=5, min_dist_res=10, start=start)
 
-        while (len(self.bounces) < 2) or (self.bounces[-1][0] < start_st) and (min_dist_res>1):
+        while ((len(self.bounces) < 2) or (self.bounces[-1][0] < start_st)) and (min_dist_res>1):
+            pdb.set_trace()
             min_dist_res -= 1
             warnings.warn("Less than 2 bounces identified or last bounce is not correct. "
                           " Will try with 'min_dist_res'={0}".format(min_dist_res))
             self.set_bounces(part=part, HR_pips=100, threshold=0.5, min_dist=1, min_dist_res=min_dist_res,start=start)
+
+        while ((len(self.bounces) < 2) or (self.bounces[-1][0] < start_st)) and (HR_pips_res<=200):
+            HR_pips_res += 5
+            warnings.warn("Less than 2 bounces identified or last bounce is not correct. "
+                          " Will try with 'HR_pips_res'={0}".format(HR_pips_res))
+            self.set_bounces(part=part, HR_pips=HR_pips_res, threshold=0.5, min_dist=1, min_dist_res=10,start=start)
 
         if len(self.bounces) < 2:
             raise Exception("Less than 2 bounces were found for this trade."
