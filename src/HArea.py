@@ -146,7 +146,6 @@ class HArea(object):
                 bounces.append((datetimes[ix], prices[ix],'min'))
 
         in_area_ix=sorted(in_area_ix)
-        print(in_area_ix)
         repeat = True
         datetimes_ix=[]
 

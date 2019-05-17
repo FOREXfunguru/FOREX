@@ -64,7 +64,7 @@ class TradeJournal(object):
                 c=Counter(pair=pair,**attrbs)
                 c.init_feats()
             elif strat=="counter_doubletop":
-                c=CounterDbTp(pair=pair,HR_pips=100, **attrbs)
+                c=CounterDbTp(pair=pair, **attrbs)
                 c.init_feats()
                 c.init_trend_feats()
 
