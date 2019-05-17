@@ -59,29 +59,112 @@ class CounterDbTp(Counter):
              Default: 200
     threshold: float Optional
                Threshold for detecting peaks. Default : 0.50
+    min_dist: int, Optional
+              Minimum distance between peaks. Default : 5
+    period_dbounce: int, Optional
+                    Number of candles for period starting in self.start that will contain the double bounce
+                    characteristic of this pattern. Default: 150
+    period1st_bounce: int, Optional
+                      Controls the maximum number of candles allowed between
+                      self.start and the location of the most recent bounce.
+                      Default:10
+
     '''
 
-    def __init__(self, pair, start, HR_pips=30, threshold=0.50, **kwargs):
+    def __init__(self, pair, start, HR_pips=30, threshold=0.50, min_dist=5, period_dbounce=150,
+                 period1st_bounce=10,**kwargs):
 
         self.start = start
         self.HR_pips = HR_pips
         self.threshold = threshold
+        self.min_dist = min_dist
+        self.period_dbounce = period_dbounce
+        self.period1st_bounce = period1st_bounce
+
         allowed_keys = ['id','timeframe','entry','period', 'trend_i', 'type', 'SL',
                         'TP', 'SR', 'RR']
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         super().__init__(pair)
 
-    def __get_candles4timedelta(self):
+        # Initialise the private class attributes containing some pattern restrictions
+        delta_period = None
+        delta_from_start = None
+        if self.timeframe == "D":
+            delta_period = datetime.timedelta(hours=24 * self.period_dbounce)
+            delta_from_start = datetime.timedelta(hours=24 * self.period1st_bounce)
+        else:
+            fgran = self.timeframe.replace('H', '')
+            delta_period = datetime.timedelta(hours=int(fgran) * self.period_dbounce)
+            delta_from_start = datetime.timedelta(hours=int(fgran) * self.period1st_bounce)
+
+        # timepoint cutoff that defines the period for which the doubletop will be looked for
+        self.__period_dbounce_point = self.start - delta_period
+        # timepoint cutoff that the defines the period from which the first bounce needs to be
+        # located
+        self.__period1st_bounce_point = self.start - delta_from_start
+
+    def __get_candles4timedelta(self,t):
         '''
         This private function takes a datetime.timedelta
         and returns the equivalent number of candles
 
+        Parameters
+        ----------
+        t : Datetime.timedelta
+
         Returns
         -------
-        int : Number of candles
+        int : representing the number of candles
         '''
 
-    def get_bounces(self, plot=False, part='closeAsk', period=150, period_first_bounce=10):
+        days_in_hours=t.days*24
+        secs_in_hours=t.seconds/3600
+        total_hours=days_in_hours+secs_in_hours
+
+        no_candles=None
+        if self.timeframe == "D":
+            no_candles=(total_hours/24)
+        else:
+            hours = int(self.timeframe.replace('H', ''))
+            no_candles=(total_hours/hours)
+
+        return no_candles
+
+
+
+    def __validate_bounces(self,min_len=2, distance_cutoff=5):
+        '''
+        Private function to validate bounces identified by self.get_bounces
+
+        Parameters
+        ----------
+        min_len: int
+                 Minimum number of bounces required to validate. Default: 2
+        distance_cutoff: int
+                         Minimum number of candles between 1st and 2nd bounce
+                         Default: 5
+
+        Returns
+        -------
+        bool: True if it validates, False otherwise
+        '''
+
+        if len(self.bounces) < min_len:
+            warnings.warn("Less than 2 bounces identified")
+            return False
+
+        if self.bounces[-1][0] < self.__period1st_bounce_point:
+            warnings.warn("First identified bounce is before the time cutoff")
+            return False
+
+        diff = self.bounces[-1][0] - self.bounces[-2][0]
+        candles=self.__get_candles4timedelta(diff)
+        if candles<=distance_cutoff:
+            return False
+
+        return True
+
+    def get_bounces(self, plot=False, part='closeAsk'):
         '''
         Function to identify all bounces
 
@@ -92,84 +175,63 @@ class CounterDbTp(Counter):
               the location of the bounces. Default: false
         part: str
               Candle part used for the calculation. Default='closeAsk'
-        period: int
-                Number of candles for which the 2 peaks characteristic of the
-                counterdoubletop will be searched for. Default: 150
-        period_first_bounce: int
-                             Controls the maximum number of candles allowed between
-                             self.start and the location of the most recent bounce.
-                             Default:10
 
         Returns
         -------
         It will set the self.bounces attribute
         '''
 
-        delta_period = None
-        delta_from_start = None
-        if self.timeframe == "D":
-            delta_period = datetime.timedelta(hours=24 * period)
-            delta_from_start =  datetime.timedelta(hours=24 * period_first_bounce)
-        else:
-            fgran = self.timeframe.replace('H', '')
-            delta_period = datetime.timedelta(hours=int(fgran) * period)
-            delta_from_start = datetime.timedelta(hours=int(fgran) * period_first_bounce)
-
-        start = self.start - delta_period
-        start_st = self.start - delta_from_start
         min_dist_res = 10
         HR_pips_res=100
-        pdb.set_trace()
-
         # relax parameters to detect first and second bounces
-        self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=5,min_dist_res=min_dist_res,
-                         start=start)
+        self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=self.min_dist,min_dist_res=min_dist_res,
+                         start= self.__period_dbounce_point)
 
         # Will check if there are at least 2 bounces within 'period' or there are a maximum of period_first_bounce
         # candles between self.start and self.bounces[-1], if not then it will try iteratively decreasing
         # first the threshold, then the min_dist_res and finally the HR_pips
         threshold_res = 0.5
-        distance_cutoff = 5
-        while ((len(self.bounces) < 2) or (self.bounces[-1][0] < start_st)) and (threshold_res > 0.0):
+        while (self.__validate_bounces() is False) and (threshold_res > 0.0):
             threshold_res -= 0.1
-            warnings.warn("Less than 2 bounces identified or last bounce is not correct."
+            warnings.warn("Less than 2 bounces identified or last bounce is not correct. "
                           " Will try with 'threshold_res'={0}".format(threshold_res))
-            self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=threshold_res, min_dist=5, min_dist_res=10, start=start)
+            self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=threshold_res, min_dist=5, min_dist_res=10,
+                             start=self.__period_dbounce_point)
 
-        while ((len(self.bounces) < 2) or (self.bounces[-1][0] < start_st)) and (min_dist_res > 1):
+        while (self.__validate_bounces() is False) and (min_dist_res > 1):
             min_dist_res -= 1
             warnings.warn("Less than 2 bounces identified or last bounce is not correct. "
                           " Will try with 'min_dist_res'={0}".format(min_dist_res))
-            self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1, min_dist_res=min_dist_res, start=start)
-            if (len(self.bounces)>=2) and (self.bounces[-1][0]>= start_st):
-                pdb.set_trace()
-                diff=self.bounces[-1][0]-self.bounces[-2][0]
-                print("h")
+            self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1, min_dist_res=min_dist_res,
+                             start=self.__period_dbounce_point)
 
-        while ((len(self.bounces) < 2) or (self.bounces[-1][0] < start_st)) and (HR_pips_res <= 200):
+        while (self.__validate_bounces() is False) and (HR_pips_res <= 200):
             HR_pips_res += 5
             warnings.warn("Less than 2 bounces identified or last bounce is not correct. "
                           " Will try with 'HR_pips_res'={0}".format(HR_pips_res))
-            self.set_bounces(part=part, HR_pips=HR_pips_res, threshold=self.threshold, min_dist=1, min_dist_res=10, start=start)
+            self.set_bounces(part=part, HR_pips=HR_pips_res, threshold=self.threshold, min_dist=1, min_dist_res=10,
+                             start=self.__period_dbounce_point)
 
         # Finally, and as a last-ditch effort, combine the decrease of threshold and min_dist
         threshold_res=0.5
-        while ((len(self.bounces) < 2) or (self.bounces[-1][0] < start_st)) and (threshold_res > 0.0):
+        while (self.__validate_bounces() is False) and (threshold_res > 0.0):
             threshold_res -= 0.1
             min_dist_res = 10
             warnings.warn("Less than 2 bounces identified or last bounce is not correct."
                           " Will try with 'threshold_res'={0}".format(threshold_res))
 
-            self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=threshold_res, min_dist=5, min_dist_res=10, start=start)
+            self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=threshold_res, min_dist=5, min_dist_res=10,
+                             start=self.__period_dbounce_point)
 
-            while ((len(self.bounces) < 2) or (self.bounces[-1][0] < start_st)) and (min_dist_res > 1):
+            while (self.__validate_bounces() is False) and (min_dist_res > 1):
                 min_dist_res -= 1
                 warnings.warn("Less than 2 bounces identified or last bounce is not correct. "
                               " Will try with 'min_dist_res'={0}".format(min_dist_res))
-                self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=threshold_res, min_dist=1, min_dist_res=min_dist_res,
-                                 start=start)
+                self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=threshold_res, min_dist=1,
+                                 min_dist_res=min_dist_res,start=self.__period_dbounce_point)
 
-        if len(self.bounces) < 2:
+        pdb.set_trace()
+        if self.__validate_bounces() is False:
             raise Exception("Less than 2 bounces were found for this trade."
                             "Perphaps you can try to run peakutils with lower threshold "
                             "or min_dist parameters")
