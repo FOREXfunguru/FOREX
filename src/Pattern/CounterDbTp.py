@@ -103,66 +103,144 @@ class CounterDbTp(Counter):
         # located
         self.__period1st_bounce_point = self.start - delta_from_start
 
-    def __get_candles4timedelta(self,t):
+    def __get_timedelta4candles(self, n):
         '''
-        This private function takes a datetime.timedelta
-        and returns the equivalent number of candles
+        This private function takes a a number of candles
+        and returns a Datetime.timedelta corresponding to
+        this number of candle
 
         Parameters
         ----------
-        t : Datetime.timedelta
+        n : int
+            Number of candles
 
         Returns
         -------
-        int : representing the number of candles
+        Datetime.timedelta
         '''
 
-        days_in_hours=t.days*24
-        secs_in_hours=t.seconds/3600
-        total_hours=days_in_hours+secs_in_hours
-
-        no_candles=None
+        delta=None
         if self.timeframe == "D":
-            no_candles=(total_hours/24)
+            delta=datetime.timedelta(hours=24*n)
         else:
             hours = int(self.timeframe.replace('H', ''))
-            no_candles=(total_hours/hours)
+            delta=datetime.timedelta(hours=hours*n)
 
-        return no_candles
+        return delta
 
-
-
-    def __validate_bounces(self,min_len=2, distance_cutoff=5):
+    def __validate1stbounce(self):
         '''
-        Private function to validate bounces identified by self.get_bounces
-
-        Parameters
-        ----------
-        min_len: int
-                 Minimum number of bounces required to validate. Default: 2
-        distance_cutoff: int
-                         Minimum number of candles between 1st and 2nd bounce
-                         Default: 5
+        Private function to validate the first bounce identified by self.get_first_bounce
 
         Returns
         -------
-        bool: True if it validates, False otherwise
+        str: Reason for not validating
+             'NO_BOUNCE': The bounce was not found
+             'TOO_MANY': Too many bounces found
+             'OK': Ok
         '''
 
-        if len(self.bounces) < min_len:
-            warnings.warn("Less than 2 bounces identified")
-            return False
+        if len(self.bounces) < 1:
+            warnings.warn("Not enough bounces")
+            return (False,'NO_BOUNCE')
+        elif len(self.bounces) > 1:
+            warnings.warn("Too many bounces")
+            return (False,'TOO_MANY')
+        else:
+            return (True,'OK')
 
-        if self.bounces[-1][0] < self.__period1st_bounce_point:
-            warnings.warn("First identified bounce is before the time cutoff")
-            return False
+    def __validate2ndbounce(self):
+        '''
+        Private function to validate the second bounce identified by self.get_second_bounce
 
-        diff = self.bounces[-1][0] - self.bounces[-2][0]
-        candles=self.__get_candles4timedelta(diff)
-        if candles<=distance_cutoff:
-            return False
+        Returns
+        -------
+        str: Reason for not validating
+             'NO_BOUNCE': The bounce was not found
+             'OK': Ok
+        '''
 
-        return True
+        if self.bounces is None:
+            warnings.warn("Not enough bounces")
+            return (False,'NO_BOUNCE')
+        else:
+            return (True,'OK')
+
+    def get_first_bounce(self,part='closeAsk'):
+        '''
+        Function to identify the first (most recent) bounce
+
+        Parameters
+        ----------
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
+
+        Returns
+        -------
+        A bounce representing the last bounce
+        '''
+
+        self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1, min_dist_res=1,
+                         start=self.__period1st_bounce_point)
+
+        min_dist_res=1
+        HR_pips = self.HR_pips
+
+        while(self.__validate1stbounce()[0] is False) and (min_dist_res <= 10) and (HR_pips<=200):
+            if self.__validate1stbounce()[1]=='TOO_MANY':
+                min_dist_res += 1
+                warnings.warn("More than 2 bounces identified. "
+                              "Will try with 'min_dist_res'={0}".format(min_dist_res))
+                self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1, min_dist_res=min_dist_res,
+                                 start=self.__period1st_bounce_point)
+            elif self.__validate1stbounce()[1]=='NO_BOUNCE':
+                HR_pips += 5
+                warnings.warn("Less than 1 bounce identified. "
+                              "Will try with 'HR_pips'={0}".format(HR_pips))
+                self.set_bounces(part=part, HR_pips=HR_pips, threshold=self.threshold, min_dist=1,
+                                 min_dist_res=min_dist_res,
+                                 start=self.__period1st_bounce_point)
+
+        if self.bounces is None:
+            raise Exception("No first bounce found")
+
+        return self.bounces[-1]
+
+    def get_second_bounce(self, first, part='closeAsk'):
+        '''
+        Function to identify the 2nd bounce
+
+        Parameters
+        ----------
+        first: tuple
+               First bounce
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
+
+        Returns
+        -------
+        A bounce representing the second bounce
+        '''
+
+        end=first[0]-self.__get_timedelta4candles(10)
+        self.set_bounces(part=part, HR_pips=self.HR_pips+70, threshold=self.threshold, min_dist=1,
+                         min_dist_res=10,
+                         start=self.__period_dbounce_point,end=end)
+
+        HR_pips = self.HR_pips+70
+        while (self.__validate2ndbounce()[1] == 'NO_BOUNCE') and (HR_pips<=200):
+            HR_pips += 5
+            warnings.warn("Less than 1 bounce identified. "
+                          "Will try with 'HR_pips'={0}".format(HR_pips))
+            self.set_bounces(part=part, HR_pips=HR_pips, threshold=self.threshold, min_dist=1,
+                             min_dist_res=10,
+                             start=self.__period_dbounce_point,end=end)
+
+
+        if self.bounces is None:
+            raise Exception("No second bounce found")
+
+        return self.bounces[-1]
 
     def get_bounces(self, plot=False, part='closeAsk'):
         '''
@@ -181,62 +259,11 @@ class CounterDbTp(Counter):
         It will set the self.bounces attribute
         '''
 
-        min_dist_res = 10
-        HR_pips_res=100
-        # relax parameters to detect first and second bounces
-        self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=self.min_dist,min_dist_res=min_dist_res,
-                         start= self.__period_dbounce_point)
-
-        # Will check if there are at least 2 bounces within 'period' or there are a maximum of period_first_bounce
-        # candles between self.start and self.bounces[-1], if not then it will try iteratively decreasing
-        # first the threshold, then the min_dist_res and finally the HR_pips
-        threshold_res = 0.5
-        while (self.__validate_bounces() is False) and (threshold_res > 0.0):
-            threshold_res -= 0.1
-            warnings.warn("Less than 2 bounces identified or last bounce is not correct. "
-                          " Will try with 'threshold_res'={0}".format(threshold_res))
-            self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=threshold_res, min_dist=5, min_dist_res=10,
-                             start=self.__period_dbounce_point)
-
-        while (self.__validate_bounces() is False) and (min_dist_res > 1):
-            min_dist_res -= 1
-            warnings.warn("Less than 2 bounces identified or last bounce is not correct. "
-                          " Will try with 'min_dist_res'={0}".format(min_dist_res))
-            self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1, min_dist_res=min_dist_res,
-                             start=self.__period_dbounce_point)
-
-        while (self.__validate_bounces() is False) and (HR_pips_res <= 200):
-            HR_pips_res += 5
-            warnings.warn("Less than 2 bounces identified or last bounce is not correct. "
-                          " Will try with 'HR_pips_res'={0}".format(HR_pips_res))
-            self.set_bounces(part=part, HR_pips=HR_pips_res, threshold=self.threshold, min_dist=1, min_dist_res=10,
-                             start=self.__period_dbounce_point)
-
-        # Finally, and as a last-ditch effort, combine the decrease of threshold and min_dist
-        threshold_res=0.5
-        while (self.__validate_bounces() is False) and (threshold_res > 0.0):
-            threshold_res -= 0.1
-            min_dist_res = 10
-            warnings.warn("Less than 2 bounces identified or last bounce is not correct."
-                          " Will try with 'threshold_res'={0}".format(threshold_res))
-
-            self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=threshold_res, min_dist=5, min_dist_res=10,
-                             start=self.__period_dbounce_point)
-
-            while (self.__validate_bounces() is False) and (min_dist_res > 1):
-                min_dist_res -= 1
-                warnings.warn("Less than 2 bounces identified or last bounce is not correct. "
-                              " Will try with 'min_dist_res'={0}".format(min_dist_res))
-                self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=threshold_res, min_dist=1,
-                                 min_dist_res=min_dist_res,start=self.__period_dbounce_point)
-
         pdb.set_trace()
-        if self.__validate_bounces() is False:
-            raise Exception("Less than 2 bounces were found for this trade."
-                            "Perphaps you can try to run peakutils with lower threshold "
-                            "or min_dist parameters")
+        first_bounce=self.get_first_bounce()
+        second_bounce=self.get_second_bounce(first=first_bounce)
 
-        final_bounces = [self.bounces[-2], self.bounces[-1]]
+        final_bounces = [second_bounce, first_bounce]
 
         # check bounces from the second bounce with a stricter parameter set
         self.set_bounces(part=part, HR_pips=60, threshold=0.5, min_dist=5, min_dist_res=5,
