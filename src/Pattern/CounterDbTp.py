@@ -61,9 +61,6 @@ class CounterDbTp(Counter):
                Threshold for detecting peaks. Default : 0.50
     min_dist: int, Optional
               Minimum distance between peaks. Default : 5
-    period_dbounce: int, Optional
-                    Number of candles for period starting in self.start that will contain the double bounce
-                    characteristic of this pattern. Default: 150
     period1st_bounce: int, Optional
                       Controls the maximum number of candles allowed between
                       self.start and the location of the most recent bounce.
@@ -78,7 +75,6 @@ class CounterDbTp(Counter):
         self.HR_pips = HR_pips
         self.threshold = threshold
         self.min_dist = min_dist
-        self.period_dbounce = period_dbounce
         self.period1st_bounce = period1st_bounce
 
         allowed_keys = ['id','timeframe','entry','period', 'trend_i', 'type', 'SL',
@@ -87,18 +83,26 @@ class CounterDbTp(Counter):
         super().__init__(pair)
 
         # Initialise the private class attributes containing some pattern restrictions
-        delta_period = None
         delta_from_start = None
         if self.timeframe == "D":
-            delta_period = datetime.timedelta(hours=24 * self.period_dbounce)
             delta_from_start = datetime.timedelta(hours=24 * self.period1st_bounce)
         else:
             fgran = self.timeframe.replace('H', '')
-            delta_period = datetime.timedelta(hours=int(fgran) * self.period_dbounce)
             delta_from_start = datetime.timedelta(hours=int(fgran) * self.period1st_bounce)
 
-        # timepoint cutoff that defines the period for which the doubletop will be looked for
-        self.__period_dbounce_point = self.start - delta_period
+        # calculate the cutoff for the first threshold using the number of candles
+        oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                         instrument=self.pair,
+                         granularity=self.timeframe,
+                         alignmentTimezone='Europe/London',
+                         dailyAlignment=22)
+
+        pdb.set_trace()
+        oanda.run(start=(self.start - delta_from_start).isoformat(),
+                  end= self.start.isoformat(),
+                  roll=True)
+
+        candle_list = oanda.fetch_candleset()
         # timepoint cutoff that the defines the period from which the first bounce needs to be
         # located
         self.__period1st_bounce_point = self.start - delta_from_start
@@ -160,7 +164,7 @@ class CounterDbTp(Counter):
              'OK': Ok
         '''
 
-        if self.bounces is None:
+        if len(self.bounces) < 1:
             warnings.warn("Not enough bounces")
             return (False,'NO_BOUNCE')
         else:
@@ -183,6 +187,7 @@ class CounterDbTp(Counter):
         self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1, min_dist_res=1,
                          start=self.__period1st_bounce_point)
 
+        pdb.set_trace()
         min_dist_res=1
         HR_pips = self.HR_pips
 
@@ -201,7 +206,7 @@ class CounterDbTp(Counter):
                                  min_dist_res=min_dist_res,
                                  start=self.__period1st_bounce_point)
 
-        if self.bounces is None:
+        if len(self.bounces)<1:
             raise Exception("No first bounce found")
 
         return self.bounces[-1]
@@ -223,21 +228,20 @@ class CounterDbTp(Counter):
         '''
 
         end=first[0]-self.__get_timedelta4candles(10)
-        self.set_bounces(part=part, HR_pips=self.HR_pips+70, threshold=self.threshold, min_dist=1,
+        self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1,
                          min_dist_res=10,
-                         start=self.__period_dbounce_point,end=end)
+                         start=self.trend_i,end=end)
 
-        HR_pips = self.HR_pips+70
+        HR_pips = self.HR_pips
         while (self.__validate2ndbounce()[1] == 'NO_BOUNCE') and (HR_pips<=200):
             HR_pips += 5
             warnings.warn("Less than 1 bounce identified. "
                           "Will try with 'HR_pips'={0}".format(HR_pips))
             self.set_bounces(part=part, HR_pips=HR_pips, threshold=self.threshold, min_dist=1,
                              min_dist_res=10,
-                             start=self.__period_dbounce_point,end=end)
+                             start=self.trend_i,end=end)
 
-
-        if self.bounces is None:
+        if len(self.bounces) < 1:
             raise Exception("No second bounce found")
 
         return self.bounces[-1]
@@ -259,7 +263,6 @@ class CounterDbTp(Counter):
         It will set the self.bounces attribute
         '''
 
-        pdb.set_trace()
         first_bounce=self.get_first_bounce()
         second_bounce=self.get_second_bounce(first=first_bounce)
 
@@ -267,7 +270,7 @@ class CounterDbTp(Counter):
 
         # check bounces from the second bounce with a stricter parameter set
         self.set_bounces(part=part, HR_pips=60, threshold=0.5, min_dist=5, min_dist_res=5,
-                         end=self.bounces[-2][0])
+                         end=second_bounce[0])
 
         if self.bounces is not None:
             # append the self.bounces at the beginning of final_bounces
@@ -437,3 +440,4 @@ class CounterDbTp(Counter):
         candle_list = oanda.fetch_candleset()
 
         self.valley=len(candle_list)
+

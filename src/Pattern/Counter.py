@@ -94,7 +94,7 @@ class Counter(object):
 
         warnings.warn("[INFO] Run __init_clist_trend")
 
-        # checking for feats in trend before 1st bounce
+            # checking for feats in trend before 1st bounce
         oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                          instrument=self.pair,
                          granularity=self.timeframe,
@@ -249,19 +249,29 @@ class Counter(object):
                                          min_dist=min_dist,
                                          min_dist_res=min_dist_res)
 
-        if end is not None:
+        bounces_new=[]
+        if start is None and end is not None:
             bounces_new = [d for d in bounces if d[0]<end]
             if len(bounces_new)>1:
                 self.bounces=bounces_new
             else:
                 self.bounces=None
-        elif start is not None:
+
+        if start is not None and end is None:
             bounces_new = [d for d in bounces if d[0] >= start]
             if len(bounces_new) >0:
                 self.bounces = bounces_new
             else:
                 self.bounces = []
-        else:
+
+        if start is not None and end is not None:
+            bounces_new = [d for d in bounces if d[0] >= start and d[0] <=end ]
+            if len(bounces_new) >0:
+                self.bounces = bounces_new
+            else:
+                self.bounces =[]
+
+        if start is None and end is None:
             self.bounces=bounces
 
     def set_lasttime(self):
