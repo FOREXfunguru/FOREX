@@ -38,7 +38,8 @@ class OandaAPI(object):
         'NZD_USD': datetime.datetime(2002, 9, 5, 22, 0),
         'USD_CAD': datetime.datetime(2002, 6, 5, 22, 0),
         'USD_CHF': datetime.datetime(2002, 6, 5, 22, 0),
-        'USD_JPY': datetime.datetime(2002, 6, 5, 22, 0)
+        'USD_JPY': datetime.datetime(2002, 6, 5, 22, 0),
+        'AUD_CHF': datetime.datetime(2004, 6, 5, 22, 0),
     }
 
     def __init__(self, instrument, granularity, url=None, data=None, **kwargs):

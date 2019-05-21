@@ -68,8 +68,8 @@ class CounterDbTp(Counter):
 
     '''
 
-    def __init__(self, pair, start, HR_pips=30, threshold=0.50, min_dist=5, period_dbounce=150,
-                 period1st_bounce=10,**kwargs):
+    def __init__(self, pair, start, HR_pips=30, threshold=0.50, min_dist=5,
+                 period1st_bounce=8,**kwargs):
 
         self.start = start
         self.HR_pips = HR_pips
@@ -82,13 +82,38 @@ class CounterDbTp(Counter):
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         super().__init__(pair)
 
+        # timepoint cutoff that the defines the period from which the first bounce needs to be
+        # located
+        self.__period1st_bounce_point = self.__get_time4candles(n=self.period1st_bounce, anchor_point=self.start )
+
+    def __get_time4candles(self, n, anchor_point):
+        '''
+        This private function takes a a number of candles
+        and returns a Datetime corresponding to
+        this number of candles
+
+        Parameters
+        ----------
+        n : int
+            Number of candles
+        anchor_point : datetime
+            Datetime used as the anchor for calculation
+
+        Returns
+        -------
+        Datetime.datetime
+        '''
+
         # Initialise the private class attributes containing some pattern restrictions
         delta_from_start = None
+        delta_one = None
         if self.timeframe == "D":
-            delta_from_start = datetime.timedelta(hours=24 * self.period1st_bounce)
+            delta_from_start = datetime.timedelta(hours=24 * n)
+            delta_one = datetime.timedelta(hours=24)
         else:
             fgran = self.timeframe.replace('H', '')
-            delta_from_start = datetime.timedelta(hours=int(fgran) * self.period1st_bounce)
+            delta_from_start = datetime.timedelta(hours=int(fgran) * n)
+            delta_one = datetime.timedelta(hours=int(fgran) )
 
         # calculate the cutoff for the first threshold using the number of candles
         oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
@@ -97,40 +122,24 @@ class CounterDbTp(Counter):
                          alignmentTimezone='Europe/London',
                          dailyAlignment=22)
 
-        pdb.set_trace()
-        oanda.run(start=(self.start - delta_from_start).isoformat(),
-                  end= self.start.isoformat(),
+        start=anchor_point - delta_from_start
+        end=anchor_point.isoformat()
+
+        oanda.run(start=start.isoformat(),
+                  end=end,
                   roll=True)
 
-        candle_list = oanda.fetch_candleset()
-        # timepoint cutoff that the defines the period from which the first bounce needs to be
-        # located
-        self.__period1st_bounce_point = self.start - delta_from_start
+        candle_list= oanda.fetch_candleset()
 
-    def __get_timedelta4candles(self, n):
-        '''
-        This private function takes a a number of candles
-        and returns a Datetime.timedelta corresponding to
-        this number of candle
+        while len(candle_list) < n:
+            start = start - delta_one
+            oanda.run(start=start.isoformat(),
+                      end=end,
+                      roll=True)
+            candle_list = oanda.fetch_candleset()
 
-        Parameters
-        ----------
-        n : int
-            Number of candles
+        return start
 
-        Returns
-        -------
-        Datetime.timedelta
-        '''
-
-        delta=None
-        if self.timeframe == "D":
-            delta=datetime.timedelta(hours=24*n)
-        else:
-            hours = int(self.timeframe.replace('H', ''))
-            delta=datetime.timedelta(hours=hours*n)
-
-        return delta
 
     def __validate1stbounce(self):
         '''
@@ -187,7 +196,6 @@ class CounterDbTp(Counter):
         self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1, min_dist_res=1,
                          start=self.__period1st_bounce_point)
 
-        pdb.set_trace()
         min_dist_res=1
         HR_pips = self.HR_pips
 
@@ -202,9 +210,12 @@ class CounterDbTp(Counter):
                 HR_pips += 5
                 warnings.warn("Less than 1 bounce identified. "
                               "Will try with 'HR_pips'={0}".format(HR_pips))
-                self.set_bounces(part=part, HR_pips=HR_pips, threshold=self.threshold, min_dist=1,
-                                 min_dist_res=min_dist_res,
-                                 start=self.__period1st_bounce_point)
+                threshold=self.threshold
+                while(threshold >= 0.1) and (self.__validate1stbounce()[1]=='NO_BOUNCE'):
+                    threshold-=0.1
+                    self.set_bounces(part=part, HR_pips=HR_pips, threshold=threshold, min_dist=1,
+                                     min_dist_res=min_dist_res,
+                                     start=self.__period1st_bounce_point)
 
         if len(self.bounces)<1:
             raise Exception("No first bounce found")
@@ -227,7 +238,7 @@ class CounterDbTp(Counter):
         A bounce representing the second bounce
         '''
 
-        end=first[0]-self.__get_timedelta4candles(10)
+        end=self.__get_time4candles(n=5, anchor_point=first[0])
         self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1,
                          min_dist_res=10,
                          start=self.trend_i,end=end)
@@ -237,9 +248,12 @@ class CounterDbTp(Counter):
             HR_pips += 5
             warnings.warn("Less than 1 bounce identified. "
                           "Will try with 'HR_pips'={0}".format(HR_pips))
-            self.set_bounces(part=part, HR_pips=HR_pips, threshold=self.threshold, min_dist=1,
-                             min_dist_res=10,
-                             start=self.trend_i,end=end)
+            threshold = self.threshold
+            while (threshold >= 0.1) and (self.__validate2ndbounce()[1] == 'NO_BOUNCE'):
+                threshold -= 0.1
+                self.set_bounces(part=part, HR_pips=HR_pips, threshold=threshold, min_dist=1,
+                                 min_dist_res=1,
+                                 start=self.trend_i,end=end)
 
         if len(self.bounces) < 1:
             raise Exception("No second bounce found")
