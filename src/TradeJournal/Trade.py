@@ -119,14 +119,14 @@ class Trade(object):
                 entered=True
             if entered is True:
                 failure_time = SL.get_cross_time(candle=cl)
-                if failure_time is not None:
+                if failure_time is not None and failure_time!='n.a.':
                     self.outcome='failure'
                     self.end = failure_time
                     warnings.warn("\t[INFO] S/L was hit")
                     break
             if entered is True:
                 success_time = TP.get_cross_time(candle=cl)
-                if success_time is not None:
+                if success_time is not None and success_time!='n.a.':
                     self.outcome = 'success'
                     warnings.warn("\t[INFO] T/P was hit")
                     self.end=success_time

@@ -481,9 +481,9 @@ class CandleList(object):
 
         ixs=None
         if direction=='up':
-            ixs = peakutils.indexes(cb, thres=0.50, min_dist=10)
+            ixs = peakutils.indexes(cb, thres=0.5, min_dist=5)
         elif direction=='down':
-            ixs = peakutils.indexes(-cb, thres=0.50, min_dist=10)
+            ixs = peakutils.indexes(-cb, thres=0.5, min_dist=5)
 
         bounces = []
         for ix in ixs:
@@ -575,6 +575,8 @@ class CandleList(object):
                                               "run calc_rsi first")
             prices.append(getattr(c, part))
             rsi_values.append(getattr(c, 'rsi'))
+
+        pdb.set_trace()
 
         bounces_prices=self.__get_bounces(prices,direction=direction)
         bounces_rsi = self.__get_bounces(rsi_values, direction=direction)
