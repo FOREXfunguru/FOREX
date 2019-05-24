@@ -47,7 +47,9 @@ class CounterDbTp(Counter):
               Is price in overbought/oversold
               area in second peak
     diff : float. Optional
-           Variable containing the difference between rsi_1st and rsi_2nd
+            Variable containing the difference (in pips) between bounce_1st and bounce_2nd
+    diff_rsi : float. Optional
+               Variable containing the difference between rsi_1st and rsi_2nd
     valley : int Optional
              Length in number of candles between  bounce_1st and bounce_2nd
     n_rsibounces : int, Optional
@@ -79,7 +81,9 @@ class CounterDbTp(Counter):
 
         allowed_keys = ['id','timeframe','entry','period', 'trend_i', 'type', 'SL',
                         'TP', 'SR', 'RR']
+
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
+        # initialize the Counter object
         super().__init__(pair)
 
         # timepoint cutoff that the defines the period from which the first bounce needs to be
@@ -380,6 +384,7 @@ class CounterDbTp(Counter):
         self.set_2ndbounce()
         self.bounces_fromlasttime()
         self.set_diff()
+        self.set_diff_rsi()
         self.set_valley()
 
         warnings.warn("[INFO] Done init_feats")
@@ -424,13 +429,33 @@ class CounterDbTp(Counter):
 
         Returns
         -------
-        It will set the 'diff' attribute of the class
+        It will set the 'diff' attribute of the class and calculate
+        the number of pips from the difference
+        '''
+
+        diff = self.bounce_1st[1] - self.bounce_2nd[1]
+
+        (first, second) = self.pair.split("_")
+        if first == 'JPY' or second == 'JPY':
+            diff=diff*100
+        else:
+            diff=diff*10000
+
+        self.diff = round(diff)
+
+    def set_diff_rsi(self):
+        '''
+        Function to calculate the diff between rsi_1st & rsi_2nd
+
+        Returns
+        -------
+        It will set the 'diff_rsi' attribute of the class
         '''
 
         rsi1st_val = self.clist_period.fetch_by_time(self.bounce_1st[0]).rsi
         rsi2nd_val = self.clist_period.fetch_by_time(self.bounce_2nd[0]).rsi
 
-        self.diff=rsi1st_val-rsi2nd_val
+        self.diff_rsi=rsi1st_val-rsi2nd_val
 
     def set_valley(self):
         '''

@@ -34,7 +34,7 @@ class OandaAPI(object):
         'GBP_AUD': datetime.datetime(2004, 6, 5, 22, 0),
         'GBP_JPY': datetime.datetime(2002, 6, 5, 22, 0),
         'GBP_USD': datetime.datetime(2002, 6, 5, 22, 0),
-        'NZD_JPY': datetime.datetime(2004, 6, 5, 22, 0),
+        'NZD_JPY': datetime.datetime(2004, 6, 1, 22, 0),
         'NZD_USD': datetime.datetime(2002, 9, 5, 22, 0),
         'USD_CAD': datetime.datetime(2002, 6, 5, 22, 0),
         'USD_CHF': datetime.datetime(2002, 6, 5, 22, 0),

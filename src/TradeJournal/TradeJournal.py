@@ -59,6 +59,8 @@ class TradeJournal(object):
             attrbs={}
             for items in row.iteritems():
                 attrbs[items[0]]=items[1]
+
+            # behave depending on identified pattern
             c=None
             if strat=="counter":
                 c=Counter(pair=pair,**attrbs)
@@ -112,13 +114,17 @@ class TradeJournal(object):
         for t in trade_list:
             row=[]
             for a in colnames:
-                value=getattr(t, a)
-                if value is None: raise Exception("{0} attribute does not exist".format(a))
-                if p.match(a):
-                    value=value[0]
+                value=None
+                try:
+                    value=getattr(t, a)
+                    if p.match(a):
+                        value=value[0]
+                except:
+                    pdb.set_trace()
+                    warnings.warn("Error getting value for attribute: {0}".format(a))
+                    value="n.a."
                 row.append(value)
             data.append(row)
-
         df = pd.DataFrame(data, columns=colnames)
 
         book = load_workbook(self.url)

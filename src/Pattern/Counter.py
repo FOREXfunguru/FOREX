@@ -90,6 +90,8 @@ class Counter(object):
     def __init_clist_trend(self):
         '''
         Private function to initialise self.clist_trend class attribute
+
+        This function process the candlelist going from self.trend_i to self.start
         '''
 
         warnings.warn("[INFO] Run __init_clist_trend")
@@ -120,6 +122,9 @@ class Counter(object):
     def __init_clist_period(self):
         '''
         Private function to initialise self.clist_period class attribute
+
+        Thist function process the candlelist going from self.start-self.period to
+        self.start
         '''
 
         warnings.warn("[INFO] Run __init_clist_period")

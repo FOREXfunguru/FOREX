@@ -576,8 +576,6 @@ class CandleList(object):
             prices.append(getattr(c, part))
             rsi_values.append(getattr(c, 'rsi'))
 
-        pdb.set_trace()
-
         bounces_prices=self.__get_bounces(prices,direction=direction)
         bounces_rsi = self.__get_bounces(rsi_values, direction=direction)
 
