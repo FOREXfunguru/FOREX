@@ -46,8 +46,8 @@ class CounterDbTp(Counter):
     rsi_2nd : bool, Optional
               Is price in overbought/oversold
               area in second peak
-    diff : float. Optional
-            Variable containing the difference (in pips) between bounce_1st and bounce_2nd
+    diff : int. Optional
+            Variable containing the absolute (no sign) difference (in pips)
     diff_rsi : float. Optional
                Variable containing the difference between rsi_1st and rsi_2nd
     valley : int Optional
@@ -412,6 +412,7 @@ class CounterDbTp(Counter):
             TP=self.TP,
             trend_i=str(self.trend_i))
 
+        pdb.set_trace()
         c.init_feats()
 
         self.slope=c.slope
@@ -430,7 +431,8 @@ class CounterDbTp(Counter):
         Returns
         -------
         It will set the 'diff' attribute of the class and calculate
-        the number of pips from the difference
+        the number of pips from the difference. The sign will be ignored
+        and the absolute number of pips is returned
         '''
 
         diff = self.bounce_1st[1] - self.bounce_2nd[1]
@@ -441,7 +443,7 @@ class CounterDbTp(Counter):
         else:
             diff=diff*10000
 
-        self.diff = round(diff)
+        self.diff = abs(round(diff))
 
     def set_diff_rsi(self):
         '''

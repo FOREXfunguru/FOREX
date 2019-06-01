@@ -43,7 +43,8 @@ class Counter(object):
     clist_trend: CandleList, Optional
                  CandleList extending back to datetime defined by self.trend_i
     last_time: datetime object, Optional
-               datetime for last time that price has been above/below self.SR
+               datetime for last time that price has been above/below self.SR. If last_time is not found before
+               the start of the historical record then it will be set to '01/01/1900 00:00:00'
     bounces_lasttime: list, Optional
                       List with tuples [(datetime,price)] containing the datetime
                       and price for different bounces after the lasttime
