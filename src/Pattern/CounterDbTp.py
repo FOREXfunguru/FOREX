@@ -412,7 +412,6 @@ class CounterDbTp(Counter):
             TP=self.TP,
             trend_i=str(self.trend_i))
 
-        pdb.set_trace()
         c.init_feats()
 
         self.slope=c.slope
@@ -478,7 +477,7 @@ class CounterDbTp(Counter):
         oanda.run(start=self.bounce_1st[0].isoformat(),
                   end=self.bounce_2nd[0].isoformat())
 
-        candle_list = oanda.fetch_candleset()
+        candle_list = oanda.fetch_candleset(vol_cutoff=20)
 
         self.valley=len(candle_list)
 

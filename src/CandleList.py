@@ -440,6 +440,8 @@ class CandleList(object):
         int Length in number of candles
         '''
 
+        for i in self.clist:
+            print(i.time)
         return len(self.clist)
 
     def get_length_pips(self, part='openAsk'):

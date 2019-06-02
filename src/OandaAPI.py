@@ -294,9 +294,16 @@ class OandaAPI(object):
         
         print("URL: %s" % self.resp.url)
         
-    def fetch_candleset(self):
+    def fetch_candleset(self, vol_cutoff=0):
         '''
         Retrieve candles in self.data
+
+
+        Parameters
+        ----------
+        vol_cutoff: int
+                    Do not consider candles having less than 'vol_cutoff'.
+                    Default: 0
         
         Returns
         ------
@@ -315,7 +322,7 @@ class OandaAPI(object):
                         setattr(cd,k,pd.datetime.strptime(v, '%Y-%m-%dT%H:%M:%S.%fZ'))
                     else:
                         setattr(cd,k,v)
-                candlelist.append(cd)
+                if cd.volume > vol_cutoff: candlelist.append(cd)
         return candlelist
     
     def fetch_candles_from_file(self, file):

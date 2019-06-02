@@ -182,7 +182,7 @@ def test_OandaAPI11():
 
     assert 1
     
-"""
+
 def test_OandaAPI11():
     '''
     Test a simple query to Oanda's REST API using a H12 timeframe and using
@@ -198,6 +198,28 @@ def test_OandaAPI11():
     oanda.run(start='2000-11-21T22:00:00',
               end='2002-06-15T22:00:00',
               roll=True)
+
+    assert 1
+
+"""
+def test_OandaAPI12():
+    '''
+    Test a simple query to Oanda's REST API using a H12 timeframe and using
+    a volume cutoff for 'fetch_candleset' function
+    '''
+
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='NZD_JPY',
+                     granularity='H12',
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22)
+
+    oanda.run(start='2011-09-02T21:00:00',
+              end='2011-09-06T22:00:00',
+              roll=True)
+
+    candle_list = oanda.fetch_candleset(vol_cutoff=20)
+    pdb.set_trace()
 
     assert 1
 

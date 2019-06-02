@@ -107,7 +107,7 @@ class Counter(object):
         oanda.run(start=self.trend_i.isoformat(),
                   end=self.start.isoformat())
 
-        candle_list = oanda.fetch_candleset()
+        candle_list = oanda.fetch_candleset(vol_cutoff=20)
 
         cl = CandleList(candle_list, self.pair, granularity=self.timeframe)
 
@@ -154,7 +154,7 @@ class Counter(object):
                   roll=True
                   )
 
-        candle_list = oanda.fetch_candleset()
+        candle_list = oanda.fetch_candleset(vol_cutoff=20)
 
         cl = CandleList(candle_list, self.pair, granularity=self.timeframe)
 
