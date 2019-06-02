@@ -201,7 +201,6 @@ def test_OandaAPI11():
 
     assert 1
 
-"""
 def test_OandaAPI12():
     '''
     Test a simple query to Oanda's REST API using a H12 timeframe and using
@@ -225,6 +224,22 @@ def test_OandaAPI12():
 
 """
 
+def test_OandaAPI13():
+    '''
+
+    :return:
+    '''
+
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='AUD_USD',
+                     granularity='H6',
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22)
+
+    oanda.run(start='2007-05-29T16:00:00',
+              end='2014-04-01T15:00:00',
+              roll=True)
+"""
 def test_fetch_candleset(oanda_object):
     '''
     Test how a Candle list is retrieved

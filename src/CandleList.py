@@ -6,7 +6,7 @@ from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 import pandas as pd
 import pdb
-from datetime import timedelta,datetime,time
+import datetime
 import re
 import peakutils
 import numpy as np
@@ -206,13 +206,13 @@ class CandleList(object):
         
         self.entropy=a_dict
 
-    def fetch_by_time(self, datetime):
+    def fetch_by_time(self, adatetime):
         '''
         Function to get a candle using its datetime
 
         Parameters
         ----------
-        datetime    datetime object for candle that wants
+        adatetime    datetime object for candle that wants
                     to be fetched
 
         Returns
@@ -220,13 +220,13 @@ class CandleList(object):
         Candle object
         '''
 
-        d=datetime
+        d=adatetime
         delta = None
         if self.granularity == "D":
-            delta = timedelta(hours=24)
+            delta = datetime.timedelta(hours=24)
         else:
             fgran = self.granularity.replace('H', '')
-            delta = timedelta(hours=int(fgran))
+            delta = datetime.timedelta(hours=int(fgran))
 
         sel_c=None
 
@@ -319,8 +319,8 @@ class CandleList(object):
         Parameters
         ----------
         period : int
-                 Number of days for which close price data will be fetched. The larger the
-                 number of days the more accurate the ewm calculation will be, as the exponential
+                 Number of candles for which close price data will be fetched. The larger the
+                 number of candles the more accurate the ewm calculation will be, as the exponential
                  moving average calculated for each of the windows (of size=rsi_period) will be
                  directly affected by the previous windows in the series
         rsi_period : int
@@ -334,8 +334,14 @@ class CandleList(object):
         start_time=self.clist[0].time
         end_time=self.clist[-1].time
 
-        period_delta = timedelta(days=period)
-        start_calc_time = start_time - period_delta
+        delta_period = None
+        if self.granularity == "D":
+            delta_period = datetime.timedelta(hours=24 * period)
+        else:
+            fgran = self.granularity.replace('H', '')
+            delta_period = datetime.timedelta(hours=int(fgran) * period)
+
+        start_calc_time = start_time - delta_period
 
         #fetch candle set from start_calc_time
         oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',

@@ -64,7 +64,7 @@ class Counter(object):
                  Length in number of pips for self.clist_trend
     '''
 
-    def __init__(self, pair, period=1000, **kwargs):
+    def __init__(self, pair, period= 3000, **kwargs):
 
         allowed_keys = [ 'start','timeframe','period','entry','trend_i', 'type', 'SL',
                         'TP','SR','RR','bounces','clist_period','clist_trend','last_time',
@@ -130,7 +130,7 @@ class Counter(object):
 
         warnings.warn("[INFO] Run __init_clist_period")
 
-        delta = None
+        delta_period = None
         delta_1 = None
         if self.timeframe == "D":
             delta_period = datetime.timedelta(hours=24 * self.period)

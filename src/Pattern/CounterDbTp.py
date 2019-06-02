@@ -406,7 +406,7 @@ class CounterDbTp(Counter):
             pair=self.pair,
             timeframe=self.timeframe,
             type=self.type,
-            period=1000,
+            period=3000,
             SR=self.SR,
             SL=self.SL,
             TP=self.TP,
