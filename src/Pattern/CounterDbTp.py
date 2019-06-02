@@ -83,8 +83,9 @@ class CounterDbTp(Counter):
                         'TP', 'SR', 'RR']
 
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
-        # initialize the Counter object
-        super().__init__(pair)
+
+        # initialize the Counter object that will go from self.start to self.start-period
+        super().__init__(pair,period=4000)
 
         # timepoint cutoff that the defines the period from which the first bounce needs to be
         # located
@@ -406,7 +407,6 @@ class CounterDbTp(Counter):
             pair=self.pair,
             timeframe=self.timeframe,
             type=self.type,
-            period=3000,
             SR=self.SR,
             SL=self.SL,
             TP=self.TP,

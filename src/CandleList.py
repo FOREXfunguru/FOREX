@@ -312,7 +312,7 @@ class CandleList(object):
 
         self.longest_stretch=a_dict
 
-    def calc_rsi(self, period, rsi_period=14):
+    def calc_rsi(self, period=2000, rsi_period=14):
         '''
         Calculate the RSI for a certain candle list
 
@@ -446,8 +446,6 @@ class CandleList(object):
         int Length in number of candles
         '''
 
-        for i in self.clist:
-            print(i.time)
         return len(self.clist)
 
     def get_length_pips(self, part='openAsk'):

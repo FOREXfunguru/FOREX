@@ -113,7 +113,7 @@ class Counter(object):
 
         warnings.warn("[INFO] Run cl.calc_rsi")
 
-        cl.calc_rsi(period=self.period)
+        cl.calc_rsi()
 
         warnings.warn("[INFO] Done cl.calc_rsi")
 
@@ -124,7 +124,7 @@ class Counter(object):
         '''
         Private function to initialise self.clist_period class attribute
 
-        Thist function process the candlelist going from self.start-self.period to
+        This function process the candlelist going from self.start-self.period to
         self.start
         '''
 
@@ -160,7 +160,7 @@ class Counter(object):
 
         warnings.warn("[INFO] Run cl.calc_rsi")
 
-        cl.calc_rsi(period=self.period)
+        cl.calc_rsi()
 
         warnings.warn("[INFO] Done cl.calc_rsi")
 
