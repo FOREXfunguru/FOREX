@@ -319,8 +319,8 @@ class CandleList(object):
         Parameters
         ----------
         period : int
-                 Number of candles for which close price data will be fetched. The larger the
-                 number of candles the more accurate the ewm calculation will be, as the exponential
+                 Number of candles before this CandleList start for which close price data will be fetched.
+                 The larger the number of candles the more accurate the ewm calculation will be, as the exponential
                  moving average calculated for each of the windows (of size=rsi_period) will be
                  directly affected by the previous windows in the series
         rsi_period : int
@@ -343,6 +343,7 @@ class CandleList(object):
 
         start_calc_time = start_time - delta_period
 
+
         #fetch candle set from start_calc_time
         oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                          instrument=self.instrument,
@@ -350,11 +351,28 @@ class CandleList(object):
                          alignmentTimezone='Europe/London',
                          dailyAlignment=22)
 
+        '''
+        Get candlelist from start_calc_time to (start_time-1)
+        This 2-step API call is necessary in order to avoid
+        maximum number of candles errors
+        '''
+
         oanda.run(start=start_calc_time.isoformat(),
+                  end=start_time.isoformat(),
+                  roll=True)
+        cl1 = oanda.fetch_candleset()
+
+        '''Get candlelist from start_time to end_time'''
+        oanda.run(start=start_time.isoformat(),
                   end=end_time.isoformat(),
                   roll=True)
 
-        candle_list = oanda.fetch_candleset()
+        cl2 = oanda.fetch_candleset()
+
+        if cl1[-1].time == cl2[0].time:
+            del cl1[-1]
+
+        candle_list = cl1 + cl2
 
         series=[]
         series = [c.closeAsk for c in candle_list]

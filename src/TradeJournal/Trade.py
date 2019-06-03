@@ -91,7 +91,7 @@ class Trade(object):
         # generate a range of dates starting at self.start and ending numperiods later in order to assess the outcome
         # of trade and also the entry time
 
-        numperiods=100
+        numperiods=300
         date_list = [datetime.datetime.strptime(str(self.start.isoformat()),'%Y-%m-%dT%H:%M:%S') + datetime.timedelta(hours=x*period) for x in range(0, numperiods)]
 
         entered=False
@@ -134,6 +134,9 @@ class Trade(object):
                     self.end=success_time
                     break
 
+        assert getattr(self, 'outcome')
+
+        pdb.set_trace()
         warnings.warn("[INFO] Done run_trade")
 
     def __str__(self):
