@@ -120,7 +120,6 @@ class TradeJournal(object):
                     if p.match(a):
                         value=value[0]
                 except:
-                    pdb.set_trace()
                     warnings.warn("Error getting value for attribute: {0}".format(a))
                     value="n.a."
                 row.append(value)

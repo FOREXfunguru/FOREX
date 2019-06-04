@@ -477,7 +477,7 @@ class CounterDbTp(Counter):
         oanda.run(start=self.bounce_1st[0].isoformat(),
                   end=self.bounce_2nd[0].isoformat())
 
-        candle_list = oanda.fetch_candleset(vol_cutoff=20)
+        candle_list = oanda.fetch_candleset(vol_cutoff=0)
 
         self.valley=len(candle_list)
 

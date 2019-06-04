@@ -107,7 +107,7 @@ class Counter(object):
         oanda.run(start=self.trend_i.isoformat(),
                   end=self.start.isoformat())
 
-        candle_list = oanda.fetch_candleset(vol_cutoff=20)
+        candle_list = oanda.fetch_candleset(vol_cutoff=0)
 
         cl = CandleList(candle_list, self.pair, granularity=self.timeframe)
 
@@ -154,7 +154,7 @@ class Counter(object):
                   roll=True
                   )
 
-        candle_list = oanda.fetch_candleset(vol_cutoff=20)
+        candle_list = oanda.fetch_candleset(vol_cutoff=0)
 
         cl = CandleList(candle_list, self.pair, granularity=self.timeframe)
 
@@ -287,7 +287,7 @@ class Counter(object):
         Returns
         -------
         Will set the class 'last_time' attribute representing the last time the price was above/below the self.SR
-        'last_time' will be set to 01/01/1900 if not defined for self.period
+        'last_time' will be set to the datetime for the first candle in self.clist_period if last time was not found
         '''
 
         resist = HArea(price=self.SR, pips=50, instrument=self.pair, granularity=self.timeframe)
@@ -300,7 +300,7 @@ class Counter(object):
         last_time = resist.last_time(clist=self.clist_period, position=position)
 
         if last_time is None:
-            last_time=datetime.datetime(1900, 1, 1)
+            last_time=self.clist_period.clist[0].time
 
         self.last_time=last_time
 

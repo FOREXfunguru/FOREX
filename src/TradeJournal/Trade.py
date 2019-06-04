@@ -136,7 +136,6 @@ class Trade(object):
 
         assert getattr(self, 'outcome')
 
-        pdb.set_trace()
         warnings.warn("[INFO] Done run_trade")
 
     def __str__(self):
