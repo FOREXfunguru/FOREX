@@ -206,14 +206,16 @@ class CandleList(object):
         
         self.entropy=a_dict
 
-    def fetch_by_time(self, adatetime):
+    def fetch_by_time(self, adatetime, period=0):
         '''
         Function to get a candle using its datetime
 
         Parameters
         ----------
-        adatetime    datetime object for candle that wants
+        adatetime:   datetime object for candle that wants
                     to be fetched
+        period: int
+                Number of candles above/below 'adatetime' that will be fetched
 
         Returns
         -------
@@ -222,22 +224,36 @@ class CandleList(object):
 
         d=adatetime
         delta = None
+        delta_period = None
+
         if self.granularity == "D":
             delta = datetime.timedelta(hours=24)
+            delta_period = datetime.timedelta(hours=24*period)
         else:
             fgran = self.granularity.replace('H', '')
             delta = datetime.timedelta(hours=int(fgran))
+            delta_period = datetime.timedelta(hours=int(fgran)*period)
 
-        sel_c=None
+        if period==0:
+            sel_c=None
+            for c in self.clist:
+                start=c.time
+                end=start+delta
+                if d>=start and d < end:
+                    sel_c=c
 
-        for c in self.clist:
-            start=c.time
-            end=start+delta
-            if d>=start and d < end:
-                sel_c=c
+            if sel_c is None: raise Exception("No candle was selected with time: {0}".format(datetime))
+            return sel_c
+        elif period>0:
+            start=d-delta_period
+            end=d+delta_period
+            sel_c = []
+            for c in self.clist:
+                if c.time >= start and c.time <= end:
+                    sel_c.append(c)
+            if len(sel_c)==0: raise Exception("No candle was selected for range: {0}-{1}".format(start,end))
+            return sel_c
 
-        if sel_c is None: raise Exception("No candle was selected with time: {0}".format(datetime))
-        return sel_c
 
 
     def __get_number_of_double0s(self,seq1,seq2,norm=True):

@@ -335,13 +335,14 @@ class CounterDbTp(Counter):
                             "Perphaps you can try to run peakutils with lower threshold or min_dist "
                             "parameters")
 
-        # now check rsi for this bounce
-        candle = self.clist_period.fetch_by_time(self.bounce_1st[0])
+        # now check rsi for this bounce and some candles before/after the bounce
+        candles = self.clist_period.fetch_by_time(self.bounce_1st[0],period=4)
 
         isonrsi = False
-
-        if candle.rsi >= 70 or candle.rsi <= 30:
-            isonrsi = True
+        pdb.set_trace()
+        for c in candles:
+            if c.rsi >= 70 or c.rsi <= 30:
+                isonrsi = True
 
         self.rsi_1st = isonrsi
 
@@ -357,13 +358,14 @@ class CounterDbTp(Counter):
 
         self.bounce_2nd=self.bounces[-1]
 
-        # now check rsi for this bounce
-        candle = self.clist_period.fetch_by_time(self.bounce_2nd[0])
+        # now check rsi for this bounce and some candles before/after the bounce
+        candles= self.clist_period.fetch_by_time(self.bounce_2nd[0],period=4)
 
         isonrsi = False
 
-        if candle.rsi >= 70 or candle.rsi <= 30:
-            isonrsi = True
+        for c in candles:
+            if c.rsi >= 70 or c.rsi <= 30:
+                isonrsi = True
 
         self.rsi_2nd = isonrsi
 
