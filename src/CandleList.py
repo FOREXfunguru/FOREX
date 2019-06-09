@@ -1,5 +1,6 @@
 from scipy import stats
 from OandaAPI import OandaAPI
+from zigzag import *
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from pandas.plotting import register_matplotlib_converters
@@ -515,7 +516,23 @@ class CandleList(object):
 
         return abs(int(round(diff,0)))
 
-    def __get_bounces(self, data, direction):
+    def __get_bounces(self, datetimes, data, direction):
+        '''
+        Function to get the bounces bouncing on the trend formed by this CandleList
+
+        Parameters
+        ----------
+        datetimes : list
+                     Lisf of datetimes associated to each of the prices
+        data : list
+               List with data that will be used to calculate the bounces
+        direction : str
+                    The direction of the trend, it can be 'up' or 'down'
+
+        Returns
+        -------
+        list : list of tuples containing datetime and value for each peak/bounce
+        '''
 
         cb = np.array(data)
 
@@ -527,7 +544,7 @@ class CandleList(object):
 
         bounces = []
         for ix in ixs:
-            bounces.append(data[ix])
+            bounces.append((datetimes[ix], data[ix]))
 
         return bounces
 
@@ -590,6 +607,53 @@ class CandleList(object):
 
         return model, outfile, regression_model_mse
 
+    def __plot_pivots(self, X, datetimes, pivots):
+        '''
+        Private function to generate the plot
+        for pivot points
+
+        Parameters
+        ----------
+        X : numpy array
+        pivots : list
+                 list with Zigzag identified pivots
+
+        Returns
+        -------
+        A .png file
+        '''
+        fig = plt.figure(figsize=(20, 10))
+        plt.xlim(0, len(X))
+        plt.ylim(X.min() * 0.99, X.max() * 1.01)
+        plt.plot(np.arange(len(X)), X, 'k:', alpha=0.5)
+        plt.plot(np.arange(len(X))[pivots != 0], X[pivots != 0], 'k-')
+        plt.scatter(np.arange(len(X))[pivots == 1], X[pivots == 1], color='g')
+        plt.scatter(np.arange(len(X))[pivots == -1], X[pivots == -1], color='r')
+        fig.savefig('pivots.png', format='png')
+        pdb.set_trace()
+
+    def __get_pivots(self, datetimes, data, direction):
+        '''
+        Function to calculate the pivot points as defined by implementing the zigzag indicator
+
+        Parameters
+        ----------
+        datetimes : list
+                    Lisf of datetimes associated to each of the prices
+        data : list
+               List with data that will be used to calculate the bounces
+        direction : str
+                    The direction of the trend, it can be 'up' or 'down'
+        '''
+
+        pivots = peak_valley_pivots(np.array(data), 0.01, -0.01)
+        #plot the pivot points
+        self.__plot_pivots(np.array(data), datetimes, pivots)
+
+        pdb.set_trace()
+
+
+
     def check_if_divergence(self,part='openAsk',direction='up'):
         '''
         Function to check if there is divergence between prices
@@ -610,14 +674,18 @@ class CandleList(object):
 
         rsi_values=[]
         prices=[]
+        datetimes=[]
         for c in self.clist:
             if c.rsi is None: raise Exception("RSI values are not defined for this Candlelist, "
                                               "run calc_rsi first")
             prices.append(getattr(c, part))
             rsi_values.append(getattr(c, 'rsi'))
+            datetimes.append(c.time)
 
-        bounces_prices=self.__get_bounces(prices,direction=direction)
-        bounces_rsi = self.__get_bounces(rsi_values, direction=direction)
+        pdb.set_trace()
+        self.__get_pivots(datetimes=datetimes, data=prices, direction=direction)
+        #bounces_prices=self.__get_bounces(datetimes=datetimes,data=prices,direction=direction)
+        #bounces_rsi = self.__get_bounces(datetimes=datetimes,data=rsi_values, direction=direction)
 
         if len(bounces_prices)<2 or len(bounces_rsi)<2:
             print("WARN: No enough bounces after the trend start were found. Divergence assessment will be skipped")

@@ -106,7 +106,7 @@ class HArea(object):
         else:
             return None
 
-    def get_bounces(self, datetimes, prices, type, threshold=0.50, min_dist=10,min_dist_res=10):
+    def get_bounces(self, datetimes, prices, threshold=0.50, min_dist=10,min_dist_res=10):
         '''
         Function used to calculate the datetime for previous bounces in this area
 
@@ -116,8 +116,6 @@ class HArea(object):
                 Lisf of datetimes associated to each of the prices
         prices : list
                 List of prices used to calculate the bounces
-        type : str
-               Type of trade ('long' or 'short')
         threshold : float
                     Threshold for detecting peaks. Default : 0.50
         min_dist : float
@@ -126,7 +124,8 @@ class HArea(object):
         Returns
         -------
         file : png file with identified bounces
-        list : list of tuples containing datetime and value for each peak/bounce
+        list : list of tuples containing datetime, value and type for each peak/bounce
+               where type will be 'max' if it is a maxima and 'min' will be a minima
         '''
         cb = np.array(prices)
         max = peakutils.indexes(cb, thres=threshold, min_dist=min_dist)

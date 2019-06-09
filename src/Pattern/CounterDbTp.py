@@ -339,7 +339,6 @@ class CounterDbTp(Counter):
         candles = self.clist_period.fetch_by_time(self.bounce_1st[0],period=4)
 
         isonrsi = False
-        pdb.set_trace()
         for c in candles:
             if c.rsi >= 70 or c.rsi <= 30:
                 isonrsi = True
