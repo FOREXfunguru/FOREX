@@ -6,6 +6,7 @@ import warnings
 from OandaAPI import OandaAPI
 from CandleList import CandleList
 from HArea import HArea
+from Utils import *
 
 class Trade(object):
     '''
@@ -38,6 +39,8 @@ class Trade(object):
          Take profit price
     SR:  float, Optional
          Support/Resistance area
+    pips:  int, Optional
+           Number of pips of profit/loss. This number will be negative if outcome was failure
     strat: string, Required
            What strategy was used for this trade. Possible values are: 'counter','cont','ctdbtp'
     '''
@@ -45,6 +48,7 @@ class Trade(object):
     def __init__(self, strat, **kwargs):
 
         self.__dict__.update(kwargs)
+
         self.strat=strat
         self.pair=re.sub('/','_',self.pair)
 
@@ -91,6 +95,7 @@ class Trade(object):
         # generate a range of dates starting at self.start and ending numperiods later in order to assess the outcome
         # of trade and also the entry time
 
+        self.start=datetime.datetime.strptime(str(self.start),'%Y-%m-%d %H:%M:%S')
         numperiods=300
         date_list = [datetime.datetime.strptime(str(self.start.isoformat()),'%Y-%m-%dT%H:%M:%S') + datetime.timedelta(hours=x*period) for x in range(0, numperiods)]
 
@@ -124,6 +129,7 @@ class Trade(object):
                 if failure_time is not None and failure_time != 'n.a.':
                     self.outcome='failure'
                     self.end = failure_time
+                    self.pips=float(calculate_pips(self.pair,abs(self.SL-self.entry)))*-1
                     warnings.warn("\t[INFO] S/L was hit")
                     break
             if entered is True:
@@ -132,6 +138,7 @@ class Trade(object):
                     self.outcome = 'success'
                     warnings.warn("\t[INFO] T/P was hit")
                     self.end=success_time
+                    self.pips = float(calculate_pips(self.pair, abs(self.TP - self.entry)))
                     break
 
         assert getattr(self, 'outcome')

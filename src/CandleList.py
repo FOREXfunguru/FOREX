@@ -606,32 +606,6 @@ class CandleList(object):
         fig.savefig(outfile, format='png')
 
         return model, outfile, regression_model_mse
-
-    def __plot_pivots(self, X, datetimes, pivots):
-        '''
-        Private function to generate the plot
-        for pivot points
-
-        Parameters
-        ----------
-        X : numpy array
-        pivots : list
-                 list with Zigzag identified pivots
-
-        Returns
-        -------
-        A .png file
-        '''
-        fig = plt.figure(figsize=(20, 10))
-        plt.xlim(0, len(X))
-        plt.ylim(X.min() * 0.99, X.max() * 1.01)
-        plt.plot(np.arange(len(X)), X, 'k:', alpha=0.5)
-        plt.plot(np.arange(len(X))[pivots != 0], X[pivots != 0], 'k-')
-        plt.scatter(np.arange(len(X))[pivots == 1], X[pivots == 1], color='g')
-        plt.scatter(np.arange(len(X))[pivots == -1], X[pivots == -1], color='r')
-        fig.savefig('pivots.png', format='png')
-        pdb.set_trace()
-
     def __get_pivots(self, datetimes, data, direction):
         '''
         Function to calculate the pivot points as defined by implementing the zigzag indicator
@@ -642,16 +616,37 @@ class CandleList(object):
                     Lisf of datetimes associated to each of the prices
         data : list
                List with data that will be used to calculate the bounces
-        direction : str
-                    The direction of the trend, it can be 'up' or 'down'
+
+        Return
+        ------
+        list: list of quadruples containing the date,price,ix,pivot of the bounce
+
         '''
 
-        pivots = peak_valley_pivots(np.array(data), 0.01, -0.01)
-        #plot the pivot points
-        self.__plot_pivots(np.array(data), datetimes, pivots)
+        pivots = peak_valley_pivots(np.array(data), 0.5, -0.5)
 
-        pdb.set_trace()
+        fig = plt.figure(figsize=(20, 10))
+        plt.plot(np.array(datetimes), np.array(data), 'k:', alpha=0.5)
+        plt.plot(np.array(datetimes)[pivots != 0], np.array(data)[pivots != 0], 'k-')
+        plt.scatter(np.array(datetimes)[pivots == 1], np.array(data)[pivots == 1], color='g')
+        plt.scatter(np.array(datetimes)[pivots == -1], np.array(data)[pivots == -1], color='r')
 
+        fig.savefig('pivots.png', format='png')
+
+        bounces=[]
+
+        last_ix=len(pivots)-1
+        ix=0
+        for i in pivots:
+            if direction=="down" and i==-1 and ix!=last_ix:
+                bounces.append((datetimes[ix],data[ix],ix))
+            elif direction=="up" and i==1 and ix!= last_ix:
+                bounces.append((datetimes[ix], data[ix], ix))
+            elif ix==last_ix:
+                bounces.append((datetimes[ix], data[ix], ix))
+            ix=ix+1
+
+        return bounces
 
 
     def check_if_divergence(self,part='openAsk',direction='up'):
@@ -673,29 +668,24 @@ class CandleList(object):
         '''
 
         rsi_values=[]
-        prices=[]
         datetimes=[]
         for c in self.clist:
             if c.rsi is None: raise Exception("RSI values are not defined for this Candlelist, "
                                               "run calc_rsi first")
-            prices.append(getattr(c, part))
             rsi_values.append(getattr(c, 'rsi'))
             datetimes.append(c.time)
 
         pdb.set_trace()
-        self.__get_pivots(datetimes=datetimes, data=prices, direction=direction)
-        #bounces_prices=self.__get_bounces(datetimes=datetimes,data=prices,direction=direction)
-        #bounces_rsi = self.__get_bounces(datetimes=datetimes,data=rsi_values, direction=direction)
+        bounce_rsi=self.__get_pivots(datetimes=datetimes, data=rsi_values,direction=direction)
 
-        if len(bounces_prices)<2 or len(bounces_rsi)<2:
+        if len(bounce_rsi)<2:
             print("WARN: No enough bounces after the trend start were found. Divergence assessment will be skipped")
             return "n.a."
 
-        diff_prices=bounces_prices[-1]-bounces_prices[-2]
-        diff_rsi=bounces_rsi[-1]-bounces_rsi[-2]
+        diff_rsi=bounce_rsi[-1][1]-bounce_rsi[-2][1]
 
-        if np.sign(diff_prices) == np.sign(diff_rsi):
-            return False
+        if diff_rsi>0 and direction=='down':
+            return True
         else:
             return True
 

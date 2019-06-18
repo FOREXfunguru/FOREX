@@ -1,7 +1,7 @@
 import pandas as pd
 import pdb
 import re
-import datetime
+import math
 import warnings
 from TradeJournal.Trade import Trade
 from openpyxl import load_workbook
@@ -28,6 +28,37 @@ class TradeJournal(object):
         df = xls_file.parse(worksheet,converters={'start': str, 'end': str, 'trend_i': str})
         self.df=df
 
+    def print_winrate(self,strat=None):
+        '''
+        Function to print the win rate proportion and also the profit in pips
+
+        Parameters
+        ----------
+        strat : String, Optional
+                If defined, then select all trades of a certain type.
+                Possible values are: 'counter_doubletop'
+        '''
+
+        for index, row in self.df.iterrows():
+            if strat is not None:
+                if strat != row['strat']:
+                    continue
+            # get pair from id
+            pair = row['id'].split(' ')[0]
+
+            attrbs = row.to_dict()
+            t = Trade(pair=pair, **attrbs)
+            x = float(t.outcome)
+            # run trade if outcome is not defined
+            if math.isnan(x):
+                t.run_trade()
+                self.df['outcome']=t.outcome
+                self.df['pips']=t.pips
+
+            print("Proportion of outcome:\n{0}".format(self.df.loc[:,'outcome'].value_counts()))
+            print("Sum of pips:\n{0}".format(self.df['pips'].sum()))
+
+
     def fetch_trades(self,run=False, strat=None):
         '''
         This function will fetch the trades that are in this TradingJournal and will create an independent
@@ -39,12 +70,12 @@ class TradeJournal(object):
               Execute trade. Default=False
         strat : String, Optional
                 If defined, then select all trades of a certain type.
-                Possible values are: 'counter'
+                Possible values are: 'counter_doubletop'
 
         Returns
         ------
-        Nothing
-
+        list
+             List with Trade objects
         '''
 
         trade_list=[]

@@ -3,6 +3,7 @@ import pdb
 import matplotlib
 import peakutils
 import warnings
+from zigzag import *
 from datetime import timedelta,datetime
 from OandaAPI import OandaAPI
 matplotlib.use('PS')
