@@ -39,24 +39,43 @@ class TradeJournal(object):
                 Possible values are: 'counter_doubletop'
         '''
 
-        for index, row in self.df.iterrows():
-            if strat is not None:
-                if strat != row['strat']:
-                    continue
+        DF=None
+        if strat is not None:
+            DF=self.df[self.df['strat'] == strat]
+        else:
+            DF=self.df
+
+        print("Number of records: {0}".format(DF.shape[0]))
+
+        for index, row in DF.iterrows():
             # get pair from id
             pair = row['id'].split(' ')[0]
 
             attrbs = row.to_dict()
             t = Trade(pair=pair, **attrbs)
-            x = float(t.outcome)
-            # run trade if outcome is not defined
-            if math.isnan(x):
-                t.run_trade()
-                self.df['outcome']=t.outcome
-                self.df['pips']=t.pips
+            outcome_seen=True
 
-            print("Proportion of outcome:\n{0}".format(self.df.loc[:,'outcome'].value_counts()))
-            print("Sum of pips:\n{0}".format(self.df['pips'].sum()))
+            if not hasattr(t, 'outcome'):
+                outcome_seen=False
+            else:
+                x = float(t.outcome)
+                if math.isnan(x):
+                    outcome_seen = False
+
+            if not hasattr(t, 'TP'):
+                assert hasattr(t, 'RR'), "Neither the RR not the TP is defined. Please provide RR"
+                diff = (t.entry - t.SL) * t.RR
+                t.TP = round(t.entry + diff, 4)
+
+            if outcome_seen is False:
+                t.run_trade()
+                DF.loc[index, 'outcome'] = t.outcome
+                DF.loc[index, 'pips'] = t.pips
+                DF.loc[index, 'TP'] = t.TP
+
+        pdb.set_trace()
+        print("Proportion of outcome:\n{0}".format(DF.loc[:,'outcome'].value_counts()))
+        print("Sum of pips:\n{0}".format(DF['pips'].sum()))
 
 
     def fetch_trades(self,run=False, strat=None):
