@@ -1,7 +1,7 @@
 import pytest
 import pdb
 
-from TradeJournal.Trade import Trade
+from TradeJournal.trade import Trade
 
 @pytest.fixture
 def t_object():

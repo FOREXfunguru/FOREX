@@ -1,4 +1,4 @@
-from OandaAPI import OandaAPI,Reversal
+from oanda_api import OandaAPI,Reversal
 import pandas as pd
 from pandas.tseries.offsets import BDay
 import logging

@@ -1,4 +1,4 @@
-from OandaAPI import OandaAPI
+from oanda_api import OandaAPI
 import logging
 
 logging.basicConfig(level=logging.INFO)

@@ -1,4 +1,4 @@
-from Pattern.Counter import Counter
+from Pattern.counter import Counter
 
 import pytest
 import pdb

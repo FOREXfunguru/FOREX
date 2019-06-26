@@ -1,7 +1,7 @@
 import pytest
 import pdb
 
-from TradeJournal.TradeJournal import TradeJournal
+from TradeJournal.tradejournal import TradeJournal
 
 @pytest.fixture
 def tj_counter_object():

@@ -1,4 +1,4 @@
-from Pattern.CounterDbTp import CounterDbTp
+from Pattern.counter_dbtp import CounterDbTp
 
 import pytest
 import pdb

@@ -1,7 +1,7 @@
 import argparse
 import pdb
 
-from TradeJournal.TradeJournal import TradeJournal
+from TradeJournal.tradejournal import TradeJournal
 
 
 parser = argparse.ArgumentParser(description='Script to calculate the features for Counter DoubleTop trades')

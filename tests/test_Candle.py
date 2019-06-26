@@ -1,6 +1,6 @@
 import pytest
 
-from OandaAPI import OandaAPI
+from oanda_api import OandaAPI
 
 @pytest.fixture
 def oanda_object():

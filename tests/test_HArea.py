@@ -1,9 +1,9 @@
 import pytest
 import pdb
 
-from OandaAPI import OandaAPI
-from HArea import HArea
-from CandleList import CandleList
+from oanda_api import OandaAPI
+from harea import HArea
+from candlelist import CandleList
 
 @pytest.fixture
 def oanda_object():

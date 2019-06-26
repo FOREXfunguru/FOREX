@@ -3,10 +3,10 @@ import pdb
 import re
 import math
 import warnings
-from TradeJournal.Trade import Trade
+from TradeJournal.trade import Trade
 from openpyxl import load_workbook
-from Pattern.Counter import Counter
-from Pattern.CounterDbTp import CounterDbTp
+from Pattern.counter import Counter
+from Pattern.counter_dbtp import CounterDbTp
 
 class TradeJournal(object):
     '''

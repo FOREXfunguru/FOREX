@@ -1,7 +1,7 @@
 import pytest
 import pdb
 
-from OandaAPI import OandaAPI
+from oanda_api import OandaAPI
 
 @pytest.fixture
 def oanda_object():

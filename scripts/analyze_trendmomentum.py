@@ -1,4 +1,4 @@
-from TradeJournal.TradeJournal import TradeJournal
+from TradeJournal.tradejournal import TradeJournal
 import pdb
 
 td=TradeJournal(url="../tests/data/Trading_journal_07082017.xlsx",worksheet='combined')

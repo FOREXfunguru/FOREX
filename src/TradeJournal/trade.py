@@ -3,10 +3,10 @@ import datetime
 import pdb
 import re
 import warnings
-from OandaAPI import OandaAPI
-from CandleList import CandleList
-from HArea import HArea
-from Utils import *
+from oanda_api import OandaAPI
+from candlelist import CandleList
+from harea import HArea
+from utils import *
 
 class Trade(object):
     '''
@@ -80,7 +80,7 @@ class Trade(object):
         Run the trade until conclusion from a start date
         '''
 
-        warnings.warn("[INFO] Run run_trade")
+        print("[INFO] Run run_trade with id: {0}".format(self.id))
 
         entry = HArea(price=self.entry,pips=1, instrument=self.pair, granularity=self.timeframe)
         SL = HArea(price=self.SL,pips=1, instrument=self.pair, granularity=self.timeframe)

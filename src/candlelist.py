@@ -1,5 +1,5 @@
 from scipy import stats
-from OandaAPI import OandaAPI
+from oanda_api import OandaAPI
 from zigzag import *
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
@@ -12,6 +12,7 @@ import re
 import peakutils
 import numpy as np
 import matplotlib
+import config
 
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
@@ -43,12 +44,14 @@ class CandleList(object):
     openclose_double0s : number, Optional
           Number of double 0s in the open/close of the candles in CandleList
     entropy : Dict of Floats, Optional
-          Entropy for each of the sequences in self.seq 
+          Entropy for each of the sequences in self.seq
+    id : str, Optional
+         Identifier for this CandleList (i.e. EUR_GBP 15MAY2007D)
     '''
 
     def __init__(self, clist,instrument=None, granularity=None, type=None,seq=None, number_of_0s=None,
                  longest_stretch=None, highlow_double0s=None, 
-                 openclose_double0s=None, entropy=None):
+                 openclose_double0s=None, entropy=None, id=None):
         self.clist=clist
         self.instrument=instrument
         self.granularity=granularity
@@ -60,6 +63,7 @@ class CandleList(object):
         self.highlow_double0s=highlow_double0s
         self.openclose_double0s=openclose_double0s
         self.entropy=entropy
+        self.id=id
         self.ix=0
 
     def __iter__(self):
@@ -254,8 +258,6 @@ class CandleList(object):
                     sel_c.append(c)
             if len(sel_c)==0: raise Exception("No candle was selected for range: {0}-{1}".format(start,end))
             return sel_c
-
-
 
     def __get_number_of_double0s(self,seq1,seq2,norm=True):
         '''
@@ -549,7 +551,7 @@ class CandleList(object):
         return bounces
 
 
-    def fit_reg_line(self, part='openAsk', smooth='rolling_average', k_perc=25, outfile='regression_line.png'):
+    def fit_reg_line(self, part='openAsk', smooth='rolling_average', k_perc=25):
         '''
         Function to fit a linear regression
         line on candle list. This can be used in order to assess the direction of
@@ -568,8 +570,6 @@ class CandleList(object):
             % of CandleList length that will be used as window size used for calculating the rolling average.
             For example, if CandleList length = 20 Candles. Then the k=25% will be a window_size of 5
             Default: 25
-        outfile : FILE
-                  Path to output .png file that will show the fitted regression line
 
         Returns
         -------
@@ -600,12 +600,16 @@ class CandleList(object):
         # Evaluation of the model with MSE
         regression_model_mse = mean_squared_error(y_pred, np.array(prices).reshape(-1, 1))
 
+        pdb.set_trace()
         fig = plt.figure(figsize=(20, 10))
         plt.scatter(x, prices)
         plt.plot(x, y_pred, color='red')
+        outfile="{0}/{1}.regression_line.png".format(config.PNGFILES['regression'],
+                                                     self.id.replace(' ','_'))
         fig.savefig(outfile, format='png')
 
         return model, outfile, regression_model_mse
+
     def __get_pivots(self, datetimes, data, direction):
         '''
         Function to calculate the pivot points as defined by implementing the zigzag indicator

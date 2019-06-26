@@ -1,7 +1,7 @@
 from __future__ import division
-from OandaAPI import OandaAPI
-from OandaAPI import Reversal
-from OandaAPI import BiCandle
+from oanda_api import OandaAPI
+from oanda_api import Reversal
+from oanda_api import BiCandle
 import pandas as pd
 from pandas.tseries.offsets import BDay
 import logging

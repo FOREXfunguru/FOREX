@@ -11,7 +11,7 @@ import requests,json
 import pandas as pd
 import datetime
 
-from Candle import BidAskCandle
+from candle import BidAskCandle
 
 class OandaAPI(object):
     '''
@@ -34,6 +34,7 @@ class OandaAPI(object):
         'GBP_AUD': datetime.datetime(2004, 6, 5, 21, 0),
         'GBP_JPY': datetime.datetime(2002, 6, 5, 21, 0),
         'GBP_USD': datetime.datetime(2002, 6, 5, 21, 0),
+        'NZD_CAD': datetime.datetime(2004, 6, 1, 21, 0),
         'NZD_JPY': datetime.datetime(2004, 6, 1, 21, 0),
         'NZD_USD': datetime.datetime(2002, 9, 5, 21, 0),
         'USD_CAD': datetime.datetime(2002, 6, 5, 21, 0),

@@ -1,9 +1,9 @@
 import pdb
 import datetime
 import warnings
-from OandaAPI import OandaAPI
-from CandleList import CandleList
-from HArea import HArea
+from oanda_api import OandaAPI
+from candlelist import CandleList
+from harea import HArea
 
 class Counter(object):
     '''
@@ -12,6 +12,8 @@ class Counter(object):
     Class variables
     ---------------
 
+    id : str, Required
+         Id used for this object
     start: datetime, Required
            Time/date when the trade was taken. i.e. 20-03-2017 08:20:00s
     pair: str, Required
@@ -66,7 +68,7 @@ class Counter(object):
 
     def __init__(self, pair, period= 3000, **kwargs):
 
-        allowed_keys = [ 'start','timeframe','period','entry','trend_i', 'type', 'SL',
+        allowed_keys = [ 'id','start','timeframe','period','entry','trend_i', 'type', 'SL',
                         'TP','SR','RR','bounces','clist_period','clist_trend','last_time',
                         'bounces_lasttime','slope','n_rsibounces','rsibounces_lengths',
                         'divergence','entry_onrsi','length_candles','length_pips']
@@ -109,7 +111,7 @@ class Counter(object):
 
         candle_list = oanda.fetch_candleset(vol_cutoff=0)
 
-        cl = CandleList(candle_list, self.pair, granularity=self.timeframe)
+        cl = CandleList(candle_list, instrument=self.pair, granularity=self.timeframe, id=self.id)
 
         warnings.warn("[INFO] Run cl.calc_rsi")
 
@@ -156,7 +158,7 @@ class Counter(object):
 
         candle_list = oanda.fetch_candleset(vol_cutoff=0)
 
-        cl = CandleList(candle_list, self.pair, granularity=self.timeframe)
+        cl = CandleList(candle_list, self.pair, granularity=self.timeframe, id=self.id)
 
         warnings.warn("[INFO] Run cl.calc_rsi")
 
@@ -332,6 +334,7 @@ class Counter(object):
         in self.clist_trend CandleList
         '''
 
+        pdb.set_trace()
         if k_perc is not None:
             (model, outfile, mse) = self.clist_trend.fit_reg_line(k_perc=k_perc)
         else:

@@ -1,5 +1,5 @@
-from OandaAPI import OandaAPI
-from CandleList import CandleList
+from oanda_api import OandaAPI
+from candlelist import CandleList
 import argparse
 
 parser = argparse.ArgumentParser(description='Script to calculate some basis stats on the trend momentum of a Candle List ranging from a certain timepoint to the current time')

@@ -1,8 +1,8 @@
 import pytest
 import pdb
 
-from OandaAPI import OandaAPI
-from CandleList import CandleList
+from oanda_api import OandaAPI
+from candlelist import CandleList
 import datetime
 
 @pytest.fixture

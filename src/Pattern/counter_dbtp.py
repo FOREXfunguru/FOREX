@@ -1,13 +1,13 @@
 import pdb
 import warnings
 
-from Pattern.Counter import Counter
-from OandaAPI import OandaAPI
+from Pattern.counter import Counter
+from oanda_api import OandaAPI
 import matplotlib
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 import datetime
-
+import config
 
 class CounterDbTp(Counter):
     '''
@@ -17,7 +17,7 @@ class CounterDbTp(Counter):
     ---------------
 
     id : str, Required
-         Id used for this trade
+         Id used for this object
     start: datetime, Required
            Time/date when the trade was taken. i.e. 20-03-2017 08:20:00s
     pair: str, Required
@@ -314,7 +314,8 @@ class CounterDbTp(Counter):
                 ix=datetimes.index(dt)
                 plt.scatter(datetimes[ix], prices[ix], s=50)
 
-            outfile = "{0}.png".format(self.id)
+            outfile = "{0}/{1}.bounces.png".format(config.PNGFILES['bounces'],
+                                                   self.id.replace(' ', '_'))
 
             fig.savefig(outfile, format='png')
 
@@ -411,7 +412,8 @@ class CounterDbTp(Counter):
             SR=self.SR,
             SL=self.SL,
             TP=self.TP,
-            trend_i=str(self.trend_i))
+            trend_i=str(self.trend_i),
+            id=self.id)
 
         c.init_feats()
 

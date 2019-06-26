@@ -5,7 +5,7 @@ import peakutils
 import warnings
 from zigzag import *
 from datetime import timedelta,datetime
-from OandaAPI import OandaAPI
+from oanda_api import OandaAPI
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 
