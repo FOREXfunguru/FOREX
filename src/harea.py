@@ -1,6 +1,7 @@
 import numpy as np
 import pdb
 import matplotlib
+import config
 import peakutils
 import warnings
 from zigzag import *
@@ -282,11 +283,11 @@ class HArea(object):
             cstart=candle.time
             cend=cstart+delta
 
-            oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+            oanda = OandaAPI(url=config.OANDA_API['url'],
                              instrument=self.instrument,
                              granularity=granularity,
-                             dailyAlignment=22,
-                             alignmentTimezone='Europe/London')
+                             dailyAlignment=config.OANDA_API['dailyAlignment'],
+                             alignmentTimezone=config.OANDA_API['alignmentTimezone'])
 
             oanda.run(start=cstart.isoformat(),
                       end=cend.isoformat(),

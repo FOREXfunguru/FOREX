@@ -121,11 +121,11 @@ class CounterDbTp(Counter):
             delta_one = datetime.timedelta(hours=int(fgran) )
 
         # calculate the cutoff for the first threshold using the number of candles
-        oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+        oanda = OandaAPI(url=config.OANDA_API['url'],
                          instrument=self.pair,
                          granularity=self.timeframe,
-                         alignmentTimezone='Europe/London',
-                         dailyAlignment=22)
+                         alignmentTimezone=config.OANDA_API['alignmentTimezone'],
+                         dailyAlignment=config.OANDA_API['dailyAlignment'])
 
         start=anchor_point - delta_from_start
         end=anchor_point.isoformat()
@@ -471,11 +471,11 @@ class CounterDbTp(Counter):
         It will set the 'valley' attribute of the class
         '''
 
-        oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+        oanda = OandaAPI(url=config.OANDA_API['url'],
                          instrument=self.pair,
                          granularity=self.timeframe,
-                         alignmentTimezone='Europe/London',
-                         dailyAlignment=22)
+                         alignmentTimezone=config.OANDA_API['alignmentTimezone'],
+                         dailyAlignment=config.OANDA_API['dailyAlignment'])
 
         oanda.run(start=self.bounce_1st[0].isoformat(),
                   end=self.bounce_2nd[0].isoformat())

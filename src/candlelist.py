@@ -364,11 +364,11 @@ class CandleList(object):
 
 
         #fetch candle set from start_calc_time
-        oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+        oanda = OandaAPI(url=config.OANDA_API['url'],
                          instrument=self.instrument,
                          granularity=self.granularity,
-                         alignmentTimezone='Europe/London',
-                         dailyAlignment=22)
+                         alignmentTimezone=config.OANDA_API['alignmentTimezone'],
+                         dailyAlignment=config.OANDA_API['dailyAlignment'])
 
         '''
         Get candlelist from start_calc_time to (start_time-1)
@@ -600,7 +600,6 @@ class CandleList(object):
         # Evaluation of the model with MSE
         regression_model_mse = mean_squared_error(y_pred, np.array(prices).reshape(-1, 1))
 
-        pdb.set_trace()
         fig = plt.figure(figsize=(20, 10))
         plt.scatter(x, prices)
         plt.plot(x, y_pred, color='red')
@@ -679,7 +678,6 @@ class CandleList(object):
             rsi_values.append(getattr(c, 'rsi'))
             datetimes.append(c.time)
 
-        pdb.set_trace()
         bounce_rsi=self.__get_pivots(datetimes=datetimes, data=rsi_values,direction=direction)
 
         if len(bounce_rsi)<2:

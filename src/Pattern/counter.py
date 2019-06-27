@@ -1,6 +1,7 @@
 import pdb
 import datetime
 import warnings
+import config
 from oanda_api import OandaAPI
 from candlelist import CandleList
 from harea import HArea
@@ -100,11 +101,11 @@ class Counter(object):
         warnings.warn("[INFO] Run __init_clist_trend")
 
             # checking for feats in trend before 1st bounce
-        oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+        oanda = OandaAPI(url= config.OANDA_API['url'],
                          instrument=self.pair,
                          granularity=self.timeframe,
-                         alignmentTimezone='Europe/London',
-                         dailyAlignment=22)
+                         alignmentTimezone= config.OANDA_API['alignmentTimezone'],
+                         dailyAlignment=config.OANDA_API['dailyAlignment'])
 
         oanda.run(start=self.trend_i.isoformat(),
                   end=self.start.isoformat())
@@ -145,11 +146,11 @@ class Counter(object):
         start = self.start - delta_period
         end = self.start + delta_1
 
-        oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+        oanda = OandaAPI(url=config.OANDA_API['url'],
                          instrument=self.pair,
                          granularity=self.timeframe,
-                         alignmentTimezone='Europe/London',
-                         dailyAlignment=22)
+                         alignmentTimezone=config.OANDA_API['alignmentTimezone'],
+                         dailyAlignment=config.OANDA_API['dailyAlignment'])
 
         oanda.run(start=start.isoformat(),
                   end=end.isoformat(),
@@ -334,7 +335,6 @@ class Counter(object):
         in self.clist_trend CandleList
         '''
 
-        pdb.set_trace()
         if k_perc is not None:
             (model, outfile, mse) = self.clist_trend.fit_reg_line(k_perc=k_perc)
         else:

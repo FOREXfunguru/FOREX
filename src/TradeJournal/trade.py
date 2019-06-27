@@ -2,6 +2,7 @@ from __future__ import division
 import datetime
 import pdb
 import re
+import config
 import warnings
 from oanda_api import OandaAPI
 from candlelist import CandleList
@@ -62,12 +63,12 @@ class Trade(object):
         A CandleList object
 
         '''
-        oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+        oanda=OandaAPI(url=config.OANDA_API['url'],
                        instrument=self.pair,
                        granularity=self.timeframe,
-                       alignmentTimezone='Europe/London',
+                       alignmentTimezone=config.OANDA_API['alignmentTimezone'],
                        start=datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S').isoformat(),
-                       dailyAlignment=22,
+                       dailyAlignment=config.OANDA_API['dailyAlignment'],
                        end=datetime.datetime.strptime(self.end,'%Y-%m-%dT%H:%M:%S').isoformat())
 
         candle_list=oanda.fetch_candleset()
@@ -101,11 +102,11 @@ class Trade(object):
 
         entered=False
         for d in date_list:
-            oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+            oanda = OandaAPI(url=config.OANDA_API['url'],
                              instrument=self.pair,
                              granularity=self.timeframe,
-                             dailyAlignment=22,
-                             alignmentTimezone='Europe/London')
+                             dailyAlignment=config.OANDA_API['dailyAlignment'],
+                             alignmentTimezone=config.OANDA_API['alignmentTimezone'])
 
             oanda.run(start=d.isoformat(),
                       count=1,

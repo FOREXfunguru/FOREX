@@ -10,6 +10,7 @@ import os
 import requests,json
 import pandas as pd
 import datetime
+import config
 
 from candle import BidAskCandle
 
@@ -17,31 +18,6 @@ class OandaAPI(object):
     '''
     Class representing the content returned by a GET request to Oanda's REST API
     '''
-
-    # static dictionary with start date for historical data on each of the instruments
-    start_hist_data={
-        'AUD_CAD': datetime.datetime(2004, 6, 5, 21, 0),
-        'AUD_JPY': datetime.datetime(2004, 6, 5, 21, 0),
-        'AUD_NZD': datetime.datetime(2004, 6, 5, 21, 0),
-        'AUD_USD': datetime.datetime(2002, 6, 5, 21, 0),
-        'CAD_JPY': datetime.datetime(2004, 6, 5, 21, 0),
-        'EUR_AUD': datetime.datetime(2004, 6, 5, 21, 0),
-        'EUR_CAD': datetime.datetime(2004, 6, 5, 21, 0),
-        'EUR_CHF': datetime.datetime(2002, 6, 5, 21, 0),
-        'EUR_GBP': datetime.datetime(2002, 6, 5, 21, 0),
-        'EUR_JPY': datetime.datetime(2002, 6, 5, 21, 0),
-        'EUR_USD': datetime.datetime(2002, 6, 5, 21, 0),
-        'GBP_AUD': datetime.datetime(2004, 6, 5, 21, 0),
-        'GBP_JPY': datetime.datetime(2002, 6, 5, 21, 0),
-        'GBP_USD': datetime.datetime(2002, 6, 5, 21, 0),
-        'NZD_CAD': datetime.datetime(2004, 6, 1, 21, 0),
-        'NZD_JPY': datetime.datetime(2004, 6, 1, 21, 0),
-        'NZD_USD': datetime.datetime(2002, 9, 5, 21, 0),
-        'USD_CAD': datetime.datetime(2002, 6, 5, 21, 0),
-        'USD_CHF': datetime.datetime(2002, 6, 5, 21, 0),
-        'USD_JPY': datetime.datetime(2002, 6, 5, 21, 0),
-        'AUD_CHF': datetime.datetime(2004, 6, 5, 21, 0),
-    }
 
     def __init__(self, instrument, granularity, url=None, data=None, **kwargs):
         '''
@@ -212,11 +188,11 @@ class OandaAPI(object):
         '''
 
         # check if dateObj is previous to the start of historical data for self.instrument
-        if self.instrument not in self.start_hist_data:
+        if self.instrument not in config.START_HIST:
             raise Exception("Inexistent start of historical record info for {0}".format(self.instrument))
 
-        if dateObj< self.start_hist_data[self.instrument]:
-            rolledateObj= self.start_hist_data[self.instrument]
+        if dateObj < config.START_HIST[self.instrument]:
+            rolledateObj= config.START_HIST[self.instrument]
             print("Date precedes the start of the historical record.\n"
                   "Time was rolled from {0} to {1}".format(dateObj, rolledateObj))
             return rolledateObj
