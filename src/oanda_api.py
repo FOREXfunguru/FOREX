@@ -152,6 +152,7 @@ class OandaAPI(object):
             if roll is True:
                 dateObj=self.__roll_datetime(dateObj,granularity)
             else:
+                pdb.set_trace()
                 raise Exception("Date {0} is not valid and falls on closed market".format(datestr))
 
         if nhours is not None:

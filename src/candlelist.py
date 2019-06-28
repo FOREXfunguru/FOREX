@@ -247,7 +247,9 @@ class CandleList(object):
                 if d>=start and d < end:
                     sel_c=c
 
-            if sel_c is None: raise Exception("No candle was selected with time: {0}".format(datetime))
+            if sel_c is None:
+                pdb.set_trace()
+                raise Exception("No candle was selected with time: {0}".format(datetime))
             return sel_c
         elif period>0:
             start=d-delta_period
@@ -341,7 +343,7 @@ class CandleList(object):
                  Number of candles before this CandleList start for which close price data will be fetched.
                  The larger the number of candles the more accurate the ewm calculation will be, as the exponential
                  moving average calculated for each of the windows (of size=rsi_period) will be
-                 directly affected by the previous windows in the series
+                 directly affected by the previous windows in the series. Default=2000
         rsi_period : int
                      Number of candles used for calculating the RSI. Default=14
 

@@ -1,13 +1,15 @@
 import pdb
 import warnings
 
+import matplotlib
 from Pattern.counter import Counter
 from oanda_api import OandaAPI
-import matplotlib
+
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 import datetime
 import config
+
 
 class CounterDbTp(Counter):
     '''
@@ -71,7 +73,13 @@ class CounterDbTp(Counter):
     '''
 
     def __init__(self, pair, start, HR_pips=30, threshold=0.50, min_dist=5,
-                 period1st_bounce=8,**kwargs):
+                 period1st_bounce=10, **kwargs):
+
+        # get values from config file
+        if 'HR_pips' in config.CTDBT: HR_pips = config.CTDBT['HR_pips']
+        if 'threshold' in config.CTDBT: threshold = config.CTDBT['threshold']
+        if 'min_dist' in config.CTDBT: min_dist = config.CTDBT['min_dist']
+        if 'period1st_bounce' in config.CTDBT: period1st_bounce = config.CTDBT['period1st_bounce']
 
         self.start = start
         self.HR_pips = HR_pips
@@ -79,17 +87,17 @@ class CounterDbTp(Counter):
         self.min_dist = min_dist
         self.period1st_bounce = period1st_bounce
 
-        allowed_keys = ['id','timeframe','entry','period', 'trend_i', 'type', 'SL',
+        allowed_keys = ['id', 'timeframe', 'entry', 'period', 'trend_i', 'type', 'SL',
                         'TP', 'SR', 'RR']
 
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
 
         # initialize the Counter object that will go from self.start to self.start-period
-        super().__init__(pair,period=4500)
+        super().__init__(pair, period=config.CTDBT['period'])
 
         # timepoint cutoff that the defines the period from which the first bounce needs to be
         # located
-        self.__period1st_bounce_point = self.__get_time4candles(n=self.period1st_bounce, anchor_point=self.start )
+        self.__period1st_bounce_point = self.__get_time4candles(n=self.period1st_bounce, anchor_point=self.start)
 
     def __get_time4candles(self, n, anchor_point):
         '''
@@ -118,7 +126,7 @@ class CounterDbTp(Counter):
         else:
             fgran = self.timeframe.replace('H', '')
             delta_from_start = datetime.timedelta(hours=int(fgran) * n)
-            delta_one = datetime.timedelta(hours=int(fgran) )
+            delta_one = datetime.timedelta(hours=int(fgran))
 
         # calculate the cutoff for the first threshold using the number of candles
         oanda = OandaAPI(url=config.OANDA_API['url'],
@@ -127,14 +135,14 @@ class CounterDbTp(Counter):
                          alignmentTimezone=config.OANDA_API['alignmentTimezone'],
                          dailyAlignment=config.OANDA_API['dailyAlignment'])
 
-        start=anchor_point - delta_from_start
-        end=anchor_point.isoformat()
+        start = anchor_point - delta_from_start
+        end = anchor_point.isoformat()
 
         oanda.run(start=start.isoformat(),
                   end=end,
                   roll=True)
 
-        candle_list= oanda.fetch_candleset()
+        candle_list = oanda.fetch_candleset()
 
         while len(candle_list) < n:
             start = start - delta_one
@@ -144,7 +152,6 @@ class CounterDbTp(Counter):
             candle_list = oanda.fetch_candleset()
 
         return start
-
 
     def __validate1stbounce(self):
         '''
@@ -160,12 +167,12 @@ class CounterDbTp(Counter):
 
         if len(self.bounces) < 1:
             warnings.warn("Not enough bounces")
-            return (False,'NO_BOUNCE')
+            return (False, 'NO_BOUNCE')
         elif len(self.bounces) > 1:
             warnings.warn("Too many bounces")
-            return (False,'TOO_MANY')
+            return (False, 'TOO_MANY')
         else:
-            return (True,'OK')
+            return (True, 'OK')
 
     def __validate2ndbounce(self):
         '''
@@ -180,11 +187,11 @@ class CounterDbTp(Counter):
 
         if len(self.bounces) < 1:
             warnings.warn("Not enough bounces")
-            return (False,'NO_BOUNCE')
+            return (False, 'NO_BOUNCE')
         else:
-            return (True,'OK')
+            return (True, 'OK')
 
-    def get_first_bounce(self,part='closeAsk'):
+    def get_first_bounce(self, part='closeAsk'):
         '''
         Function to identify the first (most recent) bounce
 
@@ -201,28 +208,29 @@ class CounterDbTp(Counter):
         self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1, min_dist_res=1,
                          start=self.__period1st_bounce_point)
 
-        min_dist_res=1
+        min_dist_res = 1
         HR_pips = self.HR_pips
 
-        while(self.__validate1stbounce()[0] is False) and (min_dist_res <= 10) and (HR_pips<=200):
-            if self.__validate1stbounce()[1]=='TOO_MANY':
+        while (self.__validate1stbounce()[0] is False) and (min_dist_res <= 10) and (HR_pips <= 200):
+            if self.__validate1stbounce()[1] == 'TOO_MANY':
                 min_dist_res += 1
                 warnings.warn("More than 2 bounces identified. "
                               "Will try with 'min_dist_res'={0}".format(min_dist_res))
-                self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1, min_dist_res=min_dist_res,
+                self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1,
+                                 min_dist_res=min_dist_res,
                                  start=self.__period1st_bounce_point)
-            elif self.__validate1stbounce()[1]=='NO_BOUNCE':
+            elif self.__validate1stbounce()[1] == 'NO_BOUNCE':
                 HR_pips += 5
                 warnings.warn("Less than 1 bounce identified. "
                               "Will try with 'HR_pips'={0}".format(HR_pips))
-                threshold=self.threshold
-                while(threshold >= 0.1) and (self.__validate1stbounce()[1]=='NO_BOUNCE'):
-                    threshold-=0.1
+                threshold = self.threshold
+                while (threshold >= 0.1) and (self.__validate1stbounce()[1] == 'NO_BOUNCE'):
+                    threshold -= 0.1
                     self.set_bounces(part=part, HR_pips=HR_pips, threshold=threshold, min_dist=1,
                                      min_dist_res=min_dist_res,
                                      start=self.__period1st_bounce_point)
 
-        if len(self.bounces)<1:
+        if len(self.bounces) < 1:
             raise Exception("No first bounce found")
 
         return self.bounces[-1]
@@ -243,13 +251,13 @@ class CounterDbTp(Counter):
         A bounce representing the second bounce
         '''
 
-        end=self.__get_time4candles(n=5, anchor_point=first[0])
+        end = self.__get_time4candles(n=5, anchor_point=first[0])
         self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1,
                          min_dist_res=10,
-                         start=self.trend_i,end=end)
+                         start=self.trend_i, end=end)
 
         HR_pips = self.HR_pips
-        while (self.__validate2ndbounce()[1] == 'NO_BOUNCE') and (HR_pips<=200):
+        while (self.__validate2ndbounce()[1] == 'NO_BOUNCE') and (HR_pips <= 200):
             HR_pips += 5
             warnings.warn("Less than 1 bounce identified. "
                           "Will try with 'HR_pips'={0}".format(HR_pips))
@@ -258,7 +266,7 @@ class CounterDbTp(Counter):
                 threshold -= 0.1
                 self.set_bounces(part=part, HR_pips=HR_pips, threshold=threshold, min_dist=1,
                                  min_dist_res=1,
-                                 start=self.trend_i,end=end)
+                                 start=self.trend_i, end=end)
 
         if len(self.bounces) < 1:
             raise Exception("No second bounce found")
@@ -282,8 +290,8 @@ class CounterDbTp(Counter):
         It will set the self.bounces attribute
         '''
 
-        first_bounce=self.get_first_bounce()
-        second_bounce=self.get_second_bounce(first=first_bounce)
+        first_bounce = self.get_first_bounce()
+        second_bounce = self.get_second_bounce(first=first_bounce)
 
         final_bounces = [second_bounce, first_bounce]
 
@@ -310,8 +318,8 @@ class CounterDbTp(Counter):
             ax.plot(datetimes, prices, color="black")
 
             for b in final_bounces:
-                dt=b[0]
-                ix=datetimes.index(dt)
+                dt = b[0]
+                ix = datetimes.index(dt)
                 plt.scatter(datetimes[ix], prices[ix], s=50)
 
             outfile = "{0}/{1}.bounces.png".format(config.PNGFILES['bounces'],
@@ -329,7 +337,6 @@ class CounterDbTp(Counter):
         Nothing
         '''
 
-
         self.bounce_1st = self.bounces[-2]
         if self.trend_i > self.bounce_1st[0]:
             raise Exception("Error in the definition of the 1st bounce, it is older than the trend_start."
@@ -337,7 +344,7 @@ class CounterDbTp(Counter):
                             "parameters")
 
         # now check rsi for this bounce and some candles before/after the bounce
-        candles = self.clist_period.fetch_by_time(self.bounce_1st[0],period=4)
+        candles = self.clist_period.fetch_by_time(self.bounce_1st[0], period=4)
 
         isonrsi = False
         for c in candles:
@@ -345,7 +352,6 @@ class CounterDbTp(Counter):
                 isonrsi = True
 
         self.rsi_1st = isonrsi
-
 
     def set_2ndbounce(self):
         '''
@@ -356,10 +362,10 @@ class CounterDbTp(Counter):
         Nothing
         '''
 
-        self.bounce_2nd=self.bounces[-1]
+        self.bounce_2nd = self.bounces[-1]
 
         # now check rsi for this bounce and some candles before/after the bounce
-        candles= self.clist_period.fetch_by_time(self.bounce_2nd[0],period=4)
+        candles = self.clist_period.fetch_by_time(self.bounce_2nd[0], period=4)
 
         isonrsi = False
 
@@ -380,6 +386,7 @@ class CounterDbTp(Counter):
 
         warnings.warn("[INFO] Run init_feats")
 
+        pdb.set_trace()
         self.set_lasttime()
         self.set_entry_onrsi()
         self.get_bounces(plot=True)
@@ -417,12 +424,12 @@ class CounterDbTp(Counter):
 
         c.init_feats()
 
-        self.slope=c.slope
+        self.slope = c.slope
         self.n_rsibounces = c.n_rsibounces
-        self.rsibounces_lengths=c.rsibounces_lengths
-        self.divergence=c.divergence
-        self.length_candles=c.length_candles
-        self.length_pips=c.length_pips
+        self.rsibounces_lengths = c.rsibounces_lengths
+        self.divergence = c.divergence
+        self.length_candles = c.length_candles
+        self.length_pips = c.length_pips
 
         warnings.warn("[INFO] Done init_trend_feats")
 
@@ -441,9 +448,9 @@ class CounterDbTp(Counter):
 
         (first, second) = self.pair.split("_")
         if first == 'JPY' or second == 'JPY':
-            diff=diff*100
+            diff = diff * 100
         else:
-            diff=diff*10000
+            diff = diff * 10000
 
         self.diff = abs(round(diff))
 
@@ -459,7 +466,7 @@ class CounterDbTp(Counter):
         rsi1st_val = self.clist_period.fetch_by_time(self.bounce_1st[0]).rsi
         rsi2nd_val = self.clist_period.fetch_by_time(self.bounce_2nd[0]).rsi
 
-        self.diff_rsi=rsi1st_val-rsi2nd_val
+        self.diff_rsi = rsi1st_val - rsi2nd_val
 
     def set_valley(self):
         '''
@@ -482,5 +489,4 @@ class CounterDbTp(Counter):
 
         candle_list = oanda.fetch_candleset(vol_cutoff=0)
 
-        self.valley=len(candle_list)
-
+        self.valley = len(candle_list)

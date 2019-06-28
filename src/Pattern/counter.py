@@ -108,7 +108,8 @@ class Counter(object):
                          dailyAlignment=config.OANDA_API['dailyAlignment'])
 
         oanda.run(start=self.trend_i.isoformat(),
-                  end=self.start.isoformat())
+                  end=self.start.isoformat(),
+                  roll=True)
 
         candle_list = oanda.fetch_candleset(vol_cutoff=0)
 

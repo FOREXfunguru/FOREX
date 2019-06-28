@@ -12,6 +12,18 @@ OANDA_API = {
 
 }
 
+#configuration for Counter doubletop
+CTDBT = {
+    'period' : 4500, # number of candles from self.start to self.start-period that will be considered in order to
+                    # to look for the double peak/valley,
+    'HR_pips' : 30, #  number of pips over/below S/R used for trying to identify bounces
+    'threshold' : 0.5, # threshold for detecting peaks.
+    'min_dist' : 5, # Minimum distance between peaks
+    'period1st_bounce' : 8 # Controls the maximum number of candles allowed between
+                           # self.start and the location of the most recent bounce
+
+}
+
 # start datetime for Oanda's historical data
 START_HIST = {
     'AUD_CAD': datetime.datetime(2004, 6, 5, 21, 0),

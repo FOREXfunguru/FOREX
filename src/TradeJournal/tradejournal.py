@@ -186,7 +186,8 @@ class TradeJournal(object):
     def add_trend_momentum(self):
         '''
         This function will add a new worksheet named 'trend_momentum' to the .xlsx file
-        For this, the function will perform some queries to the Oanda's REST API and will
+        For this, the function will pers
+        form some queries to the Oanda's REST API and will
         parse the results
         '''
 
