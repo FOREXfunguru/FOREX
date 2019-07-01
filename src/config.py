@@ -19,9 +19,11 @@ CTDBT = {
     'HR_pips' : 30, #  number of pips over/below S/R used for trying to identify bounces
     'threshold' : 0.5, # threshold for detecting peaks.
     'min_dist' : 5, # Minimum distance between peaks
-    'period1st_bounce' : 8 # Controls the maximum number of candles allowed between
+    'period1st_bounce' : 8, # Controls the maximum number of candles allowed between
                            # self.start and the location of the most recent bounce
-
+    'HR_pips_from2nd': 60,  # The same than before but restricted to bounces found from 2nd bounce (not including it)
+    'threshold_from2nd': 0.5,  # idem
+    'min_dist_from2nd': 5,  # idem
 }
 
 # start datetime for Oanda's historical data

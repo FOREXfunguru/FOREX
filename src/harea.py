@@ -3,6 +3,7 @@ import pdb
 import matplotlib
 import config
 import peakutils
+import traceback
 import warnings
 from zigzag import *
 from datetime import timedelta,datetime
@@ -129,6 +130,7 @@ class HArea(object):
         list : list of tuples containing datetime, value and type for each peak/bounce
                where type will be 'max' if it is a maxima and 'min' will be a minima
         '''
+
         cb = np.array(prices)
         max = peakutils.indexes(cb, thres=threshold, min_dist=min_dist)
         min = peakutils.indexes(-cb, thres=threshold, min_dist=min_dist)

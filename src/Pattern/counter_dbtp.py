@@ -275,7 +275,8 @@ class CounterDbTp(Counter):
 
     def get_bounces(self, plot=False, part='closeAsk'):
         '''
-        Function to identify all bounces
+        Function to identify all bounces, including the first and the second.
+        It will also produce a .png with the bounces if 'plot'=True
 
         Parameters
         ----------
@@ -295,9 +296,9 @@ class CounterDbTp(Counter):
 
         final_bounces = [second_bounce, first_bounce]
 
-        # check bounces from the second bounce with a stricter parameter set
-        self.set_bounces(part=part, HR_pips=60, threshold=0.5, min_dist=5, min_dist_res=5,
-                         end=second_bounce[0])
+        # check bounces from the second bounce (not including it) with a stricter parameter set
+        self.set_bounces(part=part, HR_pips=config.CTDBT['HR_pips_from2nd'], threshold=config.CTDBT['threshold_from2nd'],
+                         min_dist=config.CTDBT['min_dist_from2nd'], min_dist_res=5, end=second_bounce[0])
 
         if self.bounces is not None:
             # append the self.bounces at the beginning of final_bounces
@@ -386,7 +387,6 @@ class CounterDbTp(Counter):
 
         warnings.warn("[INFO] Run init_feats")
 
-        pdb.set_trace()
         self.set_lasttime()
         self.set_entry_onrsi()
         self.get_bounces(plot=True)

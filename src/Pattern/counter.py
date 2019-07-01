@@ -2,6 +2,7 @@ import pdb
 import datetime
 import warnings
 import config
+import traceback
 from oanda_api import OandaAPI
 from candlelist import CandleList
 from harea import HArea
@@ -387,7 +388,7 @@ class Counter(object):
 
     def set_entry_onrsi(self):
         '''
-        Function to check if entry candle is on rsi territory
+        Function to check if entry candle is on rsi territory (>=70 or <=30)
 
         Returns
         -------
