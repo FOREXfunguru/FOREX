@@ -1,8 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="Adding folders for images">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+    <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/learning_nbs/.ipynb_checkpoints/Calculating past bounces on a certain Support or Resistance area-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/learning_nbs/.ipynb_checkpoints/Calculating past bounces on a certain Support or Resistance area-checkpoint.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/learning_nbs/Calculating past bounces on a certain Support or Resistance area.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/learning_nbs/Calculating past bounces on a certain Support or Resistance area.ipynb" afterDir="false" />
     </list>
@@ -38,19 +37,31 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/TradeJournal/tradejournal.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1695">
+            <state relative-caret-position="292">
               <caret line="121" selection-start-line="121" selection-end-line="121" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Pattern/counter.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="559">
               <caret line="158" column="27" selection-start-line="158" selection-start-column="27" selection-end-line="158" selection-end-column="27" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/oanda_api.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="2568">
+              <caret line="190" column="51" selection-start-line="190" selection-start-column="51" selection-end-line="190" selection-end-column="51" />
+              <folding>
+                <element signature="e#55#65#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -68,11 +79,19 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/candlelist.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="3600">
-              <caret line="245" selection-start-line="245" selection-end-line="245" />
+            <state relative-caret-position="367">
+              <caret line="630" column="44" lean-forward="true" selection-start-line="630" selection-start-column="36" selection-end-line="630" selection-end-column="44" />
+              <folding>
+                <element signature="e#0#23#0" expanded="true" />
+                <element signature="e#13934#15922#0" />
+                <element signature="e#15966#16162#0" />
+                <element signature="e#16219#17081#0" />
+                <element signature="e#17148#18044#0" />
+                <element signature="e#18136#20251#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -195,6 +214,11 @@
             <path>
               <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
               <item name="FOREX" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FOREX" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -324,20 +348,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
-    </task>
-    <task id="LOCAL-00024" summary="adding different initialization">
-      <created>1554504486034</created>
-      <option name="number" value="00024" />
-      <option name="presentableId" value="LOCAL-00024" />
-      <option name="project" value="LOCAL" />
-      <updated>1554504486034</updated>
-    </task>
-    <task id="LOCAL-00025" summary="adding work for CounterDbtp">
-      <created>1554581843042</created>
-      <option name="number" value="00025" />
-      <option name="presentableId" value="LOCAL-00025" />
-      <option name="project" value="LOCAL" />
-      <updated>1554581843042</updated>
     </task>
     <task id="LOCAL-00026" summary="adding more feats to CounterDbtp">
       <created>1554601191065</created>
@@ -668,7 +678,21 @@
       <option name="project" value="LOCAL" />
       <updated>1561585813426</updated>
     </task>
-    <option name="localTasksCounter" value="73" />
+    <task id="LOCAL-00073" summary="Adding .gitignore">
+      <created>1562105570992</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1562105570993</updated>
+    </task>
+    <task id="LOCAL-00074" summary="Adding .gitignore">
+      <created>1562105629091</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1562105629091</updated>
+    </task>
+    <option name="localTasksCounter" value="75" />
     <servers />
   </component>
   <component name="TodoView">
@@ -682,8 +706,9 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <editor active="true" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.3937083" visible="true" weight="0.5813953" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.3937083" visible="true" weight="0.15081044" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.6062917" side_tool="true" weight="0.09255613" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -694,8 +719,8 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.3287858" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4982382" visible="true" weight="0.23373494" />
-      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5017618" side_tool="true" weight="0.25060242" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.23373494" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5024665" side_tool="true" weight="0.23373494" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32846716" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -722,7 +747,6 @@
     </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="working in moving plotting code" />
     <MESSAGE value="working on min/max selection" />
     <MESSAGE value="working on peak resolution" />
     <MESSAGE value="working on peak resolution1" />
@@ -747,7 +771,8 @@
     <MESSAGE value="working implementing the outcome proportion code" />
     <MESSAGE value="working implementing the outcome proportion code1" />
     <MESSAGE value="Adding folders for images" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding folders for images" />
+    <MESSAGE value="Adding .gitignore" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding .gitignore" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Untitled.ipynb" />
@@ -945,16 +970,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/oanda_api.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-164">
-          <caret line="190" column="51" selection-start-line="190" selection-start-column="51" selection-end-line="190" selection-end-column="51" />
-          <folding>
-            <element signature="e#55#65#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/calculate_ctdbtp.py">
       <provider selected="true" editor-type-id="text-editor">
         <state>
@@ -986,13 +1001,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/TradeJournal/tradejournal.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1695">
-          <caret line="121" selection-start-line="121" selection-end-line="121" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/harea.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1845">
@@ -1000,13 +1008,6 @@
           <folding>
             <element signature="e#0#18#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/candlelist.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3600">
-          <caret line="245" selection-start-line="245" selection-end-line="245" />
         </state>
       </provider>
     </entry>
@@ -1023,6 +1024,38 @@
           <caret line="158" column="27" selection-start-line="158" selection-start-column="27" selection-end-line="158" selection-end-column="27" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/oanda_api.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2568">
+          <caret line="190" column="51" selection-start-line="190" selection-start-column="51" selection-end-line="190" selection-end-column="51" />
+          <folding>
+            <element signature="e#55#65#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/tradejournal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="292">
+          <caret line="121" selection-start-line="121" selection-end-line="121" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/candlelist.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="367">
+          <caret line="630" column="44" lean-forward="true" selection-start-line="630" selection-start-column="36" selection-end-line="630" selection-end-column="44" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+            <element signature="e#13934#15922#0" />
+            <element signature="e#15966#16162#0" />
+            <element signature="e#16219#17081#0" />
+            <element signature="e#17148#18044#0" />
+            <element signature="e#18136#20251#0" />
           </folding>
         </state>
       </provider>
