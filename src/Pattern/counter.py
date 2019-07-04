@@ -186,10 +186,11 @@ class Counter(object):
         self.bounces_fromlasttime()
         self.set_slope()
         self.set_rsibounces_feats()
-        self.set_divergence()
+      #  self.set_divergence()
         self.set_entry_onrsi()
         self.set_length_candles()
         self.set_length_pips()
+        self.calc_itrend()
 
     def calc_itrend(self):
         '''
@@ -203,14 +204,14 @@ class Counter(object):
         -------
         Will set the class 'trend_i' attribute and will return the datetime for this 'trend_i'
         '''
+        pdb.set_trace()
+        pivots = self.clist_trend.get_pivots()
 
-        for c in reversed(self.clist_period.clist):
-            if self.type == 'long' and c.rsi>=70:
-                self.trend_i=c.time
-                return c.time
-            elif self.type == 'short' and c.rsi<=30:
-                self.trend_i = c.time
-                return c.time
+        if self.clist_trend.type=="long":
+            self.clist_trend[pivots == -1][-2]
+            self.clist_trend.clist[pivots == -1]
+        print("h")
+
 
     def set_bounces(self, part='closeAsk',HR_pips=50, threshold=0.50,
                     start=None, end=None, min_dist=10,min_dist_res=10):

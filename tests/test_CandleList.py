@@ -17,6 +17,10 @@ def oanda_object():
                    start='2015-01-26T22:00:00',
                    end='2015-01-29T22:00:00')
 
+    oanda.run(start='2015-01-26T22:00:00',
+              end='2015-01-29T22:00:00',
+              roll=True)
+
     return oanda
 
 @pytest.fixture
@@ -27,11 +31,13 @@ def trend_oanda_object():
                      instrument='AUD_USD',
                      granularity='D',
                      alignmentTimezone='Europe/London',
-                     dailyAlignment=22,
-                     start='2017-12-08T22:00:00',
-                     end='2018-01-29T22:00:00')
-    return oanda
+                     dailyAlignment=22)
 
+    oanda.run(start='2017-12-08T22:00:00',
+              end='2018-01-29T22:00:00',
+              roll=True)
+    return oanda
+"""
 def test_CandleList():
     '''
     Test the creation of a CandleList object
@@ -301,4 +307,15 @@ def test_fetch_by_time(trend_oanda_object):
     adatetime=datetime.datetime(2017,12,10,22,0)
 
     c=cl.fetch_by_time(adatetime)
+"""
 
+def test_get_pivots(trend_oanda_object):
+
+    candle_list = trend_oanda_object.fetch_candleset()
+
+    cl = CandleList(candle_list, instrument='AUD_USD', granularity='D',
+                    id='AUD_USD 29JAN2018D')
+
+    pivots=cl.get_pivots()
+    assert pivots[0] == -1
+    assert pivots[-1] == -1

@@ -8,6 +8,7 @@ def ctdbptp_object():
     '''Returns CounterDbTp object'''
 
     c = CounterDbTp(
+                    id='GBP_AUD 21FEB2019H12',
                     start='2019-02-21 22:00:00',
                     trend_i='2018-12-11 22:00:00',
                     pair='GBP_AUD',
@@ -25,6 +26,7 @@ def ctdbptp_object_notrendi():
     '''Returns CounterDbTp object without the 'trend_i' initialised'''
 
     c = CounterDbTp(
+                    id='GBP_AUD 21FEB2019H12',
                     start='2019-02-21 22:00:00',
                     pair='GBP_AUD',
                     timeframe='H12',
@@ -44,26 +46,27 @@ def test_set_1stbounce(ctdbptp_object):
 
     ctdbptp_object.set_1stbounce()
 
-"""
 def test_set_2ndbounce(ctdbptp_object):
 
     ctdbptp_object.set_2ndbounce()
-"""
 
 def test_init_feats(ctdbptp_object):
 
     ctdbptp_object.init_feats()
-
+"""
 def test_init_trend_feats(ctdbptp_object):
 
+    pdb.set_trace()
+    ctdbptp_object.get_bounces(plot=False)
     ctdbptp_object.set_1stbounce()
     ctdbptp_object.init_trend_feats()
 
     assert ctdbptp_object.n_rsibounces == 3
     assert ctdbptp_object.length_candles == 61
-
+"""
 def test_set_diff(ctdbptp_object):
 
+    self.get_bounces(plot=True)
     ctdbptp_object.set_1stbounce()
     ctdbptp_object.set_2ndbounce()
     ctdbptp_object.set_diff()

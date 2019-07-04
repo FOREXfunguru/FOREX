@@ -424,6 +424,8 @@ class CounterDbTp(Counter):
 
         c.init_feats()
 
+        pdb.set_trace()
+
         self.slope = c.slope
         self.n_rsibounces = c.n_rsibounces
         self.rsibounces_lengths = c.rsibounces_lengths

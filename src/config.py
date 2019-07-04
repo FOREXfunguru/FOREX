@@ -53,5 +53,6 @@ START_HIST = {
 
 PNGFILES = {
     'regression' : PROJECT['root']+'regresion_imgs/',
-    'bounces' : PROJECT['root']+'bounce_images/'
+    'bounces' : PROJECT['root']+'bounce_images/',
+    'pivots' : PROJECT['root']+'init_trend_imgs/'
 }
