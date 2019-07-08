@@ -54,15 +54,11 @@ def test_init_feats(ctdbptp_object):
 
     ctdbptp_object.init_feats()
 """
-def test_init_trend_feats(ctdbptp_object):
+def test_init_trend_feats(ctdbptp_object_notrendi):
 
-    pdb.set_trace()
-    ctdbptp_object.get_bounces(plot=False)
-    ctdbptp_object.set_1stbounce()
-    ctdbptp_object.init_trend_feats()
+    ctdbptp_object_notrendi.init_trend_feats()
 
-    assert ctdbptp_object.n_rsibounces == 3
-    assert ctdbptp_object.length_candles == 61
+
 """
 def test_set_diff(ctdbptp_object):
 

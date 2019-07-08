@@ -2,7 +2,7 @@ import datetime
 
 
 PROJECT = {
-    'root' :'/Users/ernesto/PycharmProjects/FOREX/scripts/'
+    'root' :'/Users/ernesto/projects/FOREX/CTDBTP/'
 }
 
 OANDA_API = {

@@ -2,6 +2,7 @@ import pdb
 import datetime
 import warnings
 import config
+import numpy as np
 import traceback
 from oanda_api import OandaAPI
 from candlelist import CandleList
@@ -190,7 +191,6 @@ class Counter(object):
         self.set_entry_onrsi()
         self.set_length_candles()
         self.set_length_pips()
-        self.calc_itrend()
 
     def calc_itrend(self):
         '''
@@ -205,11 +205,17 @@ class Counter(object):
         Will set the class 'trend_i' attribute and will return the datetime for this 'trend_i'
         '''
         pdb.set_trace()
-        pivots = self.clist_trend.get_pivots()
+        pivots = self.clist_period.get_pivots()
+        arr = np.array(self.clist_period.clist)
+        if self.type=="long": #this basically means that the trend direction will be down
+            init_dtime=arr[pivots == 1][-2].time
+            self.trend_i=init_dtime
+        elif self.type=="short":
+            init_dtime = arr[pivots == -1][-2].time
+            self.trend_i = init_dtime
 
-        if self.clist_trend.type=="long":
-            self.clist_trend[pivots == -1][-2]
-            self.clist_trend.clist[pivots == -1]
+
+        return init_dtime
         print("h")
 
 
