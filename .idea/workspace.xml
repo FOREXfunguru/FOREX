@@ -3,10 +3,10 @@
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/learning_nbs/.ipynb_checkpoints/Calculating past bounces on a certain Support or Resistance area-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/learning_nbs/.ipynb_checkpoints/Calculating past bounces on a certain Support or Resistance area-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/learning_nbs/Calculating past bounces on a certain Support or Resistance area.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/learning_nbs/Calculating past bounces on a certain Support or Resistance area.ipynb" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Pattern/counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/regression_line.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_CounterDbTp.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_CounterDbTp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,11 +19,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Pattern/counter_dbtp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="359">
-              <caret line="424" column="20" selection-start-line="424" selection-start-column="10" selection-end-line="424" selection-end-column="20" />
+            <state relative-caret-position="403">
+              <caret line="268" column="53" selection-start-line="268" selection-start-column="53" selection-end-line="268" selection-end-column="53" />
               <folding>
                 <element signature="e#14964#15534#0" />
                 <element signature="e#15572#15947#0" />
@@ -60,11 +60,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Pattern/counter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1618">
-              <caret line="175" column="18" selection-start-line="175" selection-start-column="8" selection-end-line="175" selection-end-column="18" />
+            <state relative-caret-position="-19">
+              <caret line="253" selection-start-line="253" selection-end-line="253" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -108,7 +108,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>check_if_divergence</find>
       <find>pips</find>
       <find>split(&quot;_&quot;)</find>
       <find>self.TP</find>
@@ -138,6 +137,7 @@
       <find>pivot</find>
       <find>calc_itrend</find>
       <find>init_feats</find>
+      <find>get_bounces</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -183,10 +183,10 @@
         <option value="$PROJECT_DIR$/src/harea.py" />
         <option value="$PROJECT_DIR$/src/candlelist.py" />
         <option value="$PROJECT_DIR$/tests/test_CandleList.py" />
-        <option value="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" />
-        <option value="$PROJECT_DIR$/src/Pattern/counter.py" />
         <option value="$PROJECT_DIR$/tests/test_CounterDbTp.py" />
         <option value="$PROJECT_DIR$/src/config.py" />
+        <option value="$PROJECT_DIR$/src/Pattern/counter.py" />
+        <option value="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" />
       </list>
     </option>
   </component>
@@ -345,13 +345,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
-    </task>
-    <task id="LOCAL-00028" summary="adding valley write trades for counter_doubletop">
-      <created>1554746136139</created>
-      <option name="number" value="00028" />
-      <option name="presentableId" value="LOCAL-00028" />
-      <option name="project" value="LOCAL" />
-      <updated>1554746136147</updated>
     </task>
     <task id="LOCAL-00029" summary="adding valley write trades for counter_doubletop1">
       <created>1554761371847</created>
@@ -689,7 +682,14 @@
       <option name="project" value="LOCAL" />
       <updated>1562279507751</updated>
     </task>
-    <option name="localTasksCounter" value="77" />
+    <task id="LOCAL-00077" summary="Adding init_trend_function to Counter1">
+      <created>1562621356397</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1562621356400</updated>
+    </task>
+    <option name="localTasksCounter" value="78" />
     <servers />
   </component>
   <component name="TodoView">
@@ -703,9 +703,8 @@
   </component>
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.69803923" visible="true" weight="0.15081044" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.69803923" visible="true" weight="0.15081044" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.3019608" side_tool="true" visible="true" weight="0.15081044" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -716,7 +715,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32771084" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.38554215" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.38554215" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5024665" side_tool="true" weight="0.23373494" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32846716" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -744,7 +743,6 @@
     </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="working on peak resolution1" />
     <MESSAGE value="last commit of peak resolution before changing strategy" />
     <MESSAGE value="Solving debugs in peak resolution" />
     <MESSAGE value="Solving debugs in peak resolution1" />
@@ -769,7 +767,8 @@
     <MESSAGE value="Adding .gitignore" />
     <MESSAGE value="Improving zigzag notebook" />
     <MESSAGE value="Adding init_trend_function to Counter" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding init_trend_function to Counter" />
+    <MESSAGE value="Adding init_trend_function to Counter1" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding init_trend_function to Counter1" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Untitled.ipynb" />
@@ -1050,24 +1049,24 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Pattern/counter_dbtp.py">
+    <entry file="file://$PROJECT_DIR$/src/Pattern/counter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="359">
-          <caret line="424" column="20" selection-start-line="424" selection-start-column="10" selection-end-line="424" selection-end-column="20" />
+        <state relative-caret-position="-19">
+          <caret line="253" selection-start-line="253" selection-end-line="253" />
           <folding>
-            <element signature="e#14964#15534#0" />
-            <element signature="e#15572#15947#0" />
-            <element signature="e#15983#16705#0" />
+            <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Pattern/counter.py">
+    <entry file="file://$PROJECT_DIR$/src/Pattern/counter_dbtp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1618">
-          <caret line="175" column="18" selection-start-line="175" selection-start-column="8" selection-end-line="175" selection-end-column="18" />
+        <state relative-caret-position="403">
+          <caret line="268" column="53" selection-start-line="268" selection-start-column="53" selection-end-line="268" selection-end-column="53" />
           <folding>
-            <element signature="e#0#10#0" expanded="true" />
+            <element signature="e#14964#15534#0" />
+            <element signature="e#15572#15947#0" />
+            <element signature="e#15983#16705#0" />
           </folding>
         </state>
       </provider>

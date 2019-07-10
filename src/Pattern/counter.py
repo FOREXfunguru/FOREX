@@ -87,12 +87,6 @@ class Counter(object):
             diff=(self.entry-self.SL)*self.RR
             self.TP=round(self.entry+diff,4)
 
-        if hasattr(self, 'trend_i'):
-            self.trend_i = datetime.datetime.strptime(self.trend_i, '%Y-%m-%d %H:%M:%S')
-        else:
-            self.calc_itrend()
-        self.__init_clist_trend()
-
     def __init_clist_trend(self):
         '''
         Private function to initialise self.clist_trend class attribute
@@ -101,6 +95,13 @@ class Counter(object):
         '''
 
         warnings.warn("[INFO] Run __init_clist_trend")
+
+        # if trend_i is not defined then calculate it
+        if hasattr(self, 'trend_i'):
+            self.trend_i = datetime.datetime.strptime(self.trend_i, '%Y-%m-%d %H:%M:%S')
+        else:
+            self.calc_itrend()
+        self.__init_clist_trend()
 
             # checking for feats in trend before 1st bounce
         oanda = OandaAPI(url= config.OANDA_API['url'],
@@ -182,7 +183,9 @@ class Counter(object):
         It will initialise all object's features
         '''
 
+        pdb.set_trace()
         self.set_bounces()
+        self.__init_clist_trend()
         self.set_lasttime()
         self.bounces_fromlasttime()
         self.set_slope()
@@ -216,8 +219,6 @@ class Counter(object):
 
 
         return init_dtime
-        print("h")
-
 
     def set_bounces(self, part='closeAsk',HR_pips=50, threshold=0.50,
                     start=None, end=None, min_dist=10,min_dist_res=10):

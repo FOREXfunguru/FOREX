@@ -207,7 +207,6 @@ class CounterDbTp(Counter):
 
         self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1, min_dist_res=1,
                          start=self.__period1st_bounce_point)
-
         min_dist_res = 1
         HR_pips = self.HR_pips
 
@@ -251,6 +250,7 @@ class CounterDbTp(Counter):
         A bounce representing the second bounce
         '''
 
+        pdb.set_trace()
         end = self.__get_time4candles(n=5, anchor_point=first[0])
         self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1,
                          min_dist_res=10,
