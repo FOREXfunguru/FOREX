@@ -16,7 +16,7 @@ OANDA_API = {
 CTDBT = {
     'period' : 12, # number of candles from self.start that will be considered in order to
                      # to look for peaks/valleys
-    'HR_pips' : 50, # number of pips over/below S/R used for trying to identify bounces
+    'HR_pips' : 100, # number of pips over/below S/R used for trying to identify bounces
     'threshold' : 0.5, # threshold for detecting peaks.
     'min_dist' : 5, # Minimum distance between peaks
     'period1st_bounce' : 8, # Controls the maximum number of candles allowed between

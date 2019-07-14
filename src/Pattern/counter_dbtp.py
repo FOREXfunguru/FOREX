@@ -233,50 +233,6 @@ class CounterDbTp(Counter):
 
         self.clist_period=cl
 
-
-    def get_first_bounce(self, part='closeAsk'):
-        '''
-        Function to identify the first (most recent) bounce
-
-        Parameters
-        ----------
-        part: str
-              Candle part used for the calculation. Default='closeAsk'
-
-        Returns
-        -------
-        A bounce representing the last bounce
-        '''
-
-        self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1, min_dist_res=1,
-                         start=self.__period1st_bounce_point)
-        min_dist_res = 1
-        HR_pips = self.HR_pips
-
-        while (self.__validate1stbounce()[0] is False) and (min_dist_res <= 10) and (HR_pips <= 200):
-            if self.__validate1stbounce()[1] == 'TOO_MANY':
-                min_dist_res += 1
-                warnings.warn("More than 2 bounces identified. "
-                              "Will try with 'min_dist_res'={0}".format(min_dist_res))
-                self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1,
-                                 min_dist_res=min_dist_res,
-                                 start=self.__period1st_bounce_point)
-            elif self.__validate1stbounce()[1] == 'NO_BOUNCE':
-                HR_pips += 5
-                warnings.warn("Less than 1 bounce identified. "
-                              "Will try with 'HR_pips'={0}".format(HR_pips))
-                threshold = self.threshold
-                while (threshold >= 0.1) and (self.__validate1stbounce()[1] == 'NO_BOUNCE'):
-                    threshold -= 0.1
-                    self.set_bounces(part=part, HR_pips=HR_pips, threshold=threshold, min_dist=1,
-                                     min_dist_res=min_dist_res,
-                                     start=self.__period1st_bounce_point)
-
-        if len(self.bounces) < 1:
-            raise Exception("No first bounce found")
-
-        return self.bounces[-1]
-
     def get_second_bounce(self, first, part='closeAsk'):
         '''
         Function to identify the 2nd bounce
@@ -330,12 +286,19 @@ class CounterDbTp(Counter):
         It will set the self.bounces attribute
         '''
 
-        outfile="{0}/{1}.raw.bounces.png".format(config.PNGFILES['bounces'],self.id.replace(' ', '_'))
-        bounces=self.clist_period.get_pivots(outfile, th_up=0.00, th_down=-0.00)
+        # get sliced CandleList from datetime defined by self.period1st_bounce period
+        start_clist=self.clist_period.slice(start=self.__period1st_bounce_point)
 
-        arr = np.array(self.clist_period.clist)
-#        bounce_candles =arr[np.logical_or(bounces == 1, bounces == -1)]
-        bounce_candles = arr[bounces==1]
+        outfile="{0}/{1}.fstbounce.png".format(config.PNGFILES['bounces'],self.id.replace(' ', '_'))
+        bounces=start_clist.get_pivots(outfile, th_up=0.00, th_down=-0.00)
+
+        arr = np.array(start_clist.clist)
+
+        # consider type of trade in order to select peaks or valleys
+        if self.type=='short':
+            bounce_candles = arr[bounces==1]
+        elif self.type=='long':
+            bounce_candles = arr[bounces==-1]
 
         # get bounces in the horizontal area
         lower = substract_pips2price(self.pair, self.SR, self.HR_pips)
@@ -344,6 +307,7 @@ class CounterDbTp(Counter):
         in_area_list=[]
         for c in bounce_candles:
             price=getattr(c, part)
+           # print("u:{0}-l:{1}|p:{2}".format(upper,lower,price))
             if price>=lower and price<=upper:
                 in_area_list.append(c)
 
@@ -351,8 +315,16 @@ class CounterDbTp(Counter):
             print(c.time)
 
         pdb.set_trace()
-        print("h")
+        while len(in_area_list)>1:
+            inarea_cl = CandleList(in_area_list, instrument=self.pair, granularity=self.timeframe)
+            in_area_list=inarea_cl.improve_resolution(price=self.SR)
 
+        if len(in_area_list)==0:
+            print("h")
+
+        assert len(in_area_list)==1, "Exactly one single bounce is needed"
+
+        self.bounce_1st=in_area_list[0]
 
     def set_1stbounce(self):
         '''
@@ -413,7 +385,7 @@ class CounterDbTp(Counter):
 
         warnings.warn("[INFO] Run init_feats")
 
-        self.get_bounces()
+        self.get_first_bounce()
        # self.set_lasttime()
        # self.set_entry_onrsi()
        # self.set_1stbounce()

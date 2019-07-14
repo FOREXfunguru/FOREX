@@ -13,6 +13,7 @@ import peakutils
 import numpy as np
 import matplotlib
 import config
+from utils import *
 
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
@@ -679,3 +680,56 @@ class CandleList(object):
         cl = CandleList(sliced_clist, instrument=self.instrument, granularity=self.granularity)
 
         return cl
+
+    def improve_resolution(self,price,min_dist=5,part='closeAsk'):
+        '''
+        Function used to improve the resolution of the identified maxima/minima. This function will select
+        the candle closer to 'price' when there are 2 candles less than 'min_dist' apart
+
+        Parameters
+        ----------
+        price : float
+                Price that will be used as the reference to select one of the candles
+        min_dist : int
+                   minimum distance between the identified max/min. Default=5
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
+
+        Returns
+        -------
+        list containing the selected candles
+        '''
+
+        # convert the min_dist integer to a timedelta
+        min_distDelta=periodToDelta(ncandles=min_dist,timeframe=self.granularity)
+
+        list_c=self.clist
+        res = [x.time - y.time for x, y in zip(list_c, list_c[1:])]
+        below = [] # below will contain the list_c indexes separated by <min_dist
+        ix = 0
+        for i in res:
+            i = abs(i)
+            if i < min_distDelta:
+                below.append((ix, ix + 1))
+            ix += 1
+
+        remove_l = [] #list with the indexes to remove
+        if below:
+            for i in below:
+                x0 = getattr(list_c[i[0]], part)
+                x1 = getattr(list_c[i[1]], part)
+                diff0=abs(x0-price)
+                diff1=abs(x1-price)
+                #ix to be removed: the furthest
+                # from self.price
+                if diff0>diff1:
+                    remove_l.append(i[0])
+                elif diff1>diff0:
+                    remove_l.append(i[1])
+
+        if remove_l:
+            sorted_removel=sorted(list(set(remove_l)))
+            for ix in sorted_removel:
+                del list_c[ix]
+
+        return list_c
