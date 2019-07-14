@@ -520,39 +520,6 @@ class CandleList(object):
 
         return abs(int(round(diff,0)))
 
-    def __get_bounces(self, datetimes, data, direction):
-        '''
-        Function to get the bounces bouncing on the trend formed by this CandleList
-
-        Parameters
-        ----------
-        datetimes : list
-                     Lisf of datetimes associated to each of the prices
-        data : list
-               List with data that will be used to calculate the bounces
-        direction : str
-                    The direction of the trend, it can be 'up' or 'down'
-
-        Returns
-        -------
-        list : list of tuples containing datetime and value for each peak/bounce
-        '''
-
-        cb = np.array(data)
-
-        ixs=None
-        if direction=='up':
-            ixs = peakutils.indexes(cb, thres=0.5, min_dist=5)
-        elif direction=='down':
-            ixs = peakutils.indexes(-cb, thres=0.5, min_dist=5)
-
-        bounces = []
-        for ix in ixs:
-            bounces.append((datetimes[ix], data[ix]))
-
-        return bounces
-
-
     def fit_reg_line(self, part='openAsk', smooth='rolling_average', k_perc=25):
         '''
         Function to fit a linear regression
@@ -611,13 +578,15 @@ class CandleList(object):
 
         return model, outfile, regression_model_mse
 
-    def get_pivots(self, part='openAsk', th_up=0.5, th_down=-0.5):
+    def get_pivots(self, outfile, part='openAsk', th_up=0.5, th_down=-0.5):
         '''
         Function to calculate the pivot points as defined by implementing the zigzag indicator.
         It will also generate a .png image of the identified pivots
 
         Parameters
         ----------
+        outfile : str
+                  Name of output file
         part : str
                What part of the candle will be used for calculating the length in pips
                Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid'
@@ -641,14 +610,11 @@ class CandleList(object):
 
         pivots = peak_valley_pivots(np.array(prices), th_up, th_down)
 
-        fig = plt.figure(figsize=(20, 10))
+        fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
         plt.plot(np.array(x), np.array(prices), 'k:', alpha=0.5)
         plt.plot(np.array(x)[pivots != 0], np.array(prices)[pivots != 0], 'k-')
         plt.scatter(np.array(x)[pivots == 1], np.array(prices)[pivots == 1], color='g')
         plt.scatter(np.array(x)[pivots == -1], np.array(prices)[pivots == -1], color='r')
-
-        outfile = "{0}/{1}.pivots.png".format(config.PNGFILES['pivots'],
-                                              self.id.replace(' ', '_'))
 
         fig.savefig(outfile, format='png')
 
@@ -692,4 +658,18 @@ class CandleList(object):
             return True
         else:
             return True
+
+    def slice(self, start):
+        '''
+        Function to slice self on a date interval. It will return the sliced CandleList
+
+        Parameters
+        ----------
+        start: datetime
+               Slice the CandleList from this start datetime. Required
+
+        Returns
+        -------
+        CandleList object
+        '''
 
