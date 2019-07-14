@@ -666,10 +666,16 @@ class CandleList(object):
         Parameters
         ----------
         start: datetime
-               Slice the CandleList from this start datetime. Required
+               Slice the CandleList from this start datetime. It will create a new CandleList starting
+               from this datetime. Required
 
         Returns
         -------
         CandleList object
         '''
 
+        sliced_clist = [c for c in self.clist if c.time >= start]
+
+        cl = CandleList(sliced_clist, instrument=self.instrument, granularity=self.granularity)
+
+        return cl
