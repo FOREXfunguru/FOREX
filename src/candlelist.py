@@ -726,6 +726,8 @@ class CandleList(object):
                     remove_l.append(i[0])
                 elif diff1>diff0:
                     remove_l.append(i[1])
+                elif diff1==diff0:
+                    remove_l.append(i[0])
 
         if remove_l:
             sorted_removel=sorted(list(set(remove_l)))

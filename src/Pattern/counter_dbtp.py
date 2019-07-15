@@ -233,6 +233,35 @@ class CounterDbTp(Counter):
 
         self.clist_period=cl
 
+    def __inarea_bounces(self, bounces, HRpips, part='closeAsk'):
+        '''
+        Function to identify the candles for which price is in the area defined
+        by self.SR+HRpips and self.SR-HRpips
+
+        Parameters
+        ----------
+        bounces: list
+                 Containing the initial list of candles
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
+
+        Returns
+        -------
+        list with bounces that are in the area
+        '''
+        # get bounces in the horizontal area
+        lower = substract_pips2price(self.pair, self.SR, HRpips)
+        upper = add_pips2price(self.pair, self.SR, HRpips)
+
+        in_area_list = []
+        for c in bounces:
+            price = getattr(c, part)
+            print("u:{0}-l:{1}|p:{2}".format(upper, lower, price))
+            if price >= lower and price <= upper:
+                in_area_list.append(c)
+
+        return in_area_list
+
     def get_second_bounce(self, first, part='closeAsk'):
         '''
         Function to identify the 2nd bounce
@@ -300,24 +329,20 @@ class CounterDbTp(Counter):
         elif self.type=='long':
             bounce_candles = arr[bounces==-1]
 
-        # get bounces in the horizontal area
-        lower = substract_pips2price(self.pair, self.SR, self.HR_pips)
-        upper = add_pips2price(self.pair, self.SR, self.HR_pips)
-
-        in_area_list=[]
-        for c in bounce_candles:
-            price=getattr(c, part)
-           # print("u:{0}-l:{1}|p:{2}".format(upper,lower,price))
-            if price>=lower and price<=upper:
-                in_area_list.append(c)
-
-        for c in in_area_list:
-            print(c.time)
+        in_area_list=self.__inarea_bounces(bounce_candles,self.HR_pips)
 
         pdb.set_trace()
+        for c in in_area_list:
+            print(c.time)
+        HRpips=self.HR_pips
+        while len(in_area_list)==0 and HRpips<=config.CTDBT['max_HRpips']:
+            HRpips=HRpips+config.CTDBT['step_pips']
+            in_area_list = self.__inarea_bounces(bounce_candles, HRpips)
+
+        # keep running the improve_resolution function until a single bounce is obtained
         while len(in_area_list)>1:
             inarea_cl = CandleList(in_area_list, instrument=self.pair, granularity=self.timeframe)
-            in_area_list=inarea_cl.improve_resolution(price=self.SR)
+            in_area_list=inarea_cl.improve_resolution(price=self.SR,min_dist=10)
 
         if len(in_area_list)==0:
             print("h")
