@@ -256,49 +256,11 @@ class CounterDbTp(Counter):
         in_area_list = []
         for c in bounces:
             price = getattr(c, part)
-            print("u:{0}-l:{1}|p:{2}".format(upper, lower, price))
+          #  print("u:{0}-l:{1}|p:{2}".format(upper, lower, price))
             if price >= lower and price <= upper:
                 in_area_list.append(c)
 
         return in_area_list
-
-    def get_second_bounce(self, first, part='closeAsk'):
-        '''
-        Function to identify the 2nd bounce
-
-        Parameters
-        ----------
-        first: tuple
-               First bounce
-        part: str
-              Candle part used for the calculation. Default='closeAsk'
-
-        Returns
-        -------
-        A bounce representing the second bounce
-        '''
-
-        end = self.__get_time4candles(n=5, anchor_point=first[0])
-        self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1,
-                         min_dist_res=10,
-                         start=self.trend_i, end=end)
-
-        HR_pips = self.HR_pips
-        while (self.__validate2ndbounce()[1] == 'NO_BOUNCE') and (HR_pips <= 200):
-            HR_pips += 5
-            warnings.warn("Less than 1 bounce identified. "
-                          "Will try with 'HR_pips'={0}".format(HR_pips))
-            threshold = self.threshold
-            while (threshold >= 0.1) and (self.__validate2ndbounce()[1] == 'NO_BOUNCE'):
-                threshold -= 0.1
-                self.set_bounces(part=part, HR_pips=HR_pips, threshold=threshold, min_dist=1,
-                                 min_dist_res=1,
-                                 start=self.trend_i, end=end)
-
-        if len(self.bounces) < 1:
-            raise Exception("No second bounce found")
-
-        return self.bounces[-1]
 
     def get_first_bounce(self, part='closeAsk'):
         '''
@@ -331,9 +293,6 @@ class CounterDbTp(Counter):
 
         in_area_list=self.__inarea_bounces(bounce_candles,self.HR_pips)
 
-        pdb.set_trace()
-        for c in in_area_list:
-            print(c.time)
         HRpips=self.HR_pips
         while len(in_area_list)==0 and HRpips<=config.CTDBT['max_HRpips']:
             HRpips=HRpips+config.CTDBT['step_pips']
@@ -342,10 +301,7 @@ class CounterDbTp(Counter):
         # keep running the improve_resolution function until a single bounce is obtained
         while len(in_area_list)>1:
             inarea_cl = CandleList(in_area_list, instrument=self.pair, granularity=self.timeframe)
-            in_area_list=inarea_cl.improve_resolution(price=self.SR,min_dist=10)
-
-        if len(in_area_list)==0:
-            print("h")
+            in_area_list=inarea_cl.improve_resolution(price=self.SR)
 
         assert len(in_area_list)==1, "Exactly one single bounce is needed"
 

@@ -681,7 +681,7 @@ class CandleList(object):
 
         return cl
 
-    def improve_resolution(self,price,min_dist=5,part='closeAsk'):
+    def improve_resolution(self,price,min_dist=None,part='closeAsk'):
         '''
         Function used to improve the resolution of the identified maxima/minima. This function will select
         the candle closer to 'price' when there are 2 candles less than 'min_dist' apart
@@ -691,7 +691,7 @@ class CandleList(object):
         price : float
                 Price that will be used as the reference to select one of the candles
         min_dist : int
-                   minimum distance between the identified max/min. Default=5
+                   minimum distance between the identified max/min. Optional
         part: str
               Candle part used for the calculation. Default='closeAsk'
 
@@ -700,8 +700,10 @@ class CandleList(object):
         list containing the selected candles
         '''
 
-        # convert the min_dist integer to a timedelta
-        min_distDelta=periodToDelta(ncandles=min_dist,timeframe=self.granularity)
+        min_distDelta=None
+        if min_dist is not None:
+            # convert the min_dist integer to a timedelta
+            min_distDelta=periodToDelta(ncandles=min_dist,timeframe=self.granularity)
 
         list_c=self.clist
         res = [x.time - y.time for x, y in zip(list_c, list_c[1:])]
@@ -709,8 +711,11 @@ class CandleList(object):
         ix = 0
         for i in res:
             i = abs(i)
-            if i < min_distDelta:
-                below.append((ix, ix + 1))
+            if min_distDelta is not None:
+                if i < min_distDelta:
+                    below.append((ix, ix + 1))
+            else:
+                below.append((ix,ix+1))
             ix += 1
 
         remove_l = [] #list with the indexes to remove
@@ -731,7 +736,6 @@ class CandleList(object):
 
         if remove_l:
             sorted_removel=sorted(list(set(remove_l)))
-            for ix in sorted_removel:
-                del list_c[ix]
+            list_c = [i for j, i in enumerate(list_c) if j not in sorted_removel]
 
         return list_c

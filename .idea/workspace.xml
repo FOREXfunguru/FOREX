@@ -4,10 +4,8 @@
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/candlelist.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/candlelist.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_CounterDbTp.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_CounterDbTp.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -44,8 +42,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/config.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="268">
-              <caret line="18" column="19" selection-start-line="18" selection-start-column="19" selection-end-line="18" selection-end-column="19" />
+            <state relative-caret-position="300">
+              <caret line="20" column="20" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
             </state>
           </provider>
         </entry>
@@ -83,8 +81,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/candlelist.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="418">
-              <caret line="729" selection-start-line="729" selection-end-line="729" />
+            <state relative-caret-position="710">
+              <caret line="717" column="37" selection-start-line="717" selection-start-column="37" selection-end-line="717" selection-end-column="37" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
                 <element signature="e#2764#5669#0" />
@@ -121,8 +119,14 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Pattern/counter_dbtp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="424">
-              <caret line="317" column="13" selection-start-line="317" selection-start-column="13" selection-end-line="317" selection-end-column="13" />
+            <state relative-caret-position="1318">
+              <caret line="342" selection-start-line="342" selection-end-line="342" />
+              <folding>
+                <element signature="e#4462#6230#0" />
+                <element signature="e#6275#6863#0" />
+                <element signature="e#6908#7329#0" />
+                <element signature="e#7366#8475#0" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -252,9 +256,9 @@
         <option value="$PROJECT_DIR$/src/utils.py" />
         <option value="$PROJECT_DIR$/tests/test_CandleList.py" />
         <option value="$PROJECT_DIR$/tests/test_CounterDbTp.py" />
-        <option value="$PROJECT_DIR$/src/config.py" />
         <option value="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" />
         <option value="$PROJECT_DIR$/src/candlelist.py" />
+        <option value="$PROJECT_DIR$/src/config.py" />
         <option value="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" />
       </list>
     </option>
@@ -420,20 +424,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
-    </task>
-    <task id="LOCAL-00033" summary="solving bug in fetch_time not using time ranges">
-      <created>1555837892016</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1555837892016</updated>
-    </task>
-    <task id="LOCAL-00034" summary="solving bug related to the 1st bounce being older than the trend start">
-      <created>1555857529731</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1555857529731</updated>
     </task>
     <task id="LOCAL-00035" summary="solving different bugs">
       <created>1555972815726</created>
@@ -764,7 +754,21 @@
       <option name="project" value="LOCAL" />
       <updated>1563117505900</updated>
     </task>
-    <option name="localTasksCounter" value="82" />
+    <task id="LOCAL-00082" summary="Working in new improve_resolution">
+      <created>1563127161176</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1563127161176</updated>
+    </task>
+    <task id="LOCAL-00083" summary="Working in tackling cases where there are no in_area bounces">
+      <created>1563187528286</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1563187528286</updated>
+    </task>
+    <option name="localTasksCounter" value="84" />
     <servers />
   </component>
   <component name="TodoView">
@@ -777,10 +781,9 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
+    <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.69868994" visible="true" weight="0.15081044" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.69868994" visible="true" weight="0.084285155" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.30131003" side_tool="true" weight="0.084285155" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -791,7 +794,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32771084" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.27108434" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.16423358" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5024665" side_tool="true" weight="0.38554215" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32846716" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -819,8 +822,6 @@
     </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Solving debugs in peak resolution3" />
-    <MESSAGE value="Solving debugs in peak resolution4" />
     <MESSAGE value="Solving debugs in peak resolution5" />
     <MESSAGE value="Trying new way of calculating start bounce timepoint" />
     <MESSAGE value="Minor improvements" />
@@ -844,7 +845,9 @@
     <MESSAGE value="Test new branch" />
     <MESSAGE value="Changes in CounterDoubleTop" />
     <MESSAGE value="Create slice method for CandeList" />
-    <option name="LAST_COMMIT_MESSAGE" value="Create slice method for CandeList" />
+    <MESSAGE value="Working in new improve_resolution" />
+    <MESSAGE value="Working in tackling cases where there are no in_area bounces" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working in tackling cases where there are no in_area bounces" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Untitled.ipynb" />
@@ -1072,13 +1075,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="268">
-          <caret line="18" column="19" selection-start-line="18" selection-start-column="19" selection-end-line="18" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/TradeJournal/tradejournal.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="404">
@@ -1112,8 +1108,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/candlelist.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="729" selection-start-line="729" selection-end-line="729" />
+        <state relative-caret-position="710">
+          <caret line="717" column="37" selection-start-line="717" selection-start-column="37" selection-end-line="717" selection-end-column="37" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
             <element signature="e#2764#5669#0" />
@@ -1134,10 +1130,23 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="300">
+          <caret line="20" column="20" selection-start-line="20" selection-start-column="20" selection-end-line="20" selection-end-column="20" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Pattern/counter_dbtp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="424">
-          <caret line="317" column="13" selection-start-line="317" selection-start-column="13" selection-end-line="317" selection-end-column="13" />
+        <state relative-caret-position="1318">
+          <caret line="342" selection-start-line="342" selection-end-line="342" />
+          <folding>
+            <element signature="e#4462#6230#0" />
+            <element signature="e#6275#6863#0" />
+            <element signature="e#6908#7329#0" />
+            <element signature="e#7366#8475#0" />
+          </folding>
         </state>
       </provider>
     </entry>
