@@ -660,7 +660,7 @@ class CandleList(object):
         else:
             return True
 
-    def slice(self, start):
+    def slice(self, start, end=None):
         '''
         Function to slice self on a date interval. It will return the sliced CandleList
 
@@ -668,14 +668,22 @@ class CandleList(object):
         ----------
         start: datetime
                Slice the CandleList from this start datetime. It will create a new CandleList starting
-               from this datetime. Required
+               from this datetime. If 'end' is not defined, then it will slice the CandleList from 'start'
+               to the end of the CandleList
+               Required
+        end: datetime
+             Optional
 
         Returns
         -------
         CandleList object
         '''
 
-        sliced_clist = [c for c in self.clist if c.time >= start]
+        sliced_clist=[]
+        if end is None:
+            sliced_clist = [c for c in self.clist if c.time >= start]
+        elif end is not None:
+            sliced_clist = [c for c in self.clist if c.time >= start and c.time <= end]
 
         cl = CandleList(sliced_clist, instrument=self.instrument, granularity=self.granularity)
 

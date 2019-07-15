@@ -71,9 +71,13 @@ class CounterDbTp(Counter):
             number of candles from self.start that will be considered in order to
             to look for peaks/valleys
     period1st_bounce: int, Optional
-                      Controls the maximum number of candles allowed between
-                      self.start and the location of the most recent bounce.
+                      Controls the maximum number of candles allowed from self.start
+                      in order to locate the 1st bounce
                       Default:10
+    period2nd_bounce: int, Optional
+                      Controls the maximum number of candles allowed from
+                      datetime of 1st bounce in order to locate the
+                      2nd bounce. Default:10
     clist_period : CandleList
                    CandleList that goes from self.start to self.period.
                    It will be initialised by __initclist
@@ -81,13 +85,14 @@ class CounterDbTp(Counter):
     '''
 
     def __init__(self, pair, start, HR_pips=200, threshold=0.50, min_dist=5,
-                 period1st_bounce=10, **kwargs):
+                 period1st_bounce=10, period2nd_bounce=10, **kwargs):
 
         # get values from config file
         if 'HR_pips' in config.CTDBT: HR_pips = config.CTDBT['HR_pips']
         if 'threshold' in config.CTDBT: threshold = config.CTDBT['threshold']
         if 'min_dist' in config.CTDBT: min_dist = config.CTDBT['min_dist']
         if 'period1st_bounce' in config.CTDBT: period1st_bounce = config.CTDBT['period1st_bounce']
+        if 'period2nd_bounce' in config.CTDBT: period2nd_bounce = config.CTDBT['period2nd_bounce']
         if 'period' in config.CTDBT: period = config.CTDBT['period']
 
         self.pair = pair
@@ -96,6 +101,7 @@ class CounterDbTp(Counter):
         self.threshold = threshold
         self.min_dist = min_dist
         self.period1st_bounce = period1st_bounce
+        self.period2nd_bounce = period2nd_bounce
         self.period = period
 
         allowed_keys = ['id', 'timeframe', 'entry', 'period', 'trend_i', 'type', 'SL',
@@ -307,6 +313,63 @@ class CounterDbTp(Counter):
 
         self.bounce_1st=in_area_list[0]
 
+    def get_second_bounce(self, part='closeAsk'):
+        '''
+        Function that uses the the Zigzag algorithm to identify the second bounce
+        of the CounterDoubleTop pattern
+
+        Parameters
+        ----------
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
+
+        Returns
+        -------
+        It will set the self.bounces attribute
+        '''
+
+        # timepoint cutoff that the defines the period from which the second bounce needs to be
+        # located
+        start = self.__get_time4candles(n=self.period2nd_bounce,
+                                        anchor_point=self.bounce_1st.time)
+
+        # get sliced CandleList from datetime defined by self.period1st_bounce period
+        start_clist = self.clist_period.slice(start=start,end=self.bounce_1st.time)
+
+        outfile = "{0}/{1}.2ndbounce.png".format(config.PNGFILES['bounces'], self.id.replace(' ', '_'))
+        bounces = start_clist.get_pivots(outfile, th_up=0.00, th_down=-0.00)
+
+        arr = np.array(start_clist.clist)
+
+        # consider type of trade in order to select peaks or valleys
+        if self.type == 'short':
+            bounce_candles = arr[bounces == 1]
+        elif self.type == 'long':
+            bounce_candles = arr[bounces == -1]
+
+        #if distance between 1st bounce and last detected bounce is less than 1 candle
+        #then remove last detected bounce
+        diff=abs(self.bounce_1st.time-bounce_candles[-1].time)
+        min_distDelta = periodToDelta(ncandles=1, timeframe=self.timeframe)
+        if diff<=min_distDelta:
+            bounce_candles=bounce_candles[:-1]
+
+        in_area_list = self.__inarea_bounces(bounce_candles, self.HR_pips)
+
+        HRpips = self.HR_pips
+        while len(in_area_list) == 0 and HRpips <= config.CTDBT['max_HRpips']:
+            HRpips = HRpips + config.CTDBT['step_pips']
+            in_area_list = self.__inarea_bounces(bounce_candles, HRpips)
+        pdb.set_trace()
+        # keep running the improve_resolution function until a single bounce is obtained
+        while len(in_area_list) > 1:
+            inarea_cl = CandleList(in_area_list, instrument=self.pair, granularity=self.timeframe)
+            in_area_list = inarea_cl.improve_resolution(price=self.SR)
+
+        assert len(in_area_list) == 1, "Exactly one single bounce is needed"
+
+        self.bounce_2nd = in_area_list[0]
+
     def set_1stbounce(self):
         '''
         Function to set bounce_1st (the one that is before the most recent)
@@ -367,6 +430,7 @@ class CounterDbTp(Counter):
         warnings.warn("[INFO] Run init_feats")
 
         self.get_first_bounce()
+        self.get_second_bounce()
        # self.set_lasttime()
        # self.set_entry_onrsi()
        # self.set_1stbounce()

@@ -319,7 +319,6 @@ def test_get_pivots(trend_oanda_object):
     assert pivots[0] == -1
     assert pivots[-1] == -1
 
-"""
 def test_slice_with_start(trend_oanda_object):
 
     candle_list = trend_oanda_object.fetch_candleset()
@@ -329,3 +328,16 @@ def test_slice_with_start(trend_oanda_object):
     adatetime = datetime.datetime(2017, 12, 20, 22, 0)
 
     cl.slice(start=adatetime)
+
+"""
+def test_slice_with_start_end(trend_oanda_object):
+
+    candle_list = trend_oanda_object.fetch_candleset()
+
+    cl = CandleList(candle_list, instrument='AUD_USD', granularity='D')
+
+    startdatetime = datetime.datetime(2017, 12, 20, 22, 0)
+    endatetime = datetime.datetime(2018, 1, 20, 22, 0)
+
+    cl.slice(start=startdatetime,end=endatetime)
+
