@@ -217,79 +217,7 @@ class Counter(object):
             init_dtime = arr[pivots == -1][-2].time
             self.trend_i = init_dtime
 
-
         return init_dtime
-
-    def set_bounces(self, part='closeAsk',HR_pips=50, threshold=0.50,
-                    start=None, end=None, min_dist=10,min_dist_res=10):
-        '''
-        Function to calculate previous bounces at self.SR
-
-        Parameters
-        ----------
-        part: str
-              Candle part used for the calculation. Default='closeAsk'
-        HR_pips: int
-              Number of pips around self.SR to extend the area. Default=50
-        threshold: float
-                   Threshold for detecting peaks. Default : 0.50
-        start: datetime
-               Identify bounces only from this start datetime
-        end: datetime
-             Do not identify bounces from this datetime
-        min_dist: int
-                  Minimum distance to detect bounces. Default : 10
-
-        Returns
-        -------
-        Will set the class 'bounces' attribute
-        '''
-
-        prices = []
-        datetimes = []
-        for c in self.clist_period.clist:
-            prices.append(getattr(c, part))
-            datetimes.append(c.time)
-
-        resist = HArea(price=self.SR, pips=HR_pips, instrument=self.pair, granularity=self.timeframe)
-
-        if hasattr(self, 'id'):
-            bounces = resist.get_bounces(datetimes=datetimes,
-                                         prices=prices,
-                                         threshold=threshold,
-                                         min_dist=min_dist,
-                                         min_dist_res=min_dist_res)
-        else:
-            bounces = resist.get_bounces(datetimes=datetimes,
-                                         prices=prices,
-                                         threshold=threshold,
-                                         min_dist=min_dist,
-                                         min_dist_res=min_dist_res)
-
-        bounces_new=[]
-        if start is None and end is not None:
-            bounces_new = [d for d in bounces if d[0]<end]
-            if len(bounces_new)>1:
-                self.bounces=bounces_new
-            else:
-                self.bounces=None
-
-        if start is not None and end is None:
-            bounces_new = [d for d in bounces if d[0] >= start]
-            if len(bounces_new) >0:
-                self.bounces = bounces_new
-            else:
-                self.bounces = []
-
-        if start is not None and end is not None:
-            bounces_new = [d for d in bounces if d[0] >= start and d[0] <=end ]
-            if len(bounces_new) >0:
-                self.bounces = bounces_new
-            else:
-                self.bounces =[]
-
-        if start is None and end is None:
-            self.bounces=bounces
 
     def set_lasttime(self):
         '''

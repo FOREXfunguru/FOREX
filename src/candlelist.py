@@ -579,7 +579,7 @@ class CandleList(object):
 
         return model, outfile, regression_model_mse
 
-    def get_pivots(self, outfile, part='openAsk', th_up=0.5, th_down=-0.5):
+    def get_pivots(self, outfile=None, part='openAsk', th_up=0.5, th_down=-0.5):
         '''
         Function to calculate the pivot points as defined by implementing the zigzag indicator.
         It will also generate a .png image of the identified pivots
@@ -587,7 +587,7 @@ class CandleList(object):
         Parameters
         ----------
         outfile : str
-                  Name of output file
+                  Name of output file. Optional
         part : str
                What part of the candle will be used for calculating the length in pips
                Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid'
@@ -611,13 +611,14 @@ class CandleList(object):
 
         pivots = peak_valley_pivots(np.array(prices), th_up, th_down)
 
-        fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
-        plt.plot(np.array(x), np.array(prices), 'k:', alpha=0.5)
-        plt.plot(np.array(x)[pivots != 0], np.array(prices)[pivots != 0], 'k-')
-        plt.scatter(np.array(x)[pivots == 1], np.array(prices)[pivots == 1], color='g')
-        plt.scatter(np.array(x)[pivots == -1], np.array(prices)[pivots == -1], color='r')
+        if outfile is not None:
+            fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
+            plt.plot(np.array(x), np.array(prices), 'k:', alpha=0.5)
+            plt.plot(np.array(x)[pivots != 0], np.array(prices)[pivots != 0], 'k-')
+            plt.scatter(np.array(x)[pivots == 1], np.array(prices)[pivots == 1], color='g')
+            plt.scatter(np.array(x)[pivots == -1], np.array(prices)[pivots == -1], color='r')
 
-        fig.savefig(outfile, format='png')
+            fig.savefig(outfile, format='png')
 
         return pivots
 
@@ -660,7 +661,7 @@ class CandleList(object):
         else:
             return True
 
-    def slice(self, start, end=None):
+    def slice(self, start=None, end=None):
         '''
         Function to slice self on a date interval. It will return the sliced CandleList
 
@@ -670,8 +671,8 @@ class CandleList(object):
                Slice the CandleList from this start datetime. It will create a new CandleList starting
                from this datetime. If 'end' is not defined, then it will slice the CandleList from 'start'
                to the end of the CandleList
-               Required
-        end: datetime
+               Optional
+        end: datetime. If 'start' is not defined, then it will slice from beginning of CandleList to 'end'
              Optional
 
         Returns
@@ -679,11 +680,14 @@ class CandleList(object):
         CandleList object
         '''
 
+
         sliced_clist=[]
-        if end is None:
+        if start is not None and end is None:
             sliced_clist = [c for c in self.clist if c.time >= start]
-        elif end is not None:
+        elif start is not None and end is not None:
             sliced_clist = [c for c in self.clist if c.time >= start and c.time <= end]
+        elif start is None and end is not None:
+            sliced_clist = [c for c in self.clist if c.time <= end]
 
         cl = CandleList(sliced_clist, instrument=self.instrument, granularity=self.granularity)
 
@@ -747,3 +751,26 @@ class CandleList(object):
             list_c = [i for j, i in enumerate(list_c) if j not in sorted_removel]
 
         return list_c
+
+    def calc_itrend(self):
+        '''
+        Function to calculate the datetime for the start of this CandleList, assuming that this
+        CandleList is trending. This function will calculate the start of the trend by using the self.get_pivots
+        function
+
+        Returns
+        -------
+        Will set the class 'trend_i' attribute and will return the datetime for this 'trend_i'
+        '''
+
+        pdb.set_trace()
+        pivots = self.get_pivots()
+        arr = np.array(self.clist)
+        if self.type=="long": #this basically means that the trend direction will be down
+            init_dtime=arr[pivots == 1][-2].time
+            self.trend_i=init_dtime
+        elif self.type=="short":
+            init_dtime = arr[pivots == -1][-2].time
+            self.trend_i = init_dtime
+
+        return init_dtime
