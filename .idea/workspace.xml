@@ -5,10 +5,8 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Pattern/counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/candlelist.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/candlelist.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/harea.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/harea.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -45,8 +43,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/config.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="345">
-              <caret line="28" column="35" selection-start-line="27" selection-start-column="27" selection-end-line="28" selection-end-column="35" />
+            <state relative-caret-position="900">
+              <caret line="60" column="14" selection-start-line="60" selection-start-column="5" selection-end-line="60" selection-end-column="14" />
             </state>
           </provider>
         </entry>
@@ -63,8 +61,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Pattern/counter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="263">
-              <caret line="103" column="33" lean-forward="true" selection-start-line="98" selection-start-column="7" selection-end-line="103" selection-end-column="33" />
+            <state relative-caret-position="458">
+              <caret line="217" selection-start-line="217" selection-end-line="217" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -84,8 +82,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/candlelist.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="410">
-              <caret line="773" column="37" selection-start-line="773" selection-start-column="37" selection-end-line="773" selection-end-column="37" />
+            <state relative-caret-position="980">
+              <caret line="808" column="24" selection-start-line="808" selection-start-column="24" selection-end-line="808" selection-end-column="24" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
                 <element signature="e#2764#5669#0" />
@@ -104,6 +102,7 @@
                 <element signature="e#21954#23192#0" />
                 <element signature="e#22243#23332#0" />
                 <element signature="e#22860#24789#0" />
+                <element signature="e#25616#26592#0" />
               </folding>
             </state>
           </provider>
@@ -124,15 +123,27 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/Pattern/counter_dbtp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-1075">
-              <caret line="478" column="31" selection-start-line="478" selection-start-column="31" selection-end-line="478" selection-end-column="31" />
+            <state relative-caret-position="1078">
+              <caret line="143" lean-forward="true" selection-start-line="143" selection-end-line="143" />
               <folding>
+                <element signature="e#7366#8475#0" />
                 <element signature="e#8550#9355#0" />
+                <element signature="e#9873#11599#0" />
+                <element signature="e#11625#13944#0" />
                 <element signature="e#11981#12068#0" />
                 <element signature="e#12457#12572#0" />
                 <element signature="e#13656#13823#0" />
                 <element signature="e#14089#15293#0" />
-                <element signature="e#15824#16540#0" />
+                <element signature="e#15059#15898#0" />
+                <element signature="e#16643#16899#0" />
+                <element signature="e#16949#17212#0" />
+                <element signature="e#17351#17754#0" />
+                <element signature="e#19212#19486#0" />
+                <element signature="e#19204#19569#0" />
+                <element signature="e#19815#20385#0" />
+                <element signature="e#20423#20798#0" />
+                <element signature="e#20834#21556#0" />
+                <element signature="e#23305#23712#0" />
               </folding>
             </state>
           </provider>
@@ -149,16 +160,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>get</find>
-      <find>Canl</find>
-      <find>id</find>
-      <find>outfile</find>
-      <find>pair</find>
-      <find>start_hist_data</find>
-      <find>OandaAPI</find>
-      <find>outfi</find>
-      <find>fig.s</find>
-      <find>JPY</find>
       <find>dailyAlignment</find>
       <find>period</find>
       <find>set_bounces</find>
@@ -176,9 +177,19 @@
       <find>init_feats</find>
       <find>get_bounces</find>
       <find>trade_list</find>
-      <find>calc_itrend</find>
-      <find>assert</find>
       <find>__initclist</find>
+      <find>init_trend_feats</find>
+      <find>calc_itrend</find>
+      <find>__init_clist_trend</find>
+      <find>last_time</find>
+      <find>config</find>
+      <find>set_entry_onrsi</find>
+      <find>set_diff</find>
+      <find>bounces_fromlasttime</find>
+      <find>n_rsibounces</find>
+      <find>set_rsibounces_feats</find>
+      <find>rsibounces_lengths</find>
+      <find>assert</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -262,10 +273,10 @@
         <option value="$PROJECT_DIR$/tests/test_CounterDbTp.py" />
         <option value="$PROJECT_DIR$/tests/test_CandleList.py" />
         <option value="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" />
-        <option value="$PROJECT_DIR$/src/candlelist.py" />
         <option value="$PROJECT_DIR$/src/harea.py" />
-        <option value="$PROJECT_DIR$/src/Pattern/counter.py" />
         <option value="$PROJECT_DIR$/src/config.py" />
+        <option value="$PROJECT_DIR$/src/Pattern/counter.py" />
+        <option value="$PROJECT_DIR$/src/candlelist.py" />
         <option value="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" />
       </list>
     </option>
@@ -431,13 +442,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
-    </task>
-    <task id="LOCAL-00037" summary="validation of dateime on OandaAPI">
-      <created>1556141576528</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
-      <option name="project" value="LOCAL" />
-      <updated>1556141576528</updated>
     </task>
     <task id="LOCAL-00038" summary="Changes in OandaApi validation">
       <created>1556230588161</created>
@@ -775,7 +779,14 @@
       <option name="project" value="LOCAL" />
       <updated>1563229768263</updated>
     </task>
-    <option name="localTasksCounter" value="86" />
+    <task id="LOCAL-00086" summary="Working on init_trend detection">
+      <created>1563314442610</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1563314442611</updated>
+    </task>
+    <option name="localTasksCounter" value="87" />
     <servers />
   </component>
   <component name="TodoView">
@@ -788,10 +799,9 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
-    <editor active="true" />
+    <frame x="0" y="0" width="2560" height="1440" extended-state="0" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.69868994" visible="true" weight="0.15081044" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.69868994" visible="true" weight="0.084285155" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.30131003" side_tool="true" weight="0.084285155" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -802,7 +812,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32771084" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.27108434" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.16423358" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5024665" side_tool="true" weight="0.38554215" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32846716" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -830,7 +840,6 @@
     </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Minor improvements" />
     <MESSAGE value="Minor improvements1" />
     <MESSAGE value="Improving docs" />
     <MESSAGE value="Adding volume cutoff feature to OandaAPI" />
@@ -855,7 +864,8 @@
     <MESSAGE value="Working in tackling cases where there are no in_area bounces" />
     <MESSAGE value="Finished code for detecting first bounce" />
     <MESSAGE value="Working on code for detecting 2nd bounce" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working on code for detecting 2nd bounce" />
+    <MESSAGE value="Working on init_trend detection" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working on init_trend detection" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Untitled.ipynb" />
@@ -1104,10 +1114,17 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="900">
+          <caret line="60" column="14" selection-start-line="60" selection-start-column="5" selection-end-line="60" selection-end-column="14" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Pattern/counter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="263">
-          <caret line="103" column="33" lean-forward="true" selection-start-line="98" selection-start-column="7" selection-end-line="103" selection-end-column="33" />
+        <state relative-caret-position="458">
+          <caret line="217" selection-start-line="217" selection-end-line="217" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
@@ -1116,8 +1133,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/candlelist.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="410">
-          <caret line="773" column="37" selection-start-line="773" selection-start-column="37" selection-end-line="773" selection-end-column="37" />
+        <state relative-caret-position="980">
+          <caret line="808" column="24" selection-start-line="808" selection-start-column="24" selection-end-line="808" selection-end-column="24" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
             <element signature="e#2764#5669#0" />
@@ -1136,28 +1153,34 @@
             <element signature="e#21954#23192#0" />
             <element signature="e#22243#23332#0" />
             <element signature="e#22860#24789#0" />
+            <element signature="e#25616#26592#0" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="345">
-          <caret line="28" column="35" selection-start-line="27" selection-start-column="27" selection-end-line="28" selection-end-column="35" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Pattern/counter_dbtp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1075">
-          <caret line="478" column="31" selection-start-line="478" selection-start-column="31" selection-end-line="478" selection-end-column="31" />
+        <state relative-caret-position="1078">
+          <caret line="143" lean-forward="true" selection-start-line="143" selection-end-line="143" />
           <folding>
+            <element signature="e#7366#8475#0" />
             <element signature="e#8550#9355#0" />
+            <element signature="e#9873#11599#0" />
+            <element signature="e#11625#13944#0" />
             <element signature="e#11981#12068#0" />
             <element signature="e#12457#12572#0" />
             <element signature="e#13656#13823#0" />
             <element signature="e#14089#15293#0" />
-            <element signature="e#15824#16540#0" />
+            <element signature="e#15059#15898#0" />
+            <element signature="e#16643#16899#0" />
+            <element signature="e#16949#17212#0" />
+            <element signature="e#17351#17754#0" />
+            <element signature="e#19212#19486#0" />
+            <element signature="e#19204#19569#0" />
+            <element signature="e#19815#20385#0" />
+            <element signature="e#20423#20798#0" />
+            <element signature="e#20834#21556#0" />
+            <element signature="e#23305#23712#0" />
           </folding>
         </state>
       </provider>

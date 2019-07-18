@@ -46,12 +46,14 @@ class CandleList(object):
           Number of double 0s in the open/close of the candles in CandleList
     entropy : Dict of Floats, Optional
           Entropy for each of the sequences in self.seq
+
+
     id : str, Optional
          Identifier for this CandleList (i.e. EUR_GBP 15MAY2007D)
     '''
 
     def __init__(self, clist,instrument=None, granularity=None, type=None,seq=None, number_of_0s=None,
-                 longest_stretch=None, highlow_double0s=None, 
+                 longest_stretch=None, highlow_double0s=None, last_time=None,
                  openclose_double0s=None, entropy=None, id=None):
         self.clist=clist
         self.instrument=instrument
@@ -570,7 +572,7 @@ class CandleList(object):
         # Evaluation of the model with MSE
         regression_model_mse = mean_squared_error(y_pred, np.array(prices).reshape(-1, 1))
 
-        fig = plt.figure(figsize=(20, 10))
+        fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
         plt.scatter(x, prices)
         plt.plot(x, y_pred, color='red')
         outfile="{0}/{1}.regression_line.png".format(config.PNGFILES['regression'],
@@ -689,7 +691,8 @@ class CandleList(object):
         elif start is None and end is not None:
             sliced_clist = [c for c in self.clist if c.time <= end]
 
-        cl = CandleList(sliced_clist, instrument=self.instrument, granularity=self.granularity)
+        cl = CandleList(sliced_clist, instrument=self.instrument, granularity=self.granularity,
+                        id=self.id, type=self.type)
 
         return cl
 
@@ -752,25 +755,55 @@ class CandleList(object):
 
         return list_c
 
-    def calc_itrend(self):
+    def calc_itrend(self, th_up=0.5, th_down=-0.5):
         '''
         Function to calculate the datetime for the start of this CandleList, assuming that this
         CandleList is trending. This function will calculate the start of the trend by using the self.get_pivots
         function
 
+        Parameters
+        ----------
+        th_up: float
+               Up threshold for detecting peaks. Default: 0.5
+        th_down: float
+                 Down threshold for detecting valleys. Default: -0.5
+
         Returns
         -------
-        Will set the class 'trend_i' attribute and will return the datetime for this 'trend_i'
+        Will return a datetime object
         '''
 
-        pdb.set_trace()
-        pivots = self.get_pivots()
+        outfile="{0}/{1}.itrend.png".format(config.PNGFILES['init_trend'],
+                                            self.id.replace(' ', '_'))
+        pivots = self.get_pivots(outfile=outfile, th_up=th_up, th_down=th_down)
         arr = np.array(self.clist)
         if self.type=="long": #this basically means that the trend direction will be down
-            init_dtime=arr[pivots == 1][-2].time
-            self.trend_i=init_dtime
+            init_dtime=arr[pivots == 1][-1].time
         elif self.type=="short":
-            init_dtime = arr[pivots == -1][-2].time
-            self.trend_i = init_dtime
+            init_dtime = arr[pivots == -1][-1].time
 
         return init_dtime
+
+    def get_lasttime(self):
+        '''
+        Function to get the datetime for last time that price has been above/below self.SR
+
+        Returns
+        -------
+        Will set the class 'last_time' attribute representing the last time the price was above/below the self.SR
+        'last_time' will be set to the datetime for the first candle in self.clist_period if last time was not found
+        '''
+
+        resist = HArea(price=self.SR, pips=config.CTDBT['HR_pips'], instrument=self.pair, granularity=self.timeframe)
+
+        if self.type == "short": position = 'above'
+        if self.type == "long": position = 'below'
+
+        last_time = None
+
+        last_time = resist.last_time(clist=self.clist_period, position=position)
+
+        if last_time is None:
+            last_time = self.clist_period.clist[0].time
+
+        return last_time

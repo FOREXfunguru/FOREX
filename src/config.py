@@ -22,10 +22,10 @@ CTDBT = {
     'min_dist' : 5, # Minimum distance between peaks
     'period1st_bounce' : 5, # Controls the maximum number of candles allowed between
                            # self.start and this 'period1st_bounce' in order look for the 1st bounce
-    'period2nd_bounce': 50,  # Controls the maximum number of candles allowed between
+    'period2nd_bounce': 75,  # Controls the maximum number of candles allowed between
                              # datetime controlled by 'period1st_bounce' and datetime controlled by 'period2nd_bounce'
                              # in order to detect the 2nd bounce
-    'period_trend': 300, # Controls the maximum number of candles before self.bounce_2nd in order to look for start
+    'period_trend': 500, # Controls the maximum number of candles before self.bounce_2nd in order to look for start
                          # of trend
     'HR_pips_from2nd': 60,  # The same than before but restricted to bounces found from 2nd bounce (not including it)
     'threshold_from2nd': 0.5,  # idem
