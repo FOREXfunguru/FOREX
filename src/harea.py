@@ -72,7 +72,7 @@ class HArea(object):
         datetime object of the moment that the price crosses the HArea
         '''
 
-        for c in reversed(clist.clist):
+        for c in reversed(clist):
             price=getattr(c, part)
             if position == 'above':
                 if price > self.upper:

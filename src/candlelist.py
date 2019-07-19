@@ -784,24 +784,27 @@ class CandleList(object):
 
         return init_dtime
 
-    def get_lasttime(self):
+    def get_lasttime(self,hrarea):
         '''
-        Function to get the datetime for last time that price has been above/below self.SR
+        Function to get the datetime for last time that price has been above/below a HArea
+
+        Parameters
+        ----------
+        hrarea : HArea object used to calculate the lasttime
 
         Returns
         -------
-        Will set the class 'last_time' attribute representing the last time the price was above/below the self.SR
-        'last_time' will be set to the datetime for the first candle in self.clist_period if last time was not found
+        Will return the last time the price was above/below the self.SR
+        Returned datetime will be the datetime for the first candle in self.clist_period
+        if last time was not found
         '''
-
-        resist = HArea(price=self.SR, pips=config.CTDBT['HR_pips'], instrument=self.pair, granularity=self.timeframe)
 
         if self.type == "short": position = 'above'
         if self.type == "long": position = 'below'
 
         last_time = None
 
-        last_time = resist.last_time(clist=self.clist_period, position=position)
+        last_time = hrarea.last_time(clist=self.clist, position=position)
 
         if last_time is None:
             last_time = self.clist_period.clist[0].time

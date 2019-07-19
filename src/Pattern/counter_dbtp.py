@@ -486,8 +486,9 @@ class CounterDbTp(Counter):
                                                      self.id.replace(' ', '_'))
 
         self.plot_features(outfile=outfile, part='openAsk')
-        self.init_trend_feats()
-        self.lasttime=self.clist_period.get_lasttime()
+       # self.init_trend_feats()
+        resist = HArea(price=self.SR, pips=config.CTDBT['HR_pips'], instrument=self.pair, granularity=self.timeframe)
+        self.lasttime=self.clist_period.get_lasttime(resist)
         self.set_entry_onrsi()
         self.bounces_fromlasttime()
         self.set_diff()
@@ -527,7 +528,7 @@ class CounterDbTp(Counter):
         Will set the bounces_lasttime class attribute
         '''
 
-        bounces = [n for n in self.bounces if n.time >= self.last_time]
+        bounces = [n for n in self.bounces if n.time >= self.lasttime]
 
         self.bounces_lasttime=bounces
 
@@ -649,7 +650,7 @@ class CounterDbTp(Counter):
         class attributes
         '''
 
-        dict1 = self.clist_trend.calc_rsi_bounces()
+        dict1 = self.clist_period.calc_rsi_bounces()
 
         self.n_rsibounces = dict1['number']
         self.rsibounces_lengths = dict1['lengths']
