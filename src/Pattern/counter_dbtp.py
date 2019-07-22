@@ -486,7 +486,7 @@ class CounterDbTp(Counter):
                                                      self.id.replace(' ', '_'))
 
         self.plot_features(outfile=outfile, part='openAsk')
-       # self.init_trend_feats()
+        self.init_trend_feats()
         resist = HArea(price=self.SR, pips=config.CTDBT['HR_pips'], instrument=self.pair, granularity=self.timeframe)
         self.lasttime=self.clist_period.get_lasttime(resist)
         self.set_entry_onrsi()
@@ -510,12 +510,10 @@ class CounterDbTp(Counter):
 
         warnings.warn("[INFO] Run init_trend_feats")
 
-        pdb.set_trace()
-
         self.set_slope()
         self.divergence = self.set_divergence()
-        self.length_candles = c.length_candles
-        self.length_pips = c.length_pips
+        #self.length_candles = c.length_candles
+        #self.length_pips = c.length_pips
 
         warnings.warn("[INFO] Done init_trend_feats")
 
@@ -627,17 +625,15 @@ class CounterDbTp(Counter):
         # first, lets create a CandleList for trend
         clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
 
+        outfile = "{0}/{1}.regression.png".format(config.PNGFILES['regression'],
+                                                  self.id.replace(' ', '_'))
+
         if k_perc is not None:
-            (model, outfile, mse) = clist_trend.fit_reg_line(k_perc=k_perc)
+            (model, mse) = clist_trend.fit_reg_line(outfile=outfile, k_perc=k_perc)
         else:
-            (model, outfile, mse) = clist_trend.fit_reg_line()
+            (model, mse) = clist_trend.fit_reg_line(outfile=outfile)
 
         self.slope=model.coef_[0, 0]
-
-        if model.coef_[0,0]>0:
-            self.clist_trend.type='long'
-        elif model.coef_[0,0]<0:
-            self.clist_trend.type='short'
 
     def set_rsibounces_feats(self):
         '''
@@ -655,26 +651,29 @@ class CounterDbTp(Counter):
         self.n_rsibounces = dict1['number']
         self.rsibounces_lengths = dict1['lengths']
 
-    def set_divergence(self):
+    def set_divergence(self, period=30):
         '''
         Function to check if there is divergence involving the RSI indicator
         for trend conducting to entry
+
+        Parameters
+        ----------
+        period: int
+                Number of candles before 2nd bounce that will be considered for
+                calculating the divergence. Default: 30
 
         Returns
         -------
         Will set the divergence class attribute
         '''
 
+        start = self.__get_time4candles(n=config.CTDBT['period_divergence'],
+                                        anchor_point=self.bounce_2nd.time)
+
         # first, lets create a CandleList for trend
-        clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
+        clist_trend = self.clist_period.slice(start=start, end=self.bounce_2nd.time)
 
-        direction = None
-        if self.slope > 0:
-            direction = 'up'
-        else:
-            direction = 'down'
-
-        res = clist_trend.check_if_divergence(direction=direction)
+        res = clist_trend.check_if_divergence(number_of_bounces=config.CTDBTP['number_of_rsi_bounces'])
 
         self.divergence = res
 

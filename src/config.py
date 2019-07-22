@@ -27,9 +27,9 @@ CTDBT = {
                              # in order to detect the 2nd bounce
     'period_trend': 500, # Controls the maximum number of candles before self.bounce_2nd in order to look for start
                          # of trend
-    'HR_pips_from2nd': 60,  # The same than before but restricted to bounces found from 2nd bounce (not including it)
-    'threshold_from2nd': 0.5,  # idem
-    'min_dist_from2nd': 5,  # idem
+    'period_divergence' : 30, # Number of candles to consider before 2nd_bounces in order to look for peaks/valleys in
+                             # rsi
+    'number_of_rsi_bounces' : 3 # Number of rsi bounces from last (most recent) to consider for calculating divergence
 }
 
 # start datetime for Oanda's historical data
@@ -61,5 +61,6 @@ PNGFILES = {
     'fig_sizes' : (20, 10), # tuple controlling the size of figures
     'regression' : PROJECT['root']+'regresion_imgs/',
     'bounces' : PROJECT['root']+'bounce_images/',
-    'init_trend' : PROJECT['root']+'init_trend_imgs/'
+    'init_trend' : PROJECT['root']+'init_trend_imgs/',
+    'div' : PROJECT['root']+'divergence_plots/'
 }
