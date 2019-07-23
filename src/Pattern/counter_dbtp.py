@@ -9,7 +9,10 @@ matplotlib.use('PS')
 import matplotlib.pyplot as plt
 import datetime
 import config
-
+import numpy as np
+from utils import *
+from candlelist import CandleList
+from harea import HArea
 
 class CounterDbTp(Counter):
     '''
@@ -38,10 +41,12 @@ class CounterDbTp(Counter):
          Take profit price
     SR:  float, Optional
          Support/Resistance area
-    bounce_1st : with tuple (datetime,price) containing the datetime
-                 and price for this bounce
-    bounce_2nd : with tuple (datetime,price) containing the datetime
-                 and price for this bounce
+    bounce_1st : Candle object
+                 For 1st bounce
+    bounce_2nd : Candle object
+                 For 2nd bounce
+    bounces : list of Candle objects
+              Containing the Candles occurring after the 2nd bounce
     rsi_1st : bool, Optional
               Is price in overbought/oversold
               area in first peak
@@ -55,9 +60,11 @@ class CounterDbTp(Counter):
     valley : int Optional
              Length in number of candles between  bounce_1st and bounce_2nd
     n_rsibounces : int, Optional
-                  Number of rsi bounces for trend conducting to 1st bounce
+                  Number of rsi bounces for trend conducting to 2nd bounce
+    rsibounces_lengths: list, Optional
+                        List with lengths for each rsi bounce
     slope: float, Optional
-           Float with the slope of trend conducting to 1st bounce
+           Float with the slope of trend conducting to 2nd bounce
     HR_pips: int, Optional
              Number of pips over/below S/R used for trying to identify bounces
              Default: 200
@@ -65,41 +72,71 @@ class CounterDbTp(Counter):
                Threshold for detecting peaks. Default : 0.50
     min_dist: int, Optional
               Minimum distance between peaks. Default : 5
+    period: int, Optional
+            number of candles from self.start that will be considered in order to
+            to look for peaks/valleys
     period1st_bounce: int, Optional
-                      Controls the maximum number of candles allowed between
-                      self.start and the location of the most recent bounce.
+                      Controls the maximum number of candles allowed from self.start
+                      in order to locate the 1st bounce
                       Default:10
+    period2nd_bounce: int, Optional
+                      Controls the maximum number of candles allowed from
+                      datetime of 1st bounce in order to locate the
+                      2nd bounce. Default:10
+    period_trend: int, Optional
+                  Controls the maximum number of candles before self.bounce_2nd in order to look for start
+                  of trend. Default: 300
+    clist_period : CandleList
+                   CandleList that goes from self.start to self.period.
+                   It will be initialised by __initclist
 
     '''
 
-    def __init__(self, pair, start, HR_pips=30, threshold=0.50, min_dist=5,
-                 period1st_bounce=10, **kwargs):
+    def __init__(self, pair, start, HR_pips=200, threshold=0.50, min_dist=5,
+                 period1st_bounce=10, period2nd_bounce=10, period_trend=300, **kwargs):
 
         # get values from config file
         if 'HR_pips' in config.CTDBT: HR_pips = config.CTDBT['HR_pips']
         if 'threshold' in config.CTDBT: threshold = config.CTDBT['threshold']
         if 'min_dist' in config.CTDBT: min_dist = config.CTDBT['min_dist']
         if 'period1st_bounce' in config.CTDBT: period1st_bounce = config.CTDBT['period1st_bounce']
+        if 'period2nd_bounce' in config.CTDBT: period2nd_bounce = config.CTDBT['period2nd_bounce']
+        if 'period' in config.CTDBT: period = config.CTDBT['period']
+        if 'period_trend' in config.CTDBT: period_trend = config.CTDBT['period_trend']
 
-        self.start = start
+        self.pair = pair
+        self.start = datetime.datetime.strptime(start, '%Y-%m-%d %H:%M:%S')
         self.HR_pips = HR_pips
         self.threshold = threshold
         self.min_dist = min_dist
         self.period1st_bounce = period1st_bounce
+        self.period2nd_bounce = period2nd_bounce
+        self.period = period
+        self.period_trend = period_trend
 
         allowed_keys = ['id', 'timeframe', 'entry', 'period', 'trend_i', 'type', 'SL',
-                        'TP', 'SR', 'RR']
+                        'TP', 'SR', 'RR', 'lasttime']
 
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
 
-        # initialize the Counter object that will go from self.start to self.start-period
-        super().__init__(pair, period=config.CTDBT['period'])
+        # set TP
+        if not hasattr(self, 'TP'):
+            if not hasattr(self, 'RR'): raise Exception("Neither the RR not the TP is defined. Please provide RR")
+            diff = (self.entry - self.SL) * self.RR
+            self.TP = round(self.entry + diff, 4)
 
         # timepoint cutoff that the defines the period from which the first bounce needs to be
         # located
-        self.__period1st_bounce_point = self.__get_time4candles(n=self.period1st_bounce, anchor_point=self.start)
+        self.__period1st_bounce_point = self.__get_time4candles(n=self.period1st_bounce,
+                                                                anchor_point=self.start)
 
-    def __get_time4candles(self, n, anchor_point):
+        # init the CandleList from self.period to self.start
+        self.__initclist()
+        # calc_rsi
+        self.clist_period.calc_rsi()
+        self.init_feats()
+
+    def __get_time4candles(self, n, anchor_point,roll=True):
         '''
         This private function takes a a number of candles
         and returns a Datetime corresponding to
@@ -110,14 +147,16 @@ class CounterDbTp(Counter):
         n : int
             Number of candles
         anchor_point : datetime
-            Datetime used as the anchor for calculation
+            Datetime used as the anchor (end point from which it will go back 'n' candles) for calculation
+        roll : boolean
+               if True, then if will try to go back in time in order to get exactly 'n' number of candles.
+               Default: True
 
         Returns
         -------
         Datetime.datetime
         '''
 
-        # Initialise the private class attributes containing some pattern restrictions
         delta_from_start = None
         delta_one = None
         if self.timeframe == "D":
@@ -136,64 +175,95 @@ class CounterDbTp(Counter):
                          dailyAlignment=config.OANDA_API['dailyAlignment'])
 
         start = anchor_point - delta_from_start
-        end = anchor_point.isoformat()
+        if roll is True:
+            if start< config.START_HIST[self.pair]:
+                #return the first candle in the record if start goes back before the start of the record
+                return config.START_HIST[self.pair]
+            else :
+                end = anchor_point.isoformat()
+
+                oanda.run(start=start.isoformat(),
+                          end=end,
+                          roll=True)
+
+                candle_list = oanda.fetch_candleset()
+
+                # if len of candle_list is below n then go back one candle at a time
+                while len(candle_list) < n:
+                        start = start - delta_one
+                        oanda.run(start=start.isoformat(),
+                                  end=end,
+                                  roll=True)
+                        candle_list = oanda.fetch_candleset()
+
+
+                return start
+        else:
+            return start
+
+    def __initclist(self):
+        '''
+        Private function to initialize the CandleList object that goes from self.start
+        to self.period
+
+        This will set the self.clist_period class attribute
+        '''
+
+        delta_period=periodToDelta(self.period, self.timeframe)
+        delta_1=periodToDelta(1, self.timeframe)
+        start = self.start - delta_period # get the start datetime for this CandleList period
+        end = self.start + delta_1 # increase self.start by one candle to include self.start
+
+        oanda = OandaAPI(url=config.OANDA_API['url'],
+                         instrument=self.pair,
+                         granularity=self.timeframe,
+                         alignmentTimezone=config.OANDA_API['alignmentTimezone'],
+                         dailyAlignment=config.OANDA_API['dailyAlignment'])
 
         oanda.run(start=start.isoformat(),
-                  end=end,
-                  roll=True)
+                  end=end.isoformat(),
+                  roll=True
+                  )
 
-        candle_list = oanda.fetch_candleset()
+        candle_list = oanda.fetch_candleset(vol_cutoff=0)
 
-        while len(candle_list) < n:
-            start = start - delta_one
-            oanda.run(start=start.isoformat(),
-                      end=end,
-                      roll=True)
-            candle_list = oanda.fetch_candleset()
+        cl = CandleList(candle_list, self.pair, granularity=self.timeframe, id=self.id, type=self.type)
 
-        return start
+        self.clist_period=cl
 
-    def __validate1stbounce(self):
+    def __inarea_bounces(self, bounces, HRpips, part='closeAsk'):
         '''
-        Private function to validate the first bounce identified by self.get_first_bounce
+        Function to identify the candles for which price is in the area defined
+        by self.SR+HRpips and self.SR-HRpips
+
+        Parameters
+        ----------
+        bounces: list
+                 Containing the initial list of candles
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
 
         Returns
         -------
-        str: Reason for not validating
-             'NO_BOUNCE': The bounce was not found
-             'TOO_MANY': Too many bounces found
-             'OK': Ok
+        list with bounces that are in the area
         '''
+        # get bounces in the horizontal area
+        lower = substract_pips2price(self.pair, self.SR, HRpips)
+        upper = add_pips2price(self.pair, self.SR, HRpips)
 
-        if len(self.bounces) < 1:
-            warnings.warn("Not enough bounces")
-            return (False, 'NO_BOUNCE')
-        elif len(self.bounces) > 1:
-            warnings.warn("Too many bounces")
-            return (False, 'TOO_MANY')
-        else:
-            return (True, 'OK')
+        in_area_list = []
+        for c in bounces:
+            price = getattr(c, part)
+           # print("u:{0}-l:{1}|p:{2}|t:{3}".format(upper, lower, price,c.time))
+            if price >= lower and price <= upper:
+                in_area_list.append(c)
 
-    def __validate2ndbounce(self):
-        '''
-        Private function to validate the second bounce identified by self.get_second_bounce
-
-        Returns
-        -------
-        str: Reason for not validating
-             'NO_BOUNCE': The bounce was not found
-             'OK': Ok
-        '''
-
-        if len(self.bounces) < 1:
-            warnings.warn("Not enough bounces")
-            return (False, 'NO_BOUNCE')
-        else:
-            return (True, 'OK')
+        return in_area_list
 
     def get_first_bounce(self, part='closeAsk'):
         '''
-        Function to identify the first (most recent) bounce
+        Function that uses the the Zigzag algorithm to identify the first bounce (most recent)
+        of the CounterDoubleTop pattern
 
         Parameters
         ----------
@@ -202,177 +272,186 @@ class CounterDbTp(Counter):
 
         Returns
         -------
-        A bounce representing the last bounce
+        It will set the self.bounce_1st attribute
         '''
 
-        self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1, min_dist_res=1,
-                         start=self.__period1st_bounce_point)
-        min_dist_res = 1
-        HR_pips = self.HR_pips
+        # get sliced CandleList from datetime defined by self.period1st_bounce period
+        start_clist=self.clist_period.slice(start=self.__period1st_bounce_point)
 
-        while (self.__validate1stbounce()[0] is False) and (min_dist_res <= 10) and (HR_pips <= 200):
-            if self.__validate1stbounce()[1] == 'TOO_MANY':
-                min_dist_res += 1
-                warnings.warn("More than 2 bounces identified. "
-                              "Will try with 'min_dist_res'={0}".format(min_dist_res))
-                self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1,
-                                 min_dist_res=min_dist_res,
-                                 start=self.__period1st_bounce_point)
-            elif self.__validate1stbounce()[1] == 'NO_BOUNCE':
-                HR_pips += 5
-                warnings.warn("Less than 1 bounce identified. "
-                              "Will try with 'HR_pips'={0}".format(HR_pips))
-                threshold = self.threshold
-                while (threshold >= 0.1) and (self.__validate1stbounce()[1] == 'NO_BOUNCE'):
-                    threshold -= 0.1
-                    self.set_bounces(part=part, HR_pips=HR_pips, threshold=threshold, min_dist=1,
-                                     min_dist_res=min_dist_res,
-                                     start=self.__period1st_bounce_point)
+        bounces=start_clist.get_pivots(th_up=0.00, th_down=-0.00)
 
-        if len(self.bounces) < 1:
-            raise Exception("No first bounce found")
+        arr = np.array(start_clist.clist)
 
-        return self.bounces[-1]
+        # consider type of trade in order to select peaks or valleys
+        if self.type=='short':
+            bounce_candles = arr[bounces==1]
+        elif self.type=='long':
+            bounce_candles = arr[bounces==-1]
 
-    def get_second_bounce(self, first, part='closeAsk'):
+        in_area_list=self.__inarea_bounces(bounce_candles,part=part,HRpips=self.HR_pips)
+
+        HRpips=self.HR_pips
+        while len(in_area_list)==0 and HRpips<=config.CTDBT['max_HRpips']:
+            HRpips=HRpips+config.CTDBT['step_pips']
+            in_area_list = self.__inarea_bounces(bounce_candles, part=part, HRpips=HRpips)
+
+        # keep running the improve_resolution function until a single bounce is obtained
+        while len(in_area_list)>1:
+            inarea_cl = CandleList(in_area_list, instrument=self.pair, granularity=self.timeframe)
+            in_area_list=inarea_cl.improve_resolution(part=part,price=self.SR)
+
+        assert len(in_area_list)==1, "Exactly one single bounce is needed"
+
+        self.bounce_1st=in_area_list[0]
+
+    def get_second_bounce(self, part='closeAsk'):
         '''
-        Function to identify the 2nd bounce
+        Function that uses the the Zigzag algorithm to identify the second bounce
+        of the CounterDoubleTop pattern
 
         Parameters
         ----------
-        first: tuple
-               First bounce
         part: str
               Candle part used for the calculation. Default='closeAsk'
 
         Returns
         -------
-        A bounce representing the second bounce
+        It will set the self.bounce_2nd attribute
         '''
 
-        pdb.set_trace()
-        end = self.__get_time4candles(n=5, anchor_point=first[0])
-        self.set_bounces(part=part, HR_pips=self.HR_pips, threshold=self.threshold, min_dist=1,
-                         min_dist_res=10,
-                         start=self.trend_i, end=end)
+        # timepoint cutoff that the defines the period from which the second bounce needs to be
+        # located
+        start = self.__get_time4candles(n=self.period2nd_bounce,
+                                        anchor_point=self.bounce_1st.time)
 
-        HR_pips = self.HR_pips
-        while (self.__validate2ndbounce()[1] == 'NO_BOUNCE') and (HR_pips <= 200):
-            HR_pips += 5
-            warnings.warn("Less than 1 bounce identified. "
-                          "Will try with 'HR_pips'={0}".format(HR_pips))
-            threshold = self.threshold
-            while (threshold >= 0.1) and (self.__validate2ndbounce()[1] == 'NO_BOUNCE'):
-                threshold -= 0.1
-                self.set_bounces(part=part, HR_pips=HR_pips, threshold=threshold, min_dist=1,
-                                 min_dist_res=1,
-                                 start=self.trend_i, end=end)
+        # get sliced CandleList from datetime defined by self.period1st_bounce period
+        start_clist = self.clist_period.slice(start=start,end=self.bounce_1st.time)
 
-        if len(self.bounces) < 1:
-            raise Exception("No second bounce found")
+        bounces = start_clist.get_pivots(th_up=0.00, th_down=-0.00)
 
-        return self.bounces[-1]
+        arr = np.array(start_clist.clist)
 
-    def get_bounces(self, plot=False, part='closeAsk'):
+        # consider type of trade in order to select peaks or valleys
+        if self.type == 'short':
+            bounce_candles = arr[bounces == 1]
+        elif self.type == 'long':
+            bounce_candles = arr[bounces == -1]
+
+        #if distance between 1st bounce and last detected bounce is less than 5 candles
+        #then remove last detected bounce progressively
+        diff=abs(self.bounce_1st.time-bounce_candles[-1].time)
+        min_distDelta = periodToDelta(ncandles=15, timeframe=self.timeframe)
+        while diff<=min_distDelta:
+            bounce_candles=bounce_candles[:-1]
+            diff = abs(self.bounce_1st.time - bounce_candles[-1].time)
+
+        in_area_list = self.__inarea_bounces(bounce_candles, part=part, HRpips= self.HR_pips)
+
+        HRpips = self.HR_pips
+        while len(in_area_list) == 0 and HRpips <= config.CTDBT['max_HRpips']:
+            HRpips = HRpips + config.CTDBT['step_pips']
+            in_area_list = self.__inarea_bounces(bounce_candles, part=part, HRpips=HRpips)
+
+        # keep running the improve_resolution function until a single bounce is obtained
+        while len(in_area_list) > 1:
+            inarea_cl = CandleList(in_area_list, instrument=self.pair, granularity=self.timeframe)
+            in_area_list = inarea_cl.improve_resolution(part=part,price=self.SR)
+
+        assert len(in_area_list) == 1, "Exactly one single bounce is needed"
+
+        self.bounce_2nd = in_area_list[0]
+
+    def get_restofbounces(self, part='closeAsk'):
         '''
-        Function to identify all bounces, including the first and the second.
-        It will also produce a .png with the bounces if 'plot'=True
+        Function to get the rest of bounces. The ones occurring after the second bounce
 
         Parameters
         ----------
-        plot: bool
-              If true, then produce a plot displaying
-              the location of the bounces. Default: false
         part: str
               Candle part used for the calculation. Default='closeAsk'
 
         Returns
         -------
-        It will set the self.bounces attribute
+        It will set the bounces attribute
         '''
 
-        first_bounce = self.get_first_bounce()
-        second_bounce = self.get_second_bounce(first=first_bounce)
+        # get sliced CandleList from datetime defined by self.period period
+        start_clist = self.clist_period.slice(end=self.bounce_2nd.time)
 
-        final_bounces = [second_bounce, first_bounce]
+        bounces = start_clist.get_pivots(th_up=0.01, th_down=-0.01)
 
-        # check bounces from the second bounce (not including it) with a stricter parameter set
-        self.set_bounces(part=part, HR_pips=config.CTDBT['HR_pips_from2nd'], threshold=config.CTDBT['threshold_from2nd'],
-                         min_dist=config.CTDBT['min_dist_from2nd'], min_dist_res=5, end=second_bounce[0])
+        arr = np.array(start_clist.clist)
 
-        if self.bounces is not None:
-            # append the self.bounces at the beginning of final_bounces
-            final_bounces[0:0] = self.bounces
+        # consider type of trade in order to select peaks or valleys
+        if self.type == 'short':
+            bounce_candles = arr[bounces == 1]
+        elif self.type == 'long':
+            bounce_candles = arr[bounces == -1]
 
-        self.bounces = final_bounces
+        in_area_list = self.__inarea_bounces(bounce_candles, part=part, HRpips=self.HR_pips)
 
-        if plot is True:
+        self.bounces = in_area_list
 
-            prices = []
-            datetimes = []
-            for c in self.clist_period.clist:
-                prices.append(getattr(c, part))
-                datetimes.append(c.time)
-
-            fig = plt.figure(figsize=(20, 10))
-            ax = plt.axes()
-            ax.plot(datetimes, prices, color="black")
-
-            for b in final_bounces:
-                dt = b[0]
-                ix = datetimes.index(dt)
-                plt.scatter(datetimes[ix], prices[ix], s=50)
-
-            outfile = "{0}/{1}.bounces.png".format(config.PNGFILES['bounces'],
-                                                   self.id.replace(' ', '_'))
-
-            fig.savefig(outfile, format='png')
-
-    def set_1stbounce(self):
+    def plot_features(self, outfile, part='closeAsk'):
         '''
-        Function to set bounce_1st (the one that is before the most recent)
-        and rsi_1st class attributes
+        Function to plot all bounces identified and also the start of the trend
+
+        Parameters
+        ----------
+        outfile : filename for output
+        '''
+
+        prices = []
+        datetimes = []
+        for c in self.clist_period.clist:
+            prices.append(getattr(c, part))
+            datetimes.append(c.time)
+
+        fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
+        ax = plt.axes()
+        ax.plot(datetimes, prices, color="black")
+
+        #plotting the trend_i
+        ix_trendi=datetimes.index(self.trend_i)
+        plt.scatter(datetimes[ix_trendi], prices[ix_trendi], s=100, c="blue")
+
+        final_bounces=self.bounces
+        final_bounces.append(self.bounce_2nd)
+        final_bounces.append(self.bounce_1st)
+        for b in final_bounces:
+            dt = b.time
+            ix = datetimes.index(dt)
+            plt.scatter(datetimes[ix], prices[ix], s=50)
+
+        fig.savefig(outfile, format='png')
+
+    def set_rsi_1st(self):
+        '''
+        Function to set rsi_1st class attribute
 
         Returns
         -------
         Nothing
         '''
 
-        self.bounce_1st = self.bounces[-2]
-        if self.trend_i > self.bounce_1st[0]:
-            raise Exception("Error in the definition of the 1st bounce, it is older than the trend_start."
-                            "Perphaps you can try to run peakutils with lower threshold or min_dist "
-                            "parameters")
-
-        # now check rsi for this bounce and some candles before/after the bounce
-        candles = self.clist_period.fetch_by_time(self.bounce_1st[0], period=4)
-
         isonrsi = False
-        for c in candles:
-            if c.rsi >= 70 or c.rsi <= 30:
-                isonrsi = True
+        if self.bounce_1st.rsi >= 70 or self.bounce_1st.rsi <= 30:
+            isonrsi = True
 
         self.rsi_1st = isonrsi
 
-    def set_2ndbounce(self):
+    def set_rsi_2nd(self):
         '''
-        Function to set bounce_2nd (the one that is the most recent)
-        and rsi_2nd class attributes
+        Function to set rsi_2nd class attribute
+
         Returns
         -------
         Nothing
         '''
 
-        self.bounce_2nd = self.bounces[-1]
-
-        # now check rsi for this bounce and some candles before/after the bounce
-        candles = self.clist_period.fetch_by_time(self.bounce_2nd[0], period=4)
-
         isonrsi = False
-
-        for c in candles:
-            if c.rsi >= 70 or c.rsi <= 30:
-                isonrsi = True
+        if self.bounce_2nd.rsi >= 70 or self.bounce_2nd.rsi <= 30:
+            isonrsi = True
 
         self.rsi_2nd = isonrsi
 
@@ -387,22 +466,42 @@ class CounterDbTp(Counter):
 
         warnings.warn("[INFO] Run init_feats")
 
-        self.set_lasttime()
+        self.get_first_bounce(part='openAsk')
+        self.get_second_bounce(part='openAsk')
+        self.get_restofbounces(part='openAsk')
+        self.set_rsi_1st()
+        self.set_rsi_2nd()
+        # if trend_i is not defined then calculate it
+        if hasattr(self, 'trend_i'):
+            self.trend_i = datetime.datetime.strptime(self.trend_i, '%Y-%m-%d %H:%M:%S')
+        else:
+            start = self.__get_time4candles(n=self.period_trend,
+                                            anchor_point=self.bounce_2nd.time,
+                                            roll=False)
+            possible_clist_trend = self.clist_period.slice(start=start, end=self.bounce_2nd.time)
+            startrend=possible_clist_trend.calc_itrend(th_up=0.05,th_down=-0.05)
+            self.trend_i = startrend
+
+        outfile = "{0}/{1}.final_bounces.png".format(config.PNGFILES['bounces'],
+                                                     self.id.replace(' ', '_'))
+
+        self.plot_features(outfile=outfile, part='openAsk')
+        self.init_trend_feats()
+        resist = HArea(price=self.SR, pips=config.CTDBT['HR_pips'], instrument=self.pair, granularity=self.timeframe)
+        self.lasttime=self.clist_period.get_lasttime(resist)
         self.set_entry_onrsi()
-        self.get_bounces(plot=True)
-        self.set_1stbounce()
-        self.set_2ndbounce()
         self.bounces_fromlasttime()
         self.set_diff()
         self.set_diff_rsi()
         self.set_valley()
+        self.set_rsibounces_feats()
 
         warnings.warn("[INFO] Done init_feats")
 
     def init_trend_feats(self):
         '''
         Function to initialize the features for
-        trend going from 'trend_i' to 'bounce_1st'
+        trend going from 'trend_i' to 'bounce_2nd'
 
         Returns
         -------
@@ -411,29 +510,43 @@ class CounterDbTp(Counter):
 
         warnings.warn("[INFO] Run init_trend_feats")
 
-        c = Counter(
-            start=str(self.bounce_1st[0]),
-            pair=self.pair,
-            timeframe=self.timeframe,
-            type=self.type,
-            SR=self.SR,
-            SL=self.SL,
-            TP=self.TP,
-            trend_i=str(self.trend_i),
-            id=self.id)
-
-        c.init_feats()
-
-        pdb.set_trace()
-
-        self.slope = c.slope
-        self.n_rsibounces = c.n_rsibounces
-        self.rsibounces_lengths = c.rsibounces_lengths
-        self.divergence = c.divergence
-        self.length_candles = c.length_candles
-        self.length_pips = c.length_pips
+        self.set_slope()
+        self.divergence = self.set_divergence()
+        self.length_candles = self.set_length_candles()
+        self.length_pips = self.set_length_pips()
 
         warnings.warn("[INFO] Done init_trend_feats")
+
+    def bounces_fromlasttime(self):
+        '''
+        Function to get the bounces occurring after last_time
+
+        Returns
+        -------
+        Will set the bounces_lasttime class attribute
+        '''
+
+        bounces = [n for n in self.bounces if n.time >= self.lasttime]
+
+        self.bounces_lasttime=bounces
+
+    def set_entry_onrsi(self):
+        '''
+        Function to check if entry candle is on rsi territory (>=70 or <=30)
+
+        Returns
+        -------
+        Will set the entry_onrsi class attribute
+        '''
+
+        entry_c=self.clist_period.fetch_by_time(self.start)
+
+        isonrsi=False
+
+        if entry_c.rsi>=70 or entry_c.rsi<=30:
+            isonrsi=True
+
+        self.entry_onrsi=isonrsi
 
     def set_diff(self):
         '''
@@ -446,8 +559,7 @@ class CounterDbTp(Counter):
         and the absolute number of pips is returned
         '''
 
-        diff = self.bounce_1st[1] - self.bounce_2nd[1]
-
+        diff = self.bounce_1st.rsi - self.bounce_2nd.rsi
         (first, second) = self.pair.split("_")
         if first == 'JPY' or second == 'JPY':
             diff = diff * 100
@@ -465,8 +577,8 @@ class CounterDbTp(Counter):
         It will set the 'diff_rsi' attribute of the class
         '''
 
-        rsi1st_val = self.clist_period.fetch_by_time(self.bounce_1st[0]).rsi
-        rsi2nd_val = self.clist_period.fetch_by_time(self.bounce_2nd[0]).rsi
+        rsi1st_val = self.bounce_1st.rsi
+        rsi2nd_val = self.bounce_2nd.rsi
 
         self.diff_rsi = rsi1st_val - rsi2nd_val
 
@@ -486,9 +598,111 @@ class CounterDbTp(Counter):
                          alignmentTimezone=config.OANDA_API['alignmentTimezone'],
                          dailyAlignment=config.OANDA_API['dailyAlignment'])
 
-        oanda.run(start=self.bounce_1st[0].isoformat(),
-                  end=self.bounce_2nd[0].isoformat())
+        oanda.run(start=self.bounce_2nd.time.isoformat(),
+                  end=self.bounce_1st.time.isoformat())
 
         candle_list = oanda.fetch_candleset(vol_cutoff=0)
 
         self.valley = len(candle_list)
+
+    def set_slope(self, k_perc=None):
+        '''
+        Function to set the slope for trend conducting to entry
+
+        Parameters
+        ----------
+        k_perc : int
+                 % of CandleList length that will be used as window size used for calculating the rolling average.
+                 For example, if CandleList length = 20 Candles. Then the k=25% will be a window_size of 5
+                 Default: None
+
+         Returns
+         -------
+         Will set the slope class attribute and also the type attribute
+         in self.clist_trend CandleList
+         '''
+
+        # first, lets create a CandleList for trend
+        clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
+
+        outfile = "{0}/{1}.regression.png".format(config.PNGFILES['regression'],
+                                                  self.id.replace(' ', '_'))
+
+        if k_perc is not None:
+            (model, mse) = clist_trend.fit_reg_line(outfile=outfile, k_perc=k_perc)
+        else:
+            (model, mse) = clist_trend.fit_reg_line(outfile=outfile)
+
+        self.slope=model.coef_[0, 0]
+
+    def set_rsibounces_feats(self):
+        '''
+        Function to set the n_rsibounces and rsibounces_lengths
+        for trend conducting to entry
+
+        Returns
+        -------
+        Will set the n_rsibounces and rsibounces_lengths
+        class attributes
+        '''
+
+        dict1 = self.clist_period.calc_rsi_bounces()
+
+        self.n_rsibounces = dict1['number']
+        self.rsibounces_lengths = dict1['lengths']
+
+    def set_divergence(self, period=30):
+        '''
+        Function to check if there is divergence involving the RSI indicator
+        for trend conducting to entry
+
+        Parameters
+        ----------
+        period: int
+                Number of candles before 2nd bounce that will be considered for
+                calculating the divergence. Default: 30
+
+        Returns
+        -------
+        Will set the divergence class attribute
+        '''
+
+        start = self.__get_time4candles(n=config.CTDBT['period_divergence'],
+                                        anchor_point=self.bounce_2nd.time)
+
+        # first, lets create a CandleList for trend
+        clist_trend = self.clist_period.slice(start=start, end=self.bounce_2nd.time)
+
+        res = clist_trend.check_if_divergence(number_of_bounces=config.CTDBT['number_of_rsi_bounces'])
+
+        self.divergence = res
+
+    def set_length_candles(self):
+        '''
+        Function to get the length in number of candles
+        for the trend CandleList
+
+        Returns
+        -------
+        Will set the length_candles class attribute
+        '''
+
+        # first, lets create a CandleList for trend
+        clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
+
+        self.length_candles=clist_trend.get_length_candles()
+
+    def set_length_pips(self):
+        '''
+        Function to get the length in number of candles
+        for self.clist_trend
+
+        Returns
+        -------
+        Will set the length_pips class attribute
+        '''
+
+        # first, lets create a CandleList for trend
+        clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
+
+        self.length_pips = clist_trend.get_length_pips()

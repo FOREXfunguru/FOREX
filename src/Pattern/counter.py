@@ -47,9 +47,6 @@ class Counter(object):
                   Candlelist extending back (defined by 'period') in time since the start of the pattern
     clist_trend: CandleList, Optional
                  CandleList extending back to datetime defined by self.trend_i
-    last_time: datetime object, Optional
-               datetime for last time that price has been above/below self.SR. If last_time is not found before
-               the start of the historical record then it will be set to '01/01/1900 00:00:00'
     bounces_lasttime: list, Optional
                       List with tuples [(datetime,price)] containing the datetime
                       and price for different bounces after the lasttime
@@ -217,103 +214,7 @@ class Counter(object):
             init_dtime = arr[pivots == -1][-2].time
             self.trend_i = init_dtime
 
-
         return init_dtime
-
-    def set_bounces(self, part='closeAsk',HR_pips=50, threshold=0.50,
-                    start=None, end=None, min_dist=10,min_dist_res=10):
-        '''
-        Function to calculate previous bounces at self.SR
-
-        Parameters
-        ----------
-        part: str
-              Candle part used for the calculation. Default='closeAsk'
-        HR_pips: int
-              Number of pips around self.SR to extend the area. Default=50
-        threshold: float
-                   Threshold for detecting peaks. Default : 0.50
-        start: datetime
-               Identify bounces only from this start datetime
-        end: datetime
-             Do not identify bounces from this datetime
-        min_dist: int
-                  Minimum distance to detect bounces. Default : 10
-
-        Returns
-        -------
-        Will set the class 'bounces' attribute
-        '''
-
-        prices = []
-        datetimes = []
-        for c in self.clist_period.clist:
-            prices.append(getattr(c, part))
-            datetimes.append(c.time)
-
-        resist = HArea(price=self.SR, pips=HR_pips, instrument=self.pair, granularity=self.timeframe)
-
-        if hasattr(self, 'id'):
-            bounces = resist.get_bounces(datetimes=datetimes,
-                                         prices=prices,
-                                         threshold=threshold,
-                                         min_dist=min_dist,
-                                         min_dist_res=min_dist_res)
-        else:
-            bounces = resist.get_bounces(datetimes=datetimes,
-                                         prices=prices,
-                                         threshold=threshold,
-                                         min_dist=min_dist,
-                                         min_dist_res=min_dist_res)
-
-        bounces_new=[]
-        if start is None and end is not None:
-            bounces_new = [d for d in bounces if d[0]<end]
-            if len(bounces_new)>1:
-                self.bounces=bounces_new
-            else:
-                self.bounces=None
-
-        if start is not None and end is None:
-            bounces_new = [d for d in bounces if d[0] >= start]
-            if len(bounces_new) >0:
-                self.bounces = bounces_new
-            else:
-                self.bounces = []
-
-        if start is not None and end is not None:
-            bounces_new = [d for d in bounces if d[0] >= start and d[0] <=end ]
-            if len(bounces_new) >0:
-                self.bounces = bounces_new
-            else:
-                self.bounces =[]
-
-        if start is None and end is None:
-            self.bounces=bounces
-
-    def set_lasttime(self):
-        '''
-        Function to set the datetime for last time that price has been above/below self.SR
-
-        Returns
-        -------
-        Will set the class 'last_time' attribute representing the last time the price was above/below the self.SR
-        'last_time' will be set to the datetime for the first candle in self.clist_period if last time was not found
-        '''
-
-        resist = HArea(price=self.SR, pips=50, instrument=self.pair, granularity=self.timeframe)
-
-        if self.type == "short": position = 'above'
-        if self.type == "long": position = 'below'
-
-        last_time=None
-
-        last_time = resist.last_time(clist=self.clist_period, position=position)
-
-        if last_time is None:
-            last_time=self.clist_period.clist[0].time
-
-        self.last_time=last_time
 
     def bounces_fromlasttime(self):
         '''

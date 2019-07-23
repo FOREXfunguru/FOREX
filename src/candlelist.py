@@ -13,6 +13,7 @@ import peakutils
 import numpy as np
 import matplotlib
 import config
+from utils import *
 
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
@@ -45,12 +46,14 @@ class CandleList(object):
           Number of double 0s in the open/close of the candles in CandleList
     entropy : Dict of Floats, Optional
           Entropy for each of the sequences in self.seq
+
+
     id : str, Optional
          Identifier for this CandleList (i.e. EUR_GBP 15MAY2007D)
     '''
 
     def __init__(self, clist,instrument=None, granularity=None, type=None,seq=None, number_of_0s=None,
-                 longest_stretch=None, highlow_double0s=None, 
+                 longest_stretch=None, highlow_double0s=None, last_time=None,
                  openclose_double0s=None, entropy=None, id=None):
         self.clist=clist
         self.instrument=instrument
@@ -520,40 +523,7 @@ class CandleList(object):
 
         return abs(int(round(diff,0)))
 
-    def __get_bounces(self, datetimes, data, direction):
-        '''
-        Function to get the bounces bouncing on the trend formed by this CandleList
-
-        Parameters
-        ----------
-        datetimes : list
-                     Lisf of datetimes associated to each of the prices
-        data : list
-               List with data that will be used to calculate the bounces
-        direction : str
-                    The direction of the trend, it can be 'up' or 'down'
-
-        Returns
-        -------
-        list : list of tuples containing datetime and value for each peak/bounce
-        '''
-
-        cb = np.array(data)
-
-        ixs=None
-        if direction=='up':
-            ixs = peakutils.indexes(cb, thres=0.5, min_dist=5)
-        elif direction=='down':
-            ixs = peakutils.indexes(-cb, thres=0.5, min_dist=5)
-
-        bounces = []
-        for ix in ixs:
-            bounces.append((datetimes[ix], data[ix]))
-
-        return bounces
-
-
-    def fit_reg_line(self, part='openAsk', smooth='rolling_average', k_perc=25):
+    def fit_reg_line(self, outfile, part='openAsk', smooth='rolling_average', k_perc=25):
         '''
         Function to fit a linear regression
         line on candle list. This can be used in order to assess the direction of
@@ -561,9 +531,12 @@ class CandleList(object):
 
         Parameters
         ----------
+
+        outfile : file
+                  Path to .png output file
         part : str
-               What part of the candle will be used for calculating the length in pips
-               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid'
+               What entity will be used for fitting the line.
+               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid', 'rsi'
                Default: openAsk
         smooth : str
                  What method will be used in order to smooth the data
@@ -575,7 +548,7 @@ class CandleList(object):
 
         Returns
         -------
-        Fitted model, png_file, regression_model_mse
+        Fitted model, regression_model_mse
         '''
 
         prices=[]
@@ -602,25 +575,26 @@ class CandleList(object):
         # Evaluation of the model with MSE
         regression_model_mse = mean_squared_error(y_pred, np.array(prices).reshape(-1, 1))
 
-        fig = plt.figure(figsize=(20, 10))
+        fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
         plt.scatter(x, prices)
         plt.plot(x, y_pred, color='red')
-        outfile="{0}/{1}.regression_line.png".format(config.PNGFILES['regression'],
-                                                     self.id.replace(' ','_'))
+
         fig.savefig(outfile, format='png')
 
-        return model, outfile, regression_model_mse
+        return model, regression_model_mse
 
-    def get_pivots(self, part='openAsk', th_up=0.5, th_down=-0.5):
+    def get_pivots(self, outfile=None, part='openAsk', th_up=0.5, th_down=-0.5):
         '''
         Function to calculate the pivot points as defined by implementing the zigzag indicator.
         It will also generate a .png image of the identified pivots
 
         Parameters
         ----------
+        outfile : str
+                  Name of output file. Optional
         part : str
-               What part of the candle will be used for calculating the length in pips
-               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid'
+               What entity will be used for calculating the pivots
+               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid','rsi'
                Default: openAsk
         th_up: float
                Up threshold for detecting peaks. Default: 0.5
@@ -634,27 +608,25 @@ class CandleList(object):
         '''
 
         x=[]
-        prices=[]
+        values=[]
         for i in range(len(self.clist)):
             x.append(i)
-            prices.append(getattr(self.clist[i], part))
+            values.append(getattr(self.clist[i], part))
 
-        pivots = peak_valley_pivots(np.array(prices), th_up, th_down)
+        pivots = peak_valley_pivots(np.array(values), th_up, th_down)
 
-        fig = plt.figure(figsize=(20, 10))
-        plt.plot(np.array(x), np.array(prices), 'k:', alpha=0.5)
-        plt.plot(np.array(x)[pivots != 0], np.array(prices)[pivots != 0], 'k-')
-        plt.scatter(np.array(x)[pivots == 1], np.array(prices)[pivots == 1], color='g')
-        plt.scatter(np.array(x)[pivots == -1], np.array(prices)[pivots == -1], color='r')
+        if outfile is not None:
+            fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
+            plt.plot(np.array(x), np.array(values), 'k:', alpha=0.5)
+            plt.plot(np.array(x)[pivots != 0], np.array(values)[pivots != 0], 'k-')
+            plt.scatter(np.array(x)[pivots == 1], np.array(values)[pivots == 1], color='g')
+            plt.scatter(np.array(x)[pivots == -1], np.array(values)[pivots == -1], color='r')
 
-        outfile = "{0}/{1}.pivots.png".format(config.PNGFILES['pivots'],
-                                              self.id.replace(' ', '_'))
-
-        fig.savefig(outfile, format='png')
+            fig.savefig(outfile, format='png')
 
         return pivots
 
-    def check_if_divergence(self,part='openAsk',direction='up'):
+    def check_if_divergence(self,part='openAsk', number_of_bounces=3):
         '''
         Function to check if there is divergence between prices
         and RSI indicator
@@ -664,32 +636,204 @@ class CandleList(object):
         part : str
                What part of the candle to use for the calculation
                Default: 'openAsk'
-        direction : str
-                    Direction of the trend. Possible values are 'up'/'down'
+        number_of_bounces : int
+                            Number of rsi bounces from last (most recent)
+                            to consider for calculating divergence. Default=3
 
         Returns
         -------
         bool True if there is divergence. "n.a." if the divergence was not calculated
         '''
 
-        rsi_values=[]
-        datetimes=[]
-        for c in self.clist:
-            if c.rsi is None: raise Exception("RSI values are not defined for this Candlelist, "
-                                              "run calc_rsi first")
-            rsi_values.append(getattr(c, 'rsi'))
-            datetimes.append(c.time)
+        outfile_rsi="{0}/{1}.rsi.png".format(config.PNGFILES['div'],
+                                             self.id.replace(' ', '_'))
 
-        bounce_rsi=self.__get_pivots(datetimes=datetimes, data=rsi_values,direction=direction)
+        outfile_prices = "{0}/{1}.prices.png".format(config.PNGFILES['div'],
+                                                   self.id.replace(' ', '_'))
 
-        if len(bounce_rsi)<2:
+        bounce_rsi=self.get_pivots(outfile=outfile_rsi, part="rsi", th_up=0.1, th_down=-0.1)
+
+        arr = np.array(self.clist)
+
+        # consider type of trade in order to select peaks or valleys
+        bounce_rsiA=None
+        if self.type == 'short':
+            bounce_rsiA = arr[bounce_rsi == 1]
+        elif self.type == 'long':
+            bounce_rsiA = arr[bounce_rsi == -1]
+
+        #consider only the  desired number_of_bounces
+        candles_rsi = bounce_rsiA[-number_of_bounces:]
+
+        if len(candles_rsi)<2:
             print("WARN: No enough bounces after the trend start were found. Divergence assessment will be skipped")
             return "n.a."
 
-        diff_rsi=bounce_rsi[-1][1]-bounce_rsi[-2][1]
+        cl = CandleList(candles_rsi, instrument=self.instrument, granularity=self.granularity,
+                        id=self.id, type=self.type)
 
-        if diff_rsi>0 and direction=='down':
+        # fit a regression line for rsi bounces
+        outfile_rsi = "{0}/{1}.reg_rsi.png".format(config.PNGFILES['div'],
+                                               self.id.replace(' ', '_'))
+        (model_rsi, regression_model_mse_rsi)=cl.fit_reg_line(outfile=outfile_rsi, part='rsi', smooth=None )
+
+        # fit a regression line for price bounces
+        outfile_price = "{0}/{1}.reg_price.png".format(config.PNGFILES['div'],
+                                                       self.id.replace(' ', '_'))
+        (model_price, regression_model_mse_price) = cl.fit_reg_line(outfile=outfile_price, part=part, smooth=None)
+
+
+        # check if sign of slope is different between rsi and price lines
+        if np.sign(model_rsi.coef_[0, 0])!= np.sign(model_price.coef_[0, 0]):
+            pdb.set_trace()
             return True
         else:
-            return True
+            return False
 
+    def slice(self, start=None, end=None):
+        '''
+        Function to slice self on a date interval. It will return the sliced CandleList
+
+        Parameters
+        ----------
+        start: datetime
+               Slice the CandleList from this start datetime. It will create a new CandleList starting
+               from this datetime. If 'end' is not defined, then it will slice the CandleList from 'start'
+               to the end of the CandleList
+               Optional
+        end: datetime. If 'start' is not defined, then it will slice from beginning of CandleList to 'end'
+             Optional
+
+        Returns
+        -------
+        CandleList object
+        '''
+
+
+        sliced_clist=[]
+        if start is not None and end is None:
+            sliced_clist = [c for c in self.clist if c.time >= start]
+        elif start is not None and end is not None:
+            sliced_clist = [c for c in self.clist if c.time >= start and c.time <= end]
+        elif start is None and end is not None:
+            sliced_clist = [c for c in self.clist if c.time <= end]
+
+        cl = CandleList(sliced_clist, instrument=self.instrument, granularity=self.granularity,
+                        id=self.id, type=self.type)
+
+        return cl
+
+    def improve_resolution(self,price,min_dist=None,part='closeAsk'):
+        '''
+        Function used to improve the resolution of the identified maxima/minima. This function will select
+        the candle closer to 'price' when there are 2 candles less than 'min_dist' apart
+
+        Parameters
+        ----------
+        price : float
+                Price that will be used as the reference to select one of the candles
+        min_dist : int
+                   minimum distance between the identified max/min. Optional
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
+
+        Returns
+        -------
+        list containing the selected candles
+        '''
+
+        min_distDelta=None
+        if min_dist is not None:
+            # convert the min_dist integer to a timedelta
+            min_distDelta=periodToDelta(ncandles=min_dist,timeframe=self.granularity)
+
+        list_c=self.clist
+        res = [x.time - y.time for x, y in zip(list_c, list_c[1:])]
+        below = [] # below will contain the list_c indexes separated by <min_dist
+        ix = 0
+        for i in res:
+            i = abs(i)
+            if min_distDelta is not None:
+                if i < min_distDelta:
+                    below.append((ix, ix + 1))
+            else:
+                below.append((ix,ix+1))
+            ix += 1
+
+        remove_l = [] #list with the indexes to remove
+        if below:
+            for i in below:
+                x0 = getattr(list_c[i[0]], part)
+                x1 = getattr(list_c[i[1]], part)
+                diff0=abs(x0-price)
+                diff1=abs(x1-price)
+                #ix to be removed: the furthest
+                # from self.price
+                if diff0>diff1:
+                    remove_l.append(i[0])
+                elif diff1>diff0:
+                    remove_l.append(i[1])
+                elif diff1==diff0:
+                    remove_l.append(i[0])
+
+        if remove_l:
+            sorted_removel=sorted(list(set(remove_l)))
+            list_c = [i for j, i in enumerate(list_c) if j not in sorted_removel]
+
+        return list_c
+
+    def calc_itrend(self, th_up=0.5, th_down=-0.5):
+        '''
+        Function to calculate the datetime for the start of this CandleList, assuming that this
+        CandleList is trending. This function will calculate the start of the trend by using the self.get_pivots
+        function
+
+        Parameters
+        ----------
+        th_up: float
+               Up threshold for detecting peaks. Default: 0.5
+        th_down: float
+                 Down threshold for detecting valleys. Default: -0.5
+
+        Returns
+        -------
+        Will return a datetime object
+        '''
+
+        outfile="{0}/{1}.itrend.png".format(config.PNGFILES['init_trend'],
+                                            self.id.replace(' ', '_'))
+        pivots = self.get_pivots(outfile=outfile, th_up=th_up, th_down=th_down)
+        arr = np.array(self.clist)
+        if self.type=="long": #this basically means that the trend direction will be down
+            init_dtime=arr[pivots == 1][-1].time
+        elif self.type=="short":
+            init_dtime = arr[pivots == -1][-1].time
+
+        return init_dtime
+
+    def get_lasttime(self,hrarea):
+        '''
+        Function to get the datetime for last time that price has been above/below a HArea
+
+        Parameters
+        ----------
+        hrarea : HArea object used to calculate the lasttime
+
+        Returns
+        -------
+        Will return the last time the price was above/below the self.SR
+        Returned datetime will be the datetime for the first candle in self.clist
+        if last time was not found
+        '''
+
+        if self.type == "short": position = 'above'
+        if self.type == "long": position = 'below'
+
+        last_time = None
+
+        last_time = hrarea.last_time(clist=self.clist, position=position)
+
+        if last_time is None:
+            last_time = self.clist[0].time
+
+        return last_time

@@ -11,7 +11,6 @@ from oanda_api import OandaAPI
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 
-
 class HArea(object):
     '''
     Class to represent a horizontal area in the chart
@@ -52,125 +51,6 @@ class HArea(object):
         self.upper=price+(pips/divisor)
         self.lower=price-(pips/divisor)
 
-    def __improve_resolution(self,x,y,indexes,min_dist=5):
-        '''
-        Function used to improve the resolution of the identified maxima/minima.
-        This will rely on peakutils function named 'interpolate' that will basically
-        calculate the centroid for the identified maxima/minima. This function can
-        be used along with the minimum distance parameter ('min_dist')
-        in order to select the maxima/minima that is the highest/lowest from the cluster
-        of points that are not separated by more than 'min_dist'
-
-        Parameters
-        ----------
-        x : Numpy array
-            X values, Required
-        y : Numpy array
-            Y values, Required
-        indexes : list
-                  Indexes for which the resolution will be improved
-                  Required
-        min_dist : int
-                   minimum distance between the identified max/min. Default=5
-
-        Returns
-        -------
-        int : X index/es that need to be removed. None if none index needs to be removed
-        '''
-
-        res = [x - y for x, y in zip(indexes, indexes[1:])]
-        below = []
-        ix = 0
-        for i in res:
-            i = abs(i)
-            if i < min_dist:
-                below.append((ix, ix + 1))
-            ix += 1
-
-        remove_l = [] #list with the indexes to remove
-        if below:
-            for i in below:
-                x0 = indexes[i[0]]
-                x1 = indexes[i[1]]
-                y0 = y[x0]
-                diff0=abs(y[x0]-self.price)
-                y1 = y[x1]
-                diff1=abs(y[x1]-self.price)
-                #ix to be removed: the furthest
-                # from self.price
-                if diff0>diff1:
-                    remove_l.append(x0)
-                elif diff1>diff0:
-                    remove_l.append(x1)
-                ix = +ix
-
-        if remove_l:
-            return sorted(list(set(remove_l)))
-        else:
-            return None
-
-    def get_bounces(self, datetimes, prices, threshold=0.50, min_dist=10,min_dist_res=10):
-        '''
-        Function used to calculate the datetime for previous bounces in this area
-
-        Parameters
-        ----------
-        datetimes : list
-                Lisf of datetimes associated to each of the prices
-        prices : list
-                List of prices used to calculate the bounces
-        threshold : float
-                    Threshold for detecting peaks. Default : 0.50
-        min_dist : float
-                   Threshold for minimum distance for detecting peaks. Default : 10
-
-        Returns
-        -------
-        file : png file with identified bounces
-        list : list of tuples containing datetime, value and type for each peak/bounce
-               where type will be 'max' if it is a maxima and 'min' will be a minima
-        '''
-
-        cb = np.array(prices)
-        max = peakutils.indexes(cb, thres=threshold, min_dist=min_dist)
-        min = peakutils.indexes(-cb, thres=threshold, min_dist=min_dist)
-
-        in_area_ix=[]
-
-        bounces=[]
-        for ix in max:
-            if prices[ix]>=self.lower and prices[ix]<=self.upper:
-                in_area_ix.append(ix)
-                bounces.append((datetimes[ix],prices[ix],'max'))
-
-        for ix in min:
-            if prices[ix] <= self.upper and prices[ix] >= self.lower:
-                in_area_ix.append(ix)
-                bounces.append((datetimes[ix], prices[ix],'min'))
-
-        in_area_ix=sorted(in_area_ix)
-        repeat = True
-        datetimes_ix=[]
-
-        while repeat is True:
-            datetimes_ix = self.__improve_resolution(x=np.array(list(range(0, len(datetimes), 1))),
-                                                     y=cb, indexes=in_area_ix,
-                                                     min_dist=min_dist_res)
-            if datetimes_ix is not None:
-                #removing the indexes in 'fdatetimes_ix'
-                in_area_ix = [e for e in in_area_ix if e not in datetimes_ix]
-            else:
-                repeat = False
-
-        in_area_dates=[datetimes[i] for i in in_area_ix]
-        final_bounces=[]
-        for b in bounces:
-            b_d=b[0]
-            if b_d in in_area_dates:
-                final_bounces.append(b)
-
-        return final_bounces
-
     def last_time(self, clist, position, part='openAsk'):
         '''
         Function that returns the datetime of the moment where prices were over/below this HArea
@@ -192,7 +72,7 @@ class HArea(object):
         datetime object of the moment that the price crosses the HArea
         '''
 
-        for c in reversed(clist.clist):
+        for c in reversed(clist):
             price=getattr(c, part)
             if position == 'above':
                 if price > self.upper:

@@ -14,16 +14,22 @@ OANDA_API = {
 
 #configuration for Counter doubletop
 CTDBT = {
-    'period' : 4500, # number of candles from self.start to self.start-period that will be considered in order to
-                    # to look for the double peak/valley,
-    'HR_pips' : 30, #  number of pips over/below S/R used for trying to identify bounces
-    'threshold' : 0.5, # threshold for detecting peaks.
+    'period' : 2000, # number of candles from self.start that will be considered in order to
+                     # to look for peaks/valleys
+    'HR_pips' : 100, # number of pips over/below S/R used for trying to identify bounces
+    'step_pips': 5, # number of pips to increase HR_pips in order to widen the area to look for bounces
+    'max_HRpips' : 500, # max number of pips that will be used in order to widen the area to look for bounces
     'min_dist' : 5, # Minimum distance between peaks
-    'period1st_bounce' : 8, # Controls the maximum number of candles allowed between
-                           # self.start and the location of the most recent bounce
-    'HR_pips_from2nd': 60,  # The same than before but restricted to bounces found from 2nd bounce (not including it)
-    'threshold_from2nd': 0.5,  # idem
-    'min_dist_from2nd': 5,  # idem
+    'period1st_bounce' : 5, # Controls the maximum number of candles allowed between
+                           # self.start and this 'period1st_bounce' in order look for the 1st bounce
+    'period2nd_bounce': 75,  # Controls the maximum number of candles allowed between
+                             # datetime controlled by 'period1st_bounce' and datetime controlled by 'period2nd_bounce'
+                             # in order to detect the 2nd bounce
+    'period_trend': 500, # Controls the maximum number of candles before self.bounce_2nd in order to look for start
+                         # of trend
+    'period_divergence' : 30, # Number of candles to consider before 2nd_bounces in order to look for peaks/valleys in
+                             # rsi
+    'number_of_rsi_bounces' : 3 # Number of rsi bounces from last (most recent) to consider for calculating divergence
 }
 
 # start datetime for Oanda's historical data
@@ -52,7 +58,9 @@ START_HIST = {
 }
 
 PNGFILES = {
+    'fig_sizes' : (20, 10), # tuple controlling the size of figures
     'regression' : PROJECT['root']+'regresion_imgs/',
     'bounces' : PROJECT['root']+'bounce_images/',
-    'pivots' : PROJECT['root']+'init_trend_imgs/'
+    'init_trend' : PROJECT['root']+'init_trend_imgs/',
+    'div' : PROJECT['root']+'divergence_plots/'
 }

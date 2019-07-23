@@ -3,10 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/learning_nbs/.ipynb_checkpoints/Calculating past bounces on a certain Support or Resistance area-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/learning_nbs/.ipynb_checkpoints/Calculating past bounces on a certain Support or Resistance area-checkpoint.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/learning_nbs/Calculating past bounces on a certain Support or Resistance area.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/learning_nbs/Calculating past bounces on a certain Support or Resistance area.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pattern/counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/candlelist.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/candlelist.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -19,15 +18,13 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/src/Pattern/counter_dbtp.py">
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/harea.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="403">
-              <caret line="268" column="53" selection-start-line="268" selection-start-column="53" selection-end-line="268" selection-end-column="53" />
+            <state relative-caret-position="960">
+              <caret line="73" selection-start-line="73" selection-end-line="73" />
               <folding>
-                <element signature="e#14964#15534#0" />
-                <element signature="e#15572#15947#0" />
-                <element signature="e#15983#16705#0" />
+                <element signature="e#0#18#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -36,8 +33,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_CounterDbTp.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="418">
-              <caret line="58" selection-start-line="58" selection-end-line="58" />
+            <state relative-caret-position="615">
+              <caret line="44" column="3" selection-start-line="44" selection-start-column="3" selection-end-line="44" selection-end-column="3" />
             </state>
           </provider>
         </entry>
@@ -45,8 +42,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/config.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="700">
-              <caret line="55" column="46" selection-start-line="55" selection-start-column="33" selection-end-line="55" selection-end-column="46" />
+            <state relative-caret-position="157">
+              <caret line="31" column="26" selection-start-line="31" selection-start-column="5" selection-end-line="31" selection-end-column="26" />
             </state>
           </provider>
         </entry>
@@ -54,8 +51,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/TradeJournal/tradejournal.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="292">
-              <caret line="121" selection-start-line="121" selection-end-line="121" />
+            <state relative-caret-position="2460">
+              <caret line="172" selection-start-line="172" selection-end-line="172" />
             </state>
           </provider>
         </entry>
@@ -63,8 +60,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/Pattern/counter.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-19">
-              <caret line="253" selection-start-line="253" selection-end-line="253" />
+            <state relative-caret-position="3135">
+              <caret line="217" selection-start-line="217" selection-end-line="217" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
               </folding>
@@ -73,26 +70,47 @@
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/utils.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1470">
+              <caret line="98" column="26" selection-start-line="98" selection-start-column="18" selection-end-line="98" selection-end-column="26" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/candlelist.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="45">
-              <caret line="640" selection-start-line="640" selection-end-line="640" />
+            <state relative-caret-position="149">
+              <caret line="628" column="66" selection-start-line="628" selection-start-column="49" selection-end-line="628" selection-end-column="66" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
-                <element signature="e#13934#15922#0" />
-                <element signature="e#15966#16162#0" />
-                <element signature="e#17148#18044#0" />
-                <element signature="e#18136#20251#0" />
+                <element signature="e#19435#20971#0" />
+                <element signature="e#22705#23903#0" />
+                <element signature="e#23983#26018#0" />
+                <element signature="e#26080#27119#0" />
               </folding>
             </state>
           </provider>
         </entry>
       </file>
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/TradeJournal/trade.py">
+        <entry file="file://$PROJECT_DIR$/tests/test_CandleList.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1545">
-              <caret line="112" column="32" selection-start-line="112" selection-start-column="32" selection-end-line="112" selection-end-column="32" />
+            <state relative-caret-position="843">
+              <caret line="331" column="3" selection-start-line="331" selection-start-column="3" selection-end-line="331" selection-end-column="3" />
+              <folding>
+                <element signature="e#0#13#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/Pattern/counter_dbtp.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="470">
+              <caret line="679" lean-forward="true" selection-start-line="679" selection-end-line="679" />
             </state>
           </provider>
         </entry>
@@ -108,22 +126,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>pips</find>
-      <find>split(&quot;_&quot;)</find>
-      <find>self.TP</find>
-      <find>fit_reg_line</find>
-      <find>get</find>
-      <find>Canl</find>
-      <find>id</find>
-      <find>outfile</find>
-      <find>pair</find>
-      <find>start_hist_data</find>
-      <find>OandaAPI</find>
-      <find>outfi</find>
-      <find>fig.s</find>
-      <find>JPY</find>
-      <find>dailyAlignment</find>
-      <find>period</find>
       <find>set_bounces</find>
       <find>get_first_bounce</find>
       <find>datetime</find>
@@ -135,9 +137,25 @@
       <find>clis</find>
       <find>__init_clist_period</find>
       <find>pivot</find>
-      <find>calc_itrend</find>
+      <find>utils</find>
       <find>init_feats</find>
       <find>get_bounces</find>
+      <find>trade_list</find>
+      <find>__initclist</find>
+      <find>init_trend_feats</find>
+      <find>calc_itrend</find>
+      <find>__init_clist_trend</find>
+      <find>last_time</find>
+      <find>config</find>
+      <find>set_entry_onrsi</find>
+      <find>set_diff</find>
+      <find>bounces_fromlasttime</find>
+      <find>n_rsibounces</find>
+      <find>set_rsibounces_feats</find>
+      <find>assert</find>
+      <find>rsibounces_lengths</find>
+      <find>outfile</find>
+      <find>CandleList</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -145,6 +163,44 @@
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+    <option name="RECENT_BRANCH_BY_REPOSITORY">
+      <map>
+        <entry key="$PROJECT_DIR$" value="master" />
+      </map>
+    </option>
+    <favorite-branches>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="zigzag_attempt" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </favorite-branches>
+    <excluded-from-favorite>
+      <branch-storage>
+        <map>
+          <entry type="LOCAL">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="master" />
+              </list>
+            </value>
+          </entry>
+          <entry type="REMOTE">
+            <value>
+              <list>
+                <branch-info repo="$PROJECT_DIR$" source="origin/master" />
+              </list>
+            </value>
+          </entry>
+        </map>
+      </branch-storage>
+    </excluded-from-favorite>
   </component>
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
@@ -179,18 +235,21 @@
         <option value="$PROJECT_DIR$/scripts/calculate_ctdbtp.py" />
         <option value="$PROJECT_DIR$/src/TradeJournal/trade.py" />
         <option value="$PROJECT_DIR$/src/oanda_api.py" />
-        <option value="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" />
-        <option value="$PROJECT_DIR$/src/harea.py" />
-        <option value="$PROJECT_DIR$/src/candlelist.py" />
-        <option value="$PROJECT_DIR$/tests/test_CandleList.py" />
+        <option value="$PROJECT_DIR$/src/utils.py" />
         <option value="$PROJECT_DIR$/tests/test_CounterDbTp.py" />
-        <option value="$PROJECT_DIR$/src/config.py" />
+        <option value="$PROJECT_DIR$/tests/test_CandleList.py" />
+        <option value="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" />
         <option value="$PROJECT_DIR$/src/Pattern/counter.py" />
+        <option value="$PROJECT_DIR$/src/harea.py" />
+        <option value="$PROJECT_DIR$/src/config.py" />
+        <option value="$PROJECT_DIR$/src/candlelist.py" />
         <option value="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" />
       </list>
     </option>
   </component>
   <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="x" value="-1440" />
+    <option name="y" value="-40" />
     <option name="width" value="1440" />
     <option name="height" value="900" />
   </component>
@@ -199,7 +258,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -215,12 +273,19 @@
             <path>
               <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
               <item name="FOREX" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Pattern" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FOREX" type="462c0819:PsiDirectoryNode" />
               <item name="tests" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -345,83 +410,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
-    </task>
-    <task id="LOCAL-00029" summary="adding valley write trades for counter_doubletop1">
-      <created>1554761371847</created>
-      <option name="number" value="00029" />
-      <option name="presentableId" value="LOCAL-00029" />
-      <option name="project" value="LOCAL" />
-      <updated>1554761371847</updated>
-    </task>
-    <task id="LOCAL-00030" summary="Finalyzing the write_trades for counterdoubletop">
-      <created>1554822292787</created>
-      <option name="number" value="00030" />
-      <option name="presentableId" value="LOCAL-00030" />
-      <option name="project" value="LOCAL" />
-      <updated>1554822292787</updated>
-    </task>
-    <task id="LOCAL-00031" summary="Adding trend_i calculation">
-      <created>1554906021460</created>
-      <option name="number" value="00031" />
-      <option name="presentableId" value="LOCAL-00031" />
-      <option name="project" value="LOCAL" />
-      <updated>1554906021460</updated>
-    </task>
-    <task id="LOCAL-00032" summary="Adding script to calculate ctdbtp feats">
-      <created>1555715706777</created>
-      <option name="number" value="00032" />
-      <option name="presentableId" value="LOCAL-00032" />
-      <option name="project" value="LOCAL" />
-      <updated>1555715706777</updated>
-    </task>
-    <task id="LOCAL-00033" summary="solving bug in fetch_time not using time ranges">
-      <created>1555837892016</created>
-      <option name="number" value="00033" />
-      <option name="presentableId" value="LOCAL-00033" />
-      <option name="project" value="LOCAL" />
-      <updated>1555837892016</updated>
-    </task>
-    <task id="LOCAL-00034" summary="solving bug related to the 1st bounce being older than the trend start">
-      <created>1555857529731</created>
-      <option name="number" value="00034" />
-      <option name="presentableId" value="LOCAL-00034" />
-      <option name="project" value="LOCAL" />
-      <updated>1555857529731</updated>
-    </task>
-    <task id="LOCAL-00035" summary="solving different bugs">
-      <created>1555972815726</created>
-      <option name="number" value="00035" />
-      <option name="presentableId" value="LOCAL-00035" />
-      <option name="project" value="LOCAL" />
-      <updated>1555972815727</updated>
-    </task>
-    <task id="LOCAL-00036" summary="working on validation on OandaAPI class">
-      <created>1556057655340</created>
-      <option name="number" value="00036" />
-      <option name="presentableId" value="LOCAL-00036" />
-      <option name="project" value="LOCAL" />
-      <updated>1556057655341</updated>
-    </task>
-    <task id="LOCAL-00037" summary="validation of dateime on OandaAPI">
-      <created>1556141576528</created>
-      <option name="number" value="00037" />
-      <option name="presentableId" value="LOCAL-00037" />
-      <option name="project" value="LOCAL" />
-      <updated>1556141576528</updated>
-    </task>
-    <task id="LOCAL-00038" summary="Changes in OandaApi validation">
-      <created>1556230588161</created>
-      <option name="number" value="00038" />
-      <option name="presentableId" value="LOCAL-00038" />
-      <option name="project" value="LOCAL" />
-      <updated>1556230588161</updated>
-    </task>
-    <task id="LOCAL-00039" summary="Changes in OandaApi validation1">
-      <created>1556319783007</created>
-      <option name="number" value="00039" />
-      <option name="presentableId" value="LOCAL-00039" />
-      <option name="project" value="LOCAL" />
-      <updated>1556319783007</updated>
     </task>
     <task id="LOCAL-00040" summary="solving time discrepancy in daylight savings">
       <created>1556350701887</created>
@@ -689,7 +677,84 @@
       <option name="project" value="LOCAL" />
       <updated>1562621356400</updated>
     </task>
-    <option name="localTasksCounter" value="78" />
+    <task id="LOCAL-00078" summary="Adding init_trend_function to Counter2">
+      <created>1562744073947</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1562744073967</updated>
+    </task>
+    <task id="LOCAL-00079" summary="Test new branch">
+      <created>1562744270366</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1562744270367</updated>
+    </task>
+    <task id="LOCAL-00080" summary="Changes in CounterDoubleTop">
+      <created>1563116485896</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1563116485899</updated>
+    </task>
+    <task id="LOCAL-00081" summary="Create slice method for CandeList">
+      <created>1563117505900</created>
+      <option name="number" value="00081" />
+      <option name="presentableId" value="LOCAL-00081" />
+      <option name="project" value="LOCAL" />
+      <updated>1563117505900</updated>
+    </task>
+    <task id="LOCAL-00082" summary="Working in new improve_resolution">
+      <created>1563127161176</created>
+      <option name="number" value="00082" />
+      <option name="presentableId" value="LOCAL-00082" />
+      <option name="project" value="LOCAL" />
+      <updated>1563127161176</updated>
+    </task>
+    <task id="LOCAL-00083" summary="Working in tackling cases where there are no in_area bounces">
+      <created>1563187528286</created>
+      <option name="number" value="00083" />
+      <option name="presentableId" value="LOCAL-00083" />
+      <option name="project" value="LOCAL" />
+      <updated>1563187528286</updated>
+    </task>
+    <task id="LOCAL-00084" summary="Finished code for detecting first bounce">
+      <created>1563199916076</created>
+      <option name="number" value="00084" />
+      <option name="presentableId" value="LOCAL-00084" />
+      <option name="project" value="LOCAL" />
+      <updated>1563199916076</updated>
+    </task>
+    <task id="LOCAL-00085" summary="Working on code for detecting 2nd bounce">
+      <created>1563229768263</created>
+      <option name="number" value="00085" />
+      <option name="presentableId" value="LOCAL-00085" />
+      <option name="project" value="LOCAL" />
+      <updated>1563229768263</updated>
+    </task>
+    <task id="LOCAL-00086" summary="Working on init_trend detection">
+      <created>1563314442610</created>
+      <option name="number" value="00086" />
+      <option name="presentableId" value="LOCAL-00086" />
+      <option name="project" value="LOCAL" />
+      <updated>1563314442611</updated>
+    </task>
+    <task id="LOCAL-00087" summary="Working on trend_feats1">
+      <created>1563459807768</created>
+      <option name="number" value="00087" />
+      <option name="presentableId" value="LOCAL-00087" />
+      <option name="project" value="LOCAL" />
+      <updated>1563459807768</updated>
+    </task>
+    <task id="LOCAL-00088" summary="Working on trend_feats2">
+      <created>1563532727749</created>
+      <option name="number" value="00088" />
+      <option name="presentableId" value="LOCAL-00088" />
+      <option name="project" value="LOCAL" />
+      <updated>1563532727750</updated>
+    </task>
+    <option name="localTasksCounter" value="89" />
     <servers />
   </component>
   <component name="TodoView">
@@ -702,11 +767,11 @@
     </todo-panel>
   </component>
   <component name="ToolWindowManager">
-    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <frame x="-1440" y="-40" width="1440" height="900" extended-state="0" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.69803923" visible="true" weight="0.15081044" />
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.69868994" visible="true" weight="0.15081044" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
-      <window_info id="Favorites" order="2" sideWeight="0.3019608" side_tool="true" visible="true" weight="0.15081044" />
+      <window_info id="Favorites" order="2" sideWeight="0.30131003" side_tool="true" weight="0.084285155" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.5421687" />
       <window_info anchor="bottom" id="Run" order="2" weight="0.32847342" />
@@ -715,8 +780,8 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32771084" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.38554215" />
-      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5024665" side_tool="true" weight="0.23373494" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.2686747" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5024665" side_tool="true" weight="0.38554215" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32846716" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -743,17 +808,6 @@
     </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="last commit of peak resolution before changing strategy" />
-    <MESSAGE value="Solving debugs in peak resolution" />
-    <MESSAGE value="Solving debugs in peak resolution1" />
-    <MESSAGE value="Solving debugs in peak resolution2" />
-    <MESSAGE value="Solving debugs in peak resolution3" />
-    <MESSAGE value="Solving debugs in peak resolution4" />
-    <MESSAGE value="Solving debugs in peak resolution5" />
-    <MESSAGE value="Trying new way of calculating start bounce timepoint" />
-    <MESSAGE value="Minor improvements" />
-    <MESSAGE value="Minor improvements1" />
-    <MESSAGE value="Improving docs" />
     <MESSAGE value="Adding volume cutoff feature to OandaAPI" />
     <MESSAGE value="Modifying period for calculating the rsi" />
     <MESSAGE value="Modifying period for not hitting the max number of candles" />
@@ -768,7 +822,18 @@
     <MESSAGE value="Improving zigzag notebook" />
     <MESSAGE value="Adding init_trend_function to Counter" />
     <MESSAGE value="Adding init_trend_function to Counter1" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding init_trend_function to Counter1" />
+    <MESSAGE value="Adding init_trend_function to Counter2" />
+    <MESSAGE value="Test new branch" />
+    <MESSAGE value="Changes in CounterDoubleTop" />
+    <MESSAGE value="Create slice method for CandeList" />
+    <MESSAGE value="Working in new improve_resolution" />
+    <MESSAGE value="Working in tackling cases where there are no in_area bounces" />
+    <MESSAGE value="Finished code for detecting first bounce" />
+    <MESSAGE value="Working on code for detecting 2nd bounce" />
+    <MESSAGE value="Working on init_trend detection" />
+    <MESSAGE value="Working on trend_feats1" />
+    <MESSAGE value="Working on trend_feats2" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working on trend_feats2" />
   </component>
   <component name="editorHistoryManager">
     <entry file="file://$PROJECT_DIR$/src/Untitled.ipynb" />
@@ -915,13 +980,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/utils.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="125">
-          <caret line="14" column="32" selection-start-line="14" selection-start-column="32" selection-end-line="14" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/learning_nbs/Calculating past bounces on a certain Support or Resistance area.ipynb">
       <provider selected="true" editor-type-id="ipnb-editor">
         <state>
@@ -946,23 +1004,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/harea.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1845">
-          <caret line="132" selection-start-line="132" selection-end-line="132" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/TradeJournal/trade.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1545">
-          <caret line="112" column="32" selection-start-line="112" selection-start-column="32" selection-end-line="112" selection-end-column="32" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/oanda_api.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="2568">
@@ -970,13 +1011,6 @@
           <folding>
             <element signature="e#55#65#0" expanded="true" />
           </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/TradeJournal/tradejournal.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="292">
-          <caret line="121" selection-start-line="121" selection-end-line="121" />
         </state>
       </provider>
     </entry>
@@ -1000,74 +1034,103 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_CandleList.py">
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/trade.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="358">
-          <caret line="318" column="26" lean-forward="true" selection-start-line="318" selection-start-column="3" selection-end-line="318" selection-end-column="26" />
+        <state relative-caret-position="135">
+          <caret line="9" column="5" selection-start-line="9" selection-start-column="5" selection-end-line="9" selection-end-column="5" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/harea.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="960">
+          <caret line="73" selection-start-line="73" selection-end-line="73" />
           <folding>
-            <element signature="e#0#13#0" expanded="true" />
-            <element signature="e#1035#1977#0" />
-            <element signature="e#2009#2083#0" />
-            <element signature="e#3721#4059#0" />
-            <element signature="e#4106#4485#0" />
-            <element signature="e#4513#5047#0" />
-            <element signature="e#5078#5683#0" />
-            <element signature="e#6274#6770#0" />
-            <element signature="e#6805#7320#0" />
-            <element signature="e#7359#8052#0" />
-            <element signature="e#8102#8264#0" />
-            <element signature="e#8315#8523#0" />
+            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_CounterDbTp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="418">
-          <caret line="58" selection-start-line="58" selection-end-line="58" />
+        <state relative-caret-position="615">
+          <caret line="44" column="3" selection-start-line="44" selection-start-column="3" selection-end-line="44" selection-end-column="3" />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/candlelist.py">
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/tradejournal.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="45">
-          <caret line="640" selection-start-line="640" selection-end-line="640" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-            <element signature="e#13934#15922#0" />
-            <element signature="e#15966#16162#0" />
-            <element signature="e#17148#18044#0" />
-            <element signature="e#18136#20251#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="700">
-          <caret line="55" column="46" selection-start-line="55" selection-start-column="33" selection-end-line="55" selection-end-column="46" />
+        <state relative-caret-position="2460">
+          <caret line="172" selection-start-line="172" selection-end-line="172" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/Pattern/counter.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-19">
-          <caret line="253" selection-start-line="253" selection-end-line="253" />
+        <state relative-caret-position="3135">
+          <caret line="217" selection-start-line="217" selection-end-line="217" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1470">
+          <caret line="98" column="26" selection-start-line="98" selection-start-column="18" selection-end-line="98" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_CandleList.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="843">
+          <caret line="331" column="3" selection-start-line="331" selection-start-column="3" selection-end-line="331" selection-end-column="3" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/lib/python3.7/site-packages/OpenSSL/SSL.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="194">
+          <caret line="1913" selection-start-line="1913" selection-end-line="1913" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/lib/python3.7/site-packages/sklearn/utils/validation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="194">
+          <caret line="549" selection-start-line="549" selection-end-line="549" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/candlelist.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="149">
+          <caret line="628" column="66" selection-start-line="628" selection-start-column="49" selection-end-line="628" selection-end-column="66" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+            <element signature="e#19435#20971#0" />
+            <element signature="e#22705#23903#0" />
+            <element signature="e#23983#26018#0" />
+            <element signature="e#26080#27119#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="157">
+          <caret line="31" column="26" selection-start-line="31" selection-start-column="5" selection-end-line="31" selection-end-column="26" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Pattern/counter_dbtp.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="403">
-          <caret line="268" column="53" selection-start-line="268" selection-start-column="53" selection-end-line="268" selection-end-column="53" />
-          <folding>
-            <element signature="e#14964#15534#0" />
-            <element signature="e#15572#15947#0" />
-            <element signature="e#15983#16705#0" />
-          </folding>
+        <state relative-caret-position="470">
+          <caret line="679" lean-forward="true" selection-start-line="679" selection-end-line="679" />
         </state>
       </provider>
     </entry>

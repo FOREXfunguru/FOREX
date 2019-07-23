@@ -117,8 +117,7 @@ class TradeJournal(object):
                 c.init_feats()
             elif strat=="counter_doubletop":
                 c=CounterDbTp(pair=pair, **attrbs)
-                c.init_feats()
-                c.init_trend_feats()
+  #              c.init_trend_feats()
 
             p = re.compile('clist_')
             attrbs1={}
@@ -135,8 +134,9 @@ class TradeJournal(object):
 
             t=Trade(strat=row['strat'],**attrbs1)
 
-            if run is True:
-                t.run_trade()
+         #   if run is True:
+         #       t.run_trade()
+                
             trade_list.append(t)
 
         return trade_list
