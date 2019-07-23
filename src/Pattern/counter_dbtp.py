@@ -512,8 +512,8 @@ class CounterDbTp(Counter):
 
         self.set_slope()
         self.divergence = self.set_divergence()
-        #self.length_candles = c.length_candles
-        #self.length_pips = c.length_pips
+        self.length_candles = self.set_length_candles()
+        self.length_pips = self.set_length_pips()
 
         warnings.warn("[INFO] Done init_trend_feats")
 
@@ -673,7 +673,36 @@ class CounterDbTp(Counter):
         # first, lets create a CandleList for trend
         clist_trend = self.clist_period.slice(start=start, end=self.bounce_2nd.time)
 
-        res = clist_trend.check_if_divergence(number_of_bounces=config.CTDBTP['number_of_rsi_bounces'])
+        res = clist_trend.check_if_divergence(number_of_bounces=config.CTDBT['number_of_rsi_bounces'])
 
         self.divergence = res
 
+    def set_length_candles(self):
+        '''
+        Function to get the length in number of candles
+        for the trend CandleList
+
+        Returns
+        -------
+        Will set the length_candles class attribute
+        '''
+
+        # first, lets create a CandleList for trend
+        clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
+
+        self.length_candles=clist_trend.get_length_candles()
+
+    def set_length_pips(self):
+        '''
+        Function to get the length in number of candles
+        for self.clist_trend
+
+        Returns
+        -------
+        Will set the length_pips class attribute
+        '''
+
+        # first, lets create a CandleList for trend
+        clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
+
+        self.length_pips = clist_trend.get_length_pips()

@@ -662,7 +662,6 @@ class CandleList(object):
         elif self.type == 'long':
             bounce_rsiA = arr[bounce_rsi == -1]
 
-        pdb.set_trace()
         #consider only the  desired number_of_bounces
         candles_rsi = bounce_rsiA[-number_of_bounces:]
 
@@ -673,7 +672,6 @@ class CandleList(object):
         cl = CandleList(candles_rsi, instrument=self.instrument, granularity=self.granularity,
                         id=self.id, type=self.type)
 
-        pdb.set_trace()
         # fit a regression line for rsi bounces
         outfile_rsi = "{0}/{1}.reg_rsi.png".format(config.PNGFILES['div'],
                                                self.id.replace(' ', '_'))
