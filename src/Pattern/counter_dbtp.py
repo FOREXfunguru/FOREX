@@ -115,7 +115,8 @@ class CounterDbTp(Counter):
         self.period_trend = period_trend
 
         allowed_keys = ['id', 'timeframe', 'entry', 'period', 'trend_i', 'type', 'SL',
-                        'TP', 'SR', 'RR', 'lasttime']
+                        'TP', 'SR', 'RR', 'lasttime', 'length_candles', 'divergence',
+                        'length_pips']
 
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
 
@@ -510,10 +511,12 @@ class CounterDbTp(Counter):
 
         warnings.warn("[INFO] Run init_trend_feats")
 
-        self.set_slope()
-        self.divergence = self.set_divergence()
-        self.length_candles = self.set_length_candles()
-        self.length_pips = self.set_length_pips()
+        # first, lets create a CandleList for trend
+        clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
+        self.set_slope(clist_trend=clist_trend)
+        self.divergence = self.get_divergence()
+        self.length_candles = clist_trend.get_length_candles()
+        self.length_pips = clist_trend.get_length_pips()
 
         warnings.warn("[INFO] Done init_trend_feats")
 
@@ -605,12 +608,14 @@ class CounterDbTp(Counter):
 
         self.valley = len(candle_list)
 
-    def set_slope(self, k_perc=None):
+    def set_slope(self, clist_trend, k_perc=None):
         '''
         Function to set the slope for trend conducting to entry
 
         Parameters
         ----------
+        clist_trend : CandleList
+                      CandleList corresponding to the trend
         k_perc : int
                  % of CandleList length that will be used as window size used for calculating the rolling average.
                  For example, if CandleList length = 20 Candles. Then the k=25% will be a window_size of 5
@@ -621,9 +626,6 @@ class CounterDbTp(Counter):
          Will set the slope class attribute and also the type attribute
          in self.clist_trend CandleList
          '''
-
-        # first, lets create a CandleList for trend
-        clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
 
         outfile = "{0}/{1}.regression.png".format(config.PNGFILES['regression'],
                                                   self.id.replace(' ', '_'))
@@ -651,7 +653,7 @@ class CounterDbTp(Counter):
         self.n_rsibounces = dict1['number']
         self.rsibounces_lengths = dict1['lengths']
 
-    def set_divergence(self, period=30):
+    def get_divergence(self, period=30):
         '''
         Function to check if there is divergence involving the RSI indicator
         for trend conducting to entry
@@ -664,7 +666,7 @@ class CounterDbTp(Counter):
 
         Returns
         -------
-        Will set the divergence class attribute
+        Will return True if there is divergence, False otherwise
         '''
 
         start = self.__get_time4candles(n=config.CTDBT['period_divergence'],
@@ -675,34 +677,4 @@ class CounterDbTp(Counter):
 
         res = clist_trend.check_if_divergence(number_of_bounces=config.CTDBT['number_of_rsi_bounces'])
 
-        self.divergence = res
-
-    def set_length_candles(self):
-        '''
-        Function to get the length in number of candles
-        for the trend CandleList
-
-        Returns
-        -------
-        Will set the length_candles class attribute
-        '''
-
-        # first, lets create a CandleList for trend
-        clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
-
-        self.length_candles=clist_trend.get_length_candles()
-
-    def set_length_pips(self):
-        '''
-        Function to get the length in number of candles
-        for self.clist_trend
-
-        Returns
-        -------
-        Will set the length_pips class attribute
-        '''
-
-        # first, lets create a CandleList for trend
-        clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
-
-        self.length_pips = clist_trend.get_length_pips()
+        return res

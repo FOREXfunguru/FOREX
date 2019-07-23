@@ -134,8 +134,8 @@ class TradeJournal(object):
 
             t=Trade(strat=row['strat'],**attrbs1)
 
-         #   if run is True:
-         #       t.run_trade()
+            if run is True:
+                t.run_trade()
                 
             trade_list.append(t)
 
@@ -168,7 +168,8 @@ class TradeJournal(object):
                 try:
                     value=getattr(t, a)
                     if p.match(a):
-                        value=value[0]
+                        # get datetime of bounce candles
+                        value=value.time
                 except:
                     warnings.warn("Error getting value for attribute: {0}".format(a))
                     value="n.a."
