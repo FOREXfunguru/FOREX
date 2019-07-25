@@ -71,7 +71,7 @@ class CounterDbTp(Counter):
     threshold: float Optional
                Threshold for detecting peaks. Default : 0.50
     min_dist: int, Optional
-              Minimum distance between peaks. Default : 5
+              Minimum distance between 1st and 2nd peak. Default : 15
     period: int, Optional
             number of candles from self.start that will be considered in order to
             to look for peaks/valleys
@@ -92,7 +92,7 @@ class CounterDbTp(Counter):
 
     '''
 
-    def __init__(self, pair, start, HR_pips=200, threshold=0.50, min_dist=5,
+    def __init__(self, pair, start, HR_pips=200, threshold=0.50, min_dist=15,
                  period1st_bounce=10, period2nd_bounce=10, period_trend=300, **kwargs):
 
         # get values from config file
@@ -338,10 +338,10 @@ class CounterDbTp(Counter):
         elif self.type == 'long':
             bounce_candles = arr[bounces == -1]
 
-        #if distance between 1st bounce and last detected bounce is less than 5 candles
+        #if distance between 1st bounce and last detected bounce is less than self.min_dist candles
         #then remove last detected bounce progressively
         diff=abs(self.bounce_1st.time-bounce_candles[-1].time)
-        min_distDelta = periodToDelta(ncandles=15, timeframe=self.timeframe)
+        min_distDelta = periodToDelta(ncandles=self.min_dist, timeframe=self.timeframe)
         while diff<=min_distDelta:
             bounce_candles=bounce_candles[:-1]
             diff = abs(self.bounce_1st.time - bounce_candles[-1].time)
@@ -513,6 +513,7 @@ class CounterDbTp(Counter):
 
         # first, lets create a CandleList for trend
         clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
+
         self.set_slope(clist_trend=clist_trend)
         self.divergence = self.get_divergence()
         self.length_candles = clist_trend.get_length_candles()

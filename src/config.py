@@ -19,7 +19,7 @@ CTDBT = {
     'HR_pips' : 100, # number of pips over/below S/R used for trying to identify bounces
     'step_pips': 5, # number of pips to increase HR_pips in order to widen the area to look for bounces
     'max_HRpips' : 500, # max number of pips that will be used in order to widen the area to look for bounces
-    'min_dist' : 5, # Minimum distance between peaks
+    'min_dist' : 15, # Minimum distance between peaks
     'period1st_bounce' : 5, # Controls the maximum number of candles allowed between
                            # self.start and this 'period1st_bounce' in order look for the 1st bounce
     'period2nd_bounce': 75,  # Controls the maximum number of candles allowed between

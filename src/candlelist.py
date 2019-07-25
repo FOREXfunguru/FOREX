@@ -648,9 +648,6 @@ class CandleList(object):
         outfile_rsi="{0}/{1}.rsi.png".format(config.PNGFILES['div'],
                                              self.id.replace(' ', '_'))
 
-        outfile_prices = "{0}/{1}.prices.png".format(config.PNGFILES['div'],
-                                                   self.id.replace(' ', '_'))
-
         bounce_rsi=self.get_pivots(outfile=outfile_rsi, part="rsi", th_up=0.1, th_down=-0.1)
 
         arr = np.array(self.clist)
@@ -672,6 +669,7 @@ class CandleList(object):
         cl = CandleList(candles_rsi, instrument=self.instrument, granularity=self.granularity,
                         id=self.id, type=self.type)
 
+        pdb.set_trace()
         # fit a regression line for rsi bounces
         outfile_rsi = "{0}/{1}.reg_rsi.png".format(config.PNGFILES['div'],
                                                self.id.replace(' ', '_'))
@@ -685,7 +683,6 @@ class CandleList(object):
 
         # check if sign of slope is different between rsi and price lines
         if np.sign(model_rsi.coef_[0, 0])!= np.sign(model_price.coef_[0, 0]):
-            pdb.set_trace()
             return True
         else:
             return False
@@ -803,11 +800,27 @@ class CandleList(object):
         outfile="{0}/{1}.itrend.png".format(config.PNGFILES['init_trend'],
                                             self.id.replace(' ', '_'))
         pivots = self.get_pivots(outfile=outfile, th_up=th_up, th_down=th_down)
-        arr = np.array(self.clist)
+        # remove last pivot as it should not be considered
+        arr = np.array(self.clist[:-1])
+        pivots=pivots[:-1]
+
+        pdb.set_trace()
+        bounces=None
+        if self.type == "long":  # this basically means that the trend direction will be down
+            bounces=arr[pivots == 1]
+        elif self.type == "short":
+            bounces=arr[pivots == -1]
+
+        bounces_sl=bounces[]
+        cl = CandleList(candles_rsi, instrument=self.instrument, granularity=self.granularity,
+                        id=self.id, type=self.type)
+
+        '''
         if self.type=="long": #this basically means that the trend direction will be down
             init_dtime=arr[pivots == 1][-1].time
         elif self.type=="short":
             init_dtime = arr[pivots == -1][-1].time
+        '''
 
         return init_dtime
 
