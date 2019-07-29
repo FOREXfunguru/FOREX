@@ -359,7 +359,6 @@ class CounterDbTp(Counter):
             in_area_list = inarea_cl.improve_resolution(part=part,price=self.SR)
 
         assert len(in_area_list) == 1, "Exactly one single bounce is needed"
-        pdb.set_trace()
         trend_i= datetime.datetime.strptime(self.trend_i, "%Y-%m-%d %H:%M:%S")
         assert in_area_list[0].time > trend_i, "Datetime for second bounce occurs earlier than self.trend_i. This is not" \
                                                " valid!"
@@ -493,7 +492,8 @@ class CounterDbTp(Counter):
 
         self.plot_features(outfile=outfile, part='openAsk')
         self.init_trend_feats()
-        resist = HArea(price=self.SR, pips=config.CTDBT['HR_pips'], instrument=self.pair, granularity=self.timeframe)
+        pdb.set_trace()
+        resist = HArea(price=self.SR, pips=100, instrument=self.pair, granularity=self.timeframe)
         self.lasttime=self.clist_period.get_lasttime(resist)
         self.set_entry_onrsi()
         self.bounces_fromlasttime()
@@ -515,7 +515,6 @@ class CounterDbTp(Counter):
         '''
 
         warnings.warn("[INFO] Run init_trend_feats")
-        pdb.set_trace()
 
         # first, lets create a CandleList for trend
         clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
