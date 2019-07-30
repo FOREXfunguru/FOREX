@@ -29,7 +29,10 @@ CTDBT = {
                          # of trend
     'period_divergence' : 30, # Number of candles to consider before 2nd_bounces in order to look for peaks/valleys in
                              # rsi
-    'number_of_rsi_bounces' : 3 # Number of rsi bounces from last (most recent) to consider for calculating divergence
+    'number_of_rsi_bounces' : 3, # Number of rsi bounces from last (most recent) to consider for calculating divergence
+    'threshold_1st_2nd_bounces' : 0.00, # Threshold pivot detection for 1st and 2nd bounces
+    'threshold_rest_bounces' : 0.01, # Threshold pivot detection for bounces after the 2nd bounce
+    'part' : 'openAsk' # What part of the candles to use in the different calculations
 }
 
 # start datetime for Oanda's historical data

@@ -279,7 +279,8 @@ class CounterDbTp(Counter):
         # get sliced CandleList from datetime defined by self.period1st_bounce period
         start_clist=self.clist_period.slice(start=self.__period1st_bounce_point)
 
-        bounces=start_clist.get_pivots(th_up=0.00, th_down=-0.00)
+        bounces=start_clist.get_pivots(th_up=config.CTDBT['threshold_1st_2nd_bounces'],
+                                       th_down=-config.CTDBT['threshold_1st_2nd_bounces'])
 
         arr = np.array(start_clist.clist)
 
@@ -328,7 +329,8 @@ class CounterDbTp(Counter):
         # get sliced CandleList from datetime defined by self.period1st_bounce period
         start_clist = self.clist_period.slice(start=start,end=self.bounce_1st.time)
 
-        bounces = start_clist.get_pivots(th_up=0.00, th_down=-0.00)
+        bounces = start_clist.get_pivots(th_up=config.CTDBT['threshold_1st_2nd_bounces'],
+                                         th_down=-config.CTDBT['threshold_1st_2nd_bounces'])
 
         arr = np.array(start_clist.clist)
 
@@ -382,7 +384,8 @@ class CounterDbTp(Counter):
         # get sliced CandleList from datetime defined by self.period period
         start_clist = self.clist_period.slice(end=self.bounce_2nd.time)
 
-        bounces = start_clist.get_pivots(th_up=0.01, th_down=-0.01)
+        bounces = start_clist.get_pivots(th_up=config.CTDBT['threshold_rest_bounces'],
+                                         th_down=-config.CTDBT['threshold_rest_bounces'])
 
         arr = np.array(start_clist.clist)
 
@@ -393,6 +396,15 @@ class CounterDbTp(Counter):
             bounce_candles = arr[bounces == -1]
 
         in_area_list = self.__inarea_bounces(bounce_candles, part=part, HRpips=self.HR_pips)
+
+        # if distance between 2nd bounce and last detected bounce is less than 1 candles
+        # then remove last detected bounce progressively
+        diff = abs(self.bounce_2nd.time - in_area_list[-1].time)
+        min_distDelta = periodToDelta(ncandles=1, timeframe=self.timeframe)
+        while diff <= min_distDelta and len(in_area_list)>0:
+            in_area_list = in_area_list[:-1]
+            if len(in_area_list)==0: break
+            diff = abs(self.bounce_2nd.time - in_area_list[-1].time)
 
         self.bounces = in_area_list
 
@@ -406,7 +418,8 @@ class CounterDbTp(Counter):
                          for output file for prices plot
         outfile_rsi : filename
                       for output file for rsi plot
-
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
         '''
 
         prices = []
@@ -442,24 +455,50 @@ class CounterDbTp(Counter):
 
         fig.savefig(outfile_prices, format='png')
 
-    def set_rsi_1st(self):
+    def set_rsi_1st(self, n=0):
         '''
         Function to set rsi_1st class attribute
 
+        Parameters
+        ----------
+        n : int
+            Number of candles to extend the bounce (self.bounce_1st+n and self.bounce_1st-n)
+            Default: 0
+
         Returns
         -------
         Nothing
         '''
 
         isonrsi = False
-        if self.bounce_1st.rsi >= 70 or self.bounce_1st.rsi <= 30:
-            isonrsi = True
+        if n==0:
+            if self.bounce_1st.rsi >= 70 or self.bounce_1st.rsi <= 30:
+                isonrsi = True
+        else:
+            datetimes=[]
+            for c in self.clist_period.clist:
+                datetimes.append(c.time)
+
+            ix=get_ixfromdatetimes_list(datetimes,self.bounce_1st.time)
+            start=ix-n
+            end=ix+n
+            if end>len(self.clist_period.clist)-1:end=len(self.clist_period.clist)-1
+            for i in range(start, end, 1):
+                if self.clist_period.clist[i].rsi >= 70 or self.clist_period.clist[i].rsi <= 30:
+                    isonrsi=True
+                    break
 
         self.rsi_1st = isonrsi
 
-    def set_rsi_2nd(self):
+    def set_rsi_2nd(self, n=0):
         '''
         Function to set rsi_2nd class attribute
+
+        Parameters
+        ----------
+        n : int
+            Number of candles to extend the bounce (self.bounce_1st+n and self.bounce_1st-n)
+            Default: 0
 
         Returns
         -------
@@ -467,8 +506,22 @@ class CounterDbTp(Counter):
         '''
 
         isonrsi = False
-        if self.bounce_2nd.rsi >= 70 or self.bounce_2nd.rsi <= 30:
-            isonrsi = True
+        if n == 0:
+            if self.bounce_2nd.rsi >= 70 or self.bounce_2nd.rsi <= 30:
+                isonrsi = True
+        else:
+            datetimes = []
+            for c in self.clist_period.clist:
+                datetimes.append(c.time)
+
+            ix = get_ixfromdatetimes_list(datetimes, self.bounce_2nd.time)
+            start = ix - n
+            end = ix + n
+            if end > len(self.clist_period.clist) - 1: end = len(self.clist_period.clist) - 1
+            for i in range(start, end, 1):
+                if self.clist_period.clist[i].rsi >= 70 or self.clist_period.clist[i].rsi <= 30:
+                    isonrsi = True
+                    break
 
         self.rsi_2nd = isonrsi
 
@@ -483,11 +536,11 @@ class CounterDbTp(Counter):
 
         warnings.warn("[INFO] Run init_feats")
 
-        self.get_first_bounce(part='openAsk')
-        self.get_second_bounce(part='openAsk')
-        self.get_restofbounces(part='openAsk')
-        self.set_rsi_1st()
-        self.set_rsi_2nd()
+        self.get_first_bounce(part= config.CTDBT['part'])
+        self.get_second_bounce(part= config.CTDBT['part'])
+        self.get_restofbounces(part= config.CTDBT['part'])
+        self.set_rsi_1st(n=2)
+        self.set_rsi_2nd(n=2)
 
         # if trend_i is not defined then calculate it
         if hasattr(self, 'trend_i'):
@@ -505,13 +558,13 @@ class CounterDbTp(Counter):
         outfile_rsi = "{0}/{1}.final_rsi.png".format(config.PNGFILES['rsi'],
                                                      self.id.replace(' ', '_'))
 
-        self.plot_features(outfile_prices=outfile, outfile_rsi=outfile_rsi, part='openAsk')
+        self.plot_features(outfile_prices=outfile, outfile_rsi=outfile_rsi, part= config.CTDBT['part'])
         self.init_trend_feats()
         resist = HArea(price=self.SR, pips=100, instrument=self.pair, granularity=self.timeframe)
         self.lasttime=self.clist_period.get_lasttime(resist)
-        self.set_entry_onrsi()
+        self.set_entry_onrsi(n=3)
         self.bounces_fromlasttime()
-        self.set_diff()
+        self.set_diff(part= config.CTDBT['part'])
         self.set_diff_rsi()
         self.set_valley()
 
@@ -554,9 +607,15 @@ class CounterDbTp(Counter):
 
         self.bounces_lasttime=bounces
 
-    def set_entry_onrsi(self):
+    def set_entry_onrsi(self, n=0):
         '''
         Function to check if entry candle is on rsi territory (>=70 or <=30)
+
+        Parameters
+        ----------
+        n : int
+            Number of candles to extend the bounce (self.start-n)
+            Default: 0
 
         Returns
         -------
@@ -567,14 +626,29 @@ class CounterDbTp(Counter):
 
         isonrsi=False
 
-        if entry_c.rsi>=70 or entry_c.rsi<=30:
-            isonrsi=True
+        if n == 0:
+            if entry_c.rsi >= 70 or entry_c.rsi <= 30:
+                isonrsi = True
+        else:
+            pdb.set_trace()
+            ix=len(self.clist_period.clist)-1
+            start = ix - n
+            end = ix
+            for i in range(start, end, 1):
+                if self.clist_period.clist[i].rsi >= 70 or self.clist_period.clist[i].rsi <= 30:
+                    isonrsi = True
+                    break
 
         self.entry_onrsi=isonrsi
 
-    def set_diff(self):
+    def set_diff(self, part='closeAsk'):
         '''
-        Function to calculate the diff between rsi_1st & rsi_2nd
+        Function to calculate the diff between 1st.part and 2nd.part
+
+        Parameters
+        ----------
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
 
         Returns
         -------
@@ -583,7 +657,8 @@ class CounterDbTp(Counter):
         and the absolute number of pips is returned
         '''
 
-        diff = self.bounce_1st.rsi - self.bounce_2nd.rsi
+
+        diff = getattr(self.bounce_1st,part) - getattr(self.bounce_2nd, part)
         (first, second) = self.pair.split("_")
         if first == 'JPY' or second == 'JPY':
             diff = diff * 100
