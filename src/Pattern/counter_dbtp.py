@@ -396,21 +396,34 @@ class CounterDbTp(Counter):
 
         self.bounces = in_area_list
 
-    def plot_features(self, outfile, part='closeAsk'):
+    def plot_features(self, outfile_prices, outfile_rsi, part='closeAsk'):
         '''
-        Function to plot all bounces identified and also the start of the trend
+        Function to plot all bounces, the start of the trend and rsi values for this trade
 
         Parameters
         ----------
-        outfile : filename for output
+        outfile_prices : filename
+                         for output file for prices plot
+        outfile_rsi : filename
+                      for output file for rsi plot
+
         '''
 
         prices = []
+        rsi = []
         datetimes = []
         for c in self.clist_period.clist:
             prices.append(getattr(c, part))
+            rsi.append(getattr(c,'rsi'))
             datetimes.append(c.time)
 
+        # plotting the rsi values
+        fig_rsi = plt.figure(figsize=config.PNGFILES['fig_sizes'])
+        ax_rsi = plt.axes()
+        ax_rsi.plot(datetimes, rsi, color="black")
+        fig_rsi.savefig(outfile_rsi, format='png')
+
+        # plotting the prices for part
         fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
         ax = plt.axes()
         ax.plot(datetimes, prices, color="black")
@@ -427,7 +440,7 @@ class CounterDbTp(Counter):
             ix = datetimes.index(dt)
             plt.scatter(datetimes[ix], prices[ix], s=50)
 
-        fig.savefig(outfile, format='png')
+        fig.savefig(outfile_prices, format='png')
 
     def set_rsi_1st(self):
         '''
@@ -489,10 +502,11 @@ class CounterDbTp(Counter):
 
         outfile = "{0}/{1}.final_bounces.png".format(config.PNGFILES['bounces'],
                                                      self.id.replace(' ', '_'))
+        outfile_rsi = "{0}/{1}.final_rsi.png".format(config.PNGFILES['rsi'],
+                                                     self.id.replace(' ', '_'))
 
-        self.plot_features(outfile=outfile, part='openAsk')
+        self.plot_features(outfile_prices=outfile, outfile_rsi=outfile_rsi, part='openAsk')
         self.init_trend_feats()
-        pdb.set_trace()
         resist = HArea(price=self.SR, pips=100, instrument=self.pair, granularity=self.timeframe)
         self.lasttime=self.clist_period.get_lasttime(resist)
         self.set_entry_onrsi()
@@ -500,7 +514,6 @@ class CounterDbTp(Counter):
         self.set_diff()
         self.set_diff_rsi()
         self.set_valley()
-        self.set_rsibounces_feats()
 
         warnings.warn("[INFO] Done init_feats")
 
@@ -516,13 +529,15 @@ class CounterDbTp(Counter):
 
         warnings.warn("[INFO] Run init_trend_feats")
 
-        # first, lets create a CandleList for trend
+        # first, lets create a CandleList for trend. From start of the trend to datetime of 2nd bounce
         clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
 
         self.set_slope(clist_trend=clist_trend)
         self.divergence = self.get_divergence()
         self.length_candles = clist_trend.get_length_candles()
         self.length_pips = clist_trend.get_length_pips()
+        self.set_rsibounces_feats(clist_trend=clist_trend)
+
 
         warnings.warn("[INFO] Done init_trend_feats")
 
@@ -643,10 +658,15 @@ class CounterDbTp(Counter):
 
         self.slope=model.coef_[0, 0]
 
-    def set_rsibounces_feats(self):
+    def set_rsibounces_feats(self, clist_trend):
         '''
         Function to set the n_rsibounces and rsibounces_lengths
-        for trend conducting to entry
+        for trend conducting from self.trend_i to 2nd bounce
+
+        Parameters
+        ----------
+        clist_trend: CandleList
+                     CandleList corresponding to the trend
 
         Returns
         -------
@@ -654,7 +674,7 @@ class CounterDbTp(Counter):
         class attributes
         '''
 
-        dict1 = self.clist_period.calc_rsi_bounces()
+        dict1 = clist_trend.calc_rsi_bounces()
 
         self.n_rsibounces = dict1['number']
         self.rsibounces_lengths = dict1['lengths']

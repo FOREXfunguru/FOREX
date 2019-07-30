@@ -252,7 +252,7 @@ class CandleList(object):
 
             if sel_c is None:
                 pdb.set_trace()
-                raise Exception("No candle was selected with time: {0}".format(datetime))
+                raise Exception("No candle was selected with time: {0}\n. It is good to check if the marked is closed".format(datetime))
             return sel_c
         elif period>0:
             start=d-delta_period
@@ -440,7 +440,6 @@ class CandleList(object):
         '''
 
         adj=False
-        init=False
         num_times=0
         length=0
         lengths=[]
@@ -450,7 +449,7 @@ class CandleList(object):
                                               "run calc_rsi first")
             if self.type is None: raise Exception("type is not defined for this Candlelist")
 
-            if self.type=='long':
+            if self.type=='short':
                 if c.rsi > 70 and adj is False:
                     num_times += 1
                     length = 1
@@ -460,7 +459,7 @@ class CandleList(object):
                 elif c.rsi < 70:
                     if adj is True: lengths.append(length)
                     adj = False
-            elif self.type=='short':
+            elif self.type=='long':
                 if c.rsi<30 and adj is False:
                     num_times+=1
                     length=1
@@ -476,6 +475,7 @@ class CandleList(object):
         if num_times != len(lengths): raise Exception("Number of times" \
                                                       "and lengths do not" \
                                                       "match")
+
         return { 'number' : num_times,
                  'lengths' : lengths}
 
@@ -626,7 +626,7 @@ class CandleList(object):
 
         return pivots
 
-    def check_if_divergence(self,part='openAsk', number_of_bounces=3):
+    def check_if_divergence(self, part='openAsk', number_of_bounces=3):
         '''
         Function to check if there is divergence between prices
         and RSI indicator
@@ -669,7 +669,6 @@ class CandleList(object):
         cl = CandleList(candles_rsi, instrument=self.instrument, granularity=self.granularity,
                         id=self.id, type=self.type)
 
-        pdb.set_trace()
         # fit a regression line for rsi bounces
         outfile_rsi = "{0}/{1}.reg_rsi.png".format(config.PNGFILES['div'],
                                                self.id.replace(' ', '_'))
@@ -704,13 +703,19 @@ class CandleList(object):
         Returns
         -------
         CandleList object
-        '''
 
+        Raises
+        ------
+        Exception
+            If start > end
+        '''
 
         sliced_clist=[]
         if start is not None and end is None:
             sliced_clist = [c for c in self.clist if c.time >= start]
         elif start is not None and end is not None:
+            if start > end:
+                raise Exception("Start is greater than end. Can't slice this CandleList")
             sliced_clist = [c for c in self.clist if c.time >= start and c.time <= end]
         elif start is None and end is not None:
             sliced_clist = [c for c in self.clist if c.time <= end]
@@ -779,7 +784,7 @@ class CandleList(object):
 
         return list_c
 
-    def calc_itrend(self, th_up=0.5, th_down=-0.5):
+    def calc_itrend(self, th_up=0.5, th_down=-0.5, part='openAsk'):
         '''
         Function to calculate the datetime for the start of this CandleList, assuming that this
         CandleList is trending. This function will calculate the start of the trend by using the self.get_pivots
@@ -791,6 +796,9 @@ class CandleList(object):
                Up threshold for detecting peaks. Default: 0.5
         th_down: float
                  Down threshold for detecting valleys. Default: -0.5
+        part : str
+               What part of the candle to use for the calculation
+               Default: 'openAsk'
 
         Returns
         -------
@@ -800,20 +808,30 @@ class CandleList(object):
         outfile="{0}/{1}.itrend.png".format(config.PNGFILES['init_trend'],
                                             self.id.replace(' ', '_'))
         pivots = self.get_pivots(outfile=outfile, th_up=th_up, th_down=th_down)
-        # remove last pivot as it should not be considered
-        arr = np.array(self.clist[:-1])
-        pivots=pivots[:-1]
 
-        pdb.set_trace()
+        # convert list to numpy array
+        arr = np.array(self.clist)
+
+        #last_candle will be used as the last point for fitting a regression line
+        last_candle=self.clist[-1]
+
         bounces=None
         if self.type == "long":  # this basically means that the trend direction will be down
             bounces=arr[pivots == 1]
         elif self.type == "short":
             bounces=arr[pivots == -1]
 
-        bounces_sl=bounces[]
-        cl = CandleList(candles_rsi, instrument=self.instrument, granularity=self.granularity,
+        pdb.set_trace()
+        #add last_candle at the end
+        bounces=np.append(bounces,last_candle)
+
+        bounces_sl = bounces[-3:-1]
+        cl = CandleList(bounces_sl, instrument=self.instrument, granularity=self.granularity,
                         id=self.id, type=self.type)
+
+        outfile = "{0}/{1}.itrend1.png".format(config.PNGFILES['init_trend'],
+                                               self.id.replace(' ', '_'))
+        (model, regression_model_mse) = cl.fit_reg_line(outfile=outfile, part=part, smooth=None)
 
         '''
         if self.type=="long": #this basically means that the trend direction will be down

@@ -1,4 +1,5 @@
 import datetime
+import pdb
 
 def calculate_pips(pair, price, decimals=1):
     '''
@@ -62,7 +63,6 @@ def add_pips2price(pair,price,pips):
 
     return iprice
 
-
 def substract_pips2price(pair, price, pips):
     '''
     Function that gets a price value and substracts
@@ -120,3 +120,34 @@ def periodToDelta(ncandles, timeframe):
         delta = datetime.timedelta(hours=int(fgran) * ncandles)
 
     return delta
+
+def get_ixfromdatetimes_list(datetimes_list, d):
+    '''
+    Function to get the index of the element that is closest
+    to the passed datetime
+
+    Parameters
+    ----------
+    datetimes_list : list
+                     List with datetimes
+    d : datetime
+
+    Returns
+    -------
+    int with index of the closest datetime to d
+    '''
+
+    sel_ix=None
+    diff=None
+    ix=0
+    for ad in datetimes_list:
+        if diff is None:
+            diff=abs(ad-d)
+            sel_ix=ix
+        else:
+            if abs(ad-d)<diff:
+                sel_ix=ix
+                diff=abs(ad-d)
+        ix+=1
+
+    return sel_ix

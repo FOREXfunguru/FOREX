@@ -16,13 +16,13 @@ OANDA_API = {
 CTDBT = {
     'period' : 2000, # number of candles from self.start that will be considered in order to
                      # to look for peaks/valleys
-    'HR_pips' : 100, # number of pips over/below S/R used for trying to identify bounces
+    'HR_pips' : 50, # number of pips over/below S/R used for trying to identify bounces
     'step_pips': 5, # number of pips to increase HR_pips in order to widen the area to look for bounces
     'max_HRpips' : 500, # max number of pips that will be used in order to widen the area to look for bounces
-    'min_dist' : 15, # Minimum distance between peaks
+    'min_dist' : 10, # Minimum distance between peaks
     'period1st_bounce' : 5, # Controls the maximum number of candles allowed between
                            # self.start and this 'period1st_bounce' in order look for the 1st bounce
-    'period2nd_bounce': 75,  # Controls the maximum number of candles allowed between
+    'period2nd_bounce': 175,  # Controls the maximum number of candles allowed between
                              # datetime controlled by 'period1st_bounce' and datetime controlled by 'period2nd_bounce'
                              # in order to detect the 2nd bounce
     'period_trend': 500, # Controls the maximum number of candles before self.bounce_2nd in order to look for start
@@ -61,6 +61,7 @@ PNGFILES = {
     'fig_sizes' : (20, 10), # tuple controlling the size of figures
     'regression' : PROJECT['root']+'regresion_imgs/',
     'bounces' : PROJECT['root']+'bounce_images/',
+    'rsi': PROJECT['root'] + 'rsi_images/',
     'init_trend' : PROJECT['root']+'init_trend_imgs/',
     'div' : PROJECT['root']+'divergence_plots/'
 }
