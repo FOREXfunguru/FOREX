@@ -14,15 +14,16 @@ OANDA_API = {
 
 #configuration for Counter doubletop
 CTDBT = {
-    'period' : 2000, # number of candles from self.start that will be considered in order to
+    'period' : 4000, # number of candles from self.start that will be considered in order to
                      # to look for peaks/valleys
     'HR_pips' : 50, # number of pips over/below S/R used for trying to identify bounces
+    'HR_pips_2nd' : 100, # number of pips over/below S/R used for trying to identify the 2nd bounce
     'step_pips': 5, # number of pips to increase HR_pips in order to widen the area to look for bounces
     'max_HRpips' : 500, # max number of pips that will be used in order to widen the area to look for bounces
     'min_dist' : 10, # Minimum distance between peaks
     'period1st_bounce' : 5, # Controls the maximum number of candles allowed between
                            # self.start and this 'period1st_bounce' in order look for the 1st bounce
-    'period2nd_bounce': 175,  # Controls the maximum number of candles allowed between
+    'period2nd_bounce': 75,  # Controls the maximum number of candles allowed between
                              # datetime controlled by 'period1st_bounce' and datetime controlled by 'period2nd_bounce'
                              # in order to detect the 2nd bounce
     'period_trend': 500, # Controls the maximum number of candles before self.bounce_2nd in order to look for start

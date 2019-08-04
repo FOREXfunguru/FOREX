@@ -10,7 +10,7 @@ parser.add_argument('--ifile', required=True, help='.xlsx files with the trades'
 
 args = parser.parse_args()
 
-td = TradeJournal(url=args.ifile, worksheet='backtesting_2407')
+td = TradeJournal(url=args.ifile, worksheet='training')
 
 #td.print_winrate(strat="counter_doubletop")
 

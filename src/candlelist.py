@@ -811,34 +811,25 @@ class CandleList(object):
 
         # convert list to numpy array
         arr = np.array(self.clist)
-
-        #last_candle will be used as the last point for fitting a regression line
-        last_candle=self.clist[-1]
-
-        bounces=None
-        if self.type == "long":  # this basically means that the trend direction will be down
-            bounces=arr[pivots == 1]
-        elif self.type == "short":
-            bounces=arr[pivots == -1]
-
         pdb.set_trace()
-        #add last_candle at the end
-        bounces=np.append(bounces,last_candle)
 
-        bounces_sl = bounces[-3:-1]
-        cl = CandleList(bounces_sl, instrument=self.instrument, granularity=self.granularity,
-                        id=self.id, type=self.type)
+        bounces=arr[np.logical_or(pivots==1, pivots==-1)]
 
-        outfile = "{0}/{1}.itrend1.png".format(config.PNGFILES['init_trend'],
-                                               self.id.replace(' ', '_'))
-        (model, regression_model_mse) = cl.fit_reg_line(outfile=outfile, part=part, smooth=None)
+        regression_model_mse_th=0
+        ix=-2
+        init_dtime=None
+        while regression_model_mse_th<150:
+            ix-=1
+            bounces_sl = bounces[ix:]
+            cl = CandleList(bounces_sl, instrument=self.instrument, granularity=self.granularity,
+                            id=self.id, type=self.type)
 
-        '''
-        if self.type=="long": #this basically means that the trend direction will be down
-            init_dtime=arr[pivots == 1][-1].time
-        elif self.type=="short":
-            init_dtime = arr[pivots == -1][-1].time
-        '''
+            outfile = "{0}/{1}.itrend1.png".format(config.PNGFILES['init_trend'],
+                                                   self.id.replace(' ', '_'))
+            (model, regression_model_mse) = cl.fit_reg_line(outfile=outfile, part=part, smooth=None)
+            regression_model_mse_th=regression_model_mse*100000
+            init_dtime=bounces[ix+1].time
+            print("h")
 
         return init_dtime
 

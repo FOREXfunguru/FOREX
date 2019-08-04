@@ -348,9 +348,9 @@ class CounterDbTp(Counter):
             bounce_candles=bounce_candles[:-1]
             diff = abs(self.bounce_1st.time - bounce_candles[-1].time)
 
-        in_area_list = self.__inarea_bounces(bounce_candles, part=part, HRpips= self.HR_pips)
+        in_area_list = self.__inarea_bounces(bounce_candles, part=part, HRpips= config.CTDBT['HR_pips_2nd'])
 
-        HRpips = self.HR_pips
+        HRpips =  config.CTDBT['HR_pips_2nd']
         while len(in_area_list) == 0 and HRpips <= config.CTDBT['max_HRpips']:
             HRpips = HRpips + config.CTDBT['step_pips']
             in_area_list = self.__inarea_bounces(bounce_candles, part=part, HRpips=HRpips)
@@ -361,9 +361,6 @@ class CounterDbTp(Counter):
             in_area_list = inarea_cl.improve_resolution(part=part,price=self.SR)
 
         assert len(in_area_list) == 1, "Exactly one single bounce is needed"
-        trend_i= datetime.datetime.strptime(self.trend_i, "%Y-%m-%d %H:%M:%S")
-        assert in_area_list[0].time > trend_i, "Datetime for second bounce occurs earlier than self.trend_i. This is not" \
-                                               " valid!"
 
         self.bounce_2nd = in_area_list[0]
 
@@ -395,16 +392,19 @@ class CounterDbTp(Counter):
         elif self.type == 'long':
             bounce_candles = arr[bounces == -1]
 
+        in_area_list = []
+
         in_area_list = self.__inarea_bounces(bounce_candles, part=part, HRpips=self.HR_pips)
 
-        # if distance between 2nd bounce and last detected bounce is less than 1 candles
-        # then remove last detected bounce progressively
-        diff = abs(self.bounce_2nd.time - in_area_list[-1].time)
-        min_distDelta = periodToDelta(ncandles=1, timeframe=self.timeframe)
-        while diff <= min_distDelta and len(in_area_list)>0:
-            in_area_list = in_area_list[:-1]
-            if len(in_area_list)==0: break
+        if len(in_area_list)>0:
+            # if distance between 2nd bounce and last detected bounce is less than 1 candles
+            # then remove last detected bounce progressively
             diff = abs(self.bounce_2nd.time - in_area_list[-1].time)
+            min_distDelta = periodToDelta(ncandles=1, timeframe=self.timeframe)
+            while diff <= min_distDelta and len(in_area_list)>0:
+                in_area_list = in_area_list[:-1]
+                if len(in_area_list)==0: break
+                diff = abs(self.bounce_2nd.time - in_area_list[-1].time)
 
         self.bounces = in_area_list
 
@@ -553,6 +553,15 @@ class CounterDbTp(Counter):
             startrend=possible_clist_trend.calc_itrend(th_up=0.05,th_down=-0.05)
             self.trend_i = startrend
 
+        trend_i=None
+        if isinstance(self.trend_i, datetime.date) is not True:
+            trend_i = datetime.datetime.strptime(self.trend_i, "%Y-%m-%d %H:%M:%S")
+        else:
+            trend_i=self.trend_i
+
+        assert self.bounce_2nd.time > trend_i, "Datetime for second bounce occurs earlier than self.trend_i. " \
+                                                "This is not valid!"
+
         outfile = "{0}/{1}.final_bounces.png".format(config.PNGFILES['bounces'],
                                                      self.id.replace(' ', '_'))
         outfile_rsi = "{0}/{1}.final_rsi.png".format(config.PNGFILES['rsi'],
@@ -584,13 +593,11 @@ class CounterDbTp(Counter):
 
         # first, lets create a CandleList for trend. From start of the trend to datetime of 2nd bounce
         clist_trend = self.clist_period.slice(start=self.trend_i, end=self.bounce_2nd.time)
-
         self.set_slope(clist_trend=clist_trend)
         self.divergence = self.get_divergence()
         self.length_candles = clist_trend.get_length_candles()
         self.length_pips = clist_trend.get_length_pips()
         self.set_rsibounces_feats(clist_trend=clist_trend)
-
 
         warnings.warn("[INFO] Done init_trend_feats")
 
@@ -630,7 +637,6 @@ class CounterDbTp(Counter):
             if entry_c.rsi >= 70 or entry_c.rsi <= 30:
                 isonrsi = True
         else:
-            pdb.set_trace()
             ix=len(self.clist_period.clist)-1
             start = ix - n
             end = ix
