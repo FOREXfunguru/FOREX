@@ -279,8 +279,10 @@ class CounterDbTp(Counter):
         # get sliced CandleList from datetime defined by self.period1st_bounce period
         start_clist=self.clist_period.slice(start=self.__period1st_bounce_point)
 
-        bounces=start_clist.get_pivots(th_up=config.CTDBT['threshold_1st_2nd_bounces'],
-                                       th_down=-config.CTDBT['threshold_1st_2nd_bounces'])
+        pivotlist=start_clist.get_pivotlist(th_up=config.CTDBT['threshold_1st_2nd_bounces'],
+                                            th_down=-config.CTDBT['threshold_1st_2nd_bounces'])
+
+        bounces=pivotlist.plist
 
         arr = np.array(start_clist.clist)
 
@@ -329,8 +331,10 @@ class CounterDbTp(Counter):
         # get sliced CandleList from datetime defined by self.period1st_bounce period
         start_clist = self.clist_period.slice(start=start,end=self.bounce_1st.time)
 
-        bounces = start_clist.get_pivots(th_up=config.CTDBT['threshold_1st_2nd_bounces'],
-                                         th_down=-config.CTDBT['threshold_1st_2nd_bounces'])
+        pivotlist = start_clist.get_pivotlist(th_up=config.CTDBT['threshold_1st_2nd_bounces'],
+                                              th_down=-config.CTDBT['threshold_1st_2nd_bounces'])
+
+        bounces = pivotlist.plist
 
         arr = np.array(start_clist.clist)
 
@@ -381,8 +385,10 @@ class CounterDbTp(Counter):
         # get sliced CandleList from datetime defined by self.period period
         start_clist = self.clist_period.slice(end=self.bounce_2nd.time)
 
-        bounces = start_clist.get_pivots(th_up=config.CTDBT['threshold_rest_bounces'],
-                                         th_down=-config.CTDBT['threshold_rest_bounces'])
+        pivotlist = start_clist.get_pivotlist(th_up=config.CTDBT['threshold_rest_bounces'],
+                                              th_down=-config.CTDBT['threshold_rest_bounces'])
+
+        bounces=pivotlist.plist
 
         arr = np.array(start_clist.clist)
 

@@ -1,6 +1,7 @@
 from scipy import stats
 from oanda_api import OandaAPI
 from zigzag import *
+from pivotlist import PivotList
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from pandas.plotting import register_matplotlib_converters
@@ -584,9 +585,10 @@ class CandleList(object):
 
         return model, regression_model_mse
 
-    def get_pivots(self, outfile=None, part='openAsk', th_up=0.5, th_down=-0.5, calc_angles=False):
+    def get_pivotlist(self, outfile=None, part='openAsk', th_up=0.5, th_down=-0.5, calc_angles=False):
         '''
-        Function to calculate the pivot points as defined by implementing the zigzag indicator.
+        Function to obtain a pivotlist object containing pivots identified using the
+        Zigzag indicator.
         It will also generate a .png image of the identified pivots
 
         Parameters
@@ -601,15 +603,10 @@ class CandleList(object):
                Up threshold for detecting peaks. Default: 0.5
         th_down: float
                  Down threshold for detecting valleys. Default: -0.5
-        calc_angles: boolean
-                     If true then calculate the angle between each pair of segments.
-                     Default: False
 
         Return
         ------
-        list: list of integers where filled with 1s (peaks), -1s (valleyes) or 0s (nothing).
-        angles: lisf of angles between segments (if calc_angles==true)
-
+        PivotList object
         '''
 
         x=[]
@@ -623,35 +620,7 @@ class CandleList(object):
 
         pivots = peak_valley_pivots(yarr, th_up, th_down)
 
-        angles=[]
-        if calc_angles is True:
-            pdb.set_trace()
-            modes = pivots_to_modes(pivots)
-            y_vals=yarr[np.logical_or(pivots == 1, pivots == -1)]
-            x_vals=xarr[np.logical_or(pivots == 1, pivots == -1)]
-            slopes=[]
-            x0=None
-            y0=None
-            for x, y in zip(x_vals, y_vals):
-                if x0 is None and y0 is None:
-                    x0 = x
-                    y0 = y
-                else:
-                    slope = (y0 - y) / (x0 - x)
-                    slopes.append(slope)
-                    x0 = x
-                    y0 = y
-
-            #calculate angle between segments (see documentation for formula)
-            m1=None
-            for m2 in slopes:
-                if m1 is None:
-                    m1=m2
-                    continue
-                tan_sigma=abs((m2-m1)/(1+m2*m1))
-                angle=math.degrees(math.atan(tan_sigma))
-                angles.append(angle)
-                m1=m2
+        pl=PivotList(plist=pivots)
 
         if outfile is not None:
             fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
@@ -662,10 +631,7 @@ class CandleList(object):
 
             fig.savefig(outfile, format='png')
 
-        if calc_angles is True:
-            return (pivots,angles)
-        else:
-            return pivots
+        return pl
 
     def check_if_divergence(self, part='openAsk', number_of_bounces=3):
         '''
