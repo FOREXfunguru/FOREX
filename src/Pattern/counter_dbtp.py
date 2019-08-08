@@ -550,7 +550,7 @@ class CounterDbTp(Counter):
                                             anchor_point=self.bounce_2nd.time,
                                             roll=False)
             possible_clist_trend = self.clist_period.slice(start=start, end=self.bounce_2nd.time)
-            startrend=possible_clist_trend.calc_itrend(th_up=0.05,th_down=-0.05)
+            startrend=possible_clist_trend.calc_itrend(th_up=0.03,th_down=-0.03)
             self.trend_i = startrend
 
         trend_i=None

@@ -13,6 +13,7 @@ import peakutils
 import numpy as np
 import matplotlib
 import config
+import math
 from utils import *
 
 matplotlib.use('PS')
@@ -583,7 +584,7 @@ class CandleList(object):
 
         return model, regression_model_mse
 
-    def get_pivots(self, outfile=None, part='openAsk', th_up=0.5, th_down=-0.5):
+    def get_pivots(self, outfile=None, part='openAsk', th_up=0.5, th_down=-0.5, calc_angles=False):
         '''
         Function to calculate the pivot points as defined by implementing the zigzag indicator.
         It will also generate a .png image of the identified pivots
@@ -600,10 +601,14 @@ class CandleList(object):
                Up threshold for detecting peaks. Default: 0.5
         th_down: float
                  Down threshold for detecting valleys. Default: -0.5
+        calc_angles: boolean
+                     If true then calculate the angle between each pair of segments.
+                     Default: False
 
         Return
         ------
-        list: list of integers where filled with 1s (peaks), -1s (valleyes) or 0s (nothing)
+        list: list of integers where filled with 1s (peaks), -1s (valleyes) or 0s (nothing).
+        angles: lisf of angles between segments (if calc_angles==true)
 
         '''
 
@@ -613,18 +618,54 @@ class CandleList(object):
             x.append(i)
             values.append(getattr(self.clist[i], part))
 
-        pivots = peak_valley_pivots(np.array(values), th_up, th_down)
+        xarr=np.array(x)
+        yarr=np.array(values)
+
+        pivots = peak_valley_pivots(yarr, th_up, th_down)
+
+        angles=[]
+        if calc_angles is True:
+            pdb.set_trace()
+            modes = pivots_to_modes(pivots)
+            y_vals=yarr[np.logical_or(pivots == 1, pivots == -1)]
+            x_vals=xarr[np.logical_or(pivots == 1, pivots == -1)]
+            slopes=[]
+            x0=None
+            y0=None
+            for x, y in zip(x_vals, y_vals):
+                if x0 is None and y0 is None:
+                    x0 = x
+                    y0 = y
+                else:
+                    slope = (y0 - y) / (x0 - x)
+                    slopes.append(slope)
+                    x0 = x
+                    y0 = y
+
+            #calculate angle between segments (see documentation for formula)
+            m1=None
+            for m2 in slopes:
+                if m1 is None:
+                    m1=m2
+                    continue
+                tan_sigma=abs((m2-m1)/(1+m2*m1))
+                angle=math.degrees(math.atan(tan_sigma))
+                angles.append(angle)
+                m1=m2
 
         if outfile is not None:
             fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
-            plt.plot(np.array(x), np.array(values), 'k:', alpha=0.5)
-            plt.plot(np.array(x)[pivots != 0], np.array(values)[pivots != 0], 'k-')
-            plt.scatter(np.array(x)[pivots == 1], np.array(values)[pivots == 1], color='g')
-            plt.scatter(np.array(x)[pivots == -1], np.array(values)[pivots == -1], color='r')
+            plt.plot(xarr, yarr, 'k:', alpha=0.5)
+            plt.plot(xarr[pivots != 0], yarr[pivots != 0], 'k-')
+            plt.scatter(xarr[pivots == 1], yarr[pivots == 1], color='g')
+            plt.scatter(xarr[pivots == -1], yarr[pivots == -1], color='r')
 
             fig.savefig(outfile, format='png')
 
-        return pivots
+        if calc_angles is True:
+            return (pivots,angles)
+        else:
+            return pivots
 
     def check_if_divergence(self, part='openAsk', number_of_bounces=3):
         '''
@@ -807,18 +848,20 @@ class CandleList(object):
 
         outfile="{0}/{1}.itrend.png".format(config.PNGFILES['init_trend'],
                                             self.id.replace(' ', '_'))
-        pivots = self.get_pivots(outfile=outfile, th_up=th_up, th_down=th_down)
+
+        (pivots,angles) = self.get_pivots(outfile=outfile, th_up=th_up, th_down=th_down, calc_angles=True)
+
+        pdb.set_trace()
 
         # convert list to numpy array
         arr = np.array(self.clist)
-        pdb.set_trace()
-
         bounces=arr[np.logical_or(pivots==1, pivots==-1)]
 
         regression_model_mse_th=0
         ix=-2
-        init_dtime=None
-        while regression_model_mse_th<150:
+        init_dtime=bounces[ix].time
+
+        while regression_model_mse_th<65 and len(bounces)>3:
             ix-=1
             bounces_sl = bounces[ix:]
             cl = CandleList(bounces_sl, instrument=self.instrument, granularity=self.granularity,
@@ -829,7 +872,6 @@ class CandleList(object):
             (model, regression_model_mse) = cl.fit_reg_line(outfile=outfile, part=part, smooth=None)
             regression_model_mse_th=regression_model_mse*100000
             init_dtime=bounces[ix+1].time
-            print("h")
 
         return init_dtime
 
