@@ -69,3 +69,8 @@ PNGFILES = {
     'init_trend' : PROJECT['root']+'init_trend_imgs/',
     'div' : PROJECT['root']+'divergence_plots/'
 }
+
+TREND = {
+    'diff_th' : 200 # Number of pips used as threshold in the retrace number of pips
+                    # in the detection of trend
+}

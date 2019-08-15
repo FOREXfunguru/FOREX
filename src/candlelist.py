@@ -585,7 +585,7 @@ class CandleList(object):
 
         return model, regression_model_mse
 
-    def get_pivotlist(self, outfile=None, part='openAsk', th_up=0.5, th_down=-0.5, calc_angles=False):
+    def get_pivotlist(self, outfile=None, part='openAsk', th_up=0.5, th_down=-0.5):
         '''
         Function to obtain a pivotlist object containing pivots identified using the
         Zigzag indicator.
@@ -620,7 +620,8 @@ class CandleList(object):
 
         pivots = peak_valley_pivots(yarr, th_up, th_down)
 
-        pl=PivotList(plist=pivots)
+        pl=PivotList(plist=pivots,
+                     clist=self.clist)
 
         if outfile is not None:
             fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
@@ -655,7 +656,9 @@ class CandleList(object):
         outfile_rsi="{0}/{1}.rsi.png".format(config.PNGFILES['div'],
                                              self.id.replace(' ', '_'))
 
-        bounce_rsi=self.get_pivots(outfile=outfile_rsi, part="rsi", th_up=0.1, th_down=-0.1)
+        plist = self.get_pivotlist(outfile=outfile_rsi, part="rsi", th_up=0.1, th_down=-0.1)
+
+        bounce_rsi=plist.plist
 
         arr = np.array(self.clist)
 
@@ -791,7 +794,7 @@ class CandleList(object):
 
         return list_c
 
-    def calc_itrend(self, th_up=0.5, th_down=-0.5, part='openAsk'):
+    def calc_itrend(self, th_up=0.5, th_down=-0.5):
         '''
         Function to calculate the datetime for the start of this CandleList, assuming that this
         CandleList is trending. This function will calculate the start of the trend by using the self.get_pivots
@@ -803,9 +806,6 @@ class CandleList(object):
                Up threshold for detecting peaks. Default: 0.5
         th_down: float
                  Down threshold for detecting valleys. Default: -0.5
-        part : str
-               What part of the candle to use for the calculation
-               Default: 'openAsk'
 
         Returns
         -------
@@ -815,29 +815,50 @@ class CandleList(object):
         outfile="{0}/{1}.itrend.png".format(config.PNGFILES['init_trend'],
                                             self.id.replace(' ', '_'))
 
-        (pivots,angles) = self.get_pivots(outfile=outfile, th_up=th_up, th_down=th_down, calc_angles=True)
+        plist = self.get_pivotlist(outfile=outfile, th_up=th_up, th_down=th_down)
 
-        pdb.set_trace()
+        arr=np.array(self.clist)
+        slist=plist.slist
+        diff_th=config.TREND['diff_th']
+        return_seen=False
+        ix = 0
+        for s in reversed(slist):
+            diff=abs(s.clist[-1].openAsk-s.clist[0].openAsk)
+            diff_pips=float(calculate_pips(self.instrument, diff))
+            ix -= 1
+            if self.type=="long":
+                if s.type == 1 :
+                    if diff_pips > diff_th:
+                        break
+                    else:
+                        return_seen=True
+                        continue
+            elif self.type == "short":
+                if s.type == -1 :
+                    if diff_pips > diff_th:
+                        break
+                    else:
+                        return_seen = True
+                        continue
+            if return_seen is True:
+                if self.type == "long":
+                    if s.type == -1 :
+                        if diff_pips < diff_th:
+                            ix += 1
+                            break
+                        else:
+                            return_seen = False
+                elif self.type == "short":
+                    if s.type == 1 :
+                        if diff_pips < diff_th:
+                            ix += 1
+                            break
+                        else:
+                            return_seen = False
 
-        # convert list to numpy array
-        arr = np.array(self.clist)
-        bounces=arr[np.logical_or(pivots==1, pivots==-1)]
+        bounces=arr[np.logical_or(plist.plist == 1, plist.plist == -1)]
 
-        regression_model_mse_th=0
-        ix=-2
         init_dtime=bounces[ix].time
-
-        while regression_model_mse_th<65 and len(bounces)>3:
-            ix-=1
-            bounces_sl = bounces[ix:]
-            cl = CandleList(bounces_sl, instrument=self.instrument, granularity=self.granularity,
-                            id=self.id, type=self.type)
-
-            outfile = "{0}/{1}.itrend1.png".format(config.PNGFILES['init_trend'],
-                                                   self.id.replace(' ', '_'))
-            (model, regression_model_mse) = cl.fit_reg_line(outfile=outfile, part=part, smooth=None)
-            regression_model_mse_th=regression_model_mse*100000
-            init_dtime=bounces[ix+1].time
 
         return init_dtime
 
@@ -867,3 +888,18 @@ class CandleList(object):
             last_time = self.clist[0].time
 
         return last_time
+
+    def get_SR_arealist(self, th_up=0.5, th_down=-0.5):
+        '''
+        Function to get a list of HArea objects representing the S/R areas
+
+        Parameters
+        ----------
+        th_up: float
+               Up threshold for detecting peaks. Default: 0.5
+        th_down: float
+                 Down threshold for detecting valleys. Default: -0.5
+
+        :return:
+        '''
+
