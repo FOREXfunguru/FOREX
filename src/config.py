@@ -74,3 +74,9 @@ TREND = {
     'diff_th' : 200 # Number of pips used as threshold in the retrace number of pips
                     # in the detection of trend
 }
+
+SRarea = {
+    'period' : 4000 # Number of candles used for identifying the SR areas
+    'th_up' : 0.5
+    'th_down' : -0.5
+}

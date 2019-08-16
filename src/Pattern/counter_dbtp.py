@@ -241,6 +241,9 @@ class CounterDbTp(Counter):
         ----------
         bounces: list
                  Containing the initial list of candles
+        HR_pips: int, Optional
+                 Number of pips over/below S/R used for trying to identify bounces
+                 Default: 200
         part: str
               Candle part used for the calculation. Default='closeAsk'
 
