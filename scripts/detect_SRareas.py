@@ -1,7 +1,12 @@
 from oanda_api import OandaAPI
+from datetime import *
 from utils import *
 import config
+import pdb
+from harea import HArea
+from candlelist import CandleList
 import argparse
+import numpy as np
 
 parser = argparse.ArgumentParser(description='Script to detect SR areas for a particular instrument/granularity')
 
@@ -18,46 +23,42 @@ oanda = OandaAPI(url=config.OANDA_API['url'],
                  dailyAlignment=config.OANDA_API['dailyAlignment'])
 
 delta_period=periodToDelta(config.SRarea['period'], args.granularity)
-start = args.start - delta_period # get the start datetime for this CandleList period
-end = args.start
+startObj = datetime.datetime.strptime(args.start, "%Y-%m-%d %H:%M:%S")
 
-oanda.run(start=start,
-          end=end,
+start = startObj - delta_period # get the start datetime for this CandleList period
+end = startObj
+
+oanda.run(start=start.isoformat(),
+          end=end.isoformat(),
           roll=True)
 
 candle_list = oanda.fetch_candleset()
 
-pivotlist = candle_list.get_pivotlist(th_up=config.SRarea['th_up'],
-                                      th_down=-config.SRarea['th_down'])
+cl=CandleList(clist=candle_list, instrument=args.instrument, granularity=args.instrument)
 
-def inarea_bounces(bounces, HRpips, part='closeAsk'):
-    '''
-    Function to identify the candles for which price is in the area defined
-    by self.SR+HRpips and self.SR-HRpips
+plist = cl.get_pivotlist(th_down=config.SRarea['th_down'],
+                         th_up=-config.SRarea['th_up'],
+                         outfile="/Users/ernesto/PycharmProjects/FOREX/scripts/test.png")
 
-    Parameters
-    ----------
-    bounces: list
-             Containing the initial list of candles
-    HR_pips: int, Optional
-             Number of pips over/below S/R used for trying to identify bounces
-             Default: 200
-    part: str
-          Candle part used for the calculation. Default='closeAsk'
+def estimate_bounces(price):
+    hr = HArea(price=price,
+               pips=100,
+               instrument=args.instrument,
+               granularity=args.granularity)
 
-    Returns
-    -------
-    list with bounces that are in the area
-    '''
-    # get bounces in the horizontal area
-    lower = substract_pips2price(self.pair, self.SR, HRpips)
-    upper = add_pips2price(self.pair, self.SR, HRpips)
+    inarea_bounces = hr.inarea_bounces(plist=plist)
+    if len(inarea_bounces)>1:
+        hr.calc_bounce_strength()
+        print("h")
 
-    in_area_list = []
-    for c in bounces:
-        price = getattr(c, part)
-        # print("u:{0}-l:{1}|p:{2}|t:{3}".format(upper, lower, price,c.time))
-        if price >= lower and price <= upper:
-            in_area_list.append(c)
+    return inarea_bounces
 
-    return in_area_list
+bounce_dict={}
+for p in np.arange(0.93104, 0.93154, 0.0001):
+    inarea_bs=estimate_bounces(price=p)
+    bounce_dict[p]=len(inarea_bs)
+
+bounce_dict_sorted = {k: v for k, v in sorted(bounce_dict.items(), key=lambda x: x[1])}
+pdb.set_trace()
+print("h")
+

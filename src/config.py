@@ -76,7 +76,7 @@ TREND = {
 }
 
 SRarea = {
-    'period' : 4000 # Number of candles used for identifying the SR areas
-    'th_up' : 0.5
-    'th_down' : -0.5
+    'period' : 1000, # Number of candles used for identifying the SR areas
+    'th_up' : 0.02,
+    'th_down' : -0.02
 }

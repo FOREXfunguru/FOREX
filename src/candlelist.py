@@ -889,17 +889,3 @@ class CandleList(object):
 
         return last_time
 
-    def get_SR_arealist(self, th_up=0.5, th_down=-0.5):
-        '''
-        Function to get a list of HArea objects representing the S/R areas
-
-        Parameters
-        ----------
-        th_up: float
-               Up threshold for detecting peaks. Default: 0.5
-        th_down: float
-                 Down threshold for detecting valleys. Default: -0.5
-
-        :return:
-        '''
-

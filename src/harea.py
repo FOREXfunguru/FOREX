@@ -30,6 +30,9 @@ class HArea(object):
            Upper limit of area
     lower : float, Optional
             Lower limit of area
+    bounces : list of Candle Objects
+              This list contains the candles for bounces bouncing in this area. This member class
+              can be initialized using the 'inarea_bounces' method
     '''
 
     def __init__(self, price, pips, instrument, granularity):
@@ -182,3 +185,51 @@ class HArea(object):
         else:
             return 'n.a.'
 
+    def inarea_bounces(self, plist, part='closeAsk'):
+        '''
+        Function to identify the candles for which price is in the area defined
+        by self.upper and self.lower
+
+        Parameters
+        ----------
+        plist: PivotList
+               Containing the PivotList for bounces (including the ones
+                 that are not in HRarea)
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
+
+        Returns
+        -------
+        list with bounces that are in the area and will also initialize the
+        'bounces' member class
+        '''
+
+        # get bounces in the horizontal area
+        bounces=plist.clist[np.logical_or(plist.pivots == 1, plist.pivots == -1)]
+
+        ix=0
+        in_area_list = []
+        for c in bounces:
+            price = getattr(c, part)
+            if price >= self.lower and price <= self.upper:
+                pdb.set_trace()
+                in_area_list.append(c)
+            ix+=1
+
+        self.bounces=in_area_list
+
+        return in_area_list
+
+    def calc_bounce_strength(self):
+        '''
+        Function to calculate the number of candles of the trend before and
+        after the bounce
+
+        :return:
+        '''
+
+        if self.bounces is None:
+            raise Exception("No bounces defined for this HRare instance")
+
+        for b in self.bounces:
+            pdb.set_trace()
