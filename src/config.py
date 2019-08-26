@@ -80,3 +80,7 @@ SRarea = {
     'th_up' : 0.02,
     'th_down' : -0.02
 }
+
+PIVOTLIST = {
+    'min_n_candles' : 5 # Minimum number of candles allowed for a particular segment
+}

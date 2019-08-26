@@ -1,7 +1,7 @@
 import pdb
-import pandas as pd
 from zigzag import *
-
+from utils import *
+import config
 
 class PivotList(object):
     '''
@@ -15,8 +15,8 @@ class PivotList(object):
     slist : list, Derived
             Lisf of Segment objects connecting the pivot points. For obtaining these segments
             I use the function 'pivots_to_modes' implemented in the Zigzag indicator
-    clist : list of Candles
-            List of candles of this PivotList
+    clist : CandleList object
+            CandleList for this PivotList
     '''
 
     def __init__(self, plist, clist):
@@ -42,7 +42,7 @@ class PivotList(object):
                 else:
                     s = Segment(type=type,
                                 count=count,
-                                clist=clist[pr_ix:ix])
+                                clist=clist.clist[pr_ix:ix])
                     type = i
                     count = 1
                     segs.append(s)
@@ -51,9 +51,61 @@ class PivotList(object):
 
         segs.append(Segment(type=type,
                             count=count,
-                            clist=clist[pr_ix:ix]))
+                            clist=clist.clist[pr_ix:ix]))
         self.slist = segs
         self.clist = clist
+
+    def get_major_segment(self,threshold=200):
+        '''
+        Function to reduce segment complexity and
+        to merge the minor trend to the major trend.
+        For example:
+        We have a segment like the following:
+        1,1,1-1,-1,1,1. After running this function we
+        will get 1,1,1,1,1,1,1
+
+        Parameters
+        ----------
+        threshold: int
+                   Number of pips used as threshold
+
+        Returns
+        -------
+        It will set the self.slist class member to the reduced Segment list
+        '''
+
+        pdb.set_trace()
+        slist = self.slist
+        return_seen = False
+        p_s= None
+        nslist=[]
+
+        # iterate over Segment list from most recent to oldest
+        for s in reversed(slist):
+            # check if s.count is below threshold and merge to next segment
+            # if it is
+            while s.count<config.PIVOTLIST['min_n_candles']:
+                p_s.merge(s)
+                nslist.append(p_s)
+                p_s=p_s
+                s=p_s
+                continue
+            # calculate the diff in pips between the last and first candles of this segment
+            diff = abs(s.clist[-1].openAsk - s.clist[0].openAsk)
+            diff_pips = float(calculate_pips(self.clist.instrument, diff))
+            if p_s is not None:
+                if p_s.type != s.type:
+                    if diff_pips > threshold:
+                        nslist.append(s)
+                        continue
+                    else:
+                        p_s.merge(s)
+                        s=p_s
+                        nslist.append(s)
+            p_s=s
+
+        self.slist=nslist
+
 
 class Segment(object):
     '''
@@ -66,13 +118,31 @@ class Segment(object):
     count : int, Required
             Number of entities of 'type'
     clist : list, Required
-            List of candles
+            List of candles for this Segment
     '''
 
     def __init__(self, type, count, clist):
         self.type = type
         self.count = count
         self.clist = clist
+
+    def merge(self, s):
+        '''
+        Function to merge self to s. The merge will be done by
+        concatenating s.clist to self.clist and increasing self.count to
+        self.count+s.count
+
+        Parameters
+        ----------
+        s : Segment object to be merge
+
+        Returns
+        -------
+        Nothing
+        '''
+
+        self.clist=self.clist+s.clist
+        self.count=len(self.clist)
 
     def __repr__(self):
         return "Segment"

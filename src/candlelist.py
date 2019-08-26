@@ -621,7 +621,7 @@ class CandleList(object):
         pivots = peak_valley_pivots(yarr, th_up, th_down)
 
         pl=PivotList(plist=pivots,
-                     clist=self.clist)
+                     clist=self)
 
         if outfile is not None:
             fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])

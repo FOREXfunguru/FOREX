@@ -1,7 +1,7 @@
 import datetime
 import pdb
 
-def calculate_pips(pair, price, decimals=1):
+def calculate_pips(pair, price):
     '''
     Function to calculate the number of pips
     for a given price
@@ -11,9 +11,6 @@ def calculate_pips(pair, price, decimals=1):
     pair : str, Required
            Currency pair used in the trade. i.e. AUD_USD
     price : float
-    decimals : int
-               Number of decimals for the returned number of
-               pips. Default : 1
 
     Returns
     -------
