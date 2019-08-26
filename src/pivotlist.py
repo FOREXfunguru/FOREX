@@ -1,7 +1,6 @@
 import pdb
 from zigzag import *
 from utils import *
-import config
 
 class PivotList(object):
     '''
@@ -42,6 +41,7 @@ class PivotList(object):
                 else:
                     s = Segment(type=type,
                                 count=count,
+                                instrument=clist.instrument,
                                 clist=clist.clist[pr_ix:ix])
                     type = i
                     count = 1
@@ -49,13 +49,15 @@ class PivotList(object):
                     pr_ix = ix
             ix += 1
 
+        self.clist = clist
         segs.append(Segment(type=type,
                             count=count,
+                            instrument=clist.instrument,
                             clist=clist.clist[pr_ix:ix]))
-        self.slist = segs
-        self.clist = clist
 
-    def get_major_segment(self,threshold=200):
+        self.slist = segs
+
+    def get_major_segment(self,pip_th=200, candle_th=10):
         '''
         Function to reduce segment complexity and
         to merge the minor trend to the major trend.
@@ -66,45 +68,41 @@ class PivotList(object):
 
         Parameters
         ----------
-        threshold: int
-                   Number of pips used as threshold
+        pip_th: int
+                Number of pips used as threshold to consolidate segments
+                Default: 200
+        candle_th: int
+                Number of candles used as threshold to consolidate segments
+                Default: 10
 
         Returns
         -------
         It will set the self.slist class member to the reduced Segment list
         '''
-
         pdb.set_trace()
-        slist = self.slist
-        return_seen = False
-        p_s= None
-        nslist=[]
+        print("h")
+        slist=[s.calc_diff() for s in self.slist]
 
+        count_retraced=0
+        nslist=[]
         # iterate over Segment list from most recent to oldest
         for s in reversed(slist):
-            # check if s.count is below threshold and merge to next segment
-            # if it is
-            while s.count<config.PIVOTLIST['min_n_candles']:
+            print("type:{0}; diff:{1}; count:{2}\n".format(s.type,s.diff,s.count))
+            if s.diff>pip_th or s.count>candle_th:
+                if count_retraced==1:
+                    p_s = nslist[-1]
+                    p_s.merge(s)
+                    nslist[-1] = p_s
+                else:
+                    nslist.append(s)
+                count_retraced=0
+            else:
+                count_retraced+=1
+                p_s=nslist[-1]
                 p_s.merge(s)
-                nslist.append(p_s)
-                p_s=p_s
-                s=p_s
-                continue
-            # calculate the diff in pips between the last and first candles of this segment
-            diff = abs(s.clist[-1].openAsk - s.clist[0].openAsk)
-            diff_pips = float(calculate_pips(self.clist.instrument, diff))
-            if p_s is not None:
-                if p_s.type != s.type:
-                    if diff_pips > threshold:
-                        nslist.append(s)
-                        continue
-                    else:
-                        p_s.merge(s)
-                        s=p_s
-                        nslist.append(s)
-            p_s=s
+                nslist[-1]=p_s
 
-        self.slist=nslist
+
 
 
 class Segment(object):
@@ -117,14 +115,20 @@ class Segment(object):
            1 or -1
     count : int, Required
             Number of entities of 'type'
-    clist : list, Required
-            List of candles for this Segment
+    instrument : str, Required
+                 Pair
+    clist : CandleList, Required
+            CandleList with list of candles for this Segment
+    diff : int, Optional
+           Diff in number of pips between the first and the last candles in this segment
     '''
 
-    def __init__(self, type, count, clist):
+    def __init__(self, type, count, instrument, clist, diff=None):
         self.type = type
         self.count = count
+        self.instrument = instrument
         self.clist = clist
+        self.diff = diff
 
     def merge(self, s):
         '''
@@ -143,6 +147,30 @@ class Segment(object):
 
         self.clist=self.clist+s.clist
         self.count=len(self.clist)
+
+    def calc_diff(self, part="openAsk"):
+        '''
+        Function to calculate the absolute difference in
+        number of pips between the first and the last candles
+        of this segment
+
+        Paramters
+        ---------
+        part : What part of the candles used for calculating the difference.
+               Default: 'openAsk'
+
+        Returns
+        -------
+        It will set the 'diff' class member attribute
+        '''
+
+        # calculate the diff in pips between the last and first candles of this segment
+        diff = abs(getattr(self.clist[-1],part) - getattr(self.clist[0],part))
+        diff_pips = float(calculate_pips(self.instrument, diff))
+
+        self.diff=diff_pips
+
+        return self
 
     def __repr__(self):
         return "Segment"
