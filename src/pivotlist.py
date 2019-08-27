@@ -79,12 +79,12 @@ class PivotList(object):
         -------
         It will set the self.slist class member to the reduced Segment list
         '''
-        pdb.set_trace()
-        print("h")
+
         slist=[s.calc_diff() for s in self.slist]
 
         count_retraced=0
         nslist=[]
+
         # iterate over Segment list from most recent to oldest
         for s in reversed(slist):
             print("type:{0}; diff:{1}; count:{2}\n".format(s.type,s.diff,s.count))
@@ -101,6 +101,9 @@ class PivotList(object):
                 p_s=nslist[-1]
                 p_s.merge(s)
                 nslist[-1]=p_s
+
+        pdb.set_trace()
+        print("h")
 
 
 
@@ -145,7 +148,7 @@ class Segment(object):
         Nothing
         '''
 
-        self.clist=self.clist+s.clist
+        self.clist=s.clist+self.clist
         self.count=len(self.clist)
 
     def calc_diff(self, part="openAsk"):
@@ -154,7 +157,7 @@ class Segment(object):
         number of pips between the first and the last candles
         of this segment
 
-        Paramters
+        Parameters
         ---------
         part : What part of the candles used for calculating the difference.
                Default: 'openAsk'
