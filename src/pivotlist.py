@@ -57,7 +57,45 @@ class PivotList(object):
 
         self.slist = segs
 
-    def get_major_segment(self,pip_th=200, candle_th=10):
+    def __trim_edge_segs(self, pip_th, candle_th):
+        '''
+        Private function to trim the edges of the 'slist'.
+        By trimming I mean to remove the segments below 'pip_th' and 'candle_th'
+
+        Parameters
+        ----------
+        pip_th: int
+                Number of pips used as threshold to consolidate segments
+                Required
+        candle_th: int
+                Number of candles used as threshold to consolidate segments
+                Required
+
+        Returns
+        -------
+        list with Segments with edge segments removed
+        '''
+
+        # removing elements at the beginning of the segment list
+        nlist=self.slist
+        for s in self.slist:
+            if s.diff > pip_th or s.count > candle_th:
+                break
+            else:
+                nlist=nlist[1:]
+
+        pdb.set_trace()
+        # removing elements at the end of the segment list
+        for s in reversed(nlist):
+            if s.diff > pip_th or s.count > candle_th:
+                break
+            else:
+                nlist.pop()
+
+        return nlist
+
+
+    def get_major_segment(self, pip_th=200, candle_th=5):
         '''
         Function to reduce segment complexity and
         to merge the minor trend to the major trend.
@@ -73,7 +111,7 @@ class PivotList(object):
                 Default: 200
         candle_th: int
                 Number of candles used as threshold to consolidate segments
-                Default: 10
+                Default: 5
 
         Returns
         -------
@@ -82,9 +120,13 @@ class PivotList(object):
 
         slist=[s.calc_diff() for s in self.slist]
 
+        nlist=self.__trim_edge_segs(pip_th,candle_th)
+
+        pdb.set_trace()
         count_retraced=0
         nslist=[]
 
+        """
         # iterate over Segment list from most recent to oldest
         for s in reversed(slist):
             print("type:{0}; diff:{1}; count:{2}\n".format(s.type,s.diff,s.count))
@@ -97,16 +139,24 @@ class PivotList(object):
                     nslist.append(s)
                 count_retraced=0
             else:
-                count_retraced+=1
-                p_s=nslist[-1]
-                p_s.merge(s)
-                nslist[-1]=p_s
-
+                if len(nslist)>0:
+                    count_retraced+=1
+                    p_s=nslist[-1]
+                    p_s.merge(s)
+                    nslist[-1]=p_s
+                else:
+                    # it is the first segment in the slist
+                    nslist.append(s)
+        """
+        ix=0
+        sel_ixs=[]
+        for s in reversed(slist):
+            print("type:{0}; diff:{1}; count:{2}".format(s.type, s.diff, s.count))
+            if s.diff < pip_th or s.count < candle_th:
+                sel_ixs.append(ix)
+            ix+=1
         pdb.set_trace()
         print("h")
-
-
-
 
 class Segment(object):
     '''
