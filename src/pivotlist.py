@@ -1,6 +1,7 @@
 import pdb
 from zigzag import *
 from utils import *
+from itertools import tee, islice, chain
 
 class PivotList(object):
     '''
@@ -84,7 +85,6 @@ class PivotList(object):
             else:
                 nlist=nlist[1:]
 
-        pdb.set_trace()
         # removing elements at the end of the segment list
         for s in reversed(nlist):
             if s.diff > pip_th or s.count > candle_th:
@@ -94,8 +94,13 @@ class PivotList(object):
 
         return nlist
 
+    def __previous_and_next(self, some_iterable):
+        prevs, items, nexts = tee(some_iterable, 3)
+        prevs = chain([None], prevs)
+        nexts = chain(islice(nexts, 1, None), [None])
+        return zip(prevs, items, nexts)
 
-    def get_major_segment(self, pip_th=200, candle_th=5):
+    def get_major_segment(self, pip_th=200, candle_th=10):
         '''
         Function to reduce segment complexity and
         to merge the minor trend to the major trend.
@@ -118,44 +123,100 @@ class PivotList(object):
         It will set the self.slist class member to the reduced Segment list
         '''
 
-        slist=[s.calc_diff() for s in self.slist]
+        [s.calc_diff() for s in self.slist]
 
         nlist=self.__trim_edge_segs(pip_th,candle_th)
-
-        pdb.set_trace()
-        count_retraced=0
+        merged=False
         nslist=[]
-
-        """
-        # iterate over Segment list from most recent to oldest
-        for s in reversed(slist):
-            print("type:{0}; diff:{1}; count:{2}\n".format(s.type,s.diff,s.count))
-            if s.diff>pip_th or s.count>candle_th:
-                if count_retraced==1:
-                    p_s = nslist[-1]
-                    p_s.merge(s)
-                    nslist[-1] = p_s
-                else:
-                    nslist.append(s)
-                count_retraced=0
-            else:
-                if len(nslist)>0:
-                    count_retraced+=1
-                    p_s=nslist[-1]
-                    p_s.merge(s)
-                    nslist[-1]=p_s
-                else:
-                    # it is the first segment in the slist
-                    nslist.append(s)
-        """
+        in_count=0
         ix=0
-        sel_ixs=[]
-        for s in reversed(slist):
-            print("type:{0}; diff:{1}; count:{2}".format(s.type, s.diff, s.count))
-            if s.diff < pip_th or s.count < candle_th:
-                sel_ixs.append(ix)
-            ix+=1
         pdb.set_trace()
+        previous=None
+        item=None
+        for previous, item, nxt in self.__previous_and_next(reversed(nlist)):
+            item=item
+            if ix==0:
+                ix += 1
+                continue
+            elif merged is True:
+                in_count+=1
+                if in_count==2:
+                    if item.diff < pip_th and item.count < candle_th:
+                        if (previous.diff > pip_th or previous.count > candle_th) \
+                                and (nxt.diff > pip_th or nxt.count > candle_th):
+                            merged = True
+                            nslist[-1].merge(item)
+                            nslist[-1].merge(nxt)
+                            previous = nslist[-1]
+                            in_count=0
+                        elif (previous.diff > pip_th or previous.count > candle_th) \
+                                and (nxt.diff < pip_th and nxt.count < candle_th):
+                            merged=True
+                            nslist[-1].merge(item)
+                            previous=nslist[-1]
+                            in_count-=1
+                    else:
+                        merged=False
+                continue
+            else:
+                if item.diff < pip_th and item.count < candle_th:
+                    if (previous.diff > pip_th or previous.count > candle_th) \
+                        and (nxt.diff > pip_th or nxt.count > candle_th):
+                        merged=True
+                        previous.merge(item)
+                        previous.merge(nxt)
+                        nslist.append(previous)
+                        previous=previous
+                        print("h")
+                else:
+                    if previous.diff > pip_th or previous.count > candle_th:
+                        nslist.append(previous)
+                        previous=previous
+            ix+=1
+        nslist.append(item)
+
+
+
+
+        merge=[]
+        for s in reversed(nlist):
+            print("type:{0}; diff:{1}; count:{2}\n".format(s.type, s.diff, s.count))
+            if s.diff > pip_th or s.count > candle_th:
+                merge.append(False)
+            else:
+                merge.append(True)
+
+        pdb.set_trace()
+        ix=0
+        to_merge=[]
+        for i in merge:
+            if i is False:
+                ix+=1
+                continue
+            elif i is True:
+                if merge[ix - 1] is False and merge[ix + 1] is False:
+                    to_merge.append(ix-1)
+                    to_merge.append(ix)
+                    to_merge.append(ix+1)
+
+            ix+=1
+
+        nslist=[]
+        # iterate over Segment list from most recent to oldest
+        ix=0
+        for s in reversed(nlist):
+            print("type:{0}; diff:{1}; count:{2}; s: {3}; e: {4} \n".format(s.type,s.diff,s.count,
+                                                                            s.clist[0].time, s.clist[-1].time))
+            if merge[ix] is False:
+                nslist.append(s)
+            else:
+                if merge[ix-1] is False and merge[ix+1] is False:
+                    p_s = nlist[ix-1]
+                    p_s.merge(s)
+                    a_s = nlist[ix+1]
+                    p_s.merge(a_s)
+                    nslist.append(p_s)
+            ix+=1
         print("h")
 
 class Segment(object):

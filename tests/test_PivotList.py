@@ -36,8 +36,8 @@ def cl_object():
                      alignmentTimezone='Europe/London',
                      dailyAlignment=22)
 
-    oanda.run(start='2017-09-11T22:00:00',
-              end='2018-01-29T22:00:00',
+    oanda.run(start='2018-01-25T22:00:00',
+              end='2018-10-12T22:00:00',
               roll=True)
 
     candle_list = oanda.fetch_candleset()
@@ -59,7 +59,7 @@ def test_get_pivotlist(cl_object):
 def test_get_major_segment(cl_object):
     '''Test get_major_segment method'''
 
-    pl = cl_object.get_pivotlist(outfile='test.png',th_up=0.01, th_down=-0.01)
+    pl = cl_object.get_pivotlist(outfile='test.png',th_up=0.015, th_down=-0.015)
 
     pl.get_major_segment()
 
