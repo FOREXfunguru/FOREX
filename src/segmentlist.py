@@ -84,11 +84,39 @@ class SegmentList(object):
         It will set the self.slist class member to the reduced Segment list
         '''
 
+        pdb.set_trace()
+
         # trim the edge segments for irrelevant segments
         nlist=self.__trim_edge_segs(pip_th=100,candle_th=10)
 
+        flist=[] # list of lists, each sublist is a merged segment
+        slist=[]
+        pr_s=None
+        is_first=False
+        for s in reversed(nlist):
+            if pr_s is None:
+                pr_s=s
+                slist.append(s)
+                continue
+            else:
+                if s.is_short() is True:
+                    slist.append(s)
+                elif len(slist)==0 and s.is_short() is False:
+                    # segment is long but is the first one in a new major segment
+                    slist.append(s)
+                    is_first=True
+                else:
+                    # segment is long
+                    if is_first is True:
+                        flist.append(slist)
+                        is_first=False
+                        slist=[]
+                        slist.append(s)
+                    else:
+                        slist.append(s)
+                        flist.append(slist)
+                        slist=[]
 
-        pdb.set_trace()
         print("h")
 
 
@@ -222,7 +250,7 @@ class Segment(object):
         True if is short
         '''
 
-        if self.count < config.SEGMENT['min_n_candles']  and self.count < config.SEGMENT['diff_in_pips']:
+        if self.count < config.SEGMENT['min_n_candles']  and self.diff < config.SEGMENT['diff_in_pips']:
             return True
         else:
             return False
