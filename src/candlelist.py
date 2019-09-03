@@ -10,11 +10,9 @@ import pandas as pd
 import pdb
 import datetime
 import re
-import peakutils
 import numpy as np
 import matplotlib
 import config
-import math
 from utils import *
 
 matplotlib.use('PS')

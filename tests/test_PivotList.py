@@ -59,7 +59,7 @@ def test_get_pivotlist(cl_object):
 def test_get_major_segment(cl_object):
     '''Test get_major_segment method'''
 
-    pl = cl_object.get_pivotlist(outfile='test.png',th_up=0.015, th_down=-0.015)
+    pl = cl_object.get_pivotlist(outfile='test.png',th_up=0.02, th_down=-0.02)
 
     pl.get_major_segment()
 

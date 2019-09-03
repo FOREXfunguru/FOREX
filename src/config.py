@@ -81,6 +81,7 @@ SRarea = {
     'th_down' : -0.02
 }
 
-PIVOTLIST = {
-    'min_n_candles' : 5 # Minimum number of candles allowed for a particular segment
+SEGMENT = {
+    'min_n_candles' : 10, # Minimum number of candles in order not be considered a short segment
+    'diff_in_pips' : 200 # Below this number of pips the segment will be short
 }
