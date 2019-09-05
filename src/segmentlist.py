@@ -61,13 +61,7 @@ class SegmentList(object):
 
         return nlist
 
-    def __previous_and_next(self, some_iterable):
-        prevs, items, nexts = tee(some_iterable, 3)
-        prevs = chain([None], prevs)
-        nexts = chain(islice(nexts, 1, None), [None])
-        return zip(prevs, items, nexts)
-
-    def merge_segments(self):
+    def merge_segments(self, outfile=None):
         '''
         Function to reduce segment complexity and
         to merge the minor trend to the major trend.
@@ -78,13 +72,22 @@ class SegmentList(object):
 
         Parameters
         ----------
+        outfile: File
+                 Print the merged segments to thie .png file
 
         Returns
         -------
-        It will set the self.slist class member to the reduced Segment list
+        It will return a list of lists. Each sublist will represent
+        a merged segment
         '''
 
+        x=[]
         pdb.set_trace()
+        if outfile is not None:
+            for s in self.slist:
+                x=x+[getattr(x, config.CTDBT['part']) for x in s.clist]
+                print("h")
+
 
         # trim the edge segments for irrelevant segments
         nlist=self.__trim_edge_segs(pip_th=100,candle_th=10)
@@ -97,9 +100,11 @@ class SegmentList(object):
             if pr_s is None:
                 pr_s=s
                 slist.append(s)
+                is_first = True
                 continue
             else:
                 if s.is_short() is True:
+                    is_first = False
                     slist.append(s)
                 elif len(slist)==0 and s.is_short() is False:
                     # segment is long but is the first one in a new major segment
@@ -109,7 +114,6 @@ class SegmentList(object):
                     # segment is long
                     if is_first is True:
                         flist.append(slist)
-                        is_first=False
                         slist=[]
                         slist.append(s)
                     else:
@@ -117,62 +121,18 @@ class SegmentList(object):
                         flist.append(slist)
                         slist=[]
 
-        print("h")
+        if len(slist)>0:
+            flist.append(slist)
+
+        if outfile is not None:
+            print("h")
+
+        return flist
 
 
 
 
 
-        """
-        merged=False
-        nslist=[]
-        in_count=0
-        ix=0
-        pdb.set_trace()
-        previous=None
-        item=None
-        for previous, item, nxt in self.__previous_and_next(reversed(nlist)):
-            item=item
-            if ix==0:
-                ix += 1
-                continue
-            elif merged is True:
-                in_count+=1
-                if in_count==2:
-                    if item.diff < pip_th and item.count < candle_th:
-                        if (previous.diff > pip_th or previous.count > candle_th) \
-                                and (nxt.diff > pip_th or nxt.count > candle_th):
-                            merged = True
-                            nslist[-1].merge(item)
-                            nslist[-1].merge(nxt)
-                            previous = nslist[-1]
-                            in_count=0
-                        elif (previous.diff > pip_th or previous.count > candle_th) \
-                                and (nxt.diff < pip_th and nxt.count < candle_th):
-                            merged=True
-                            nslist[-1].merge(item)
-                            previous=nslist[-1]
-                            in_count-=1
-                    else:
-                        merged=False
-                continue
-            else:
-                if item.diff < pip_th and item.count < candle_th:
-                    if (previous.diff > pip_th or previous.count > candle_th) \
-                        and (nxt.diff > pip_th or nxt.count > candle_th):
-                        merged=True
-                        previous.merge(item)
-                        previous.merge(nxt)
-                        nslist.append(previous)
-                        previous=previous
-                        print("h")
-                else:
-                    if previous.diff > pip_th or previous.count > candle_th:
-                        nslist.append(previous)
-                        previous=previous
-            ix+=1
-        nslist.append(item)
-        """
 
 class Segment(object):
     '''
