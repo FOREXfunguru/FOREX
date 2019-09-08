@@ -16,8 +16,8 @@ def pl_object():
                      alignmentTimezone='Europe/London',
                      dailyAlignment=22)
 
-    oanda.run(start='2016-01-14T22:00:00',
-              end='2016-08-15T22:00:00',
+    oanda.run(start='2019-03-08T22:00:00',
+              end='2019-08-09T22:00:00',
               roll=True)
 
     candle_list = oanda.fetch_candleset()
@@ -33,5 +33,5 @@ def test_merge_segments(pl_object):
 
     slist=pl_object.slist
 
-    slist.merge_segments(outfile="test.png")
+    slist.merge_segments(outfile="test1.png")
 

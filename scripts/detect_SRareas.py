@@ -12,7 +12,8 @@ parser = argparse.ArgumentParser(description='Script to detect SR areas for a pa
 
 parser.add_argument('--instrument', required=True, help='Instrument')
 parser.add_argument('--granularity', required=True, help='Granularity')
-parser.add_argument('--start', required=True, help='Start time to detect SR areas in isoformat')
+parser.add_argument('--start', required=True, help='Start time to detect SR areas in isoformat. Example: 2019-03-08 22:00:00')
+
 
 args = parser.parse_args()
 
@@ -40,21 +41,27 @@ plist = cl.get_pivotlist(th_down=config.SRarea['th_down'],
                          th_up=-config.SRarea['th_up'],
                          outfile="/Users/ernesto/PycharmProjects/FOREX/scripts/test.png")
 
+
+merged_segs=plist.slist.merge_segments(outfile="test1.png")
+
 def estimate_bounces(price):
     hr = HArea(price=price,
                pips=100,
                instrument=args.instrument,
                granularity=args.granularity)
 
+
     inarea_bounces = hr.inarea_bounces(plist=plist)
     if len(inarea_bounces)>1:
-        hr.calc_bounce_strength()
+        pdb.set_trace()
+        inarea_cl = CandleList(inarea_bounces, instrument=args.instrument, granularity=args.granularity)
+        in_area_list = inarea_cl.improve_resolution(part='openAsk', price=price)
         print("h")
 
     return inarea_bounces
 
 bounce_dict={}
-for p in np.arange(0.93104, 0.93154, 0.0001):
+for p in np.arange(0.67985, 0.72219, 0.0001):
     inarea_bs=estimate_bounces(price=p)
     bounce_dict[p]=len(inarea_bs)
 

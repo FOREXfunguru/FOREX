@@ -2,6 +2,8 @@ from itertools import tee, islice, chain
 from utils import *
 
 import config
+import numpy as np
+import matplotlib.pyplot as plt
 
 class SegmentList(object):
     '''
@@ -78,16 +80,16 @@ class SegmentList(object):
         Returns
         -------
         It will return a list of lists. Each sublist will represent
-        a merged segment
+        a merged segment. The list will be sorted from most recent segment
+        to oldest
         '''
 
-        x=[]
-        pdb.set_trace()
+        y=[]
+        dates=[]
         if outfile is not None:
             for s in self.slist:
-                x=x+[getattr(x, config.CTDBT['part']) for x in s.clist]
-                print("h")
-
+                y=y+[getattr(x, config.CTDBT['part']) for x in s.clist]
+                dates=dates+[getattr(x, 'time') for x in s.clist]
 
         # trim the edge segments for irrelevant segments
         nlist=self.__trim_edge_segs(pip_th=100,candle_th=10)
@@ -125,14 +127,28 @@ class SegmentList(object):
             flist.append(slist)
 
         if outfile is not None:
-            print("h")
+            x = [*range(0, len(dates), 1)]
+            xarr = np.array(x)
+            yarr = np.array(y)
+            ix_start=[]
+            ix_end=[]
+            for ms in reversed(flist):
+                start=ms[-1].clist[0].time
+                end=ms[0].clist[-1].time
+                ix_start.append(np.where(dates == np.datetime64(start))[0][0])
+                ix_end.append(np.where(dates == np.datetime64(end))[0][0])
+            fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
+            plt.plot(xarr, yarr, 'k:', alpha=0.5)
+            plt.scatter(xarr[[ix_start]], yarr[[ix_start]], color='g')
+            plt.scatter(xarr[[ix_end]], yarr[[ix_end]], color='r')
+            fixs=[]
+            for i, j in zip(ix_start, ix_end):
+                fixs.append(i)
+                fixs.append(j)
+            plt.plot(xarr[[fixs]], yarr[[fixs]], 'k-')
+            fig.savefig(outfile, format='png')
 
         return flist
-
-
-
-
-
 
 class Segment(object):
     '''
