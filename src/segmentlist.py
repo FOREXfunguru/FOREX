@@ -63,7 +63,7 @@ class SegmentList(object):
 
         return nlist
 
-    def merge_segments(self, outfile=None):
+    def merge_segments(self, min_n_candles, diff_in_pips, outfile=None):
         '''
         Function to reduce segment complexity and
         to merge the minor trend to the major trend.
@@ -74,6 +74,10 @@ class SegmentList(object):
 
         Parameters
         ----------
+        min_n_candles: int, Required
+                       Minimum number of candles for this segment to be considered short
+        diff_in_pips: int, Required
+                      Minimum number of pips for this segment to be considered short
         outfile: File
                  Print the merged segments to thie .png file
 
@@ -105,10 +109,10 @@ class SegmentList(object):
                 is_first = True
                 continue
             else:
-                if s.is_short() is True:
+                if s.is_short(min_n_candles, diff_in_pips) is True:
                     is_first = False
                     slist.append(s)
-                elif len(slist)==0 and s.is_short() is False:
+                elif len(slist)==0 and s.is_short(min_n_candles, diff_in_pips) is False:
                     # segment is long but is the first one in a new major segment
                     slist.append(s)
                     is_first=True
@@ -217,19 +221,37 @@ class Segment(object):
 
         return self
 
-    def is_short(self):
+    def is_short(self, min_n_candles, diff_in_pips):
         '''
         Function to check if segment is short (self.diff < pip_th or self.count < candle_th)
+
+        Parameters
+        ----------
+        min_n_candles: int, Required
+                       Minimum number of candles for this segment to be considered short
+        diff_in_pips: int, Required
+                      Minimum number of pips for this segment to be considered short
 
         Returns
         -------
         True if is short
         '''
 
-        if self.count < config.SEGMENT['min_n_candles']  and self.diff < config.SEGMENT['diff_in_pips']:
+        if self.count < min_n_candles  and self.diff < diff_in_pips:
             return True
         else:
             return False
+
+    def length(self):
+        '''
+        Function to get the length of a segment
+
+        Returns
+        -------
+        int Number of candles of this segment
+        '''
+
+        return len(self.clist)
 
     def __repr__(self):
         return "Segment"

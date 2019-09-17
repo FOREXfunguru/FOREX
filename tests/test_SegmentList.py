@@ -35,3 +35,12 @@ def test_merge_segments(pl_object):
 
     slist.merge_segments(outfile="test1.png")
 
+def test_length(pl_object):
+    '''Test the length function of segment'''
+
+    slist=pl_object.slist
+
+    assert slist.slist[0].length()==1
+
+
+
