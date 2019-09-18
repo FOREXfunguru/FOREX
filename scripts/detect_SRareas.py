@@ -18,31 +18,8 @@ parser.add_argument('--start', required=True, help='Start time to detect SR area
 
 args = parser.parse_args()
 
-oanda = OandaAPI(url=config.OANDA_API['url'],
-                 instrument=args.instrument,
-                 granularity=args.granularity,
-                 alignmentTimezone=config.OANDA_API['alignmentTimezone'],
-                 dailyAlignment=config.OANDA_API['dailyAlignment'])
 
-delta_period=periodToDelta(config.SRarea['period'], args.granularity)
-startObj = datetime.datetime.strptime(args.start, "%Y-%m-%d %H:%M:%S")
-
-start = startObj - delta_period # get the start datetime for this CandleList period
-end = startObj
-
-oanda.run(start=start.isoformat(),
-          end=end.isoformat(),
-          roll=True)
-
-candle_list = oanda.fetch_candleset()
-
-cl=CandleList(clist=candle_list, instrument=args.instrument, granularity=args.instrument)
-
-plist = cl.get_pivotlist(th_down=config.SRarea['th_down'],
-                         th_up=-config.SRarea['th_up'],
-                         outfile="/Users/ernesto/PycharmProjects/FOREX/scripts/test.png")
-
-def estimate_bounces(price):
+def estimate_bounces(price,plist):
     '''
     Function to estimate the bounces at 'price'
 
@@ -50,6 +27,8 @@ def estimate_bounces(price):
     ----------
     price: float
            Price used to identify bounces
+    plist: PivotList
+           object
 
     Returns
     -------
@@ -90,17 +69,48 @@ def calc_surr_lengths(b_list):
         # get 50 candles after and before the bounce
         start = b.time - delta_period
         end = b.time + delta_period
-        sub_cl=cl.slice(start,end)
-        sub_pl = sub_cl.get_pivotlist(outfile='test.png', th_up=0.01, th_down=-0.01)
+
+        # run api query with new period
+        oanda.run(start=start.isoformat(),
+                  end=end.isoformat(),
+                  roll=True)
+
+        candle_list = oanda.fetch_candleset()
+        sub_cl = CandleList(clist=candle_list, instrument=args.instrument, granularity=args.instrument)
+
+        sub_pl = sub_cl.get_pivotlist(outfile='test_subcl.png', th_up=0.01, th_down=-0.01)
         slist = sub_pl.slist
 
-        mslist=slist.merge_segments(min_n_candles=5, diff_in_pips=100, outfile="test1.png")
+        mslist=slist.merge_segments(min_n_candles=10, diff_in_pips=200, outfile="test_subcl1.png")
         print("h")
 
+oanda = OandaAPI(url=config.OANDA_API['url'],
+                 instrument=args.instrument,
+                 granularity=args.granularity,
+                 alignmentTimezone=config.OANDA_API['alignmentTimezone'],
+                 dailyAlignment=config.OANDA_API['dailyAlignment'])
+
+delta_period=periodToDelta(config.SRarea['period'], args.granularity)
+startObj = datetime.datetime.strptime(args.start, "%Y-%m-%d %H:%M:%S")
+
+start = startObj - delta_period # get the start datetime for this CandleList period
+end = startObj
+
+oanda.run(start=start.isoformat(),
+          end=end.isoformat(),
+          roll=True)
+
+candle_list = oanda.fetch_candleset()
+
+cl=CandleList(clist=candle_list, instrument=args.instrument, granularity=args.instrument)
+
+plist = cl.get_pivotlist(th_down=config.SRarea['th_down'],
+                         th_up=-config.SRarea['th_up'],
+                         outfile="/Users/ernesto/PycharmProjects/FOREX/scripts/test.png")
 
 bounce_dict={}
 for p in np.arange(0.67985, 0.72219, 0.0001):
-    inarea_bs=estimate_bounces(price=p)
+    inarea_bs=estimate_bounces(price=p, plist=plist)
     if len(inarea_bs)>0:
         calc_surr_lengths(inarea_bs)
         bounce_dict[p]=len(inarea_bs)

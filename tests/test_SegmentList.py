@@ -28,19 +28,28 @@ def pl_object():
 
     return pl
 
+"""
 def test_merge_segments(pl_object):
     '''Test merge_segments method'''
 
     slist=pl_object.slist
 
-    slist.merge_segments(outfile="test1.png")
+    mslist=slist.merge_segments(outfile="test1.png", min_n_candles=10, diff_in_pips=200)
 
-def test_length(pl_object):
-    '''Test the length function of segment'''
+    assert len(mslist)==4
+
+def test_length_of_segment(pl_object):
+    '''Test the length function of Segment'''
 
     slist=pl_object.slist
 
     assert slist.slist[0].length()==1
+"""
 
+def test_length_of_segmentlist(pl_object):
+    '''Test the length function of SegmentList'''
 
+    slist = pl_object.slist
+
+    assert slist.length()==110
 

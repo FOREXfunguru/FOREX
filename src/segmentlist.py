@@ -83,7 +83,7 @@ class SegmentList(object):
 
         Returns
         -------
-        It will return a list of lists. Each sublist will represent
+        It will return a list of SegmentLists. Each SegmentList will represent
         a merged segment. The list will be sorted from most recent segment
         to oldest
         '''
@@ -98,6 +98,7 @@ class SegmentList(object):
         # trim the edge segments for irrelevant segments
         nlist=self.__trim_edge_segs(pip_th=100,candle_th=10)
 
+        flistb=[]
         flist=[] # list of lists, each sublist is a merged segment
         slist=[]
         pr_s=None
@@ -120,16 +121,20 @@ class SegmentList(object):
                     # segment is long
                     if is_first is True:
                         flist.append(slist)
+                        flistb.append(SegmentList(instrument=self.instrument,slist=slist))
                         slist=[]
                         slist.append(s)
                     else:
                         slist.append(s)
                         flist.append(slist)
+                        flistb.append(SegmentList(instrument=self.instrument, slist=slist))
                         slist=[]
 
         if len(slist)>0:
             flist.append(slist)
+            flistb.append(SegmentList(instrument=self.instrument, slist=slist))
 
+        # the code below is just to plot the merged segments
         if outfile is not None:
             x = [*range(0, len(dates), 1)]
             xarr = np.array(x)
@@ -152,7 +157,23 @@ class SegmentList(object):
             plt.plot(xarr[[fixs]], yarr[[fixs]], 'k-')
             fig.savefig(outfile, format='png')
 
-        return flist
+        return flistb
+
+    def length(self):
+        '''
+        Get length in terms of number of candles representing the sum of candles in each Segment
+        of the SegmentList
+
+        Returns
+        -------
+        int
+        '''
+
+        length=0
+        for s in self.slist:
+            length=length+len(s.clist)
+
+        return length
 
 class Segment(object):
     '''
