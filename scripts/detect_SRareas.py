@@ -65,7 +65,6 @@ def calc_surr_lengths(b_list):
     delta_period = periodToDelta(100, args.granularity)
 
     for b in b_list:
-        pdb.set_trace()
         # get 50 candles after and before the bounce
         start = b.time - delta_period
         end = b.time + delta_period
@@ -82,6 +81,7 @@ def calc_surr_lengths(b_list):
         slist = sub_pl.slist
 
         mslist=slist.merge_segments(min_n_candles=10, diff_in_pips=200, outfile="test_subcl1.png")
+        pdb.set_trace()
         print("h")
 
 oanda = OandaAPI(url=config.OANDA_API['url'],

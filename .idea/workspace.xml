@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="Working on detect SRareas">
+    <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/detect_SRareas.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/detect_SRareas.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/segmentlist.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/segmentlist.py" afterDir="false" />
@@ -21,17 +21,17 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/config.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-217">
+            <state relative-caret-position="525">
               <caret line="35" column="21" selection-start-line="35" selection-start-column="14" selection-end-line="35" selection-end-column="21" />
             </state>
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/detect_SRareas.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="488">
-              <caret line="96" column="67" selection-start-line="96" selection-start-column="67" selection-end-line="96" selection-end-column="67" />
+            <state relative-caret-position="50">
+              <caret line="67" selection-start-line="67" selection-end-line="67" />
               <folding>
                 <element signature="e#0#30#0" expanded="true" />
               </folding>
@@ -60,13 +60,25 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/segmentlist.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="113">
-              <caret line="223" column="50" selection-start-line="223" selection-start-column="38" selection-end-line="223" selection-end-column="50" />
+            <state relative-caret-position="182">
+              <caret line="135" column="89" selection-start-line="135" selection-start-column="89" selection-end-line="135" selection-end-column="89" />
               <folding>
                 <element signature="e#0#40#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/test_SegmentList.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="168">
+              <caret line="42" column="23" selection-start-line="42" selection-start-column="23" selection-end-line="42" selection-end-column="23" />
+              <folding>
+                <element signature="e#0#32#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -107,8 +119,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>plot_features</find>
-      <find>calc_rsi</find>
       <find>set_rsibounces_feats</find>
       <find>calc_rsi_bounces</find>
       <find>bounces_fromlasttime</find>
@@ -137,6 +147,8 @@
       <find>get_pivotlist</find>
       <find>improve</find>
       <find>is_short</find>
+      <find>flist</find>
+      <find>plist</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -228,9 +240,9 @@
         <option value="$PROJECT_DIR$/src/config.py" />
         <option value="$PROJECT_DIR$/src/harea.py" />
         <option value="$PROJECT_DIR$/src/pivotlist.py" />
+        <option value="$PROJECT_DIR$/scripts/detect_SRareas.py" />
         <option value="$PROJECT_DIR$/tests/test_SegmentList.py" />
         <option value="$PROJECT_DIR$/src/segmentlist.py" />
-        <option value="$PROJECT_DIR$/scripts/detect_SRareas.py" />
       </list>
     </option>
   </component>
@@ -243,6 +255,7 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -285,7 +298,6 @@
           <select />
         </subPane>
       </pane>
-      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -410,20 +422,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
-    </task>
-    <task id="LOCAL-00061" summary="Minor improvements1">
-      <created>1558563818486</created>
-      <option name="number" value="00061" />
-      <option name="presentableId" value="LOCAL-00061" />
-      <option name="project" value="LOCAL" />
-      <updated>1558563818490</updated>
-    </task>
-    <task id="LOCAL-00062" summary="Improving docs">
-      <created>1559411952214</created>
-      <option name="number" value="00062" />
-      <option name="presentableId" value="LOCAL-00062" />
-      <option name="project" value="LOCAL" />
-      <updated>1559411952215</updated>
     </task>
     <task id="LOCAL-00063" summary="Adding volume cutoff feature to OandaAPI">
       <created>1559466485108</created>
@@ -754,7 +752,21 @@
       <option name="project" value="LOCAL" />
       <updated>1567975889238</updated>
     </task>
-    <option name="localTasksCounter" value="110" />
+    <task id="LOCAL-00110" summary="Working on detect SRareas1">
+      <created>1568757503107</created>
+      <option name="number" value="00110" />
+      <option name="presentableId" value="LOCAL-00110" />
+      <option name="project" value="LOCAL" />
+      <updated>1568757503109</updated>
+    </task>
+    <task id="LOCAL-00111" summary="Writing length function on SegmentList">
+      <created>1568844985006</created>
+      <option name="number" value="00111" />
+      <option name="presentableId" value="LOCAL-00111" />
+      <option name="project" value="LOCAL" />
+      <updated>1568844985006</updated>
+    </task>
+    <option name="localTasksCounter" value="112" />
     <servers />
   </component>
   <component name="TodoView">
@@ -769,7 +781,7 @@
   <component name="ToolWindowManager">
     <frame x="0" y="0" width="1440" height="900" extended-state="0" />
     <layout>
-      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.697695" visible="true" weight="0.13178295" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.697695" visible="true" weight="0.13178295" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.30230495" side_tool="true" weight="0.1319417" />
       <window_info anchor="bottom" id="Message" order="0" />
@@ -780,7 +792,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32771084" />
-      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.1746988" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.39759037" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5024665" side_tool="true" weight="0.38554215" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32771084" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -808,8 +820,6 @@
     </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Finished code for detecting first bounce" />
-    <MESSAGE value="Working on code for detecting 2nd bounce" />
     <MESSAGE value="Working on init_trend detection" />
     <MESSAGE value="Working on trend_feats1" />
     <MESSAGE value="Working on trend_feats2" />
@@ -833,7 +843,9 @@
     <MESSAGE value="Major code reorganization in order to improve get_major_segment. It involves creation of new class named SegmentList-1" />
     <MESSAGE value="Working on plotting the new Segments" />
     <MESSAGE value="Working on detect SRareas" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working on detect SRareas" />
+    <MESSAGE value="Working on detect SRareas1" />
+    <MESSAGE value="Writing length function on SegmentList" />
+    <option name="LAST_COMMIT_MESSAGE" value="Writing length function on SegmentList" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1122,6 +1134,13 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="525">
+          <caret line="35" column="21" selection-start-line="35" selection-start-column="14" selection-end-line="35" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/src/Pattern/counter_dbtp.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4545">
@@ -1159,39 +1178,32 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/detect_SRareas.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="50">
+          <caret line="67" selection-start-line="67" selection-end-line="67" />
+          <folding>
+            <element signature="e#0#30#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_SegmentList.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="383">
-          <caret line="35" column="45" selection-start-line="35" selection-start-column="45" selection-end-line="35" selection-end-column="45" />
+        <state relative-caret-position="168">
+          <caret line="42" column="23" selection-start-line="42" selection-start-column="23" selection-end-line="42" selection-end-column="23" />
           <folding>
             <element signature="e#0#32#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-217">
-          <caret line="35" column="21" selection-start-line="35" selection-start-column="14" selection-end-line="35" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/segmentlist.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="113">
-          <caret line="223" column="50" selection-start-line="223" selection-start-column="38" selection-end-line="223" selection-end-column="50" />
+        <state relative-caret-position="182">
+          <caret line="135" column="89" selection-start-line="135" selection-start-column="89" selection-end-line="135" selection-end-column="89" />
           <folding>
             <element signature="e#0#40#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/scripts/detect_SRareas.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="488">
-          <caret line="96" column="67" selection-start-line="96" selection-start-column="67" selection-end-line="96" selection-end-column="67" />
-          <folding>
-            <element signature="e#0#30#0" expanded="true" />
           </folding>
         </state>
       </provider>

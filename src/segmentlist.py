@@ -98,7 +98,8 @@ class SegmentList(object):
         # trim the edge segments for irrelevant segments
         nlist=self.__trim_edge_segs(pip_th=100,candle_th=10)
 
-        flistb=[]
+        pdb.set_trace()
+        flistb=[] # list of SegmentLists
         flist=[] # list of lists, each sublist is a merged segment
         slist=[]
         pr_s=None
@@ -120,20 +121,21 @@ class SegmentList(object):
                 else:
                     # segment is long
                     if is_first is True:
-                        flist.append(slist)
-                        flistb.append(SegmentList(instrument=self.instrument,slist=slist))
+                        flist.append(reversed(slist))
+                        flistb.append(SegmentList(instrument=self.instrument,slist=reversed(slist)))
                         slist=[]
                         slist.append(s)
                     else:
                         slist.append(s)
-                        flist.append(slist)
-                        flistb.append(SegmentList(instrument=self.instrument, slist=slist))
+                        flist.append(reversed(slist))
+                        flistb.append(SegmentList(instrument=self.instrument, slist=reversed(slist)))
                         slist=[]
 
         if len(slist)>0:
-            flist.append(slist)
-            flistb.append(SegmentList(instrument=self.instrument, slist=slist))
+            flist.append(reversed(slist))
+            flistb.append(SegmentList(instrument=self.instrument, slist=reversed(slist)))
 
+        pdb.set_trace()
         # the code below is just to plot the merged segments
         if outfile is not None:
             x = [*range(0, len(dates), 1)]
@@ -174,6 +176,31 @@ class SegmentList(object):
             length=length+len(s.clist)
 
         return length
+
+    def start(self):
+        '''
+        Get the start datetime for this SegmentList
+        This start will be the time of the first candle in SegmentList
+
+        Returns
+        -------
+        A datetime object
+        '''
+
+        return self.slist[0].clist[0].time
+
+    def end(self):
+        '''
+        Get the end datetime for this SegmentList
+        This start will be the time of the first candle in SegmentList
+
+        Returns
+        -------
+        A datetime object
+        '''
+
+        return self.slist[-1].clist[-1].time
+
 
 class Segment(object):
     '''
