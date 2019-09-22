@@ -47,21 +47,51 @@ def pl_object1():
 
     cl = CandleList(candle_list, instrument='AUD_USD', type='long')
 
-    pl = cl.get_pivotlist(outfile='test.png', th_up=0.01, th_down=-0.01)
+    pl = cl.get_pivotlist(outfile='test.png', th_up=0.02, th_down=-0.02)
 
     return pl
 
+@pytest.fixture
+def pl_object2():
+    '''Returns PivotList object'''
 
-def test_merge_segments(pl_object1):
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='AUD_USD',
+                     granularity='D',
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22)
+
+    oanda.run(start='2016-01-15T22:00:00',
+              end='2016-08-17T22:00:00',
+              roll=True)
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list, instrument='AUD_USD', type='long')
+
+    pl = cl.get_pivotlist(outfile='test.png', th_up=0.02, th_down=-0.02)
+
+    return pl
+
+def test_merge_segments2(pl_object2):
+    '''Test merge_segments method'''
+
+    slist=pl_object2.slist
+
+    mslist=slist.merge_segments(outfile="test1.png", min_n_candles=10, diff_in_pips=200)
+
+    assert len(mslist)==4
+
+"""
+def test_merge_segments1(pl_object1):
     '''Test merge_segments method'''
 
     slist=pl_object1.slist
 
-    pdb.set_trace()
     mslist=slist.merge_segments(outfile="test1.png", min_n_candles=10, diff_in_pips=200)
 
-    assert len(mslist)==4
-"""
+    assert len(mslist)==3
+
 def test_length_of_segment(pl_object):
     '''Test the length function of Segment'''
 

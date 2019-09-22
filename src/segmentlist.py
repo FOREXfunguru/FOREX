@@ -1,4 +1,3 @@
-from itertools import tee, islice, chain
 from utils import *
 
 import config
@@ -98,56 +97,56 @@ class SegmentList(object):
         # trim the edge segments for irrelevant segments
         nlist=self.__trim_edge_segs(pip_th=100,candle_th=10)
 
-        pdb.set_trace()
-        flistb=[] # list of SegmentLists
-        flist=[] # list of lists, each sublist is a merged segment
+        flist=[] # list of SegmentLists
         slist=[]
         pr_s=None
         is_first=False
-        for s in reversed(nlist):
+
+        for s in nlist:
             if pr_s is None:
+                # Initialize all structures
                 pr_s=s
                 slist.append(s)
                 is_first = True
                 continue
-            else:
+            else: # structures have been initialized
                 if s.is_short(min_n_candles, diff_in_pips) is True:
                     is_first = False
                     slist.append(s)
                 elif len(slist)==0 and s.is_short(min_n_candles, diff_in_pips) is False:
-                    # segment is long but is the first one in a new major segment
+                    # segment is long but is the first one in a new non short segment
                     slist.append(s)
                     is_first=True
                 else:
-                    # segment is long
+                    # current segment is long and the previous one is non-short
                     if is_first is True:
-                        flist.append(reversed(slist))
-                        flistb.append(SegmentList(instrument=self.instrument,slist=reversed(slist)))
-                        slist=[]
-                        slist.append(s)
+                        #append to final structure the previous slist
+                        flist.append(SegmentList(instrument=self.instrument,slist=slist))
+                        slist=[] # reinitialize list
+                        slist.append(s) # add first segment
                     else:
+                        # is_first is False, this means that previous Segment is short
                         slist.append(s)
-                        flist.append(reversed(slist))
-                        flistb.append(SegmentList(instrument=self.instrument, slist=reversed(slist)))
+                        flist.append(SegmentList(instrument=self.instrument, slist=slist))
                         slist=[]
 
         if len(slist)>0:
-            flist.append(reversed(slist))
-            flistb.append(SegmentList(instrument=self.instrument, slist=reversed(slist)))
+            flist.append(SegmentList(instrument=self.instrument, slist=slist))
 
-        pdb.set_trace()
         # the code below is just to plot the merged segments
         if outfile is not None:
             x = [*range(0, len(dates), 1)]
-            xarr = np.array(x)
-            yarr = np.array(y)
+            xarr = np.array(x) # convert to numpy array
+            yarr = np.array(y) # convert to numpy array
             ix_start=[]
             ix_end=[]
-            for ms in reversed(flist):
-                start=ms[-1].clist[0].time
-                end=ms[0].clist[-1].time
-                ix_start.append(np.where(dates == np.datetime64(start))[0][0])
-                ix_end.append(np.where(dates == np.datetime64(end))[0][0])
+            # iterate over each of the SegmentLists representing
+            # each merged segment
+            for ms in flist:
+                ix_start.append(np.where(dates == np.datetime64(ms.start()))[0][0]) # get the ix in dates of the start of merged
+                                                                                    # segment
+                ix_end.append(np.where(dates == np.datetime64(ms.end()))[0][0]) # get the ix in dates of the end of merged
+                                                                                # segment
             fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
             plt.plot(xarr, yarr, 'k:', alpha=0.5)
             plt.scatter(xarr[[ix_start]], yarr[[ix_start]], color='g')
@@ -159,7 +158,7 @@ class SegmentList(object):
             plt.plot(xarr[[fixs]], yarr[[fixs]], 'k-')
             fig.savefig(outfile, format='png')
 
-        return flistb
+        return flist
 
     def length(self):
         '''
@@ -175,6 +174,8 @@ class SegmentList(object):
         for s in self.slist:
             length=length+len(s.clist)
 
+        self.length=length
+
         return length
 
     def start(self):
@@ -187,7 +188,10 @@ class SegmentList(object):
         A datetime object
         '''
 
-        return self.slist[0].clist[0].time
+        start=self.slist[0].clist[0].time
+        self.start= start
+
+        return start
 
     def end(self):
         '''
@@ -199,7 +203,19 @@ class SegmentList(object):
         A datetime object
         '''
 
-        return self.slist[-1].clist[-1].time
+        end= self.slist[-1].clist[-1].time
+        self.end= end
+
+        return end
+
+    def __repr__(self):
+        return "SegmentList"
+
+    def __str__(self):
+        out_str = ""
+        for attr, value in self.__dict__.items():
+            out_str += "%s:%s " % (attr, value)
+        return out_str
 
 
 class Segment(object):
@@ -285,7 +301,7 @@ class Segment(object):
         True if is short
         '''
 
-        if self.count < min_n_candles  and self.diff < diff_in_pips:
+        if self.count < min_n_candles and self.diff < diff_in_pips:
             return True
         else:
             return False
@@ -300,6 +316,29 @@ class Segment(object):
         '''
 
         return len(self.clist)
+
+    def start(self):
+        '''
+        Function that returns the start of this
+        Segment
+
+        Returns
+        -------
+        datetime
+        '''
+        return self.clist[0].time
+
+    def end(self):
+        '''
+        Function that returns the end of this
+        Segment
+
+        Returns
+        -------
+        datetime
+        '''
+        return self.clist[-1].time
+
 
     def __repr__(self):
         return "Segment"

@@ -56,15 +56,23 @@ def calc_surr_lengths(b_list):
     Parameters
     ----------
     blist: List of candles representing each bounce
+
+    Returns
+    -------
+    Dict of dicts: Each key will be the datetime of the bounce
+                   and each value will be the number of candles
+                   of the SegmentList before and after the bounce
     '''
 
     if len(b_list)==0:
         warnings.warn("No bounces in area. Skipping...")
         return 0
 
+    bounce_lengths={}
     delta_period = periodToDelta(100, args.granularity)
 
     for b in b_list:
+        bounce_lengths[b.time]={}
         # get 50 candles after and before the bounce
         start = b.time - delta_period
         end = b.time + delta_period
@@ -77,12 +85,27 @@ def calc_surr_lengths(b_list):
         candle_list = oanda.fetch_candleset()
         sub_cl = CandleList(clist=candle_list, instrument=args.instrument, granularity=args.instrument)
 
-        sub_pl = sub_cl.get_pivotlist(outfile='test_subcl.png', th_up=0.01, th_down=-0.01)
+        sub_pl = sub_cl.get_pivotlist(outfile='test_subcl.png', th_up=0.02, th_down=-0.02)
         slist = sub_pl.slist
 
         mslist=slist.merge_segments(min_n_candles=10, diff_in_pips=200, outfile="test_subcl1.png")
-        pdb.set_trace()
-        print("h")
+        diff=None
+        pr_ms=None
+        max_pr_ms=None
+        c_ms=None
+        for ms in mslist:
+            if diff is None:
+                pr_ms=ms
+                diff= abs(ms.start-b.time)
+            else:
+                if abs(ms.start-b.time)<diff:
+                    max_pr_ms=pr_ms
+                    c_ms=ms
+                    diff=abs(ms.start-b.time)
+                pr_ms = ms
+        bounce_lengths[b.time]={'pre': max_pr_ms.length(),
+                                'after': c_ms.length()}
+        return bounce_lengths
 
 oanda = OandaAPI(url=config.OANDA_API['url'],
                  instrument=args.instrument,
@@ -112,7 +135,8 @@ bounce_dict={}
 for p in np.arange(0.67985, 0.72219, 0.0001):
     inarea_bs=estimate_bounces(price=p, plist=plist)
     if len(inarea_bs)>0:
-        calc_surr_lengths(inarea_bs)
+        pdb.set_trace()
+        seg_lens=calc_surr_lengths(inarea_bs)
         bounce_dict[p]=len(inarea_bs)
 
 bounce_dict_sorted = {k: v for k, v in sorted(bounce_dict.items(), key=lambda x: x[1])}
