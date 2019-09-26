@@ -8,6 +8,7 @@ from harea import HArea
 from candlelist import CandleList
 import argparse
 import numpy as np
+import pandas as pd
 
 parser = argparse.ArgumentParser(description='Script to detect SR areas for a particular instrument/granularity')
 
@@ -36,15 +37,17 @@ def estimate_bounces(price,plist):
     '''
 
     hr = HArea(price=price,
-               pips=100,
+               pips=hr_extension,
                instrument=args.instrument,
                granularity=args.granularity)
+
+    print("upper: {0} - lower: {1}".format(hr.upper,hr.lower))
 
 
     inarea_bounces = hr.inarea_bounces(plist=plist)
     if len(inarea_bounces)>1:
         inarea_cl = CandleList(inarea_bounces, instrument=args.instrument, granularity=args.granularity)
-        inarea_bounces = inarea_cl.improve_resolution(part='openAsk', price=price)
+        inarea_bounces = inarea_cl.improve_resolution(part='openAsk', price=price, min_dist=5)
 
     return inarea_bounces
 
@@ -105,7 +108,8 @@ def calc_surr_lengths(b_list):
                 pr_ms = ms
         bounce_lengths[b.time]={'pre': max_pr_ms.length(),
                                 'after': c_ms.length()}
-        return bounce_lengths
+
+    return bounce_lengths
 
 oanda = OandaAPI(url=config.OANDA_API['url'],
                  instrument=args.instrument,
@@ -132,14 +136,26 @@ plist = cl.get_pivotlist(th_down=config.SRarea['th_down'],
                          outfile="/Users/ernesto/PycharmProjects/FOREX/scripts/test.png")
 
 bounce_dict={}
-for p in np.arange(0.67985, 0.72219, 0.0001):
-    inarea_bs=estimate_bounces(price=p, plist=plist)
-    if len(inarea_bs)>0:
-        pdb.set_trace()
-        seg_lens=calc_surr_lengths(inarea_bs)
-        bounce_dict[p]=len(inarea_bs)
 
-bounce_dict_sorted = {k: v for k, v in sorted(bounce_dict.items(), key=lambda x: x[1])}
+hr_extension=30
+increment_price=0.006 # the increment of price in number of pips is double the hr_extension
+for p in np.arange(0.67985, 0.72219, increment_price):
+    print("Price: {0}".format(p))
+    inarea_bs=estimate_bounces(price=p, plist=plist)
+    print("Length: {0}".format(len(inarea_bs)))
+    if len(inarea_bs)>0:
+        seg_lens=calc_surr_lengths(inarea_bs)
+        bounce_dict[p]=seg_lens
+
+ix=1
+final_dict={}
+for price in bounce_dict.keys():
+    for d,segs in bounce_dict[price].items():
+        final_dict[ix]=[price,d,segs['pre'],segs['after']]
+        ix+=1
+
+df = pd.DataFrame.from_dict(final_dict, orient='index',columns=['price','datetime','pre','after'])
+
 pdb.set_trace()
 print("h")
 

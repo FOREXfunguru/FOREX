@@ -4,13 +4,11 @@
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/detect_SRareas.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/detect_SRareas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/test.png" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/test.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/test_subcl.png" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/test_subcl.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/test_subcl1.png" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/test_subcl1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/segmentlist.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/segmentlist.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test.bef.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test.png" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test1.png" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test1.png" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_SegmentList.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_SegmentList.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/candlelist.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/candlelist.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -24,21 +22,9 @@
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
       <file pinned="false" current-in-tab="false">
-        <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.py">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="5040">
-              <caret line="336" column="22" selection-end-line="336" selection-end-column="22" />
-              <folding>
-                <element signature="e#0#40#0" expanded="true" />
-              </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/segmentlist.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="258">
+            <state relative-caret-position="1640">
               <caret line="190" selection-start-line="190" selection-end-line="190" />
               <folding>
                 <element signature="e#2#21#0" expanded="true" />
@@ -51,7 +37,7 @@
         <entry file="file://$PROJECT_DIR$/src/candle.py">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="215">
-              <caret line="172" column="22" lean-forward="true" selection-start-line="165" selection-start-column="3" selection-end-line="172" selection-end-column="22" />
+              <caret line="172" column="22" selection-start-line="165" selection-start-column="3" selection-end-line="172" selection-end-column="22" />
             </state>
           </provider>
         </entry>
@@ -59,7 +45,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_SegmentList.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="293">
+            <state relative-caret-position="384">
               <caret line="82" selection-start-line="82" selection-end-line="82" />
             </state>
           </provider>
@@ -68,8 +54,38 @@
       <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/scripts/detect_SRareas.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="294">
-              <caret line="137" column="23" selection-start-line="137" selection-start-column="23" selection-end-line="137" selection-end-column="23" />
+            <state relative-caret-position="527">
+              <caret line="155" selection-start-line="155" selection-end-line="155" />
+              <folding>
+                <element signature="e#0#30#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/config.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="472">
+              <caret line="80" column="21" lean-forward="true" selection-start-line="80" selection-start-column="21" selection-end-line="80" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/candlelist.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="453">
+              <caret line="568" column="21" lean-forward="true" selection-start-line="561" selection-start-column="8" selection-end-line="568" selection-end-column="21" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/harea.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="222">
+              <caret line="209" selection-start-line="209" selection-end-line="209" />
             </state>
           </provider>
         </entry>
@@ -85,9 +101,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>calc_rsi_bounces</find>
-      <find>bounces_fromlasttime</find>
-      <find>get_restofbounces</find>
       <find>get_first_bounce</find>
       <find>part</find>
       <find>slice</find>
@@ -115,6 +128,9 @@
       <find>plist</find>
       <find>flist</find>
       <find>pdb.s</find>
+      <find>moving average</find>
+      <find>regression</find>
+      <find>fit_reg_line</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -202,13 +218,13 @@
         <option value="$PROJECT_DIR$/src/utils.py" />
         <option value="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" />
         <option value="$PROJECT_DIR$/tests/test_PivotList.py" />
-        <option value="$PROJECT_DIR$/src/candlelist.py" />
-        <option value="$PROJECT_DIR$/src/config.py" />
-        <option value="$PROJECT_DIR$/src/harea.py" />
         <option value="$PROJECT_DIR$/src/pivotlist.py" />
         <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch.py" />
         <option value="$PROJECT_DIR$/tests/test_SegmentList.py" />
         <option value="$PROJECT_DIR$/src/segmentlist.py" />
+        <option value="$PROJECT_DIR$/src/candlelist.py" />
+        <option value="$PROJECT_DIR$/src/harea.py" />
+        <option value="$PROJECT_DIR$/src/config.py" />
         <option value="$PROJECT_DIR$/scripts/detect_SRareas.py" />
       </list>
     </option>
@@ -233,12 +249,12 @@
             <path>
               <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
               <item name="FOREX" type="462c0819:PsiDirectoryNode" />
-              <item name="scripts" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
               <item name="FOREX" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -369,13 +385,6 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
-    </task>
-    <task id="LOCAL-00064" summary="Modifying period for calculating the rsi">
-      <created>1559506518453</created>
-      <option name="number" value="00064" />
-      <option name="presentableId" value="LOCAL-00064" />
-      <option name="project" value="LOCAL" />
-      <updated>1559506518453</updated>
     </task>
     <task id="LOCAL-00065" summary="Modifying period for not hitting the max number of candles">
       <created>1559515427540</created>
@@ -713,7 +722,14 @@
       <option name="project" value="LOCAL" />
       <updated>1569019330615</updated>
     </task>
-    <option name="localTasksCounter" value="113" />
+    <task id="LOCAL-00113" summary="Working on bug in order of segments in segmentlist1">
+      <created>1569191762746</created>
+      <option name="number" value="00113" />
+      <option name="presentableId" value="LOCAL-00113" />
+      <option name="project" value="LOCAL" />
+      <updated>1569191762749</updated>
+    </task>
+    <option name="localTasksCounter" value="114" />
     <servers />
   </component>
   <component name="TodoView">
@@ -739,7 +755,7 @@
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.32771084" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.35060242" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.21204819" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5024665" side_tool="true" weight="0.38554215" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32771084" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
@@ -767,7 +783,6 @@
     </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Working on trend_feats1" />
     <MESSAGE value="Working on trend_feats2" />
     <MESSAGE value="Working on unset colnames" />
     <MESSAGE value="Working on extending itrend" />
@@ -792,7 +807,8 @@
     <MESSAGE value="Working on detect SRareas1" />
     <MESSAGE value="Writing length function on SegmentList" />
     <MESSAGE value="Working on bug in order of segments in segmentlist" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working on bug in order of segments in segmentlist" />
+    <MESSAGE value="Working on bug in order of segments in segmentlist1" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working on bug in order of segments in segmentlist1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1070,27 +1086,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="525">
-          <caret line="35" column="21" selection-start-line="35" selection-start-column="14" selection-end-line="35" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/Pattern/counter_dbtp.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="4545">
           <caret line="308" selection-start-line="306" selection-start-column="12" selection-end-line="308" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/candlelist.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="10935">
-          <caret line="735" column="15" selection-start-line="735" selection-start-column="8" selection-end-line="735" selection-end-column="15" />
-          <folding>
-            <element signature="e#0#23#0" expanded="true" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1100,16 +1099,6 @@
           <caret line="57" column="71" selection-start-line="57" selection-start-column="71" selection-end-line="57" selection-end-column="71" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/harea.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="3165">
-          <caret line="220" column="27" selection-start-line="220" selection-start-column="27" selection-end-line="220" selection-end-column="27" />
-          <folding>
-            <element signature="e#0#18#0" expanded="true" />
           </folding>
         </state>
       </provider>
@@ -1124,23 +1113,37 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_SegmentList.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="293">
-          <caret line="82" selection-start-line="82" selection-end-line="82" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/candle.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="215">
-          <caret line="172" column="22" lean-forward="true" selection-start-line="165" selection-start-column="3" selection-end-line="172" selection-end-column="22" />
+          <caret line="172" column="22" selection-start-line="165" selection-start-column="3" selection-end-line="172" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/harea.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="222">
+          <caret line="209" selection-start-line="209" selection-end-line="209" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/candlelist.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="453">
+          <caret line="568" column="21" lean-forward="true" selection-start-line="561" selection-start-column="8" selection-end-line="568" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_SegmentList.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="384">
+          <caret line="82" selection-start-line="82" selection-end-line="82" />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/segmentlist.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="258">
+        <state relative-caret-position="1640">
           <caret line="190" selection-start-line="190" selection-end-line="190" />
           <folding>
             <element signature="e#2#21#0" expanded="true" />
@@ -1148,10 +1151,20 @@
         </state>
       </provider>
     </entry>
+    <entry file="file://$PROJECT_DIR$/src/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="472">
+          <caret line="80" column="21" lean-forward="true" selection-start-line="80" selection-start-column="21" selection-end-line="80" selection-end-column="21" />
+        </state>
+      </provider>
+    </entry>
     <entry file="file://$PROJECT_DIR$/scripts/detect_SRareas.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="137" column="23" selection-start-line="137" selection-start-column="23" selection-end-line="137" selection-end-column="23" />
+        <state relative-caret-position="527">
+          <caret line="155" selection-start-line="155" selection-end-line="155" />
+          <folding>
+            <element signature="e#0#30#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>

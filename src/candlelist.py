@@ -733,7 +733,7 @@ class CandleList(object):
 
         return cl
 
-    def improve_resolution(self,price,min_dist=None,part='closeAsk'):
+    def improve_resolution(self,price,min_dist,part='closeAsk'):
         '''
         Function used to improve the resolution of the identified maxima/minima. This function will select
         the candle closer to 'price' when there are 2 candles less than 'min_dist' apart
@@ -743,7 +743,7 @@ class CandleList(object):
         price : float
                 Price that will be used as the reference to select one of the candles
         min_dist : int
-                   minimum distance between the identified max/min. Optional
+                   minimum distance between the identified max/min. Required
         part: str
               Candle part used for the calculation. Default='closeAsk'
 
