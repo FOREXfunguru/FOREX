@@ -97,11 +97,12 @@ class SegmentList(object):
         # trim the edge segments for irrelevant segments
         nlist=self.__trim_edge_segs(pip_th=100,candle_th=10)
 
-        flist=[] # list of SegmentLists
+        flist=[] # final list of SegmentLists
         slist=[]
         pr_s=None
         is_first=False
 
+        pdb.set_trace()
         for s in nlist:
             if pr_s is None:
                 # Initialize all structures

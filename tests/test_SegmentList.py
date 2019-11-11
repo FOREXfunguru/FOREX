@@ -73,6 +73,38 @@ def pl_object2():
 
     return pl
 
+@pytest.fixture
+def pl_object3():
+    '''Returns PivotList object'''
+
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='AUD_USD',
+                     granularity='D',
+                     alignmentTimezone='Europe/London',
+                     dailyAlignment=22)
+
+    oanda.run(start='2018-09-24T22:00:00',
+              end='2019-04-12T22:00:00',
+              roll=True)
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list, instrument='AUD_USD', type='long')
+
+    pl = cl.get_pivotlist(outfile='testInit.png', th_up=0.02, th_down=-0.02)
+
+    return pl
+
+def test_merge_segments3(pl_object3):
+    '''Test merge_segments method'''
+
+    slist=pl_object3.slist
+
+    mslist=slist.merge_segments(outfile="testAft.png", min_n_candles=10, diff_in_pips=200)
+
+    assert len(mslist)==4
+
+"""
 def test_merge_segments2(pl_object2):
     '''Test merge_segments method'''
 
@@ -82,7 +114,6 @@ def test_merge_segments2(pl_object2):
 
     assert len(mslist)==4
 
-"""
 def test_merge_segments1(pl_object1):
     '''Test merge_segments method'''
 

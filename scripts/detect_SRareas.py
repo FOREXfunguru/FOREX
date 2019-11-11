@@ -47,7 +47,7 @@ def estimate_bounces(price,plist):
     inarea_bounces = hr.inarea_bounces(plist=plist)
     if len(inarea_bounces)>1:
         inarea_cl = CandleList(inarea_bounces, instrument=args.instrument, granularity=args.granularity)
-        inarea_bounces = inarea_cl.improve_resolution(part='openAsk', price=price, min_dist=5)
+        inarea_bounces = inarea_cl.improve_resolution(part='openAsk', price=price, min_dist=10)
 
     return inarea_bounces
 
@@ -72,11 +72,11 @@ def calc_surr_lengths(b_list):
         return 0
 
     bounce_lengths={}
-    delta_period = periodToDelta(100, args.granularity)
+    # 100 will be the period before/after the bounce that will be used
+    delta_period = periodToDelta(200, args.granularity)
 
     for b in b_list:
         bounce_lengths[b.time]={}
-        # get 50 candles after and before the bounce
         start = b.time - delta_period
         end = b.time + delta_period
 
@@ -88,15 +88,24 @@ def calc_surr_lengths(b_list):
         candle_list = oanda.fetch_candleset()
         sub_cl = CandleList(clist=candle_list, instrument=args.instrument, granularity=args.instrument)
 
+        # get PivotList
         sub_pl = sub_cl.get_pivotlist(outfile='test_subcl.png', th_up=0.02, th_down=-0.02)
+        # get SegmentList
         slist = sub_pl.slist
+        # merget segments
 
+        pdb.set_trace()
         mslist=slist.merge_segments(min_n_candles=10, diff_in_pips=200, outfile="test_subcl1.png")
-        diff=None
-        pr_ms=None
+
+        diff=None # will store the difference in datetime between bounce.time and start of SegmentList
+        pr_ms=None # will store previous SegmentList
         max_pr_ms=None
         c_ms=None
+        # this for loop will be used to detect the SegmentList
+        # for which the difference in time between the start
+        # and bounce time is the least
         for ms in mslist:
+            # iterate over each merged SegmentList
             if diff is None:
                 pr_ms=ms
                 diff= abs(ms.start-b.time)
@@ -108,6 +117,8 @@ def calc_surr_lengths(b_list):
                 pr_ms = ms
         bounce_lengths[b.time]={'pre': max_pr_ms.length(),
                                 'after': c_ms.length()}
+
+    pdb.set_trace()
 
     return bounce_lengths
 
@@ -137,9 +148,10 @@ plist = cl.get_pivotlist(th_down=config.SRarea['th_down'],
 
 bounce_dict={}
 
-hr_extension=30
-increment_price=0.006 # the increment of price in number of pips is double the hr_extension
-for p in np.arange(0.67985, 0.72219, increment_price):
+hr_extension=10
+increment_price=0.002
+# the increment of price in number of pips is double the hr_extension
+for p in np.arange(0.68612, 0.75548, increment_price):
     print("Price: {0}".format(p))
     inarea_bs=estimate_bounces(price=p, plist=plist)
     print("Length: {0}".format(len(inarea_bs)))
@@ -150,12 +162,41 @@ for p in np.arange(0.67985, 0.72219, increment_price):
 ix=1
 final_dict={}
 for price in bounce_dict.keys():
+    bounces=len(bounce_dict[price]) # bounces at this price
     for d,segs in bounce_dict[price].items():
-        final_dict[ix]=[price,d,segs['pre'],segs['after']]
+        final_dict[ix]=[price,bounces,d,segs['pre'],segs['after']]
         ix+=1
 
-df = pd.DataFrame.from_dict(final_dict, orient='index',columns=['price','datetime','pre','after'])
+df = pd.DataFrame.from_dict(final_dict, orient='index',columns=['price','n_bounces','datetime','pre','after'])
+
+def calc_score(x):
+    '''
+    Function to calc the score for 'pre' and 'after'
+    '''
+
+    if x=="short":
+        return 1
+    elif x=="medium":
+        return 2
+    elif x=="long":
+        return 3
+
+df['pre_cat']=pd.cut(df['pre'], 3, labels=["short", "medium", "long"])
+df['after_cat']=pd.cut(df['after'], 3, labels=["short", "medium", "long"])
+
+df['seg_score_pre']=df['pre_cat'].apply(calc_score)
+df['seg_score_aft']=df['after_cat'].apply(calc_score)
+
+#convert categorical column to int
+df[['seg_score_pre', 'seg_score_aft']] = df[['seg_score_pre', 'seg_score_aft']].astype(int)
+#sum scores for pre and aft
+df['tot_seg_score']=df['seg_score_pre']+df['seg_score_aft']
 
 pdb.set_trace()
+resDF=df.groupby(['price','n_bounces']).agg({'tot_seg_score': 'sum'})
+
+resDF.sort_values(by='tot_seg_score',inplace=True,ascending=False)
+
 print("h")
+
 
