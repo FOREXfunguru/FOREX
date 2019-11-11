@@ -85,3 +85,6 @@ SEGMENT = {
     'min_n_candles' : 10, # Minimum number of candles in order not be considered a short segment
     'diff_in_pips' : 200 # Below this number of pips the segment will be short
 }
+
+#List with valid strategies from the TradeJournal trades
+VALID_STRATS = ['counter','counter_sma','counter_beftrade']
