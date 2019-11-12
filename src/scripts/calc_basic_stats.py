@@ -11,6 +11,10 @@ parser.add_argument('--strat', required=True, help='Trade strat that will be ana
 
 args = parser.parse_args()
 
-td = TradeJournal(url=args.ifile, worksheet='backtesting')
+td = TradeJournal(url=args.ifile, worksheet=args.sheet)
 
-td.print_winrate(strat='counter_beftrade')
+(prop,pips,number)=td.print_winrate(strat=args.strat, write_xlsx=True)
+
+print("Total number of recordsij:\n{0}".format(number))
+print("Proportion:\n{0}".format(prop))
+print("Sum of pips:{0}".format(pips))

@@ -87,4 +87,4 @@ SEGMENT = {
 }
 
 #List with valid strategies from the TradeJournal trades
-VALID_STRATS = ['counter','counter_sma','counter_beftrade']
+VALID_STRATS = ['counter','counter_sma','counter_beftrade','cont']

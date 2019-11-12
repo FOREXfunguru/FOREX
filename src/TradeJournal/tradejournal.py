@@ -3,6 +3,7 @@ import pdb
 import re
 import math
 import warnings
+import config
 from TradeJournal.trade import Trade
 from openpyxl import load_workbook
 from Pattern.counter import Counter
@@ -28,7 +29,7 @@ class TradeJournal(object):
         df = xls_file.parse(worksheet,converters={'start': str, 'end': str, 'trend_i': str})
         self.df=df
 
-    def print_winrate(self,strat=None):
+    def print_winrate(self,write_xlsx=False,strat=None):
         '''
         Function to print the win rate proportion and also the profit in pips
 
@@ -36,11 +37,23 @@ class TradeJournal(object):
         ----------
         strat : String, Optional
                 If defined, then select all trades of a certain type.
-                Possible values are: 'counter_doubletop'
+                Possible values are: config.VALID_STRATS
+        write_xlsx : Boolean
+                     If true, then it will write a .xlsx with outcomes.
+                     Default: False
+
+        Returns
+        -------
+        Proportion of outcome
+        Total sum of pips
+        Number of observations
         '''
 
         DF=None
         if strat is not None:
+            # check if strat is valid
+            if strat not in config.VALID_STRATS:
+                raise Exception("No valid strat: {0}".format(strat))
             DF=self.df[self.df['strat'] == strat]
         else:
             DF=self.df
@@ -73,9 +86,19 @@ class TradeJournal(object):
                 DF.loc[index, 'pips'] = t.pips
                 DF.loc[index, 'TP'] = t.TP
 
-        pdb.set_trace()
-        print("Proportion of outcome:\n{0}".format(DF.loc[:,'outcome'].value_counts()))
-        print("Sum of pips:\n{0}".format(DF['pips'].sum()))
+        outcome_prop=DF.loc[:,'outcome'].value_counts()
+        sum_pips=DF['pips'].sum()
+
+        if write_xlsx is True:
+            sheet_name="outcome_{0}".format(strat)
+            book = load_workbook(self.url)
+            writer = pd.ExcelWriter(self.url, engine='openpyxl')
+            writer.book = book
+            writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
+            DF.to_excel(writer, sheet_name)
+            writer.save()
+
+        return (outcome_prop,sum_pips,DF.shape[0])
 
 
     def fetch_trades(self,run=False, strat=None):

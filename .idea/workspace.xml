@@ -3,11 +3,12 @@
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/FOREX.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FOREX.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scripts/Trading_journal_07082017.xlsx" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/harea.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/harea.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/scripts/calc_basic_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/scripts/calc_basic_stats.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/segmentlist.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/segmentlist.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -24,43 +25,6 @@
         <option value="Python Script" />
       </list>
     </option>
-  </component>
-  <component name="FindInProjectRecents">
-    <findStrings>
-      <find>get_first_bounce</find>
-      <find>part</find>
-      <find>slice</find>
-      <find>length_</find>
-      <find>set_rsi_1st</find>
-      <find>logical</find>
-      <find>get_pi</find>
-      <find>get_</find>
-      <find>calc_</find>
-      <find>get_pivots</find>
-      <find>calc_itrend</find>
-      <find>0.0</find>
-      <find>__initclist</find>
-      <find>__inarea_bounces</find>
-      <find>strptime(</find>
-      <find>attr</find>
-      <find>np.logical</find>
-      <find>get_attr</find>
-      <find>config</find>
-      <find>candlelist</find>
-      <find>getA</find>
-      <find>get_pivotlist</find>
-      <find>improve</find>
-      <find>is_short</find>
-      <find>plist</find>
-      <find>flist</find>
-      <find>pdb.s</find>
-      <find>moving average</find>
-      <find>regression</find>
-      <find>fit_reg_line</find>
-    </findStrings>
-    <dirStrings>
-      <dir>$PROJECT_DIR$</dir>
-    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -263,6 +227,7 @@
       <workItem from="1573472930573" duration="4071000" />
       <workItem from="1573488977979" duration="16000" />
       <workItem from="1573489156043" duration="772000" />
+      <workItem from="1573492533411" duration="9076000" />
     </task>
     <task id="LOCAL-00066" summary="Extending the period for running trade">
       <created>1559599390124</created>

@@ -156,7 +156,6 @@ class HArea(object):
                  n.a. if crossing time could not retrieved. This can happens
                  when there is an artifactual jump in the Oanda data
         '''
-
         if candle.lowAsk <= self.price <= candle.highAsk:
             delta=None
             if self.granularity=="D":
