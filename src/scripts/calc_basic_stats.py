@@ -15,6 +15,6 @@ td = TradeJournal(url=args.ifile, worksheet=args.sheet)
 
 (prop,pips,number)=td.print_winrate(strat=args.strat, write_xlsx=True)
 
-print("Total number of recordsij:\n{0}".format(number))
+print("Total number of records:\n{0}".format(number))
 print("Proportion:\n{0}".format(prop))
 print("Sum of pips:{0}".format(pips))

@@ -2,12 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/FOREX.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FOREX.iml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/harea.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/harea.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/scripts/calc_basic_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/scripts/calc_basic_stats.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -227,14 +222,7 @@
       <workItem from="1573472930573" duration="4071000" />
       <workItem from="1573488977979" duration="16000" />
       <workItem from="1573489156043" duration="772000" />
-      <workItem from="1573492533411" duration="9076000" />
-    </task>
-    <task id="LOCAL-00066" summary="Extending the period for running trade">
-      <created>1559599390124</created>
-      <option name="number" value="00066" />
-      <option name="presentableId" value="LOCAL-00066" />
-      <option name="project" value="LOCAL" />
-      <updated>1559599390127</updated>
+      <workItem from="1573492533411" duration="14701000" />
     </task>
     <task id="LOCAL-00067" summary="Modifying approach for set last_time">
       <created>1559687385830</created>
@@ -572,7 +560,14 @@
       <option name="project" value="LOCAL" />
       <updated>1569536477807</updated>
     </task>
-    <option name="localTasksCounter" value="115" />
+    <task id="LOCAL-00115" summary="Working on improvement of calc_basic_stats">
+      <created>1573568130904</created>
+      <option name="number" value="00115" />
+      <option name="presentableId" value="LOCAL-00115" />
+      <option name="project" value="LOCAL" />
+      <updated>1573568130906</updated>
+    </task>
+    <option name="localTasksCounter" value="116" />
     <servers />
   </component>
   <component name="TodoView">
@@ -601,7 +596,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Working on trend_feats2" />
     <MESSAGE value="Working on unset colnames" />
     <MESSAGE value="Working on extending itrend" />
     <MESSAGE value="WOrk in raising exception when start and end for slice are not valid" />
@@ -626,7 +620,8 @@
     <MESSAGE value="Working on bug in order of segments in segmentlist" />
     <MESSAGE value="Working on bug in order of segments in segmentlist1" />
     <MESSAGE value="Working on SR detection" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working on SR detection" />
+    <MESSAGE value="Working on improvement of calc_basic_stats" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working on improvement of calc_basic_stats" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
