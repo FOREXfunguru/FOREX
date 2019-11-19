@@ -137,6 +137,7 @@ class OandaAPI(object):
                 nmins = int(granularity.replace('M', ''))
                 delta = datetime.timedelta(minutes=int(nmins))
 
+        # increment dateObj by one period. This is necessary in order to query Oanda
         endObj=dateObj+delta
 
         #check if datestr returns a candle
@@ -162,7 +163,6 @@ class OandaAPI(object):
             # daylightime saving discrepancy
             base1 = datetime.time(21, 00, 00)
             valid_time1 = [(datetime.datetime.combine(datetime.date(1, 1, 1), base1) + datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
-
             if (dateObj.time() not in valid_time) and (dateObj.time() not in valid_time1):
                 raise Exception("Time {0} not valid. Valid times for {1} granularity are: {2} or are: {3}".format(dateObj.time(),
                                                                                                                   granularity, valid_time,

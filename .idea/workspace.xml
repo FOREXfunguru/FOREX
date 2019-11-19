@@ -3,7 +3,7 @@
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/scripts/calc_basic_stats.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/scripts/calc_basic_stats.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oanda_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/oanda_api.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -222,14 +222,7 @@
       <workItem from="1573472930573" duration="4071000" />
       <workItem from="1573488977979" duration="16000" />
       <workItem from="1573489156043" duration="772000" />
-      <workItem from="1573492533411" duration="14701000" />
-    </task>
-    <task id="LOCAL-00067" summary="Modifying approach for set last_time">
-      <created>1559687385830</created>
-      <option name="number" value="00067" />
-      <option name="presentableId" value="LOCAL-00067" />
-      <option name="project" value="LOCAL" />
-      <updated>1559687385834</updated>
+      <workItem from="1573492533411" duration="20008000" />
     </task>
     <task id="LOCAL-00068" summary="Add extension on each side of the bounce of rsi calculation">
       <created>1559833143814</created>
@@ -567,7 +560,14 @@
       <option name="project" value="LOCAL" />
       <updated>1573568130906</updated>
     </task>
-    <option name="localTasksCounter" value="116" />
+    <task id="LOCAL-00116" summary="Improving">
+      <created>1574090205971</created>
+      <option name="number" value="00116" />
+      <option name="presentableId" value="LOCAL-00116" />
+      <option name="project" value="LOCAL" />
+      <updated>1574090205971</updated>
+    </task>
+    <option name="localTasksCounter" value="117" />
     <servers />
   </component>
   <component name="TodoView">
@@ -596,7 +596,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Working on unset colnames" />
     <MESSAGE value="Working on extending itrend" />
     <MESSAGE value="WOrk in raising exception when start and end for slice are not valid" />
     <MESSAGE value="Changing number of pips for last_time" />
@@ -621,7 +620,8 @@
     <MESSAGE value="Working on bug in order of segments in segmentlist1" />
     <MESSAGE value="Working on SR detection" />
     <MESSAGE value="Working on improvement of calc_basic_stats" />
-    <option name="LAST_COMMIT_MESSAGE" value="Working on improvement of calc_basic_stats" />
+    <MESSAGE value="Improving" />
+    <option name="LAST_COMMIT_MESSAGE" value="Improving" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
