@@ -8,15 +8,16 @@ def counter_object():
     '''Returns Counter object'''
 
     c = Counter(
-                start='2018-10-11 21:00:00',
-                pair='GBP_AUD',
-                timeframe='H12',
-                type='short',
-                period=1000,
-                SR=1.87074,
-                SL=1.87384,
-                TP=1.83942,
-                trend_i='2018-08-08 21:00:00')
+        id='GBP_AUD 12OCT2018H12',
+        start='2018-10-11 21:00:00',
+        pair='GBP_AUD',
+        timeframe='H12',
+        type='short',
+        period=1000,
+        SR=1.87074,
+        SL=1.87384,
+        TP=1.83942,
+        trend_i='2018-08-08 21:00:00')
     return c
 
 @pytest.fixture
@@ -24,15 +25,16 @@ def counter_object_notrendi():
     '''Returns Counter object without the 'trend_i' initialised'''
 
     c = Counter(
-                start='2018-10-11 21:00:00',
-                pair='GBP_AUD',
-                timeframe='H12',
-                type='short',
-                period=1000,
-                entry=1.85929,
-                SR=1.87074,
-                SL=1.87384,
-                RR=1.5)
+        id='GBP_AUD 12OCT2018H12',
+        start='2018-10-11 21:00:00',
+        pair='GBP_AUD',
+        timeframe='H12',
+        type='short',
+        period=1000,
+        entry=1.85929,
+        SR=1.87074,
+        SL=1.87384,
+        RR=1.5)
     return c
 """
 def test_calc_itrend(counter_object_notrendi):

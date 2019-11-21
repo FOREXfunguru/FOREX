@@ -1,11 +1,15 @@
 import pdb
 import datetime
-import warnings
 import config
 import numpy as np
-import traceback
+import matplotlib
+
+matplotlib.use('PS')
+import matplotlib.pyplot as plt
+
 from oanda_api import OandaAPI
 from candlelist import CandleList
+from utils import *
 from harea import HArea
 
 class Counter(object):
@@ -48,10 +52,12 @@ class Counter(object):
     clist_trend: CandleList, Optional
                  CandleList extending back to datetime defined by self.trend_i
     bounces_lasttime: list, Optional
-                      List with tuples [(datetime,price)] containing the datetime
-                      and price for different bounces after the lasttime
+                      With Candles representing the bounces
     slope: float, Optional
            Float with the slope of trend conducting to entry
+    HR_pips: int, Optional
+             Number of pips over/below S/R used for trying to identify bounces
+             Default: 200
     n_rsibounces: int, Optional
                   Number of rsi bounces for trend conducting to start
     rsibounces_lengths: list, Optional
@@ -66,89 +72,54 @@ class Counter(object):
                  Length in number of pips for self.clist_trend
     '''
 
-    def __init__(self, pair, period= 3000, **kwargs):
+    def __init__(self, pair, period= 3000, HR_pips=200, **kwargs):
 
         allowed_keys = [ 'id','start','timeframe','period','entry','trend_i', 'type', 'SL',
-                        'TP','SR','RR','bounces','clist_period','clist_trend','last_time',
+                        'TP','SR','RR','bounces','clist_period','clist_trend','lasttime',
                         'bounces_lasttime','slope','n_rsibounces','rsibounces_lengths',
                         'divergence','entry_onrsi','length_candles','length_pips']
 
         # get values from config file
         if 'period' in config.CT: period = config.CT['period']
+        if 'HR_pips' in config.CT: HR_pips = config.CT['HR_pips']
 
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         self.pair=pair
         self.period=period
+        self.HR_pips = HR_pips
         self.start = datetime.datetime.strptime(self.start, '%Y-%m-%d %H:%M:%S')
-        self.__init_clist_period()
+
+        # init the CandleList from self.period to self.start
+        self.__initclist()
+        # calc_rsi
+        self.clist_period.calc_rsi()
 
         if not hasattr(self, 'TP'):
             if not hasattr(self, 'RR'): raise Exception("Neither the RR not the TP is defined. Please provide RR")
             diff=(self.entry-self.SL)*self.RR
             self.TP=round(self.entry+diff,4)
 
-    def __init_clist_trend(self):
+        # instantiate an HArea object representing the self.SR in order to calculate the lasttime
+        # price has been above/below SR
+        resist = HArea(price=self.SR, pips=100, instrument=self.pair, granularity=self.timeframe)
+        self.lasttime=self.clist_period.get_lasttime(resist)
+
+        # set bounces_lasttime Class attribute
+        self.bounces_fromlasttime()
+
+
+    def __initclist(self):
         '''
-        Private function to initialise self.clist_trend class attribute
+        Private function to initialize the CandleList object that goes from self.start
+        to self.period
 
-        This function process the candlelist going from self.trend_i to self.start
-        '''
-
-        warnings.warn("[INFO] Run __init_clist_trend")
-
-        # if trend_i is not defined then calculate it
-        if hasattr(self, 'trend_i'):
-            self.trend_i = datetime.datetime.strptime(self.trend_i, '%Y-%m-%d %H:%M:%S')
-        else:
-            self.calc_itrend()
-        self.__init_clist_trend()
-
-            # checking for feats in trend before 1st bounce
-        oanda = OandaAPI(url= config.OANDA_API['url'],
-                         instrument=self.pair,
-                         granularity=self.timeframe,
-                         alignmentTimezone= config.OANDA_API['alignmentTimezone'],
-                         dailyAlignment=config.OANDA_API['dailyAlignment'])
-
-        oanda.run(start=self.trend_i.isoformat(),
-                  end=self.start.isoformat(),
-                  roll=True)
-
-        candle_list = oanda.fetch_candleset(vol_cutoff=0)
-
-        cl = CandleList(candle_list, instrument=self.pair, granularity=self.timeframe, id=self.id)
-
-        warnings.warn("[INFO] Run cl.calc_rsi")
-
-        cl.calc_rsi()
-
-        warnings.warn("[INFO] Done cl.calc_rsi")
-
-        self.clist_trend = cl
-
-
-    def __init_clist_period(self):
-        '''
-        Private function to initialise self.clist_period class attribute
-
-        This function process the candlelist going from self.start-self.period to
-        self.start
+        This will set the self.clist_period class attribute
         '''
 
-        warnings.warn("[INFO] Run __init_clist_period")
-
-        delta_period = None
-        delta_1 = None
-        if self.timeframe == "D":
-            delta_period = datetime.timedelta(hours=24 * self.period)
-            delta_1 = datetime.timedelta(hours=24)
-        else:
-            fgran = self.timeframe.replace('H', '')
-            delta_period = datetime.timedelta(hours=int(fgran) * self.period)
-            delta_1 = datetime.timedelta(hours=int(fgran))
-
-        start = self.start - delta_period
-        end = self.start + delta_1
+        delta_period=periodToDelta(self.period, self.timeframe)
+        delta_1=periodToDelta(1, self.timeframe)
+        start = self.start - delta_period # get the start datetime for this CandleList period
+        end = self.start + delta_1 # increase self.start by one candle to include self.start
 
         oanda = OandaAPI(url=config.OANDA_API['url'],
                          instrument=self.pair,
@@ -163,61 +134,125 @@ class Counter(object):
 
         candle_list = oanda.fetch_candleset(vol_cutoff=0)
 
-        cl = CandleList(candle_list, self.pair, granularity=self.timeframe, id=self.id)
+        cl = CandleList(candle_list, self.pair, granularity=self.timeframe, id=self.id, type=self.type)
 
-        warnings.warn("[INFO] Run cl.calc_rsi")
+        self.clist_period=cl
 
-        cl.calc_rsi()
-
-        warnings.warn("[INFO] Done cl.calc_rsi")
-
-        self.clist_period = cl
-
-
-    def init_feats(self):
+    def __inarea_bounces(self, bounces, HRpips, part='closeAsk'):
         '''
-        Function to initialise all object features
+        Function to identify the candles for which price is in the area defined
+        by self.SR+HRpips and self.SR-HRpips
+
+        Parameters
+        ----------
+        bounces: list
+                 Containing the initial list of candles
+        HR_pips: int, Optional
+                 Number of pips over/below S/R used for trying to identify bounces
+                 Default: 200
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
 
         Returns
         -------
-        It will initialise all object's features
+        list with bounces that are in the area
         '''
+        # get bounces in the horizontal area
+        lower = substract_pips2price(self.pair, self.SR, HRpips)
+        upper = add_pips2price(self.pair, self.SR, HRpips)
 
-        pdb.set_trace()
-        self.set_bounces()
-        self.__init_clist_trend()
-        self.set_lasttime()
-        self.bounces_fromlasttime()
-        self.set_slope()
-        self.set_rsibounces_feats()
-      #  self.set_divergence()
-        self.set_entry_onrsi()
-        self.set_length_candles()
-        self.set_length_pips()
+        in_area_list = []
+        for c in bounces:
+            price = getattr(c, part)
+            # print("u:{0}-l:{1}|p:{2}|t:{3}".format(upper, lower, price,c.time))
+            if price >= lower and price <= upper:
+                in_area_list.append(c)
 
-    def calc_itrend(self):
+        return in_area_list
+
+    def set_bounces(self, part='closeAsk'):
         '''
-        Function to calculate the datetime for the start of the trend conducting to entry
-        The start of the trend will be defined by the first time the price is on RSI on the
-        other end of the RSI spectrum, i.e. if the trade type if short it will look for the
-        first time the price rsi is <=30. If the trade type is long, it will look for the
-        price rsi >=70
+        Function to get the bounces. For this, Zigzag will be used
+
+        Parameters
+        ----------
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
 
         Returns
         -------
-        Will set the class 'trend_i' attribute and will return the datetime for this 'trend_i'
+        It will set the bounces attribute
         '''
-        pdb.set_trace()
-        pivots = self.clist_period.get_pivots()
+
+        pivotlist = self.clist_period.get_pivotlist(th_up=config.CT['threshold_bounces'],
+                                                    th_down=-config.CT['threshold_bounces'])
+
+        bounces = pivotlist.plist
+
         arr = np.array(self.clist_period.clist)
-        if self.type=="long": #this basically means that the trend direction will be down
-            init_dtime=arr[pivots == 1][-2].time
-            self.trend_i=init_dtime
-        elif self.type=="short":
-            init_dtime = arr[pivots == -1][-2].time
-            self.trend_i = init_dtime
 
-        return init_dtime
+        # consider type of trade in order to select peaks or valleys
+        if self.type == 'short':
+            bounce_candles = arr[bounces == 1]
+        elif self.type == 'long':
+            bounce_candles = arr[bounces == -1]
+
+        in_area_list = []
+
+        in_area_list = self.__inarea_bounces(bounce_candles, part=part, HRpips=self.HR_pips)
+
+        outfile = "{0}/{1}.final_bounces.png".format(config.PNGFILES['bounces'],
+                                                     self.id.replace(' ', '_'))
+        outfile_rsi = "{0}/{1}.final_rsi.png".format(config.PNGFILES['rsi'],
+                                                     self.id.replace(' ', '_'))
+        pdb.set_trace()
+
+        self.bounces= in_area_list
+
+        self.plot_bounces(outfile_prices=outfile, outfile_rsi=outfile_rsi, part= config.CT['part'])
+
+
+    def plot_bounces(self, outfile_prices, outfile_rsi, part='closeAsk'):
+        '''
+        Function to plot all bounces, the start of the trend and rsi values for this trade
+
+        Parameters
+        ----------
+        outfile_prices : filename
+                         for output file for prices plot
+        outfile_rsi : filename
+                      for output file for rsi plot
+        part: str
+              Candle part used for the calculation. Default='closeAsk'
+        '''
+
+        prices = []
+        rsi = []
+        datetimes = []
+        for c in self.clist_period.clist:
+            prices.append(getattr(c, part))
+            rsi.append(getattr(c,'rsi'))
+            datetimes.append(c.time)
+
+        pdb.set_trace()
+        # plotting the rsi values
+        fig_rsi = plt.figure(figsize=config.PNGFILES['fig_sizes'])
+        ax_rsi = plt.axes()
+        ax_rsi.plot(datetimes, rsi, color="black")
+        fig_rsi.savefig(outfile_rsi, format='png')
+
+        # plotting the prices for part
+        fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
+        ax = plt.axes()
+        ax.plot(datetimes, prices, color="black")
+
+        final_bounces=self.bounces
+        for b in final_bounces:
+            dt = b.time
+            ix = datetimes.index(dt)
+            plt.scatter(datetimes[ix], prices[ix], s=50)
+
+        fig.savefig(outfile_prices, format='png')
 
     def bounces_fromlasttime(self):
         '''
@@ -228,117 +263,9 @@ class Counter(object):
         Will set the bounces_lasttime class attribute
         '''
 
-        bounces = [n for n in self.bounces if n[0] >= self.last_time]
+        bounces = [n for n in self.bounces if n.time >= self.lasttime]
 
-        self.bounces_lasttime=bounces
-
-    def set_slope(self,k_perc=None):
-        '''
-        Function to set the slope for trend conducting to entry
-
-        Parameters
-        ----------
-        k_perc : int
-                % of CandleList length that will be used as window size used for calculating the rolling average.
-                For example, if CandleList length = 20 Candles. Then the k=25% will be a window_size of 5
-                Default: None
-
-        Returns
-        -------
-        Will set the slope class attribute and also the type attribute
-        in self.clist_trend CandleList
-        '''
-
-        if k_perc is not None:
-            (model, outfile, mse) = self.clist_trend.fit_reg_line(k_perc=k_perc)
-        else:
-            (model, outfile, mse) = self.clist_trend.fit_reg_line()
-
-        self.slope=model.coef_[0, 0]
-
-        if model.coef_[0,0]>0:
-            self.clist_trend.type='long'
-        elif model.coef_[0,0]<0:
-            self.clist_trend.type='short'
-
-
-    def set_rsibounces_feats(self):
-        '''
-        Function to set the n_rsibounces and rsibounces_lengths
-        for trend conducting to entry
-
-        Returns
-        -------
-        Will set the n_rsibounces and rsibounces_lengths
-        class attributes
-        '''
-
-        dict1 = self.clist_trend.calc_rsi_bounces()
-
-        self.n_rsibounces=dict1['number']
-        self.rsibounces_lengths=dict1['lengths']
-
-    def set_divergence(self):
-        '''
-        Function to check if there is divergence involving the RSI indicator
-        for trend conducting to entry
-
-        Returns
-        -------
-        Will set the divergence class attribute
-        '''
-
-        direction = None
-        if self.slope > 0:
-            direction = 'up'
-        else:
-            direction = 'down'
-
-        res=self.clist_trend.check_if_divergence(direction=direction)
-
-        self.divergence=res
-
-    def set_entry_onrsi(self):
-        '''
-        Function to check if entry candle is on rsi territory (>=70 or <=30)
-
-        Returns
-        -------
-        Will set the entry_onrsi class attribute
-        '''
-
-        entry_c=self.clist_period.fetch_by_time(self.start)
-
-        isonrsi=False
-
-        if entry_c.rsi>=70 or entry_c.rsi<=30:
-            isonrsi=True
-
-        self.entry_onrsi=isonrsi
-
-    def set_length_candles(self):
-        '''
-        Function to get the length in number of candles
-        for self.clist_trend
-
-        Returns
-        -------
-        Will set the length_candles class attribute
-        '''
-
-        self.length_candles=self.clist_trend.get_length_candles()
-
-    def set_length_pips(self):
-        '''
-        Function to get the length in number of candles
-        for self.clist_trend
-
-        Returns
-        -------
-        Will set the length_pips class attribute
-        '''
-
-        self.length_pips = self.clist_trend.get_length_pips()
+        self.bounces_lasttime = bounces
 
     def __str__(self):
         sb = []

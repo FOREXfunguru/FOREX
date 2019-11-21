@@ -577,6 +577,8 @@ class CounterDbTp(object):
 
         self.plot_features(outfile_prices=outfile, outfile_rsi=outfile_rsi, part= config.CTDBT['part'])
         self.init_trend_feats()
+        # instantiate an HArea object representing the self.SR in order to calculate the lasttime
+        # price has been above/below SR
         resist = HArea(price=self.SR, pips=100, instrument=self.pair, granularity=self.timeframe)
         self.lasttime=self.clist_period.get_lasttime(resist)
         self.set_entry_onrsi(n=3)

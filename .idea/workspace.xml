@@ -5,8 +5,11 @@
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Pattern/counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/testAft.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/testInit.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_Counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_Counter.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -226,14 +229,7 @@
       <workItem from="1573472930573" duration="4071000" />
       <workItem from="1573488977979" duration="16000" />
       <workItem from="1573489156043" duration="772000" />
-      <workItem from="1573492533411" duration="29969000" />
-    </task>
-    <task id="LOCAL-00069" summary="working implementing the zigzag indicator&#10;&#10;for now, this indicator will be only added to self.trend check for divergence">
-      <created>1560070907775</created>
-      <option name="number" value="00069" />
-      <option name="presentableId" value="LOCAL-00069" />
-      <option name="project" value="LOCAL" />
-      <updated>1560070907780</updated>
+      <workItem from="1573492533411" duration="37440000" />
     </task>
     <task id="LOCAL-00070" summary="working implementing the outcome proportion code">
       <created>1560895947214</created>
@@ -571,7 +567,14 @@
       <option name="project" value="LOCAL" />
       <updated>1574178221583</updated>
     </task>
-    <option name="localTasksCounter" value="118" />
+    <task id="LOCAL-00118" summary="Bug in nan in TP">
+      <created>1574342347136</created>
+      <option name="number" value="00118" />
+      <option name="presentableId" value="LOCAL-00118" />
+      <option name="project" value="LOCAL" />
+      <updated>1574342347137</updated>
+    </task>
+    <option name="localTasksCounter" value="119" />
     <servers />
   </component>
   <component name="TodoView">
@@ -600,7 +603,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="WOrk in raising exception when start and end for slice are not valid" />
     <MESSAGE value="Changing number of pips for last_time" />
     <MESSAGE value="Solving bug in the detection of RSI bounces" />
     <MESSAGE value="Working on the rsi extend area" />
@@ -625,7 +627,8 @@
     <MESSAGE value="Working on improvement of calc_basic_stats" />
     <MESSAGE value="Improving" />
     <MESSAGE value="Improving1" />
-    <option name="LAST_COMMIT_MESSAGE" value="Improving1" />
+    <MESSAGE value="Bug in nan in TP" />
+    <option name="LAST_COMMIT_MESSAGE" value="Bug in nan in TP" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -634,6 +637,11 @@
           <url>file://$PROJECT_DIR$/src/candlelist.py</url>
           <line>451</line>
           <option name="timeStamp" value="1" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/Pattern/counter.py</url>
+          <line>74</line>
+          <option name="timeStamp" value="3" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
