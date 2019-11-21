@@ -39,14 +39,14 @@ def test_calc_itrend(counter_object_notrendi):
 
     counter_object_notrendi.calc_itrend()
 
-
+"""
 def test_get_bounces(counter_object):
 
     counter_object.set_bounces()
 
     assert counter_object.bounces[0][0].strftime('%Y-%m-%d') == '2018-10-10'
     assert counter_object.bounces[0][1] == 1.87111
-
+"""
 def test_last_time(counter_object):
 
     assert counter_object.set_lasttime()==None
@@ -59,13 +59,13 @@ def test_bounces_fromlasttime(counter_object):
 
     assert counter_object.bounces[0][0].strftime('%Y-%m-%d') == '2018-10-10'
     assert counter_object.bounces[0][1] == 1.87111
-"""
+
 def test_set_slope(counter_object):
 
     counter_object.set_slope()
 
     assert counter_object.slope==0.0011973711767399185
-"""
+
 def test_set_n_rsibounces(counter_object):
 
     counter_object.set_slope()

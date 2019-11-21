@@ -12,7 +12,7 @@ OANDA_API = {
 
 }
 
-#configuration for Counter doubletop
+#configuration for Counter doubletop pattern
 CTDBT = {
     'period' : 4000, # number of candles from self.start that will be considered in order to
                      # to look for peaks/valleys
@@ -35,6 +35,13 @@ CTDBT = {
     'threshold_rest_bounces' : 0.01, # Threshold pivot detection for bounces after the 2nd bounce
     'part' : 'openAsk' # What part of the candles to use in the different calculations
 }
+
+#configuration for Counter pattern
+CT = {
+    'period' : 4000, # number of candles from self.start that will be considered in order to
+                     # to look for peaks/valleys
+}
+
 
 # start datetime for Oanda's historical data
 START_HIST = {

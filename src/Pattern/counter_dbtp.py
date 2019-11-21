@@ -2,7 +2,6 @@ import pdb
 import warnings
 
 import matplotlib
-from Pattern.counter import Counter
 from oanda_api import OandaAPI
 
 matplotlib.use('PS')
@@ -14,9 +13,9 @@ from utils import *
 from candlelist import CandleList
 from harea import HArea
 
-class CounterDbTp(Counter):
+class CounterDbTp(object):
     '''
-    This class represents a trade showing Counter doubletop pattern (inherits from Counter)
+    This class represents a trade showing Counter doubletop pattern
 
     Class variables
     ---------------

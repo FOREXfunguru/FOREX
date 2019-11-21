@@ -73,6 +73,9 @@ class Counter(object):
                         'bounces_lasttime','slope','n_rsibounces','rsibounces_lengths',
                         'divergence','entry_onrsi','length_candles','length_pips']
 
+        # get values from config file
+        if 'period' in config.CT: period = config.CT['period']
+
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         self.pair=pair
         self.period=period

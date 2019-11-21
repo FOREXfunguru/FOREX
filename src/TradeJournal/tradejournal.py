@@ -65,6 +65,7 @@ class TradeJournal(object):
             pair = row['id'].split(' ')[0]
 
             attrbs = row.to_dict()
+
             t = Trade(pair=pair, **attrbs)
             outcome_seen=True
 
@@ -75,7 +76,7 @@ class TradeJournal(object):
                 if math.isnan(x):
                     outcome_seen = False
 
-            if not hasattr(t, 'TP'):
+            if not hasattr(t, 'TP') or math.isnan(t.TP) is True:
                 assert hasattr(t, 'RR'), "Neither the RR not the TP is defined. Please provide RR"
                 diff = (t.entry - t.SL) * t.RR
                 t.TP = round(t.entry + diff, 4)
