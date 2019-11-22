@@ -38,7 +38,7 @@ CTDBT = {
 
 #configuration for Counter pattern
 CT = {
-    'HR_pips': 100,  # number of pips over/below S/R used for trying to identify bounces
+    'HR_pips': 75,  # number of pips over/below S/R used for trying to identify bounces
     'period' : 4000, # number of candles from self.start that will be considered in order to
                      # to look for peaks/valleys
     'threshold_bounces' : 0.01, # Threshold pivot detection for bounces

@@ -127,6 +127,7 @@ class TradeJournal(object):
             if strat is not None:
                 if strat!=row['strat']:
                     continue
+
             #get pair from id
             pair=row['id'].split(' ')[0]
 
@@ -138,7 +139,6 @@ class TradeJournal(object):
             c=None
             if strat=="counter":
                 c=Counter(pair=pair,**attrbs)
-                c.init_feats()
             elif strat=="counter_doubletop":
                 c=CounterDbTp(pair=pair, **attrbs)
 

@@ -104,6 +104,9 @@ class Counter(object):
         resist = HArea(price=self.SR, pips=100, instrument=self.pair, granularity=self.timeframe)
         self.lasttime=self.clist_period.get_lasttime(resist)
 
+        #initialize bounces Class attribute
+        self.set_bounces(doPlot=True)
+
         # set bounces_lasttime Class attribute
         self.bounces_fromlasttime()
 
@@ -170,7 +173,7 @@ class Counter(object):
 
         return in_area_list
 
-    def set_bounces(self, part='closeAsk'):
+    def set_bounces(self, part='closeAsk', doPlot=False):
         '''
         Function to get the bounces. For this, Zigzag will be used
 
@@ -178,6 +181,9 @@ class Counter(object):
         ----------
         part: str
               Candle part used for the calculation. Default='closeAsk'
+        doPlot: boolean
+                If true, then generate a plot with bounces and a plot with rsi.
+                Default: False
 
         Returns
         -------
@@ -197,19 +203,19 @@ class Counter(object):
         elif self.type == 'long':
             bounce_candles = arr[bounces == -1]
 
+        # get bounces in area
         in_area_list = []
-
         in_area_list = self.__inarea_bounces(bounce_candles, part=part, HRpips=self.HR_pips)
-
-        outfile = "{0}/{1}.final_bounces.png".format(config.PNGFILES['bounces'],
-                                                     self.id.replace(' ', '_'))
-        outfile_rsi = "{0}/{1}.final_rsi.png".format(config.PNGFILES['rsi'],
-                                                     self.id.replace(' ', '_'))
-        pdb.set_trace()
 
         self.bounces= in_area_list
 
-        self.plot_bounces(outfile_prices=outfile, outfile_rsi=outfile_rsi, part= config.CT['part'])
+        if doPlot is True:
+            outfile = "{0}/{1}.final_bounces.png".format(config.PNGFILES['bounces'],
+                                                         self.id.replace(' ', '_'))
+            outfile_rsi = "{0}/{1}.final_rsi.png".format(config.PNGFILES['rsi'],
+                                                         self.id.replace(' ', '_'))
+
+            self.plot_bounces(outfile_prices=outfile, outfile_rsi=outfile_rsi, part= config.CT['part'])
 
 
     def plot_bounces(self, outfile_prices, outfile_rsi, part='closeAsk'):
@@ -234,7 +240,6 @@ class Counter(object):
             rsi.append(getattr(c,'rsi'))
             datetimes.append(c.time)
 
-        pdb.set_trace()
         # plotting the rsi values
         fig_rsi = plt.figure(figsize=config.PNGFILES['fig_sizes'])
         ax_rsi = plt.axes()

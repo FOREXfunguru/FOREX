@@ -3,7 +3,6 @@ import pdb
 
 from TradeJournal.tradejournal import TradeJournal
 
-
 parser = argparse.ArgumentParser(description='Script to calculate the features for Counter DoubleTop trades')
 
 parser.add_argument('--ifile', required=True, help='.xlsx files with the trades')

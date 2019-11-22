@@ -2,6 +2,7 @@ from Pattern.counter import Counter
 
 import pytest
 import pdb
+import datetime
 
 @pytest.fixture
 def counter_object():
@@ -20,7 +21,6 @@ def counter_object():
         trend_i='2018-08-08 21:00:00')
     return c
 
-@pytest.fixture
 def counter_object_notrendi():
     '''Returns Counter object without the 'trend_i' initialised'''
 
@@ -36,22 +36,40 @@ def counter_object_notrendi():
         SL=1.87384,
         RR=1.5)
     return c
+
+def test_bounces_attr(counter_object):
+    '''
+    Check that self.bounces class attribute
+    has been initialized
+    '''
+
+    assert counter_object.bounces[0].openAsk==1.88006
+    assert counter_object.bounces[1].openAsk==1.88187
+    assert len(counter_object.bounces)==3
+
+def test_lasttime_attr(counter_object):
+    '''
+    Check that self.lasttime class attribute
+    has been initialized
+    '''
+
+    adatetime = datetime.datetime(2016, 6, 24, 9, 0)
+    assert counter_object.lasttime==adatetime
+
+def test_bounces_lasttime_attr(counter_object):
+    '''
+    Check that self.bounces_lasttime class attribute
+    has been initialized
+    '''
+
+    assert len(counter_object.bounces_lasttime)==0
+
+
 """
 def test_calc_itrend(counter_object_notrendi):
 
     counter_object_notrendi.calc_itrend()
 
-"""
-def test_get_bounces(counter_object):
-
-    counter_object.set_bounces()
-
-    assert counter_object.bounces[0][0].strftime('%Y-%m-%d') == '2018-10-10'
-    assert counter_object.bounces[0][1] == 1.87111
-"""
-def test_last_time(counter_object):
-
-    assert counter_object.set_lasttime()==None
 
 def test_bounces_fromlasttime(counter_object):
 
