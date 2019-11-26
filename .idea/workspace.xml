@@ -2,13 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/scripts/calculate_counter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/calculate_ctdbtp.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/calculate_ctdbtp.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pattern/counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_Counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_Counter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oanda_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/oanda_api.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -227,14 +222,8 @@
       <workItem from="1573472930573" duration="4071000" />
       <workItem from="1573488977979" duration="16000" />
       <workItem from="1573489156043" duration="772000" />
-      <workItem from="1573492533411" duration="45111000" />
-    </task>
-    <task id="LOCAL-00071" summary="working implementing the outcome proportion code1">
-      <created>1561531138863</created>
-      <option name="number" value="00071" />
-      <option name="presentableId" value="LOCAL-00071" />
-      <option name="project" value="LOCAL" />
-      <updated>1561531138877</updated>
+      <workItem from="1573492533411" duration="45477000" />
+      <workItem from="1574755433569" duration="1797000" />
     </task>
     <task id="LOCAL-00072" summary="Adding folders for images">
       <created>1561585813412</created>
@@ -572,7 +561,14 @@
       <option name="project" value="LOCAL" />
       <updated>1574356379619</updated>
     </task>
-    <option name="localTasksCounter" value="120" />
+    <task id="LOCAL-00120" summary="Creation of Counter calculation script">
+      <created>1574438736692</created>
+      <option name="number" value="00120" />
+      <option name="presentableId" value="LOCAL-00120" />
+      <option name="project" value="LOCAL" />
+      <updated>1574438736693</updated>
+    </task>
+    <option name="localTasksCounter" value="121" />
     <servers />
   </component>
   <component name="TodoView">
@@ -601,7 +597,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Solving bug in the detection of RSI bounces" />
     <MESSAGE value="Working on the rsi extend area" />
     <MESSAGE value="Working on automatic detection of self.trend_i and automatic extension" />
     <MESSAGE value="Working on automatic detection of self.trend_i and automatic extension using segment angles" />
@@ -626,7 +621,8 @@
     <MESSAGE value="Improving1" />
     <MESSAGE value="Bug in nan in TP" />
     <MESSAGE value="Creation of Counter pattern" />
-    <option name="LAST_COMMIT_MESSAGE" value="Creation of Counter pattern" />
+    <MESSAGE value="Creation of Counter calculation script" />
+    <option name="LAST_COMMIT_MESSAGE" value="Creation of Counter calculation script" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

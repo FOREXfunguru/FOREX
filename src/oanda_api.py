@@ -11,6 +11,7 @@ import requests,json
 import pandas as pd
 import datetime
 import config
+import time
 
 from candle import BidAskCandle
 
@@ -44,6 +45,30 @@ class OandaAPI(object):
                         'alignmentTimezone']
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
 
+    def retry(cooloff=5, exc_type=None):
+        '''
+        Decorator for retrying connection and prevent TimeOut errors
+        '''
+        if not exc_type:
+            exc_type = [requests.exceptions.ConnectionError]
+
+        def real_decorator(function):
+            def wrapper(*args, **kwargs):
+                while True:
+                    try:
+                        return function(*args, **kwargs)
+                    except Exception as e:
+                        if e.__class__ in exc_type:
+                            print("failed (?)")
+                            time.sleep(cooloff)
+                        else:
+                            raise e
+
+            return wrapper
+
+        return real_decorator
+
+    @retry()
     def run(self, start, end=None, count=None,roll=False):
         '''
         Function to run a particular REST query. It will set self.data with the data response
@@ -66,6 +91,7 @@ class OandaAPI(object):
         -------
         int: Response code of the REST query
         '''
+
         startObj = self.validate_datetime(start, self.granularity, roll=roll)
         start = startObj.isoformat()
         params={}
@@ -87,6 +113,7 @@ class OandaAPI(object):
             raise Exception("You need to set at least the 'end' or the 'count' attribute")
 
         if self.url:
+
             resp = requests.get(url=self.url, params=params)
 
             if resp.status_code != 200:
