@@ -1,1 +1,1 @@
-python -m pdb calc_basic_stats.py --ifile ~/Downloads/Computational_analysis.xlsx --sheet backtesting_23102019 --strat counter_sma
+python calc_basic_stats.py --ifile ~/Downloads/Backtesting.xlsx --sheet backtesting_23102019 --strat counter

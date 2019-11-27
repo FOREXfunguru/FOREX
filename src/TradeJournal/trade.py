@@ -52,6 +52,8 @@ class Trade(object):
 
         self.strat=strat
         self.pair=re.sub('/','_',self.pair)
+        #remove potential whitespaces in timeframe
+        self.timeframe=re.sub(' ','',self.timeframe)
 
     def fetch_candlelist(self):
         '''
