@@ -121,12 +121,15 @@ class TradeJournal(object):
              List with Trade objects
         '''
 
+        trades_seen=False
         trade_list=[]
         for index,row in self.df.iterrows():
             print("Processing trade with id: {0}".format(row['id']))
             if strat is not None:
                 if strat!=row['strat']:
                     continue
+                else:
+                    trades_seen=True
 
             #get pair from id
             pair=row['id'].split(' ')[0]
@@ -137,7 +140,7 @@ class TradeJournal(object):
 
             # behave depending on identified pattern
             c=None
-            if strat=="counter":
+            if strat=="counter" or strat=="counter_sma" or strat=="counter_beftrade":
                 c=Counter(pair=pair,**attrbs)
             elif strat=="counter_doubletop":
                 c=CounterDbTp(pair=pair, **attrbs)
@@ -161,6 +164,7 @@ class TradeJournal(object):
                 
             trade_list.append(t)
 
+        assert trades_seen is True, "No trades retrieved for strat: {0}".format(strat)
         return trade_list
 
     def write_trades(self, trade_list, colnames):
