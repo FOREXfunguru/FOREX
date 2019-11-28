@@ -50,7 +50,7 @@ CT = {
 START_HIST = {
     'AUD_CAD': datetime.datetime(2004, 6, 5, 21, 0),
     'AUD_JPY': datetime.datetime(2004, 6, 5, 21, 0),
-    'AUD_NZD': datetime.datetime(2004, 6, 5, 21, 0),
+    'AUD_NZD': datetime.datetime(2004, 5, 30, 21, 0),
     'AUD_USD': datetime.datetime(2002, 6, 5, 21, 0),
     'CAD_JPY': datetime.datetime(2004, 6, 5, 21, 0),
     'EUR_AUD': datetime.datetime(2004, 6, 5, 21, 0),

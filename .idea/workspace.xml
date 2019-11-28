@@ -3,7 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/calculate_counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/calculate_counter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oanda_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/oanda_api.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -107,7 +109,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.calculate_ctdbtp">
+  <component name="RunManager" selected="Python.calculate_counter">
     <configuration default="true" type="PythonConfigurationType" factoryName="Python">
       <module name="FOREX" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -115,14 +117,33 @@
       <envs>
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="" />
+      <option name="SDK_HOME" value="$USER_HOME$/miniconda3/envs/python3_5_env/bin/python3.5" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts" />
       <option name="IS_MODULE_SDK" value="false" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="" />
-      <option name="PARAMETERS" value="" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/calculate_counter.py" />
+      <option name="PARAMETERS" value="--ifle ~/Downloads/Backtesting.xlsx --worksheet backtesting_23102019 --strat counter_sma" />
+      <option name="SHOW_COMMAND_LINE" value="true" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="calculate_counter" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
+      <module name="FOREX" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <option name="SDK_HOME" value="$USER_HOME$/miniconda3/envs/python3_5_env/bin/python3.5" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts" />
+      <option name="IS_MODULE_SDK" value="false" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/calculate_counter.py" />
+      <option name="PARAMETERS" value="--ifile &quot;~/Downloads/Backtesting.xlsx&quot; --worksheet &quot;backtesting_23102019&quot; --strat &quot;counter_sma&quot;" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -197,6 +218,7 @@
       <method v="2" />
     </configuration>
     <list>
+      <item itemvalue="Python.calculate_counter" />
       <item itemvalue="Python.calculate_ctdbtp" />
       <item itemvalue="Python.calculate_rsi" />
       <item itemvalue="Python.main" />
@@ -223,21 +245,7 @@
       <workItem from="1573488977979" duration="16000" />
       <workItem from="1573489156043" duration="772000" />
       <workItem from="1573492533411" duration="45477000" />
-      <workItem from="1574755433569" duration="6611000" />
-    </task>
-    <task id="LOCAL-00074" summary="Adding .gitignore">
-      <created>1562105629091</created>
-      <option name="number" value="00074" />
-      <option name="presentableId" value="LOCAL-00074" />
-      <option name="project" value="LOCAL" />
-      <updated>1562105629091</updated>
-    </task>
-    <task id="LOCAL-00075" summary="Improving zigzag notebook">
-      <created>1562192137996</created>
-      <option name="number" value="00075" />
-      <option name="presentableId" value="LOCAL-00075" />
-      <option name="project" value="LOCAL" />
-      <updated>1562192137997</updated>
+      <workItem from="1574755433569" duration="11880000" />
     </task>
     <task id="LOCAL-00076" summary="Adding init_trend_function to Counter">
       <created>1562279507751</created>
@@ -568,7 +576,21 @@
       <option name="project" value="LOCAL" />
       <updated>1574860798820</updated>
     </task>
-    <option name="localTasksCounter" value="123" />
+    <task id="LOCAL-00123" summary="Adding new trade types">
+      <created>1574871313772</created>
+      <option name="number" value="00123" />
+      <option name="presentableId" value="LOCAL-00123" />
+      <option name="project" value="LOCAL" />
+      <updated>1574871313772</updated>
+    </task>
+    <task id="LOCAL-00124" summary="Adding new trade types1">
+      <created>1574873825534</created>
+      <option name="number" value="00124" />
+      <option name="presentableId" value="LOCAL-00124" />
+      <option name="project" value="LOCAL" />
+      <updated>1574873825534</updated>
+    </task>
+    <option name="localTasksCounter" value="125" />
     <servers />
   </component>
   <component name="TodoView">
@@ -597,8 +619,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Working on automatic detection of self.trend_i and automatic extension using segment angles" />
-    <MESSAGE value="Working on PivotList" />
     <MESSAGE value="Working on SR detection1" />
     <MESSAGE value="Working on new PivotList testing unit" />
     <MESSAGE value="Working on consolidation of segments" />
@@ -622,25 +642,43 @@
     <MESSAGE value="Creation of Counter calculation script" />
     <MESSAGE value="Implementation of ConnectionError recovery" />
     <MESSAGE value="Correcting whitespace in TimeFrame" />
-    <option name="LAST_COMMIT_MESSAGE" value="Correcting whitespace in TimeFrame" />
+    <MESSAGE value="Adding new trade types" />
+    <MESSAGE value="Adding new trade types1" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding new trade types1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/candlelist.py</url>
           <line>451</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+        <line-breakpoint suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/Pattern/counter.py</url>
-          <line>74</line>
-          <option name="timeStamp" value="3" />
+          <line>86</line>
+          <option name="timeStamp" value="4" />
+        </line-breakpoint>
+        <line-breakpoint suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/oanda_api.py</url>
+          <line>143</line>
+          <option name="timeStamp" value="7" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/oanda_api.py</url>
+          <line>217</line>
+          <option name="timeStamp" value="8" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/candlelist.py</url>
+          <line>383</line>
+          <option name="timeStamp" value="9" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/FOREX$calculate_ctdbtp.coverage" NAME="calculate_ctdbtp Coverage Results" MODIFIED="1573474841099" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
+    <SUITE FILE_PATH="coverage/FOREX$calculate_ctdbtp.coverage" NAME="calculate_ctdbtp Coverage Results" MODIFIED="1574937287632" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
+    <SUITE FILE_PATH="coverage/FOREX$calculate_counter.coverage" NAME="calculate_counter Coverage Results" MODIFIED="1574940583145" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
   </component>
 </project>
