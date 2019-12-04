@@ -2,10 +2,30 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/calculate_counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/calculate_counter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_102_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_119_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_122_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_125_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_12_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_15_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_18_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_21_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_24_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_27_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_30_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_33_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_50_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_53_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_56_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_73_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_76_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_79_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_8_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_96_0.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/output_99_0.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oanda_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/oanda_api.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -136,6 +156,9 @@
       <module name="FOREX" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
       <option name="SDK_HOME" value="$USER_HOME$/miniconda3/envs/python3_5_env/bin/python3.5" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -245,14 +268,8 @@
       <workItem from="1573488977979" duration="16000" />
       <workItem from="1573489156043" duration="772000" />
       <workItem from="1573492533411" duration="45477000" />
-      <workItem from="1574755433569" duration="11880000" />
-    </task>
-    <task id="LOCAL-00076" summary="Adding init_trend_function to Counter">
-      <created>1562279507751</created>
-      <option name="number" value="00076" />
-      <option name="presentableId" value="LOCAL-00076" />
-      <option name="project" value="LOCAL" />
-      <updated>1562279507751</updated>
+      <workItem from="1574755433569" duration="16092000" />
+      <workItem from="1575380629554" duration="1853000" />
     </task>
     <task id="LOCAL-00077" summary="Adding init_trend_function to Counter1">
       <created>1562621356397</created>
@@ -590,7 +607,14 @@
       <option name="project" value="LOCAL" />
       <updated>1574873825534</updated>
     </task>
-    <option name="localTasksCounter" value="125" />
+    <task id="LOCAL-00125" summary="Fixing bug with historical record">
+      <created>1574940881315</created>
+      <option name="number" value="00125" />
+      <option name="presentableId" value="LOCAL-00125" />
+      <option name="project" value="LOCAL" />
+      <updated>1574940881315</updated>
+    </task>
+    <option name="localTasksCounter" value="126" />
     <servers />
   </component>
   <component name="TodoView">
@@ -619,7 +643,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Working on SR detection1" />
     <MESSAGE value="Working on new PivotList testing unit" />
     <MESSAGE value="Working on consolidation of segments" />
     <MESSAGE value="Working on consolidation of segments1" />
@@ -644,7 +667,8 @@
     <MESSAGE value="Correcting whitespace in TimeFrame" />
     <MESSAGE value="Adding new trade types" />
     <MESSAGE value="Adding new trade types1" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding new trade types1" />
+    <MESSAGE value="Fixing bug with historical record" />
+    <option name="LAST_COMMIT_MESSAGE" value="Fixing bug with historical record" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

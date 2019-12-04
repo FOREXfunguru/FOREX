@@ -65,7 +65,7 @@ START_HIST = {
     'NZD_CAD': datetime.datetime(2004, 6, 1, 21, 0),
     'NZD_JPY': datetime.datetime(2004, 6, 1, 21, 0),
     'NZD_USD': datetime.datetime(2002, 9, 5, 21, 0),
-    'USD_CAD': datetime.datetime(2002, 6, 5, 21, 0),
+    'USD_CAD': datetime.datetime(2002, 5, 19, 21, 0),
     'USD_CHF': datetime.datetime(2002, 6, 5, 21, 0),
     'USD_JPY': datetime.datetime(2002, 6, 5, 21, 0),
     'AUD_CHF': datetime.datetime(2004, 6, 5, 21, 0),
@@ -97,4 +97,5 @@ SEGMENT = {
 }
 
 #List with valid strategies from the TradeJournal trades
-VALID_STRATS = ['counter','counter_sma','counter_beftrade','cont','counter_dbtp','counter_aftrade']
+VALID_STRATS = ['counter','counter_sma','counter_beftrade','cont','counter_dbtp','counter_aftrade', 'counter_b1',
+                'counter_b2','counter_b3', 'counter_b4']
