@@ -2,30 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.gitignore" beforeDir="false" afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/notebooks/.ipynb_checkpoints/Analysis of bounces for Counterish trades-checkpoint.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/notebooks/Analysis of bounces for Counterish trades.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/notebooks/counter_b1.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_102_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_119_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_122_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_125_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_12_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_15_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_18_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_21_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_24_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_27_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_30_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_33_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_50_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_53_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_56_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_73_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_76_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_79_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_8_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_96_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/output_99_0.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -156,9 +137,6 @@
       <module name="FOREX" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
       <option name="SDK_HOME" value="$USER_HOME$/miniconda3/envs/python3_5_env/bin/python3.5" />
       <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts" />
       <option name="IS_MODULE_SDK" value="false" />
@@ -166,7 +144,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/calculate_counter.py" />
-      <option name="PARAMETERS" value="--ifile &quot;~/Downloads/Backtesting.xlsx&quot; --worksheet &quot;backtesting_23102019&quot; --strat &quot;counter_sma&quot;" />
+      <option name="PARAMETERS" value="--ifile &quot;~/Downloads/Backtesting.xlsx&quot; --worksheet &quot;backtesting_23102019&quot; --strat &quot;counter_b1&quot;" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -270,6 +248,7 @@
       <workItem from="1573492533411" duration="45477000" />
       <workItem from="1574755433569" duration="16092000" />
       <workItem from="1575380629554" duration="1853000" />
+      <workItem from="1575537219884" duration="983000" />
     </task>
     <task id="LOCAL-00077" summary="Adding init_trend_function to Counter1">
       <created>1562621356397</created>
@@ -698,11 +677,16 @@
           <line>383</line>
           <option name="timeStamp" value="9" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/TradeJournal/tradejournal.py</url>
+          <line>150</line>
+          <option name="timeStamp" value="10" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/FOREX$calculate_ctdbtp.coverage" NAME="calculate_ctdbtp Coverage Results" MODIFIED="1574937287632" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
-    <SUITE FILE_PATH="coverage/FOREX$calculate_counter.coverage" NAME="calculate_counter Coverage Results" MODIFIED="1574940583145" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
+    <SUITE FILE_PATH="coverage/FOREX$calculate_counter.coverage" NAME="calculate_counter Coverage Results" MODIFIED="1575545576654" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
   </component>
 </project>

@@ -140,7 +140,7 @@ class TradeJournal(object):
 
             # behave depending on identified pattern
             c=None
-            if strat=="counter" or strat=="counter_sma" or strat=="counter_beftrade":
+            if strat=="counter" or strat=="counter_b1" or strat=="counter_b3" or strat=="counter_b2" or strat=="counter_b4":
                 c=Counter(pair=pair,**attrbs)
             elif strat=="counter_doubletop":
                 c=CounterDbTp(pair=pair, **attrbs)
