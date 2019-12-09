@@ -2,11 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/notebooks/.ipynb_checkpoints/Analysis of bounces for Counterish trades-checkpoint.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/Analysis of bounces for Counterish trades.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/counter_b1.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/calculate_counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/calculate_counter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TradeJournal/trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/trade.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_Trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_Trade.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -248,14 +247,7 @@
       <workItem from="1573492533411" duration="45477000" />
       <workItem from="1574755433569" duration="16092000" />
       <workItem from="1575380629554" duration="1853000" />
-      <workItem from="1575537219884" duration="983000" />
-    </task>
-    <task id="LOCAL-00077" summary="Adding init_trend_function to Counter1">
-      <created>1562621356397</created>
-      <option name="number" value="00077" />
-      <option name="presentableId" value="LOCAL-00077" />
-      <option name="project" value="LOCAL" />
-      <updated>1562621356400</updated>
+      <workItem from="1575537219884" duration="4289000" />
     </task>
     <task id="LOCAL-00078" summary="Adding init_trend_function to Counter2">
       <created>1562744073947</created>
@@ -593,7 +585,14 @@
       <option name="project" value="LOCAL" />
       <updated>1574940881315</updated>
     </task>
-    <option name="localTasksCounter" value="126" />
+    <task id="LOCAL-00126" summary="Adding nb with counterish trades">
+      <created>1575646510670</created>
+      <option name="number" value="00126" />
+      <option name="presentableId" value="LOCAL-00126" />
+      <option name="project" value="LOCAL" />
+      <updated>1575646510671</updated>
+    </task>
+    <option name="localTasksCounter" value="127" />
     <servers />
   </component>
   <component name="TodoView">
@@ -622,7 +621,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Working on new PivotList testing unit" />
     <MESSAGE value="Working on consolidation of segments" />
     <MESSAGE value="Working on consolidation of segments1" />
     <MESSAGE value="Working on consolidation of segments2" />
@@ -647,7 +645,8 @@
     <MESSAGE value="Adding new trade types" />
     <MESSAGE value="Adding new trade types1" />
     <MESSAGE value="Fixing bug with historical record" />
-    <option name="LAST_COMMIT_MESSAGE" value="Fixing bug with historical record" />
+    <MESSAGE value="Adding nb with counterish trades" />
+    <option name="LAST_COMMIT_MESSAGE" value="Adding nb with counterish trades" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

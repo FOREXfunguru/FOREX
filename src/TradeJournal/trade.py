@@ -43,7 +43,9 @@ class Trade(object):
     pips:  int, Optional
            Number of pips of profit/loss. This number will be negative if outcome was failure
     strat: string, Required
-           What strategy was used for this trade. Possible values are: 'counter','cont','ctdbtp'
+           What strategy was used for this trade. Possible values are defined in config.py
+    id : str, Required
+         Id used for this object
     '''
 
     def __init__(self, strat, **kwargs):
@@ -65,13 +67,15 @@ class Trade(object):
         A CandleList object
 
         '''
-        oanda=OandaAPI(url=config.OANDA_API['url'],
-                       instrument=self.pair,
-                       granularity=self.timeframe,
-                       alignmentTimezone=config.OANDA_API['alignmentTimezone'],
-                       start=datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S').isoformat(),
-                       dailyAlignment=config.OANDA_API['dailyAlignment'],
-                       end=datetime.datetime.strptime(self.end,'%Y-%m-%dT%H:%M:%S').isoformat())
+        oanda = OandaAPI(url=config.OANDA_API['url'],
+                         instrument=self.pair,
+                         granularity=self.timeframe,
+                         alignmentTimezone=config.OANDA_API['alignmentTimezone'],
+                         dailyAlignment=config.OANDA_API['dailyAlignment'])
+
+        oanda.run(start=datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S').isoformat(),
+                  end=datetime.datetime.strptime(self.end,'%Y-%m-%dT%H:%M:%S').isoformat(),
+                  roll=True)
 
         candle_list=oanda.fetch_candleset()
         cl=CandleList(candle_list, type=self.type)
