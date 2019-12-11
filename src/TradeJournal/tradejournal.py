@@ -158,6 +158,7 @@ class TradeJournal(object):
                 else:
                     attrbs1[attr] = value
 
+            # instantiate a Trade object with attributes of 'c'
             t=Trade(strat=row['strat'],**attrbs1)
             if run is True:
                 t.run_trade()
@@ -167,7 +168,7 @@ class TradeJournal(object):
         assert trades_seen is True, "No trades retrieved for strat: {0}".format(strat)
         return trade_list
 
-    def write_trades(self, trade_list, colnames):
+    def write_trades(self, trade_list, colnames, sheetname='calculated_trades'):
         '''
         Write the trade_list to the Excel spreadsheet
         pointed by the TradeJournal
@@ -177,8 +178,10 @@ class TradeJournal(object):
         trade_list : list, Required
                      List with Trade objects
         colnames : list, Required
-                    Column names that will control the order
-                    of the columns
+                    Column names that will set the order and the columns that
+                    will be written to the final spreadsheet
+        sheetname : str, Optional
+                    Default: 'calculated_trades'
 
         Returns
         -------
@@ -207,7 +210,7 @@ class TradeJournal(object):
         writer = pd.ExcelWriter(self.url, engine='openpyxl')
         writer.book = book
         writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
-        df.to_excel(writer, 'calculated_trades')
+        df.to_excel(writer, sheetname)
         writer.save()
 
     def add_trend_momentum(self):

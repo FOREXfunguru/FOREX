@@ -70,6 +70,8 @@ class Counter(object):
                     Number of candles in self.clist_trend
     length_pips: int, Optional
                  Length in number of pips for self.clist_trend
+    SMA : str, Optional
+          Is there SMA support for this trade. Values: 'Y'/'N'
     '''
 
     def __init__(self, pair, period= 3000, HR_pips=200, **kwargs):
@@ -77,7 +79,7 @@ class Counter(object):
         allowed_keys = [ 'id','start','timeframe','period','entry','trend_i', 'type', 'SL',
                         'TP','SR','RR','bounces','clist_period','clist_trend','lasttime',
                         'bounces_lasttime','slope','n_rsibounces','rsibounces_lengths',
-                        'divergence','entry_onrsi','length_candles','length_pips']
+                        'divergence','entry_onrsi','length_candles','length_pips', 'SMA']
 
         # get values from config file
         if 'period' in config.CT: period = config.CT['period']
