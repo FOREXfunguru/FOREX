@@ -2,16 +2,35 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/notebooks/.ipynb_checkpoints/Analysis of number of pips (entry-SL)-checkpoint.ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/notebooks/Analysis of number of pips (entry-SL).ipynb" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/notebooks/allbacktested.csv" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/notebooks/counter_b1.calc.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/counter_b1.csv" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/calculate_counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/calculate_counter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pattern/counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TradeJournal/trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/trade.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="DatabaseView">
+    <option name="SHOW_INTERMEDIATE" value="true" />
+    <option name="GROUP_DATA_SOURCES" value="true" />
+    <option name="GROUP_SCHEMA" value="true" />
+    <option name="GROUP_CONTENTS" value="false" />
+    <option name="SORT_POSITIONED" value="false" />
+    <option name="SHOW_EMPTY_GROUPS" value="false" />
+    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
+    <option name="HIDDEN_KINDS">
+      <set />
+    </option>
+    <expand />
+    <select />
   </component>
   <component name="FavoritesManager">
     <favorites_list name="FOREX" />
@@ -146,7 +165,7 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/calculate_counter.py" />
-      <option name="PARAMETERS" value="--ifile &quot;$USER_HOME$/Downloads/test.xlsx&quot; --worksheet &quot;test&quot; --strat &quot;counter_b1&quot;" />
+      <option name="PARAMETERS" value="--ifile &quot;$USER_HOME$/Downloads/allbacktesteddebug.xls&quot; --worksheet &quot;allbacktested&quot; --strat &quot;counter_b1&quot;" />
       <option name="SHOW_COMMAND_LINE" value="true" />
       <option name="EMULATE_TERMINAL" value="false" />
       <option name="MODULE_MODE" value="false" />
@@ -251,14 +270,7 @@
       <workItem from="1574755433569" duration="16092000" />
       <workItem from="1575380629554" duration="1853000" />
       <workItem from="1575537219884" duration="12098000" />
-      <workItem from="1576069780992" duration="1156000" />
-    </task>
-    <task id="LOCAL-00079" summary="Test new branch">
-      <created>1562744270366</created>
-      <option name="number" value="00079" />
-      <option name="presentableId" value="LOCAL-00079" />
-      <option name="project" value="LOCAL" />
-      <updated>1562744270367</updated>
+      <workItem from="1576069780992" duration="6549000" />
     </task>
     <task id="LOCAL-00080" summary="Changes in CounterDoubleTop">
       <created>1563116485896</created>
@@ -596,7 +608,14 @@
       <option name="project" value="LOCAL" />
       <updated>1575911528569</updated>
     </task>
-    <option name="localTasksCounter" value="128" />
+    <task id="LOCAL-00128" summary="Dealing with 'entry' error">
+      <created>1576084484810</created>
+      <option name="number" value="00128" />
+      <option name="presentableId" value="LOCAL-00128" />
+      <option name="project" value="LOCAL" />
+      <updated>1576084484811</updated>
+    </task>
+    <option name="localTasksCounter" value="129" />
     <servers />
   </component>
   <component name="TodoView">
@@ -625,7 +644,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Working on consolidation of segments1" />
     <MESSAGE value="Working on consolidation of segments2" />
     <MESSAGE value="Working on consolidation of segments3" />
     <MESSAGE value="Major code reorganization in order to improve get_major_segment. It involves creation of new class named SegmentList" />
@@ -650,7 +668,8 @@
     <MESSAGE value="Fixing bug with historical record" />
     <MESSAGE value="Adding nb with counterish trades" />
     <MESSAGE value="Adding modifs to the Trade module" />
-    <option name="LAST_COMMIT_MESSAGE" value="Adding modifs to the Trade module" />
+    <MESSAGE value="Dealing with 'entry' error" />
+    <option name="LAST_COMMIT_MESSAGE" value="Dealing with 'entry' error" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -670,11 +689,23 @@
           <line>206</line>
           <option name="timeStamp" value="20" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/TradeJournal/trade.py</url>
+          <line>110</line>
+          <option name="timeStamp" value="21" />
+        </line-breakpoint>
       </breakpoints>
+      <default-breakpoints>
+        <breakpoint type="python-exception">
+          <properties notifyOnTerminate="true" exception="BaseException">
+            <option name="notifyOnTerminate" value="true" />
+          </properties>
+        </breakpoint>
+      </default-breakpoints>
     </breakpoint-manager>
   </component>
   <component name="com.intellij.coverage.CoverageDataManagerImpl">
     <SUITE FILE_PATH="coverage/FOREX$calculate_ctdbtp.coverage" NAME="calculate_ctdbtp Coverage Results" MODIFIED="1574937287632" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
-    <SUITE FILE_PATH="coverage/FOREX$calculate_counter.coverage" NAME="calculate_counter Coverage Results" MODIFIED="1576058212939" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
+    <SUITE FILE_PATH="coverage/FOREX$calculate_counter.coverage" NAME="calculate_counter Coverage Results" MODIFIED="1576235410974" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
   </component>
 </project>

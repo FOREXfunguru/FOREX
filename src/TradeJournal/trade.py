@@ -147,8 +147,11 @@ class Trade(object):
                     self.end=success_time
                     self.pips = float(calculate_pips(self.pair, abs(self.TP - self.entry)))
                     break
-
-        assert getattr(self, 'outcome')
+        try:
+            assert getattr(self, 'outcome')
+        except:
+            warnings.warn("\tNo outcome could be calculated")
+            self.oucome="n.a."
 
         warnings.warn("[INFO] Done run_trade")
 
