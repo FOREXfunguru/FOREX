@@ -2,15 +2,11 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/notebooks/.ipynb_checkpoints/Analysis of number of pips (entry-SL)-checkpoint.ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/Analysis of number of pips (entry-SL).ipynb" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/allbacktested.csv" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/notebooks/counter_b1.calc.csv" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/counter_b1.csv" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/calculate_counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/calculate_counter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TradeJournal/trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/trade.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/cmd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/harea.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/harea.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/oanda_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/oanda_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_HArea.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_HArea.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -270,14 +266,7 @@
       <workItem from="1574755433569" duration="16092000" />
       <workItem from="1575380629554" duration="1853000" />
       <workItem from="1575537219884" duration="12098000" />
-      <workItem from="1576069780992" duration="6549000" />
-    </task>
-    <task id="LOCAL-00080" summary="Changes in CounterDoubleTop">
-      <created>1563116485896</created>
-      <option name="number" value="00080" />
-      <option name="presentableId" value="LOCAL-00080" />
-      <option name="project" value="LOCAL" />
-      <updated>1563116485899</updated>
+      <workItem from="1576069780992" duration="10086000" />
     </task>
     <task id="LOCAL-00081" summary="Create slice method for CandeList">
       <created>1563117505900</created>
@@ -615,7 +604,14 @@
       <option name="project" value="LOCAL" />
       <updated>1576084484811</updated>
     </task>
-    <option name="localTasksCounter" value="129" />
+    <task id="LOCAL-00129" summary="Dealing with errors">
+      <created>1576250724347</created>
+      <option name="number" value="00129" />
+      <option name="presentableId" value="LOCAL-00129" />
+      <option name="project" value="LOCAL" />
+      <updated>1576250724348</updated>
+    </task>
+    <option name="localTasksCounter" value="130" />
     <servers />
   </component>
   <component name="TodoView">
@@ -644,7 +640,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Working on consolidation of segments2" />
     <MESSAGE value="Working on consolidation of segments3" />
     <MESSAGE value="Major code reorganization in order to improve get_major_segment. It involves creation of new class named SegmentList" />
     <MESSAGE value="Major code reorganization in order to improve get_major_segment. It involves creation of new class named SegmentList-1" />
@@ -669,7 +664,8 @@
     <MESSAGE value="Adding nb with counterish trades" />
     <MESSAGE value="Adding modifs to the Trade module" />
     <MESSAGE value="Dealing with 'entry' error" />
-    <option name="LAST_COMMIT_MESSAGE" value="Dealing with 'entry' error" />
+    <MESSAGE value="Dealing with errors" />
+    <option name="LAST_COMMIT_MESSAGE" value="Dealing with errors" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -693,6 +689,11 @@
           <url>file://$PROJECT_DIR$/src/TradeJournal/trade.py</url>
           <line>110</line>
           <option name="timeStamp" value="21" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/oanda_api.py</url>
+          <line>318</line>
+          <option name="timeStamp" value="23" />
         </line-breakpoint>
       </breakpoints>
       <default-breakpoints>

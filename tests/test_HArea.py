@@ -4,6 +4,7 @@ import pdb
 from oanda_api import OandaAPI
 from harea import HArea
 from candlelist import CandleList
+import datetime
 
 @pytest.fixture
 def oanda_object():
@@ -14,49 +15,28 @@ def oanda_object():
                      granularity='D',
                      dailyAlignment=22,
                      alignmentTimezone='Europe/London')
+
     oanda.run(start='2015-08-26T22:00:00',
               end='2016-08-15T22:00:00')
 
     return oanda
 
-def test_get_bounces(oanda_object):
+
+def test_last_time(oanda_object):
     '''
-    Test function to set basic candle features based on price
-    i.e. self.colour, upper_wick, etc...
+    Test last_time function from HArea
     '''
 
     candle_list = oanda_object.fetch_candleset()
 
-    close_prices = []
-    datetimes = []
-    for c in oanda_object.fetch_candleset():
-        close_prices.append(c.closeAsk)
-        datetimes.append(c.time)
+    cl = CandleList(candle_list, instrument='EUR_AUD', granularity='D')
 
-    resist=HArea(price=1.15212,pips=100, instrument='EUR_AUD', granularity='D')
+    resist = HArea(price=0.92216, pips=50, instrument='EUR_AUD', granularity='D')
 
-    (bounces,outfile)=resist.get_bounces(datetimes=datetimes,
-                                         prices=close_prices,
-                                         type='long')
+    lt=resist.last_time(clist=cl.clist, position='above')
+
+    assert lt == datetime.datetime(2016, 8, 15, 21, 0)
 """
-def test_last_time(oanda_object):
-
-    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                     instrument='NZD_CAD',
-                     granularity='D',
-                     alignmentTimezone='Europe/London',
-                     start='2005-01-01T22:00:00',
-                     end='2019-03-21T22:00:00')
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list, instrument='NZD_CAD', granularity='D')
-
-
-    resist = HArea(price=0.92216, pips=50, instrument='NZD_CAD', granularity='D')
-
-    resist.last_time(clist=cl, position='above')
-
 def test_get_bounce_feats():
 
     oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',

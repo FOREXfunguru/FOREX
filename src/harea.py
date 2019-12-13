@@ -60,7 +60,7 @@ class HArea(object):
 
         Parameters
         ----------
-        clist   CandleList object
+        clist   list
                 List with Candles
         position    This parameter controls if price should cross the HArea.upper for 'above'
                     or HArea.lower for 'below'

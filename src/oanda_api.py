@@ -315,6 +315,7 @@ class OandaAPI(object):
         
         '''
         candlelist=[]
+
         for c in self.data['candles']:
             
             if "openBid" in c:

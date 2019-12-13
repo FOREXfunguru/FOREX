@@ -9,3 +9,6 @@ python crossvalidate.py --ifile out_scores.ALL.tsv --outcom outcome --timeframe 
 ##counter doubletop
 python get_score_counterdbtp.py --ifile /Users/ernesto/Downloads/Screenshot analysis - train_counter_doubletop.tsv --timeframe ALL --verbose True --attrbs ../data/counter_dbptp/training.dbtp.27022019.json --prefix out_scores
 python crossvalidate.py --ifile out_scores_dbptpcont.ALL.tsv --outcom 'outcome 2nd peak' --timeframe ALL
+
+#calculate outcome for all trades
+python calculate_counter.py --ifile ~/Downloads/allbacktested.xls --worksheet allbacktested --strat counter_b1
