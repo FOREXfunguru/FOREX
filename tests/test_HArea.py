@@ -36,20 +36,13 @@ def test_last_time(oanda_object):
     lt=resist.last_time(clist=cl.clist, position='above')
 
     assert lt == datetime.datetime(2016, 8, 15, 21, 0)
-"""
-def test_get_bounce_feats():
 
-    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                     instrument='CAD_JPY',
-                     granularity='H12',
-                     alignmentTimezone='Europe/London',
-                     dailyAlignment=22,
-                     start='2014-12-26T22:00:00',
-                     end='2015-01-08T23:00:00')
+def test_get_bounce_feats(oanda_object):
 
-    candle_list = oanda.fetch_candleset()
 
-    cl = CandleList(candle_list, instrument='CAD_JPY', granularity='H12')
+    candle_list = oanda_object.fetch_candleset()
+
+    cl = CandleList(candle_list, instrument='EUR_AUD', granularity='D')
 
     (model, outfile) = cl.fit_reg_line()
 
@@ -59,13 +52,13 @@ def test_get_bounce_feats():
     else:
         direction = 'down'
 
-    resist = HArea(price=101.318, pips=20, instrument='CAD_JPY', granularity='H12')
+    resist = HArea(price=0.92216, pips=50, instrument='EUR_AUD', granularity='D')
 
     (inn_bounce, bounce_pips)=resist.get_bounce_feats(clist=cl, direction=direction)
 
     assert inn_bounce == 5
     assert bounce_pips == 139
-
+"""
 def test_get_cross_time():
 
     resist = HArea(price=94.431, pips=20, instrument='CAD_JPY', granularity='H12')

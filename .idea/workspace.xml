@@ -2,10 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/FOREX.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/FOREX.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/misc.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/cmd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/cmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/harea.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/harea.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oanda_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/oanda_api.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TradeJournal/trade.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/trade.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_HArea.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_HArea.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
@@ -14,22 +14,75 @@
     <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
     <option name="LAST_RESOLUTION" value="IGNORE" />
   </component>
-  <component name="DatabaseView">
-    <option name="SHOW_INTERMEDIATE" value="true" />
-    <option name="GROUP_DATA_SOURCES" value="true" />
-    <option name="GROUP_SCHEMA" value="true" />
-    <option name="GROUP_CONTENTS" value="false" />
-    <option name="SORT_POSITIONED" value="false" />
-    <option name="SHOW_EMPTY_GROUPS" value="false" />
-    <option name="AUTO_SCROLL_FROM_SOURCE" value="false" />
-    <option name="HIDDEN_KINDS">
-      <set />
-    </option>
-    <expand />
-    <select />
-  </component>
   <component name="FavoritesManager">
     <favorites_list name="FOREX" />
+  </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/test_HArea.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="409">
+              <caret line="56" column="53" selection-start-line="56" selection-start-column="37" selection-end-line="56" selection-end-column="53" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/candlelist.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="344">
+              <caret line="555" column="40" selection-start-line="555" selection-start-column="40" selection-end-line="555" selection-end-column="40" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/harea.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="267">
+              <caret line="103" column="23" lean-forward="true" selection-start-line="103" selection-start-column="23" selection-end-line="103" selection-end-column="23" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/oanda_api.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1915">
+              <caret line="299" column="8" selection-start-line="299" selection-start-column="8" selection-end-line="299" selection-end-column="8" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/TradeJournal/tradejournal.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1296">
+              <caret line="199" column="56" lean-forward="true" selection-start-line="199" selection-start-column="56" selection-end-line="199" selection-end-column="56" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/TradeJournal/trade.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="1898">
+              <caret line="157" column="22" selection-start-line="157" selection-start-column="22" selection-end-line="157" selection-end-column="22" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/config.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="224">
+              <caret line="98" column="16" selection-start-line="98" selection-start-column="11" selection-end-line="98" selection-end-column="16" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
@@ -37,6 +90,43 @@
         <option value="Python Script" />
       </list>
     </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>length_</find>
+      <find>set_rsi_1st</find>
+      <find>logical</find>
+      <find>get_pi</find>
+      <find>get_</find>
+      <find>calc_</find>
+      <find>get_pivots</find>
+      <find>calc_itrend</find>
+      <find>0.0</find>
+      <find>__initclist</find>
+      <find>__inarea_bounces</find>
+      <find>strptime(</find>
+      <find>attr</find>
+      <find>np.logical</find>
+      <find>get_attr</find>
+      <find>config</find>
+      <find>candlelist</find>
+      <find>getA</find>
+      <find>get_pivotlist</find>
+      <find>improve</find>
+      <find>is_short</find>
+      <find>plist</find>
+      <find>flist</find>
+      <find>pdb.s</find>
+      <find>moving average</find>
+      <find>regression</find>
+      <find>fit_reg_line</find>
+      <find>valid</find>
+      <find>oucome</find>
+      <find>get_bounce_feats</find>
+    </findStrings>
+    <dirStrings>
+      <dir>$PROJECT_DIR$</dir>
+    </dirStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -79,12 +169,110 @@
       </branch-storage>
     </excluded-from-favorite>
   </component>
-  <component name="ProjectId" id="1TT8rOWr524OVtuFW2FnaDM65CJ" />
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/main.py" />
+        <option value="$PROJECT_DIR$/README.md" />
+        <option value="$PROJECT_DIR$/src/Reversal.py" />
+        <option value="$PROJECT_DIR$/tests/test_Candle.py" />
+        <option value="$PROJECT_DIR$/src/scripts/calculate_rsi.py" />
+        <option value="$PROJECT_DIR$/src/Area.py" />
+        <option value="$PROJECT_DIR$/src/VArea.py" />
+        <option value="$PROJECT_DIR$/tests/test_Trade.py" />
+        <option value="$PROJECT_DIR$/scripts/trade_journal/calculate_feats.py" />
+        <option value="$PROJECT_DIR$/src/Candle.py" />
+        <option value="$PROJECT_DIR$/src/TradeJournal/CounterTrade.py" />
+        <option value="$PROJECT_DIR$/scripts/TRAIN/calculate_ctdbtp.py" />
+        <option value="$PROJECT_DIR$/tests/test_Counter.py" />
+        <option value="$PROJECT_DIR$/tests/test_OandaAPI.py" />
+        <option value="$PROJECT_DIR$/src/OandaAPI.py" />
+        <option value="$PROJECT_DIR$/env/env.sh" />
+        <option value="$PROJECT_DIR$/src/Pattern/CounterDbTp.py" />
+        <option value="$PROJECT_DIR$/src/HArea.py" />
+        <option value="$PROJECT_DIR$/src/Pattern/Counter.py" />
+        <option value="$PROJECT_DIR$/src/CandleList.py" />
+        <option value="$PROJECT_DIR$/scripts/test.py" />
+        <option value="$PROJECT_DIR$/src/Utils.py" />
+        <option value="$PROJECT_DIR$/src/TradeJournal/Trade.py" />
+        <option value="$PROJECT_DIR$/tests/test_TradeJournal.py" />
+        <option value="$PROJECT_DIR$/src/TradeJournal/TradeJournal.py" />
+        <option value="$PROJECT_DIR$/src/scripts/calc_basic_stats.py" />
+        <option value="$PROJECT_DIR$/src/oanda_api.py" />
+        <option value="$PROJECT_DIR$/tests/test_CounterDbTp.py" />
+        <option value="$PROJECT_DIR$/tests/test_CandleList.py" />
+        <option value="$PROJECT_DIR$/src/Pattern/counter.py" />
+        <option value="$PROJECT_DIR$/scripts/calculate_ctdbtp.py" />
+        <option value="$PROJECT_DIR$/src/detect_SRareas.py" />
+        <option value="$PROJECT_DIR$/src/utils.py" />
+        <option value="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" />
+        <option value="$PROJECT_DIR$/tests/test_PivotList.py" />
+        <option value="$PROJECT_DIR$/src/pivotlist.py" />
+        <option value="$APPLICATION_CONFIG_DIR$/scratches/scratch.py" />
+        <option value="$PROJECT_DIR$/src/candlelist.py" />
+        <option value="$PROJECT_DIR$/src/harea.py" />
+        <option value="$PROJECT_DIR$/tests/test_SegmentList.py" />
+        <option value="$PROJECT_DIR$/src/config.py" />
+        <option value="$PROJECT_DIR$/scripts/detect_SRareas.py" />
+        <option value="$PROJECT_DIR$/src/segmentlist.py" />
+        <option value="$PROJECT_DIR$/src/TradeJournal/trade.py" />
+        <option value="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" />
+        <option value="$PROJECT_DIR$/tests/test_HArea.py" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectFrameBounds" fullScreen="true">
+    <option name="width" value="1440" />
+    <option name="height" value="900" />
+  </component>
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FOREX" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FOREX" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FOREX" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Pattern" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FOREX" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="TradeJournal" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FOREX" type="462c0819:PsiDirectoryNode" />
+              <item name="tests" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Scratches and Consoles" type="1a2a3e82:ScratchProjectViewPane$MyProjectNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
   <component name="PropertiesComponent">
-    <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="Python" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/src" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PyActiveSdkModuleConfigurable" />
   </component>
   <component name="PyConsoleOptionsProvider">
@@ -124,51 +312,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.calculate_counter">
-    <configuration default="true" type="PythonConfigurationType" factoryName="Python">
-      <module name="FOREX" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="$USER_HOME$/miniconda3/envs/python3_5_env/bin/python3.5" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/calculate_counter.py" />
-      <option name="PARAMETERS" value="--ifle ~/Downloads/Backtesting.xlsx --worksheet backtesting_23102019 --strat counter_sma" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
-    <configuration name="calculate_counter" type="PythonConfigurationType" factoryName="Python" nameIsGenerated="true">
-      <module name="FOREX" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="$USER_HOME$/miniconda3/envs/python3_5_env/bin/python3.5" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts" />
-      <option name="IS_MODULE_SDK" value="false" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/calculate_counter.py" />
-      <option name="PARAMETERS" value="--ifile &quot;$USER_HOME$/Downloads/allbacktesteddebug.xls&quot; --worksheet &quot;allbacktested&quot; --strat &quot;counter_b1&quot;" />
-      <option name="SHOW_COMMAND_LINE" value="true" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.calculate_ctdbtp">
     <configuration name="calculate_ctdbtp" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="FOREX" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -181,7 +325,6 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/calculate_ctdbtp.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -203,7 +346,6 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/scripts/calculate_rsi.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -225,7 +367,6 @@
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/main.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
@@ -235,12 +376,6 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <list>
-      <item itemvalue="Python.calculate_counter" />
-      <item itemvalue="Python.calculate_ctdbtp" />
-      <item itemvalue="Python.calculate_rsi" />
-      <item itemvalue="Python.main" />
-    </list>
     <recent_temporary>
       <list>
         <item itemvalue="Python.calculate_ctdbtp" />
@@ -259,14 +394,104 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
-      <workItem from="1573472930573" duration="4071000" />
-      <workItem from="1573488977979" duration="16000" />
-      <workItem from="1573489156043" duration="772000" />
-      <workItem from="1573492533411" duration="45477000" />
-      <workItem from="1574755433569" duration="16092000" />
-      <workItem from="1575380629554" duration="1853000" />
-      <workItem from="1575537219884" duration="12098000" />
-      <workItem from="1576069780992" duration="10086000" />
+    </task>
+    <task id="LOCAL-00067" summary="Modifying approach for set last_time">
+      <created>1559687385830</created>
+      <option name="number" value="00067" />
+      <option name="presentableId" value="LOCAL-00067" />
+      <option name="project" value="LOCAL" />
+      <updated>1559687385834</updated>
+    </task>
+    <task id="LOCAL-00068" summary="Add extension on each side of the bounce of rsi calculation">
+      <created>1559833143814</created>
+      <option name="number" value="00068" />
+      <option name="presentableId" value="LOCAL-00068" />
+      <option name="project" value="LOCAL" />
+      <updated>1559833143825</updated>
+    </task>
+    <task id="LOCAL-00069" summary="working implementing the zigzag indicator&#10;&#10;for now, this indicator will be only added to self.trend check for divergence">
+      <created>1560070907775</created>
+      <option name="number" value="00069" />
+      <option name="presentableId" value="LOCAL-00069" />
+      <option name="project" value="LOCAL" />
+      <updated>1560070907780</updated>
+    </task>
+    <task id="LOCAL-00070" summary="working implementing the outcome proportion code">
+      <created>1560895947214</created>
+      <option name="number" value="00070" />
+      <option name="presentableId" value="LOCAL-00070" />
+      <option name="project" value="LOCAL" />
+      <updated>1560895947223</updated>
+    </task>
+    <task id="LOCAL-00071" summary="working implementing the outcome proportion code1">
+      <created>1561531138863</created>
+      <option name="number" value="00071" />
+      <option name="presentableId" value="LOCAL-00071" />
+      <option name="project" value="LOCAL" />
+      <updated>1561531138877</updated>
+    </task>
+    <task id="LOCAL-00072" summary="Adding folders for images">
+      <created>1561585813412</created>
+      <option name="number" value="00072" />
+      <option name="presentableId" value="LOCAL-00072" />
+      <option name="project" value="LOCAL" />
+      <updated>1561585813426</updated>
+    </task>
+    <task id="LOCAL-00073" summary="Adding .gitignore">
+      <created>1562105570992</created>
+      <option name="number" value="00073" />
+      <option name="presentableId" value="LOCAL-00073" />
+      <option name="project" value="LOCAL" />
+      <updated>1562105570993</updated>
+    </task>
+    <task id="LOCAL-00074" summary="Adding .gitignore">
+      <created>1562105629091</created>
+      <option name="number" value="00074" />
+      <option name="presentableId" value="LOCAL-00074" />
+      <option name="project" value="LOCAL" />
+      <updated>1562105629091</updated>
+    </task>
+    <task id="LOCAL-00075" summary="Improving zigzag notebook">
+      <created>1562192137996</created>
+      <option name="number" value="00075" />
+      <option name="presentableId" value="LOCAL-00075" />
+      <option name="project" value="LOCAL" />
+      <updated>1562192137997</updated>
+    </task>
+    <task id="LOCAL-00076" summary="Adding init_trend_function to Counter">
+      <created>1562279507751</created>
+      <option name="number" value="00076" />
+      <option name="presentableId" value="LOCAL-00076" />
+      <option name="project" value="LOCAL" />
+      <updated>1562279507751</updated>
+    </task>
+    <task id="LOCAL-00077" summary="Adding init_trend_function to Counter1">
+      <created>1562621356397</created>
+      <option name="number" value="00077" />
+      <option name="presentableId" value="LOCAL-00077" />
+      <option name="project" value="LOCAL" />
+      <updated>1562621356400</updated>
+    </task>
+    <task id="LOCAL-00078" summary="Adding init_trend_function to Counter2">
+      <created>1562744073947</created>
+      <option name="number" value="00078" />
+      <option name="presentableId" value="LOCAL-00078" />
+      <option name="project" value="LOCAL" />
+      <updated>1562744073967</updated>
+    </task>
+    <task id="LOCAL-00079" summary="Test new branch">
+      <created>1562744270366</created>
+      <option name="number" value="00079" />
+      <option name="presentableId" value="LOCAL-00079" />
+      <option name="project" value="LOCAL" />
+      <updated>1562744270367</updated>
+    </task>
+    <task id="LOCAL-00080" summary="Changes in CounterDoubleTop">
+      <created>1563116485896</created>
+      <option name="number" value="00080" />
+      <option name="presentableId" value="LOCAL-00080" />
+      <option name="project" value="LOCAL" />
+      <updated>1563116485899</updated>
     </task>
     <task id="LOCAL-00081" summary="Create slice method for CandeList">
       <created>1563117505900</created>
@@ -506,112 +731,14 @@
       <option name="project" value="LOCAL" />
       <updated>1569536477807</updated>
     </task>
-    <task id="LOCAL-00115" summary="Working on improvement of calc_basic_stats">
-      <created>1573568130904</created>
+    <task id="LOCAL-00115" summary="Working on SR detection1">
+      <created>1573458183055</created>
       <option name="number" value="00115" />
       <option name="presentableId" value="LOCAL-00115" />
       <option name="project" value="LOCAL" />
-      <updated>1573568130906</updated>
+      <updated>1573458183056</updated>
     </task>
-    <task id="LOCAL-00116" summary="Improving">
-      <created>1574090205971</created>
-      <option name="number" value="00116" />
-      <option name="presentableId" value="LOCAL-00116" />
-      <option name="project" value="LOCAL" />
-      <updated>1574090205971</updated>
-    </task>
-    <task id="LOCAL-00117" summary="Improving1">
-      <created>1574178221583</created>
-      <option name="number" value="00117" />
-      <option name="presentableId" value="LOCAL-00117" />
-      <option name="project" value="LOCAL" />
-      <updated>1574178221583</updated>
-    </task>
-    <task id="LOCAL-00118" summary="Bug in nan in TP">
-      <created>1574342347136</created>
-      <option name="number" value="00118" />
-      <option name="presentableId" value="LOCAL-00118" />
-      <option name="project" value="LOCAL" />
-      <updated>1574342347137</updated>
-    </task>
-    <task id="LOCAL-00119" summary="Creation of Counter pattern">
-      <created>1574356379619</created>
-      <option name="number" value="00119" />
-      <option name="presentableId" value="LOCAL-00119" />
-      <option name="project" value="LOCAL" />
-      <updated>1574356379619</updated>
-    </task>
-    <task id="LOCAL-00120" summary="Creation of Counter calculation script">
-      <created>1574438736692</created>
-      <option name="number" value="00120" />
-      <option name="presentableId" value="LOCAL-00120" />
-      <option name="project" value="LOCAL" />
-      <updated>1574438736693</updated>
-    </task>
-    <task id="LOCAL-00121" summary="Implementation of ConnectionError recovery">
-      <created>1574787747963</created>
-      <option name="number" value="00121" />
-      <option name="presentableId" value="LOCAL-00121" />
-      <option name="project" value="LOCAL" />
-      <updated>1574787747965</updated>
-    </task>
-    <task id="LOCAL-00122" summary="Correcting whitespace in TimeFrame">
-      <created>1574860798820</created>
-      <option name="number" value="00122" />
-      <option name="presentableId" value="LOCAL-00122" />
-      <option name="project" value="LOCAL" />
-      <updated>1574860798820</updated>
-    </task>
-    <task id="LOCAL-00123" summary="Adding new trade types">
-      <created>1574871313772</created>
-      <option name="number" value="00123" />
-      <option name="presentableId" value="LOCAL-00123" />
-      <option name="project" value="LOCAL" />
-      <updated>1574871313772</updated>
-    </task>
-    <task id="LOCAL-00124" summary="Adding new trade types1">
-      <created>1574873825534</created>
-      <option name="number" value="00124" />
-      <option name="presentableId" value="LOCAL-00124" />
-      <option name="project" value="LOCAL" />
-      <updated>1574873825534</updated>
-    </task>
-    <task id="LOCAL-00125" summary="Fixing bug with historical record">
-      <created>1574940881315</created>
-      <option name="number" value="00125" />
-      <option name="presentableId" value="LOCAL-00125" />
-      <option name="project" value="LOCAL" />
-      <updated>1574940881315</updated>
-    </task>
-    <task id="LOCAL-00126" summary="Adding nb with counterish trades">
-      <created>1575646510670</created>
-      <option name="number" value="00126" />
-      <option name="presentableId" value="LOCAL-00126" />
-      <option name="project" value="LOCAL" />
-      <updated>1575646510671</updated>
-    </task>
-    <task id="LOCAL-00127" summary="Adding modifs to the Trade module">
-      <created>1575911528568</created>
-      <option name="number" value="00127" />
-      <option name="presentableId" value="LOCAL-00127" />
-      <option name="project" value="LOCAL" />
-      <updated>1575911528569</updated>
-    </task>
-    <task id="LOCAL-00128" summary="Dealing with 'entry' error">
-      <created>1576084484810</created>
-      <option name="number" value="00128" />
-      <option name="presentableId" value="LOCAL-00128" />
-      <option name="project" value="LOCAL" />
-      <updated>1576084484811</updated>
-    </task>
-    <task id="LOCAL-00129" summary="Dealing with errors">
-      <created>1576250724347</created>
-      <option name="number" value="00129" />
-      <option name="presentableId" value="LOCAL-00129" />
-      <option name="project" value="LOCAL" />
-      <updated>1576250724348</updated>
-    </task>
-    <option name="localTasksCounter" value="130" />
+    <option name="localTasksCounter" value="116" />
     <servers />
   </component>
   <component name="TodoView">
@@ -623,23 +750,62 @@
       <is-autoscroll-to-source value="true" />
     </todo-panel>
   </component>
-  <component name="TypeScriptGeneratedFilesManager">
-    <option name="version" value="1" />
-  </component>
-  <component name="Vcs.Log.Tabs.Properties">
-    <option name="TAB_STATES">
-      <map>
-        <entry key="MAIN">
-          <value>
-            <State>
-              <option name="COLUMN_ORDER" />
-            </State>
-          </value>
-        </entry>
-      </map>
-    </option>
+  <component name="ToolWindowManager">
+    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <layout>
+      <window_info active="true" content_ui="combo" id="Project" order="0" sideWeight="0.697695" visible="true" weight="0.14376321" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" sideWeight="0.30230495" side_tool="true" weight="0.1319417" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.5421687" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32847342" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.35839415" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.32650602" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.25060242" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5024665" side_tool="true" weight="0.38554215" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32771084" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+    <layout-to-restore>
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.39473686" visible="true" weight="0.16560958" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" sideWeight="0.6052632" side_tool="true" weight="0.16560958" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.5421687" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32847342" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.35839415" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.3287858" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4982382" weight="0.413253" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5017618" side_tool="true" weight="0.25060242" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32846716" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout-to-restore>
   </component>
   <component name="VcsManagerConfiguration">
+    <MESSAGE value="Working on trend_feats2" />
+    <MESSAGE value="Working on unset colnames" />
+    <MESSAGE value="Working on extending itrend" />
+    <MESSAGE value="WOrk in raising exception when start and end for slice are not valid" />
+    <MESSAGE value="Changing number of pips for last_time" />
+    <MESSAGE value="Solving bug in the detection of RSI bounces" />
+    <MESSAGE value="Working on the rsi extend area" />
+    <MESSAGE value="Working on automatic detection of self.trend_i and automatic extension" />
+    <MESSAGE value="Working on automatic detection of self.trend_i and automatic extension using segment angles" />
+    <MESSAGE value="Working on PivotList" />
+    <MESSAGE value="Working on new PivotList testing unit" />
+    <MESSAGE value="Working on consolidation of segments" />
+    <MESSAGE value="Working on consolidation of segments1" />
+    <MESSAGE value="Working on consolidation of segments2" />
     <MESSAGE value="Working on consolidation of segments3" />
     <MESSAGE value="Major code reorganization in order to improve get_major_segment. It involves creation of new class named SegmentList" />
     <MESSAGE value="Major code reorganization in order to improve get_major_segment. It involves creation of new class named SegmentList-1" />
@@ -650,63 +816,354 @@
     <MESSAGE value="Working on bug in order of segments in segmentlist" />
     <MESSAGE value="Working on bug in order of segments in segmentlist1" />
     <MESSAGE value="Working on SR detection" />
-    <MESSAGE value="Working on improvement of calc_basic_stats" />
-    <MESSAGE value="Improving" />
-    <MESSAGE value="Improving1" />
-    <MESSAGE value="Bug in nan in TP" />
-    <MESSAGE value="Creation of Counter pattern" />
-    <MESSAGE value="Creation of Counter calculation script" />
-    <MESSAGE value="Implementation of ConnectionError recovery" />
-    <MESSAGE value="Correcting whitespace in TimeFrame" />
-    <MESSAGE value="Adding new trade types" />
-    <MESSAGE value="Adding new trade types1" />
-    <MESSAGE value="Fixing bug with historical record" />
-    <MESSAGE value="Adding nb with counterish trades" />
-    <MESSAGE value="Adding modifs to the Trade module" />
-    <MESSAGE value="Dealing with 'entry' error" />
-    <MESSAGE value="Dealing with errors" />
-    <option name="LAST_COMMIT_MESSAGE" value="Dealing with errors" />
+    <MESSAGE value="Working on SR detection1" />
+    <option name="LAST_COMMIT_MESSAGE" value="Working on SR detection1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
       <breakpoints>
-        <line-breakpoint suspend="THREAD" type="python-line">
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/src/candlelist.py</url>
           <line>451</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
-        <line-breakpoint suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/oanda_api.py</url>
-          <line>143</line>
-          <option name="timeStamp" value="7" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/TradeJournal/tradejournal.py</url>
-          <line>206</line>
-          <option name="timeStamp" value="20" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/TradeJournal/trade.py</url>
-          <line>110</line>
-          <option name="timeStamp" value="21" />
-        </line-breakpoint>
-        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/src/oanda_api.py</url>
-          <line>318</line>
-          <option name="timeStamp" value="23" />
-        </line-breakpoint>
       </breakpoints>
-      <default-breakpoints>
-        <breakpoint type="python-exception">
-          <properties notifyOnTerminate="true" exception="BaseException">
-            <option name="notifyOnTerminate" value="true" />
-          </properties>
-        </breakpoint>
-      </default-breakpoints>
     </breakpoint-manager>
   </component>
-  <component name="com.intellij.coverage.CoverageDataManagerImpl">
-    <SUITE FILE_PATH="coverage/FOREX$calculate_ctdbtp.coverage" NAME="calculate_ctdbtp Coverage Results" MODIFIED="1574937287632" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
-    <SUITE FILE_PATH="coverage/FOREX$calculate_counter.coverage" NAME="calculate_counter Coverage Results" MODIFIED="1576235410974" SOURCE_PROVIDER="com.intellij.coverage.DefaultCoverageFileProvider" RUNNER="coverage.py" COVERAGE_BY_TEST_ENABLED="true" COVERAGE_TRACING_ENABLED="false" WORKING_DIRECTORY="$PROJECT_DIR$/scripts" />
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/src/Untitled.ipynb" />
+    <entry file="file://$PROJECT_DIR$/src/Untitled1.ipynb" />
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/pydevd.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="463">
+          <caret line="1736" column="24" lean-forward="true" selection-start-line="1736" selection-start-column="24" selection-end-line="1736" selection-end-column="24" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_HOME_DIR$/helpers/pydev/_pydev_imps/_pydev_execfile.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="255">
+          <caret line="17" selection-start-line="17" selection-end-line="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="18" column="1" lean-forward="true" selection-start-line="18" selection-start-column="1" selection-end-line="18" selection-end-column="1" />
+          <folding>
+            <element signature="e#0#29#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/README.md">
+      <provider selected="true" editor-type-id="split-provider[text-editor;markdown-preview-editor]">
+        <state split_layout="SPLIT">
+          <first_editor relative-caret-position="60">
+            <caret line="4" column="74" lean-forward="true" selection-start-line="4" selection-start-column="74" selection-end-line="4" selection-end-column="74" />
+          </first_editor>
+          <second_editor />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_Candle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="210">
+          <caret line="14" column="16" selection-start-line="14" selection-start-column="16" selection-end-line="14" selection-end-column="16" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripts/calculate_rsi.py" />
+    <entry file="file://$PROJECT_DIR$/src/scripts/analyze_reversal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#0#31#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/test.txt" />
+    <entry file="file://$PROJECT_DIR$/scripts/trade_journal/calculate_feats.py" />
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/CounterTrade.py" />
+    <entry file="file://$USER_HOME$/bin/anaconda/envs/python3/lib/python3.5/site-packages/pandas/plotting/_converter.py" />
+    <entry file="file://$PROJECT_DIR$/tests/test_Trade.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="367">
+          <caret line="44" column="18" selection-start-line="44" selection-start-column="9" selection-end-line="44" selection-end-column="18" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/bin/anaconda/envs/python3/lib/python3.5/site-packages/requests/sessions.py" />
+    <entry file="file://$PROJECT_DIR$/scripts/get_score_continuations.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="21" selection-start-line="21" selection-end-line="21" selection-end-column="26" />
+          <folding>
+            <element signature="e#18#37#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/bin/anaconda/envs/python3/lib/python3.5/site-packages/OpenSSL/SSL.py" />
+    <entry file="file://$PROJECT_DIR$/scripts/get_score_counterdbtp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1649">
+          <caret line="32" selection-start-line="26" selection-end-line="32" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/bin/anaconda/envs/python3/lib/python3.5/site-packages/matplotlib/rcsetup.py" />
+    <entry file="file://$USER_HOME$/bin/anaconda/envs/python3/lib/python3.5/bdb.py" />
+    <entry file="file://$PROJECT_DIR$/env/env.sh">
+      <provider selected="true" editor-type-id="text-editor" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/test.py" />
+    <entry file="file://$PROJECT_DIR$/tests/test_TradeJournal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1021">
+          <caret line="70" column="85" selection-start-line="70" selection-start-column="44" selection-end-line="70" selection-end-column="85" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/scripts/calc_basic_stats.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="165">
+          <caret line="11" column="62" selection-start-line="11" selection-start-column="62" selection-end-line="11" selection-end-column="62" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/learning_nbs/Calculating past bounces on a certain Support or Resistance area.ipynb">
+      <provider selected="true" editor-type-id="ipnb-editor">
+        <state>
+          <selected id="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/reversal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="3105">
+          <caret line="207" column="48" selection-start-line="207" selection-start-column="36" selection-end-line="207" selection-end-column="48" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_Counter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="996">
+          <caret line="73" column="41" lean-forward="true" selection-start-line="73" selection-start-column="41" selection-end-line="73" selection-end-column="41" />
+          <folding>
+            <element signature="e#0#35#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="973">
+          <caret line="240" column="24" selection-start-line="238" selection-start-column="3" selection-end-line="240" selection-end-column="24" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/lib/python3.7/site-packages/OpenSSL/SSL.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="194">
+          <caret line="1913" selection-start-line="1913" selection-end-line="1913" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/lib/python3.7/site-packages/sklearn/utils/validation.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="194">
+          <caret line="549" selection-start-line="549" selection-end-line="549" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Pattern/counter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="583">
+          <caret line="217" selection-start-line="217" selection-end-line="217" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/calculate_ctdbtp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="150">
+          <caret line="10" column="26" lean-forward="true" selection-start-line="6" selection-end-line="10" selection-end-column="26" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/utils.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="180">
+          <caret line="12" column="17" selection-start-line="12" selection-start-column="17" selection-end-line="12" selection-end-column="17" />
+          <folding>
+            <element signature="e#0#15#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$USER_HOME$/miniconda3/lib/python3.7/site-packages/socks.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-11731">
+          <caret line="60" column="22" lean-forward="true" selection-start-line="60" selection-start-column="22" selection-end-line="60" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_CounterDbTp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="501">
+          <caret line="44" column="3" selection-start-line="44" selection-start-column="3" selection-end-line="44" selection-end-column="3" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_CandleList.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="360">
+          <caret line="24" lean-forward="true" selection-start-line="24" selection-end-line="24" />
+          <folding>
+            <element signature="e#0#13#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_PivotList.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="742">
+          <caret line="61" column="77" selection-start-line="61" selection-start-column="77" selection-end-line="61" selection-end-column="77" />
+          <folding>
+            <element signature="e#0#44#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Pattern/counter_dbtp.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="4545">
+          <caret line="308" selection-start-line="306" selection-start-column="12" selection-end-line="308" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/pivotlist.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="825">
+          <caret line="57" column="71" selection-start-line="57" selection-start-column="71" selection-end-line="57" selection-end-column="71" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$APPLICATION_CONFIG_DIR$/scratches/scratch.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="5040">
+          <caret line="336" column="22" selection-end-line="336" selection-end-column="22" />
+          <folding>
+            <element signature="e#0#40#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/segmentlist.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-1899">
+          <caret line="104" column="23" selection-start-line="104" selection-start-column="23" selection-end-line="104" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/candle.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="2580">
+          <caret line="172" column="22" selection-start-line="165" selection-start-column="3" selection-end-line="172" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_SegmentList.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1290">
+          <caret line="92" selection-start-line="92" selection-end-line="92" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/detect_SRareas.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1290">
+          <caret line="96" column="23" selection-start-line="96" selection-start-column="23" selection-end-line="96" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#30#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="224">
+          <caret line="98" column="16" selection-start-line="98" selection-start-column="11" selection-end-line="98" selection-end-column="16" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/oanda_api.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1915">
+          <caret line="299" column="8" selection-start-line="299" selection-start-column="8" selection-end-line="299" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/trade.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1898">
+          <caret line="157" column="22" selection-start-line="157" selection-start-column="22" selection-end-line="157" selection-end-column="22" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/tradejournal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1296">
+          <caret line="199" column="56" lean-forward="true" selection-start-line="199" selection-start-column="56" selection-end-line="199" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_HArea.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="409">
+          <caret line="56" column="53" selection-start-line="56" selection-start-column="37" selection-end-line="56" selection-end-column="53" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/candlelist.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="344">
+          <caret line="555" column="40" selection-start-line="555" selection-start-column="40" selection-end-line="555" selection-end-column="40" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/harea.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="267">
+          <caret line="103" column="23" lean-forward="true" selection-start-line="103" selection-start-column="23" selection-end-line="103" selection-end-column="23" />
+        </state>
+      </provider>
+    </entry>
   </component>
 </project>

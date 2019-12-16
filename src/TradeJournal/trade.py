@@ -151,7 +151,7 @@ class Trade(object):
             assert getattr(self, 'outcome')
         except:
             warnings.warn("\tNo outcome could be calculated")
-            self.oucome="n.a."
+            self.outcome="n.a."
 
         warnings.warn("[INFO] Done run_trade")
 
