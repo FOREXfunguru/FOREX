@@ -54,19 +54,39 @@ def test_get_cross_time(oanda_object):
 
     assert cross_time == datetime.datetime(2015, 8, 27, 9, 0)
 
-def test_get_cross_time(oanda_object):
+def test_get_cross_time1(oanda_object):
     '''
-
-    :param oanda_object:
-    :return:
+    Test 'get_cross_time' function from HArea
+    for a single candle that does not cross the 'resist' object
+    that is centered at 1.52287
     '''
 
     candle_list = oanda_object.fetch_candleset()
 
-    resist = HArea(price=1.57854, pips=50, instrument='EUR_AUD', granularity='D')
+    resist = HArea(price=1.52287, pips=50, instrument='EUR_AUD', granularity='D')
 
     # Candle that will be analysed for crossing is 27/08/2015
-    # which crosses 'resist'
+    # which does not cross 'resist'
     cross_time = resist.get_cross_time(candle=candle_list[0])
 
-    assert cross_time == datetime.datetime(2015, 8, 27, 9, 0)
+    assert cross_time == "n.a."
+
+
+def test_get_cross_time2():
+    '''
+    Test 'get_cross_time' function from HArea
+    for a single candle that does not cross the 'resist' object
+    that is centered at 0.66662
+    '''
+
+    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
+                     instrument='EUR_GBP',
+                     granularity='D',
+                     dailyAlignment=22,
+                     alignmentTimezone='Europe/London')
+
+    oanda.run(start='2004-03-12T22:00:00',
+              end='2004-03-23T22:00:00')
+
+    resist = HArea(price=0.66662, pips=50, instrument='EUR_GBP', granularity='D')
+
