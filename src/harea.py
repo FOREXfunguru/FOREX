@@ -84,62 +84,6 @@ class HArea(object):
                 if price < self.lower:
                     return c.time
 
-    def get_bounce_feats(self, clist, direction):
-        '''
-        This function is used to calculate some bounce
-        features, where bounce is defined with respect
-        to the HArea
-
-        Parameters
-        ----------
-        clist :   CandleList object
-                  List with Candles
-        direction : str
-                    Direction of the trend. Possible values are 'up'/'down'
-
-        Returns
-        ------
-        int  number of candles of the bounce
-        int  number of pips from HRarea.price to highest/lowest point reached by
-             the bounce
-        '''
-
-        highest=0
-        inn_bounce=0
-        entered=False
-
-        for c in reversed(clist.clist):
-            #check if candle is within body
-            if c.openAsk <= self.price <= c.closeAsk and entered is False:
-                if direction=='up': highest=c.highAsk
-                elif direction=='down': highest=c.lowAsk
-                inn_bounce+=1
-                entered=True
-            elif entered is True and direction=='down' and (c.openAsk>self.price and c.closeAsk > self.price):
-                break
-            elif entered is True and direction=='up' and (c.openAsk<self.price and c.closeAsk < self.price):
-                break
-            elif entered is True:
-                inn_bounce+=1
-                if direction == 'up' and c.highAsk > highest:
-                    highest = c.highAsk
-                elif direction == 'down' and c.lowAsk < highest:
-                    highest = c.lowAsk
-
-        (first, second) = self.instrument.split("_")
-        round_number = None
-        if first == 'JPY' or second == 'JPY':
-            round_number = 2
-        else:
-            round_number = 4
-
-        highest = round(highest, round_number)
-        s_rprice = round(self.price, round_number)
-
-        diff = (highest - s_rprice) * 10 ** round_number
-
-        return (inn_bounce,abs(int(round(diff, 0))))
-
     def get_cross_time(self, candle, granularity='M30'):
         '''
         This function is used get the time that the candle

@@ -37,27 +37,6 @@ def test_last_time(oanda_object):
 
     assert lt == datetime.datetime(2016, 8, 15, 21, 0)
 
-def test_get_bounce_feats(oanda_object):
-
-
-    candle_list = oanda_object.fetch_candleset()
-
-    cl = CandleList(candle_list, instrument='EUR_AUD', granularity='D')
-
-    (model, outfile) = cl.fit_reg_line()
-
-    direction = None
-    if model.coef_[0, 0] > 0:
-        direction = 'up'
-    else:
-        direction = 'down'
-
-    resist = HArea(price=0.92216, pips=50, instrument='EUR_AUD', granularity='D')
-
-    (inn_bounce, bounce_pips)=resist.get_bounce_feats(clist=cl, direction=direction)
-
-    assert inn_bounce == 5
-    assert bounce_pips == 139
 """
 def test_get_cross_time():
 
