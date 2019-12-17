@@ -152,7 +152,7 @@ class Trade(object):
         except:
             warnings.warn("\tNo outcome could be calculated")
             self.outcome="n.a."
-            self.pips="n.a."
+            self.pips=0
 
         warnings.warn("[INFO] Done run_trade")
 
