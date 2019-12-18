@@ -231,7 +231,7 @@ class CounterDbTp(object):
 
         self.clist_period=cl
 
-    def __inarea_bounces(self, bounces, HRpips, part='closeAsk'):
+    def __inarea_bounces(self, bounces, HRpips, part='midAsk'):
         '''
         Function to identify the candles for which price is in the area defined
         by self.SR+HRpips and self.SR-HRpips
@@ -244,7 +244,7 @@ class CounterDbTp(object):
                  Number of pips over/below S/R used for trying to identify bounces
                  Default: 200
         part: str
-              Candle part used for the calculation. Default='closeAsk'
+              Candle part used for the calculation. Default='midAsk'
 
         Returns
         -------
@@ -256,6 +256,7 @@ class CounterDbTp(object):
 
         in_area_list = []
         for c in bounces:
+            c.set_candle_features()
             price = getattr(c, part)
            # print("u:{0}-l:{1}|p:{2}|t:{3}".format(upper, lower, price,c.time))
             if price >= lower and price <= upper:

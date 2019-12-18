@@ -2,15 +2,8 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/calculate_counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/calculate_counter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/Pattern/counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/candle.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/candle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/harea.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/harea.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oanda_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/oanda_api.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_Candle.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_Candle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_Counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_Counter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_HArea.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_HArea.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -198,14 +191,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
-      <workItem from="1576565490708" duration="13699000" />
-    </task>
-    <task id="LOCAL-00070" summary="working implementing the outcome proportion code">
-      <created>1560895947214</created>
-      <option name="number" value="00070" />
-      <option name="presentableId" value="LOCAL-00070" />
-      <option name="project" value="LOCAL" />
-      <updated>1560895947223</updated>
+      <workItem from="1576565490708" duration="13948000" />
     </task>
     <task id="LOCAL-00071" summary="working implementing the outcome proportion code1">
       <created>1561531138863</created>
@@ -543,7 +529,14 @@
       <option name="project" value="LOCAL" />
       <updated>1576590535572</updated>
     </task>
-    <option name="localTasksCounter" value="119" />
+    <task id="LOCAL-00119" summary="Changes in Candle part used for Counter trades">
+      <created>1576688374070</created>
+      <option name="number" value="00119" />
+      <option name="presentableId" value="LOCAL-00119" />
+      <option name="project" value="LOCAL" />
+      <updated>1576688374070</updated>
+    </task>
+    <option name="localTasksCounter" value="120" />
     <servers />
   </component>
   <component name="TodoView">
@@ -570,7 +563,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="WOrk in raising exception when start and end for slice are not valid" />
     <MESSAGE value="Changing number of pips for last_time" />
     <MESSAGE value="Solving bug in the detection of RSI bounces" />
     <MESSAGE value="Working on the rsi extend area" />
@@ -595,7 +587,8 @@
     <MESSAGE value="changes" />
     <MESSAGE value="removing get_bounces_feats from HArea" />
     <MESSAGE value="changes in test_HRarere" />
-    <option name="LAST_COMMIT_MESSAGE" value="changes in test_HRarere" />
+    <MESSAGE value="Changes in Candle part used for Counter trades" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes in Candle part used for Counter trades" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>

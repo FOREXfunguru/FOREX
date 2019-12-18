@@ -173,7 +173,6 @@ class Counter(object):
             price = getattr(c, part)
             if price >= lower and price <= upper:
                 in_area_list.append(c)
-        pdb.set_trace()
 
         return in_area_list
 
