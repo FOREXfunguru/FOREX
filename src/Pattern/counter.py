@@ -45,8 +45,7 @@ class Counter(object):
     SR:  float, Optional
          Support/Resistance area
     bounces: list, Optional
-             List with tuples [(datetime,price)] containing the datetime
-             and price for different bounces
+             List with Candle objects for price bounces at self.SR
     clist_period: CandleList, Optional
                   Candlelist extending back (defined by 'period') in time since the start of the pattern
     clist_trend: CandleList, Optional
@@ -143,7 +142,7 @@ class Counter(object):
 
         self.clist_period=cl
 
-    def __inarea_bounces(self, bounces, HRpips, part='closeAsk'):
+    def __inarea_bounces(self, bounces, HRpips, part='midAsk'):
         '''
         Function to identify the candles for which price is in the area defined
         by self.SR+HRpips and self.SR-HRpips
@@ -154,35 +153,38 @@ class Counter(object):
                  Containing the initial list of candles
         HR_pips: int, Optional
                  Number of pips over/below S/R used for trying to identify bounces
-                 Default: 200
+                 Required.
         part: str
-              Candle part used for the calculation. Default='closeAsk'
+              Candle part used for the calculation. Default='midAsk'
 
         Returns
         -------
         list with bounces that are in the area
         '''
-        # get bounces in the horizontal area
+        # get bounces in the horizontal SR area
         lower = substract_pips2price(self.pair, self.SR, HRpips)
         upper = add_pips2price(self.pair, self.SR, HRpips)
 
         in_area_list = []
         for c in bounces:
+            # initialize candle features to be sure that midAsk or midBid are
+            # initialized
+            c.set_candle_features()
             price = getattr(c, part)
-            # print("u:{0}-l:{1}|p:{2}|t:{3}".format(upper, lower, price,c.time))
             if price >= lower and price <= upper:
                 in_area_list.append(c)
+        pdb.set_trace()
 
         return in_area_list
 
-    def set_bounces(self, part='closeAsk', doPlot=False):
+    def set_bounces(self, part='midAsk', doPlot=False):
         '''
         Function to get the bounces. For this, Zigzag will be used
 
         Parameters
         ----------
         part: str
-              Candle part used for the calculation. Default='closeAsk'
+              Candle part used for the calculation. Default='midAsk'
         doPlot: boolean
                 If true, then generate a plot with bounces and a plot with rsi.
                 Default: False

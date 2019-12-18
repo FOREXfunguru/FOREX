@@ -113,7 +113,6 @@ class OandaAPI(object):
             raise Exception("You need to set at least the 'end' or the 'count' attribute")
 
         if self.url:
-
             resp = requests.get(url=self.url, params=params)
 
             if resp.status_code != 200:

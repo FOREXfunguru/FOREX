@@ -43,9 +43,8 @@ def test_bounces_attr(counter_object):
     has been initialized
     '''
 
-    assert counter_object.bounces[0].openAsk==1.88006
-    assert counter_object.bounces[1].openAsk==1.88187
-    assert len(counter_object.bounces)==3
+    assert counter_object.bounces[0].midAsk==1.8763
+    assert len(counter_object.bounces)==1
 
 def test_lasttime_attr(counter_object):
     '''

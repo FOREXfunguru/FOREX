@@ -4,6 +4,8 @@ Created on 07 Mar 2019
 @author: ernesto lowy
 '''
 
+import pdb
+
 class Candle(object):
     """
     Constructor
@@ -53,33 +55,29 @@ class BidAskCandle(Candle):
                Candle's lowAsk value
     closeAsk : float
                Candle's closeAsk value
+    midAsk : float
+             Middle of the candle. Calculated by doing
+             (highAsk+lowAsk)/2
+    midBid : float
+              Middle of the candle. Calculated by doing
+             (highBid+lowBid)/2
 
     Inherits from Candle
     '''
 
-    def __init__(self, representation=None, openBid=None, openAsk=None, highBid=None, highAsk=None,
-                 lowBid=None, lowAsk=None, closeBid=None, closeAsk=None, upper_wick=None, lower_wick=None
-                 , colour=None, perc_body=None, perc_uwick=None, perc_lwick=None):
+    def __init__(self, representation=None, **kwargs):
         Candle.__init__(self, representation)
-        self.openBid = openBid
-        self.openAsk = openAsk
-        self.highBid = highBid
-        self.highAsk = highAsk
-        self.lowBid = lowBid
-        self.lowAsk = lowAsk
-        self.closeBid = closeBid
-        self.closeAsk = closeAsk
-        self.colour = colour
-        self.upper_wick = upper_wick
-        self.lower_wick = lower_wick
-        self.perc_body = perc_body
-        self.perc_uwick = perc_uwick
-        self.perc_lwick = perc_lwick
+
+        allowed_keys = ['representation', 'openBid', 'openAsk', 'highBid', 'highAsk',
+                        'lowBid', 'lowAsk', 'closeBid', 'closeAsk', 'upper_wick', 'lower_wick', 'colour',
+                        'perc_body', 'perc_uwick', 'perc_lwick', 'midAsk', 'midBid']
+
+        self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
 
     def set_candle_features(self):
         '''
         Set basic candle features based on price
-        i.e. self.colour, upper_wick, etc...
+        i.e. self.colour, upper_wick, midAsk or midBid, etc...
 
         Returns
         ------
@@ -105,6 +103,10 @@ class BidAskCandle(Candle):
             self.colour = "undefined"
             upper = self.openBid
             lower = self.closeBid
+
+        #calculating mid*
+        self.midAsk = round(abs(self.highAsk+self.lowAsk)/2,4)
+        self.midBid = round(abs(self.highBid + self.lowBid)/2,4)
 
         self.upper_wick = self.highBid - upper
         self.lower_wick = lower - self.lowBid

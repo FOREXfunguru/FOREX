@@ -9,9 +9,11 @@ def oanda_object():
     oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                      instrument='AUD_USD',
                      granularity='D',
-                     alignmentTimezone='Europe/London',
-                     start='2015-01-25T22:00:00',
-                     end='2015-01-26T22:00:00')
+                     alignmentTimezone='Europe/London')
+
+    oanda.run(start='2015-01-25T22:00:00',
+              end='2015-01-26T22:00:00')
+
     return oanda
 
 def test_set_candle_features(oanda_object):
@@ -24,3 +26,4 @@ def test_set_candle_features(oanda_object):
     candle_list[0].set_candle_features()
 
     assert candle_list[0].colour == "green"
+    assert candle_list[0].midAsk == 0.7897

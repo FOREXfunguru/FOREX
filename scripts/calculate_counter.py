@@ -15,7 +15,7 @@ td = TradeJournal(url=args.ifile, worksheet=args.worksheet)
 
 trade_list = td.fetch_trades(strat=args.strat,run=True)
 
-#td.write_trades(trade_list, colnames=['id', 'start', 'strat', 'type', 'SMA', 'entry', 'TP', 'SL', 'SR','entry_time','outcome','pips','lasttime',
-#                                      'bounces','bounces_lasttime'], sheetname= args.strat+".calc")
-td.write_trades(trade_list, colnames=['id', 'start', 'strat', 'type', 'SMA', 'entry', 'TP', 'SL', 'SR','entry_time','outcome','pips'], sheetname= args.strat+".calc")
+td.write_trades(trade_list, colnames=['id', 'start', 'strat', 'type', 'SMA', 'entry', 'TP', 'SL', 'SR','entry_time','outcome','pips','lasttime',
+                                      'bounces','bounces_lasttime'], sheetname= args.strat+".calc")
+#td.write_trades(trade_list, colnames=['id', 'start', 'strat', 'type', 'SMA', 'entry', 'TP', 'SL', 'SR','entry_time','outcome','pips'], sheetname= args.strat+".calc")
 

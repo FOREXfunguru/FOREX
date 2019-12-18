@@ -113,7 +113,7 @@ class HArea(object):
 
             oanda = OandaAPI(url=config.OANDA_API['url'],
                              instrument=self.instrument,
-                             granularity=granularity,
+                             granularity=granularity, # 'M30' in this case
                              dailyAlignment=config.OANDA_API['dailyAlignment'],
                              alignmentTimezone=config.OANDA_API['alignmentTimezone'])
 
