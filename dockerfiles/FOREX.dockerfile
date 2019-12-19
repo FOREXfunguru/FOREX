@@ -6,5 +6,5 @@ LABEL description="Dockerfile used for using jupyter nbs with my FOREX library"
 # cloning FOREX repo
 WORKDIR work/
 RUN git clone https://github.com/elowy01/FOREX.git
-ENV PYTHONPATH=/work/FOREX/src/
+ENV PYTHONPATH="$PYTHONPATH:/home/jovyan/work/FOREX/src/"
 

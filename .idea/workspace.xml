@@ -3,6 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/dockerfiles/FOREX.dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/dockerfiles/FOREX.dockerfile" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/.ipynb_checkpoints/Analysis of bounces for Counterish trades-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/.ipynb_checkpoints/Analysis of bounces for Counterish trades-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/Consolidating the major trend.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/Consolidating the major trend.ipynb" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -190,14 +193,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
-      <workItem from="1576565490708" duration="16517000" />
-    </task>
-    <task id="LOCAL-00072" summary="Adding folders for images">
-      <created>1561585813412</created>
-      <option name="number" value="00072" />
-      <option name="presentableId" value="LOCAL-00072" />
-      <option name="project" value="LOCAL" />
-      <updated>1561585813426</updated>
+      <workItem from="1576565490708" duration="18322000" />
     </task>
     <task id="LOCAL-00073" summary="Adding .gitignore">
       <created>1562105570992</created>
@@ -535,7 +531,14 @@
       <option name="project" value="LOCAL" />
       <updated>1576688494232</updated>
     </task>
-    <option name="localTasksCounter" value="121" />
+    <task id="LOCAL-00121" summary="Changes in Candle part used for Counter_dbtp trades1">
+      <created>1576766765264</created>
+      <option name="number" value="00121" />
+      <option name="presentableId" value="LOCAL-00121" />
+      <option name="project" value="LOCAL" />
+      <updated>1576766765264</updated>
+    </task>
+    <option name="localTasksCounter" value="122" />
     <servers />
   </component>
   <component name="TodoView">
@@ -562,7 +565,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Solving bug in the detection of RSI bounces" />
     <MESSAGE value="Working on the rsi extend area" />
     <MESSAGE value="Working on automatic detection of self.trend_i and automatic extension" />
     <MESSAGE value="Working on automatic detection of self.trend_i and automatic extension using segment angles" />
@@ -587,7 +589,8 @@
     <MESSAGE value="changes in test_HRarere" />
     <MESSAGE value="Changes in Candle part used for Counter trades" />
     <MESSAGE value="Changes in Candle part used for Counter_dbtp trades" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes in Candle part used for Counter_dbtp trades" />
+    <MESSAGE value="Changes in Candle part used for Counter_dbtp trades1" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes in Candle part used for Counter_dbtp trades1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
