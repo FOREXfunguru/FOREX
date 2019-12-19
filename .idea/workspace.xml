@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/src/Pattern/counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter_dbtp.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -191,14 +190,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
-      <workItem from="1576565490708" duration="13948000" />
-    </task>
-    <task id="LOCAL-00071" summary="working implementing the outcome proportion code1">
-      <created>1561531138863</created>
-      <option name="number" value="00071" />
-      <option name="presentableId" value="LOCAL-00071" />
-      <option name="project" value="LOCAL" />
-      <updated>1561531138877</updated>
+      <workItem from="1576565490708" duration="16517000" />
     </task>
     <task id="LOCAL-00072" summary="Adding folders for images">
       <created>1561585813412</created>
@@ -536,7 +528,14 @@
       <option name="project" value="LOCAL" />
       <updated>1576688374070</updated>
     </task>
-    <option name="localTasksCounter" value="120" />
+    <task id="LOCAL-00120" summary="Changes in Candle part used for Counter_dbtp trades">
+      <created>1576688494232</created>
+      <option name="number" value="00120" />
+      <option name="presentableId" value="LOCAL-00120" />
+      <option name="project" value="LOCAL" />
+      <updated>1576688494232</updated>
+    </task>
+    <option name="localTasksCounter" value="121" />
     <servers />
   </component>
   <component name="TodoView">
@@ -563,7 +562,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Changing number of pips for last_time" />
     <MESSAGE value="Solving bug in the detection of RSI bounces" />
     <MESSAGE value="Working on the rsi extend area" />
     <MESSAGE value="Working on automatic detection of self.trend_i and automatic extension" />
@@ -588,7 +586,8 @@
     <MESSAGE value="removing get_bounces_feats from HArea" />
     <MESSAGE value="changes in test_HRarere" />
     <MESSAGE value="Changes in Candle part used for Counter trades" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes in Candle part used for Counter trades" />
+    <MESSAGE value="Changes in Candle part used for Counter_dbtp trades" />
+    <option name="LAST_COMMIT_MESSAGE" value="Changes in Candle part used for Counter_dbtp trades" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
