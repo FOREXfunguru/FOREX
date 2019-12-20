@@ -102,18 +102,17 @@ class TradeJournal(object):
         return (outcome_prop,sum_pips,DF.shape[0])
 
 
-    def fetch_trades(self,run=False, strat=None):
+    def fetch_trades(self,strats,run=False):
         '''
         This function will fetch the trades that are in this TradingJournal and will create an independent
         Trade object for each record
 
         Parameters
         ----------
+        strats : List of strings, Required
+                 Strategies to be analysed.
         run : bool, Optional
               Execute trade. Default=False
-        strat : String, Optional
-                If defined, then select all trades of a certain type.
-                Possible values are: 'counter_doubletop'
 
         Returns
         ------
@@ -125,11 +124,10 @@ class TradeJournal(object):
         trade_list=[]
         for index,row in self.df.iterrows():
             print("Processing trade with id: {0}".format(row['id']))
-            if strat is not None:
-                if strat!=row['strat']:
-                    continue
-                else:
-                    trades_seen=True
+            if row['strat'] not in strats:
+                continue
+            else:
+                trades_seen=True
 
             #get pair from id
             pair=row['id'].split(' ')[0]
@@ -140,9 +138,10 @@ class TradeJournal(object):
 
             # behave depending on identified pattern
             c=None
-            if strat=="counter" or strat=="counter_b1" or strat=="counter_b3" or strat=="counter_b2" or strat=="counter_b4":
+            if row['strat']=="counter" or row['strat']=="counter_b1" or row['strat']=="counter_b2" or \
+                    row['strat']=="counter_b3" or row['strat']=="counter_b4" or row['strat']=='cont':
                 c=Counter(pair=pair,**attrbs)
-            elif strat=="counter_doubletop":
+            elif row['strat']=="counter_doubletop":
                 c=CounterDbTp(pair=pair, **attrbs)
 
             p = re.compile('clist_')
@@ -165,7 +164,7 @@ class TradeJournal(object):
                 
             trade_list.append(t)
 
-        assert trades_seen is True, "No trades retrieved for strat: {0}".format(strat)
+        assert trades_seen is True, "No trades retrieved for strats: {0}".format(",".join(strats))
         return trade_list
 
     def write_trades(self, trade_list, colnames, sheetname='calculated_trades'):

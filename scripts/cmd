@@ -11,4 +11,4 @@ python get_score_counterdbtp.py --ifile /Users/ernesto/Downloads/Screenshot anal
 python crossvalidate.py --ifile out_scores_dbptpcont.ALL.tsv --outcom 'outcome 2nd peak' --timeframe ALL
 
 #calculate outcome for all trades
-python calculate_counter.py --ifile ~/Downloads/allbacktested.xls --worksheet allbacktested --strat counter_b1
+python calculate_counter.py --ifile /Users/ernesto/Downloads/Backtesting.xlsx --worksheet backtesting_23102019 --strat counter_b1,cont,counter_b2,counter,counter_b3,counter_b4 --outsheet counter_trades

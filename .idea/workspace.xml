@@ -3,9 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/dockerfiles/FOREX.dockerfile" beforeDir="false" afterPath="$PROJECT_DIR$/dockerfiles/FOREX.dockerfile" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/.ipynb_checkpoints/Analysis of bounces for Counterish trades-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/.ipynb_checkpoints/Analysis of bounces for Counterish trades-checkpoint.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/Consolidating the major trend.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/Consolidating the major trend.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/calculate_counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/calculate_counter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/cmd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/cmd" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -193,14 +193,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
-      <workItem from="1576565490708" duration="18322000" />
-    </task>
-    <task id="LOCAL-00073" summary="Adding .gitignore">
-      <created>1562105570992</created>
-      <option name="number" value="00073" />
-      <option name="presentableId" value="LOCAL-00073" />
-      <option name="project" value="LOCAL" />
-      <updated>1562105570993</updated>
+      <workItem from="1576565490708" duration="23131000" />
     </task>
     <task id="LOCAL-00074" summary="Adding .gitignore">
       <created>1562105629091</created>
@@ -538,7 +531,14 @@
       <option name="project" value="LOCAL" />
       <updated>1576766765264</updated>
     </task>
-    <option name="localTasksCounter" value="122" />
+    <task id="LOCAL-00122" summary="changes1">
+      <created>1576775599741</created>
+      <option name="number" value="00122" />
+      <option name="presentableId" value="LOCAL-00122" />
+      <option name="project" value="LOCAL" />
+      <updated>1576775599741</updated>
+    </task>
+    <option name="localTasksCounter" value="123" />
     <servers />
   </component>
   <component name="TodoView">
@@ -565,7 +565,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Working on the rsi extend area" />
     <MESSAGE value="Working on automatic detection of self.trend_i and automatic extension" />
     <MESSAGE value="Working on automatic detection of self.trend_i and automatic extension using segment angles" />
     <MESSAGE value="Working on PivotList" />
@@ -590,7 +589,8 @@
     <MESSAGE value="Changes in Candle part used for Counter trades" />
     <MESSAGE value="Changes in Candle part used for Counter_dbtp trades" />
     <MESSAGE value="Changes in Candle part used for Counter_dbtp trades1" />
-    <option name="LAST_COMMIT_MESSAGE" value="Changes in Candle part used for Counter_dbtp trades1" />
+    <MESSAGE value="changes1" />
+    <option name="LAST_COMMIT_MESSAGE" value="changes1" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
