@@ -251,7 +251,6 @@ class CandleList(object):
                     sel_c=c
 
             if sel_c is None:
-                pdb.set_trace()
                 raise Exception("No candle was selected with time: {0}\n. It is good to check if the marked is closed".format(datetime))
             return sel_c
         elif period>0:

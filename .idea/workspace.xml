@@ -2,10 +2,21 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/scripts/consolidate_segment.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/calculate_counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/calculate_counter.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/.ipynb_checkpoints/Consolidating the major trend-checkpoint.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/.ipynb_checkpoints/Consolidating the major trend-checkpoint.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/Consolidating the major trend.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/Consolidating the major trend.ipynb" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/img/major_trend_eurnzd.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/cmd" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/cmd" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/TradeJournal/tradejournal.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/detect_SRareas.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/detect_SRareas.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/test.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/test_subcl.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/test_subcl1.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/candlelist.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/candlelist.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/config.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/config.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/segmentlist.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/segmentlist.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_OandaAPI.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_OandaAPI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/tests/test_TradeJournal.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_TradeJournal.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -16,12 +27,68 @@
   <component name="FavoritesManager">
     <favorites_list name="FOREX" />
   </component>
+  <component name="FileEditorManager">
+    <leaf>
+      <file pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/segmentlist.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="147">
+              <caret line="127" selection-start-line="127" selection-end-line="127" />
+              <folding>
+                <element signature="e#0#19#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/scripts/consolidate_segment.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="315">
+              <caret line="21" column="75" lean-forward="true" selection-start-line="21" selection-start-column="75" selection-end-line="21" selection-end-column="75" />
+              <folding>
+                <element signature="e#0#30#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/candlelist.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="211">
+              <caret line="237" column="48" lean-forward="true" selection-start-line="237" selection-start-column="48" selection-end-line="237" selection-end-column="48" />
+              <folding>
+                <element signature="e#0#23#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/config.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="404">
+              <caret line="61" column="52" selection-start-line="61" selection-start-column="52" selection-end-line="61" selection-end-column="52" />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
+  </component>
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="Python Script" />
       </list>
     </option>
+  </component>
+  <component name="FindInProjectRecents">
+    <findStrings>
+      <find>oucome</find>
+      <find>self.outcome</find>
+      <find>pdb.set</find>
+    </findStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -64,7 +131,53 @@
       </branch-storage>
     </excluded-from-favorite>
   </component>
+  <component name="IdeDocumentHistory">
+    <option name="CHANGED_PATHS">
+      <list>
+        <option value="$PROJECT_DIR$/src/candlelist.py" />
+        <option value="$PROJECT_DIR$/scripts/detect_SRareas.py" />
+        <option value="$PROJECT_DIR$/tests/test_TradeJournal.py" />
+        <option value="$PROJECT_DIR$/tests/test_OandaAPI.py" />
+        <option value="$PROJECT_DIR$/src/config.py" />
+        <option value="$PROJECT_DIR$/scripts/consolidate_segment.py" />
+        <option value="$PROJECT_DIR$/src/segmentlist.py" />
+      </list>
+    </option>
+  </component>
   <component name="ProjectId" id="1V6F9fGSNgpT9xklXL2phCrRi14" />
+  <component name="ProjectView">
+    <navigator proportions="" version="1">
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FOREX" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FOREX" type="462c0819:PsiDirectoryNode" />
+              <item name="scripts" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FOREX" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Scratches and Consoles" type="1a2a3e82:ScratchProjectViewPane$MyProjectNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
   <component name="PropertiesComponent">
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="com.intellij.ide.scratch.LRUPopupBuilder$1/New Scratch File" value="Python" />
@@ -108,29 +221,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.calculate_ctdbtp">
-    <configuration name="calculate_ctdbtp" type="PythonConfigurationType" factoryName="Python" temporary="true">
-      <module name="FOREX" />
-      <option name="INTERPRETER_OPTIONS" value="" />
-      <option name="PARENT_ENVS" value="true" />
-      <envs>
-        <env name="PYTHONUNBUFFERED" value="1" />
-      </envs>
-      <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts" />
-      <option name="IS_MODULE_SDK" value="true" />
-      <option name="ADD_CONTENT_ROOTS" value="true" />
-      <option name="ADD_SOURCE_ROOTS" value="true" />
-      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/calculate_ctdbtp.py" />
-      <option name="PARAMETERS" value="" />
-      <option name="SHOW_COMMAND_LINE" value="false" />
-      <option name="EMULATE_TERMINAL" value="false" />
-      <option name="MODULE_MODE" value="false" />
-      <option name="REDIRECT_INPUT" value="false" />
-      <option name="INPUT_FILE" value="" />
-      <method v="2" />
-    </configuration>
+  <component name="RunManager" selected="Python.consolidate_segment">
     <configuration name="calculate_rsi" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="FOREX" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -145,6 +236,28 @@
       <option name="ADD_SOURCE_ROOTS" value="true" />
       <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
       <option name="SCRIPT_NAME" value="$PROJECT_DIR$/src/scripts/calculate_rsi.py" />
+      <option name="PARAMETERS" value="" />
+      <option name="SHOW_COMMAND_LINE" value="false" />
+      <option name="EMULATE_TERMINAL" value="false" />
+      <option name="MODULE_MODE" value="false" />
+      <option name="REDIRECT_INPUT" value="false" />
+      <option name="INPUT_FILE" value="" />
+      <method v="2" />
+    </configuration>
+    <configuration name="consolidate_segment" type="PythonConfigurationType" factoryName="Python" temporary="true">
+      <module name="FOREX" />
+      <option name="INTERPRETER_OPTIONS" value="" />
+      <option name="PARENT_ENVS" value="true" />
+      <envs>
+        <env name="PYTHONUNBUFFERED" value="1" />
+      </envs>
+      <option name="SDK_HOME" value="" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/scripts" />
+      <option name="IS_MODULE_SDK" value="true" />
+      <option name="ADD_CONTENT_ROOTS" value="true" />
+      <option name="ADD_SOURCE_ROOTS" value="true" />
+      <EXTENSION ID="PythonCoverageRunConfigurationExtension" runner="coverage.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/scripts/consolidate_segment.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -175,9 +288,14 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
+    <list>
+      <item itemvalue="Python.consolidate_segment" />
+      <item itemvalue="Python.calculate_rsi" />
+      <item itemvalue="Python.main" />
+    </list>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.calculate_ctdbtp" />
+        <item itemvalue="Python.consolidate_segment" />
         <item itemvalue="Python.calculate_rsi" />
         <item itemvalue="Python.main" />
       </list>
@@ -550,6 +668,47 @@
       <is-autoscroll-to-source value="true" />
     </todo-panel>
   </component>
+  <component name="ToolWindowManager">
+    <frame x="0" y="0" width="1440" height="900" extended-state="0" />
+    <layout>
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.697695" visible="true" weight="0.033121917" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" sideWeight="0.30230495" side_tool="true" weight="0.1319417" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info anchor="bottom" id="Find" order="1" weight="0.23012048" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32771084" />
+      <window_info active="true" anchor="bottom" id="Debug" order="3" visible="true" weight="0.39518073" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.10240964" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" weight="0.25060242" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5024665" side_tool="true" weight="0.38554215" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32771084" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout>
+    <layout-to-restore>
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.39473686" visible="true" weight="0.16560958" />
+      <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
+      <window_info id="Favorites" order="2" sideWeight="0.6052632" side_tool="true" weight="0.16560958" />
+      <window_info anchor="bottom" id="Message" order="0" />
+      <window_info active="true" anchor="bottom" id="Find" order="1" visible="true" weight="0.5421687" />
+      <window_info anchor="bottom" id="Run" order="2" weight="0.32847342" />
+      <window_info anchor="bottom" id="Debug" order="3" weight="0.35839415" />
+      <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
+      <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
+      <window_info anchor="bottom" id="Version Control" order="7" weight="0.3287858" />
+      <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.4982382" weight="0.413253" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5017618" side_tool="true" weight="0.25060242" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32846716" />
+      <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
+      <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
+      <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
+    </layout-to-restore>
+  </component>
   <component name="TypeScriptGeneratedFilesManager">
     <option name="version" value="1" />
   </component>
@@ -558,7 +717,28 @@
       <map>
         <entry key="MAIN">
           <value>
-            <State />
+            <State>
+              <option name="RECENTLY_FILTERED_USER_GROUPS">
+                <collection />
+              </option>
+              <option name="RECENTLY_FILTERED_BRANCH_GROUPS">
+                <collection />
+              </option>
+            </State>
+          </value>
+        </entry>
+      </map>
+    </option>
+    <option name="RECENT_FILTERS">
+      <map>
+        <entry key="Branch">
+          <value>
+            <list />
+          </value>
+        </entry>
+        <entry key="User">
+          <value>
+            <list />
           </value>
         </entry>
       </map>
@@ -600,7 +780,112 @@
           <line>451</line>
           <option name="timeStamp" value="1" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/segmentlist.py</url>
+          <line>104</line>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
+  </component>
+  <component name="debuggerHistoryManager">
+    <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>pr_s.is_short(min_n_candles,diff_in_pips)</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+    </expressions>
+  </component>
+  <component name="editorHistoryManager">
+    <entry file="file://$PROJECT_DIR$/scripts/detect_SRareas.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="605">
+          <caret line="97" column="20" lean-forward="true" selection-start-line="97" selection-end-line="98" />
+          <folding>
+            <element signature="e#0#30#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/harea.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="303">
+          <caret line="106" column="17" selection-start-line="106" selection-start-column="17" selection-end-line="106" selection-end-column="17" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_OandaAPI.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="45">
+          <caret line="3" column="17" lean-forward="true" selection-start-line="3" selection-end-line="4" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_HArea.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="563">
+          <caret line="68" column="61" selection-start-line="68" selection-start-column="61" selection-end-line="68" selection-end-column="61" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/oanda_api.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1915">
+          <caret line="298" column="8" selection-start-line="298" selection-start-column="8" selection-end-line="298" selection-end-column="8" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/tradejournal.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="1296">
+          <caret line="198" column="56" selection-start-line="198" selection-start-column="56" selection-end-line="198" selection-end-column="56" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/TradeJournal/trade.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="387">
+          <caret line="150" column="43" selection-start-line="150" selection-start-column="43" selection-end-line="150" selection-end-column="43" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/candlelist.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="211">
+          <caret line="237" column="48" lean-forward="true" selection-start-line="237" selection-start-column="48" selection-end-line="237" selection-end-column="48" />
+          <folding>
+            <element signature="e#0#23#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="404">
+          <caret line="61" column="52" selection-start-line="61" selection-start-column="52" selection-end-line="61" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/scripts/consolidate_segment.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="315">
+          <caret line="21" column="75" lean-forward="true" selection-start-line="21" selection-start-column="75" selection-end-line="21" selection-end-column="75" />
+          <folding>
+            <element signature="e#0#30#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/segmentlist.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="147">
+          <caret line="127" selection-start-line="127" selection-end-line="127" />
+          <folding>
+            <element signature="e#0#19#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
   </component>
 </project>

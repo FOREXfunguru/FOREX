@@ -92,9 +92,8 @@ def calc_surr_lengths(b_list):
         sub_pl = sub_cl.get_pivotlist(outfile='test_subcl.png', th_up=0.02, th_down=-0.02)
         # get SegmentList
         slist = sub_pl.slist
-        # merget segments
+        # merge segments
 
-        pdb.set_trace()
         mslist=slist.merge_segments(min_n_candles=10, diff_in_pips=200, outfile="test_subcl1.png")
 
         diff=None # will store the difference in datetime between bounce.time and start of SegmentList
@@ -117,8 +116,6 @@ def calc_surr_lengths(b_list):
                 pr_ms = ms
         bounce_lengths[b.time]={'pre': max_pr_ms.length(),
                                 'after': c_ms.length()}
-
-    pdb.set_trace()
 
     return bounce_lengths
 
@@ -192,7 +189,6 @@ df[['seg_score_pre', 'seg_score_aft']] = df[['seg_score_pre', 'seg_score_aft']].
 #sum scores for pre and aft
 df['tot_seg_score']=df['seg_score_pre']+df['seg_score_aft']
 
-pdb.set_trace()
 resDF=df.groupby(['price','n_bounces']).agg({'tot_seg_score': 'sum'})
 
 resDF.sort_values(by='tot_seg_score',inplace=True,ascending=False)

@@ -76,9 +76,9 @@ class SegmentList(object):
         Parameters
         ----------
         min_n_candles: int, Required
-                       Minimum number of candles for this segment to be considered short
+                       Minimum number of candles for this segment not to be considered retracement
         diff_in_pips: int, Required
-                      Minimum number of pips for this segment to be considered short
+                      Minimum number of pips for this segment not to be considered retracement
         outfile: File
                  Print the merged segments to thie .png file
 
@@ -104,7 +104,6 @@ class SegmentList(object):
         pr_s=None
         is_first=False
 
-        pdb.set_trace()
         for s in nlist:
             if pr_s is None:
                 # Initialize all structures
@@ -120,6 +119,10 @@ class SegmentList(object):
                     # segment is long but is the first one in a new non short segment
                     slist.append(s)
                     is_first=True
+                elif pr_s.is_short(min_n_candles, diff_in_pips) is True:
+                    # previous segment is short so merge the current to the previous one
+                    slist.append(s)
+                    pr_s=s
                 else:
                     # current segment is long and the previous one is non-short
                     if is_first is True:

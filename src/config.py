@@ -59,6 +59,7 @@ START_HIST = {
     'EUR_GBP': datetime.datetime(2002, 5, 7, 21, 0),
     'EUR_JPY': datetime.datetime(2002, 6, 5, 21, 0),
     'EUR_USD': datetime.datetime(2002, 6, 5, 21, 0),
+    'EUR_NZD': datetime.datetime(2002, 6, 5, 21, 0),
     'GBP_AUD': datetime.datetime(2004, 6, 5, 21, 0),
     'GBP_JPY': datetime.datetime(2002, 6, 5, 21, 0),
     'GBP_USD': datetime.datetime(2002, 6, 5, 21, 0),

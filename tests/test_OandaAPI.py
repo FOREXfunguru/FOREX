@@ -218,7 +218,6 @@ def test_OandaAPI12():
               roll=True)
 
     candle_list = oanda.fetch_candleset(vol_cutoff=20)
-    pdb.set_trace()
 
     assert 1
 

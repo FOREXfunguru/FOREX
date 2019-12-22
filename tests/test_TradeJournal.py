@@ -42,7 +42,6 @@ def test_add_trend_momentum(tj_object):
     assert 1
 
 def test_write_trades_counter(tj_counter_object):
-    pdb.set_trace()
     trade_list = tj_counter_object.fetch_trades(strat='counter',run=True)
 
     tj_counter_object.write_trades(trade_list, colnames=['id','start','strat','entry','outcome','trend_i','type','timeframe',
