@@ -16,6 +16,9 @@ class SegmentList(object):
             List of Segment objects
     instrument : str, Required
                  Pair
+    diff : int, Optional
+           Diff in pips between first candle in first Segment
+           and last candle in the last Segment
 
     '''
 
@@ -24,6 +27,7 @@ class SegmentList(object):
         # initialize the 'diff' attribute in each segment
         self.slist=[s.calc_diff() for s in slist]
         self.instrument = instrument
+        self.diff=self.calc_diff()
 
     def __trim_edge_segs(self, pip_th, candle_th):
         '''
@@ -63,6 +67,31 @@ class SegmentList(object):
         self.slist=nlist
 
         return nlist
+
+    def calc_diff(self, part="openAsk"):
+        '''
+        Function to calculate the difference in terms
+        of number of pips betweeen the 1st candle in
+        the 1st segment and the last candle in the
+        last segment
+
+        Parameters
+        ---------
+        part : What part of the candles used for calculating the difference.
+               Default: 'openAsk'
+
+        Returns
+        -------
+        float representing the diff in pips. It will be positive
+        when it is a downtrend and negative otherwise
+        '''
+
+        diff = (getattr(self.slist[0].clist[0], part) -
+                getattr(self.slist[-1].clist[-1], part))
+        diff_pips = float(calculate_pips(self.instrument, diff))
+
+        self.diff=diff_pips
+
 
     def merge_segments(self, min_n_candles, diff_in_pips, outfile=None):
         '''
@@ -137,7 +166,19 @@ class SegmentList(object):
                         slist=[]
 
         if len(slist)>0:
-            flist.append(SegmentList(instrument=self.instrument, slist=slist))
+            if slist[0].is_short(min_n_candles, diff_in_pips) is True:
+                # first segment in 'slist' is short, so merge this slist to flist
+                nlist=flist[-1].slist
+                nlist.extend(slist)
+                nslist=SegmentList(instrument=self.instrument, slist=nlist)
+                flist[-1]=nslist
+            else:
+                flist.append(SegmentList(instrument=self.instrument, slist=slist))
+
+        for slist in flist:
+           # print("{0}-{1}".forma  t(slist[0].clist[0].time, slist[-1].clist[-1].time ))
+           print("{0}-{1}".format(slist.slist[0].clist[0].time,slist.slist[-1].clist[-1].time))
+           print("h")
 
         # the code below is just to plot the merged segments
         if outfile is not None:

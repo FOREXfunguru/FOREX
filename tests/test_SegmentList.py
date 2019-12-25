@@ -95,6 +95,18 @@ def pl_object3():
 
     return pl
 
+def test_calc_diff(pl_object):
+    '''
+    Function to test the 'calc_diff' function
+    '''
+    slist = pl_object.slist
+    slist.calc_diff()
+
+    #when diff is + it means that
+    #the is a downtrend
+    assert slist.diff==232.5
+    
+
 def test_merge_segments3(pl_object3):
     '''Test merge_segments method'''
 
