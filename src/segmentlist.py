@@ -92,7 +92,6 @@ class SegmentList(object):
 
         self.diff=diff_pips
 
-
     def merge_segments(self, min_n_candles, diff_in_pips, outfile=None):
         '''
         Function to reduce segment complexity and
@@ -175,10 +174,39 @@ class SegmentList(object):
             else:
                 flist.append(SegmentList(instrument=self.instrument, slist=slist))
 
+        # check the direction of SegmentLists in order to see if there 2 consecutive
+        # SegmentLists with the same direction. If that's the case then merge the two
+        # SegmentLists
+        [x.calc_diff() for x in flist]
+        prev_sign=None
+        ix=0
         for slist in flist:
-           # print("{0}-{1}".forma  t(slist[0].clist[0].time, slist[-1].clist[-1].time ))
-           print("{0}-{1}".format(slist.slist[0].clist[0].time,slist.slist[-1].clist[-1].time))
-           print("h")
+            if prev_sign is None:
+                ix+=1
+                if slist.diff>0:
+                    prev_sign='-'
+                else:
+                    prev_sign='+'
+            else:
+                merge=False
+                if slist.diff>0 and prev_sign is '-':
+                    #merge segments because they have the same sign
+                    merge=True
+                elif slist.diff<0 and prev_sign is '+':
+                    # merge segments because they have the same sign
+                    merge = True
+                else:
+                    if slist.diff>0:
+                        prev_sign='-'
+                    else:
+                        prev_sign = '+'
+                if merge is True:
+                    nlist = flist[ix-1].slist
+                    nlist.extend(slist.slist)
+                    nslist = SegmentList(instrument=self.instrument, slist=nlist)
+                    flist[ix-1] = nslist
+                    del flist[ix]
+                ix+=1
 
         # the code below is just to plot the merged segments
         if outfile is not None:
