@@ -4,18 +4,13 @@
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/notebooks/Consolidating the major trend.ipynb" beforeDir="false" afterPath="$PROJECT_DIR$/notebooks/Consolidating the major trend.ipynb" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/img/cl2_0_02_a.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/img/cl_0_01_a.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/img/cl_0_02_a.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/img/mcl2_0_01_ncandles20.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/img/mcl2_0_01_ncandles20a.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/img/mcl2_0_01_ncandles20c.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/img/mcl_0_01.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/notebooks/img/mcl_0_01_ncandles20.png" beforeDir="false" />
-      <change beforePath="$PROJECT_DIR$/scripts/cl2_0_02_a.png" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/cl2_0_02_a.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/img/cl2_0_02_b.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/notebooks/img/mcl2_0_01_ncandles20e.png" beforeDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/caca.png" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/caca.png" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/scripts/cl2_0_02_a.png" beforeDir="false" />
       <change beforePath="$PROJECT_DIR$/scripts/consolidate_segment.py" beforeDir="false" afterPath="$PROJECT_DIR$/scripts/consolidate_segment.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/Pattern/counter.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/Pattern/counter.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/segmentlist.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/segmentlist.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_SegmentList.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_SegmentList.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -28,16 +23,15 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/src/segmentlist.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="86" column="11" selection-start-line="86" selection-start-column="11" selection-end-line="86" selection-end-column="11" />
+            <state relative-caret-position="349">
+              <caret line="208" column="26" selection-start-line="208" selection-start-column="26" selection-end-line="208" selection-end-column="26" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
                 <element signature="e#622#1726#0" />
-                <element signature="e#1809#6711#0" />
-                <element signature="e#5958#6279#0" />
+                <element signature="e#1946#2573#0" />
                 <element signature="e#6310#6598#0" />
                 <element signature="e#6627#6908#0" />
                 <element signature="e#6942#6962#0" />
@@ -47,11 +41,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_SegmentList.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="338">
-              <caret line="104" column="28" selection-start-line="104" selection-start-column="28" selection-end-line="104" selection-end-column="28" />
+            <state relative-caret-position="554">
+              <caret line="105" column="23" selection-start-line="105" selection-start-column="23" selection-end-line="105" selection-end-column="23" />
               <folding>
                 <element signature="e#0#32#0" expanded="true" />
                 <element signature="e#179#768#0" />
@@ -65,8 +59,11 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/pivotlist.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="30">
-              <caret line="2" selection-start-line="2" selection-end-line="2" />
+            <state relative-caret-position="-2">
+              <caret line="26" column="17" lean-forward="true" selection-start-line="26" selection-start-column="17" selection-end-line="26" selection-end-column="17" />
+              <folding>
+                <element signature="e#0#10#0" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
@@ -74,8 +71,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/scripts/consolidate_segment.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="300">
-              <caret line="20" selection-start-line="20" selection-end-line="20" />
+            <state relative-caret-position="120">
+              <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
               <folding>
                 <element signature="e#0#30#0" expanded="true" />
               </folding>
@@ -86,10 +83,48 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/candlelist.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="227">
-              <caret line="237" column="48" lean-forward="true" selection-start-line="237" selection-start-column="48" selection-end-line="237" selection-end-column="48" />
+            <state relative-caret-position="167">
+              <caret line="216" column="49" selection-start-line="216" selection-start-column="49" selection-end-line="216" selection-end-column="49" />
               <folding>
                 <element signature="e#0#23#0" expanded="true" />
+                <element signature="e#2068#2476#0" />
+                <element signature="e#2510#2521#0" />
+                <element signature="e#2555#2715#0" />
+                <element signature="e#2816#5721#0" />
+                <element signature="e#5775#6539#0" />
+                <element signature="e#6587#7430#0" />
+                <element signature="e#7490#9059#0" />
+                <element signature="e#9129#10172#0" />
+                <element signature="e#10232#10630#0" />
+                <element signature="e#10684#11135#0" />
+                <element signature="e#11197#13991#0" />
+                <element signature="e#14033#16003#0" />
+                <element signature="e#16047#16243#0" />
+                <element signature="e#16300#17162#0" />
+                <element signature="e#17262#19265#0" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Pattern/counter.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="122">
+              <caret line="198" column="54" lean-forward="true" selection-start-line="198" selection-start-column="54" selection-end-line="198" selection-end-column="54" />
+              <folding>
+                <element signature="e#0#10#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/tests/test_Counter.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state>
+              <folding>
+                <element signature="e#7#42#0" expanded="true" />
               </folding>
             </state>
           </provider>
@@ -98,7 +133,7 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/config.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="404">
+            <state relative-caret-position="419">
               <caret line="61" column="52" selection-start-line="61" selection-start-column="52" selection-end-line="61" selection-end-column="52" />
             </state>
           </provider>
@@ -169,9 +204,11 @@
         <option value="$PROJECT_DIR$/tests/test_TradeJournal.py" />
         <option value="$PROJECT_DIR$/tests/test_OandaAPI.py" />
         <option value="$PROJECT_DIR$/src/config.py" />
+        <option value="$PROJECT_DIR$/tests/test_SegmentList.py" />
+        <option value="$PROJECT_DIR$/src/Pattern/counter.py" />
+        <option value="$PROJECT_DIR$/tests/test_Counter.py" />
         <option value="$PROJECT_DIR$/scripts/consolidate_segment.py" />
         <option value="$PROJECT_DIR$/src/segmentlist.py" />
-        <option value="$PROJECT_DIR$/tests/test_SegmentList.py" />
       </list>
     </option>
   </component>
@@ -197,6 +234,12 @@
               <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
               <item name="FOREX" type="462c0819:PsiDirectoryNode" />
               <item name="src" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
+              <item name="FOREX" type="462c0819:PsiDirectoryNode" />
+              <item name="src" type="462c0819:PsiDirectoryNode" />
+              <item name="Pattern" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="FOREX" type="b2602c69:ProjectViewProjectNode" />
@@ -348,13 +391,6 @@
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
       <workItem from="1576565490708" duration="23131000" />
-    </task>
-    <task id="LOCAL-00075" summary="Improving zigzag notebook">
-      <created>1562192137996</created>
-      <option name="number" value="00075" />
-      <option name="presentableId" value="LOCAL-00075" />
-      <option name="project" value="LOCAL" />
-      <updated>1562192137997</updated>
     </task>
     <task id="LOCAL-00076" summary="Adding init_trend_function to Counter">
       <created>1562279507751</created>
@@ -692,7 +728,14 @@
       <option name="project" value="LOCAL" />
       <updated>1576972941918</updated>
     </task>
-    <option name="localTasksCounter" value="124" />
+    <task id="LOCAL-00124" summary="working in merge of segments">
+      <created>1577312085246</created>
+      <option name="number" value="00124" />
+      <option name="presentableId" value="LOCAL-00124" />
+      <option name="project" value="LOCAL" />
+      <updated>1577312085246</updated>
+    </task>
+    <option name="localTasksCounter" value="125" />
     <servers />
   </component>
   <component name="TodoView">
@@ -707,19 +750,19 @@
   <component name="ToolWindowManager">
     <frame x="0" y="23" width="1440" height="823" extended-state="0" />
     <layout>
-      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.697695" visible="true" weight="0.3481325" />
+      <window_info content_ui="combo" id="Project" order="0" sideWeight="0.697695" visible="true" weight="0.18534179" />
       <window_info id="Structure" order="1" side_tool="true" weight="0.25" />
       <window_info id="Favorites" order="2" sideWeight="0.30230495" side_tool="true" weight="0.1319417" />
       <window_info anchor="bottom" id="Message" order="0" />
       <window_info anchor="bottom" id="Find" order="1" weight="0.23012048" />
-      <window_info anchor="bottom" id="Run" order="2" weight="0.32771084" />
-      <window_info anchor="bottom" id="Debug" order="3" weight="0.29274964" />
+      <window_info anchor="bottom" id="Run" order="2" sideWeight="0.49753347" weight="0.3269494" />
+      <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.76109934" weight="0.29001367" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
       <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.10240964" />
-      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.49753347" visible="true" weight="0.250342" />
-      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.5024665" side_tool="true" weight="0.38554215" />
+      <window_info active="true" anchor="bottom" id="Terminal" order="8" sideWeight="0.8787879" visible="true" weight="0.250342" />
+      <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.121212125" side_tool="true" weight="0.250342" />
       <window_info anchor="bottom" id="Python Console" order="10" weight="0.32771084" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
@@ -781,7 +824,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Working on automatic detection of self.trend_i and automatic extension using segment angles" />
     <MESSAGE value="Working on PivotList" />
     <MESSAGE value="Working on new PivotList testing unit" />
     <MESSAGE value="Working on consolidation of segments" />
@@ -806,7 +848,8 @@
     <MESSAGE value="Changes in Candle part used for Counter_dbtp trades1" />
     <MESSAGE value="changes1" />
     <MESSAGE value="working on the improvement of merge segs" />
-    <option name="LAST_COMMIT_MESSAGE" value="working on the improvement of merge segs" />
+    <MESSAGE value="working in merge of segments" />
+    <option name="LAST_COMMIT_MESSAGE" value="working in merge of segments" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -821,11 +864,41 @@
           <line>180</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/src/segmentlist.py</url>
+          <line>240</line>
+          <option name="timeStamp" value="17" />
+        </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>
   </component>
   <component name="debuggerHistoryManager">
     <expressions id="evaluateExpression">
+      <expression>
+        <expression-string>flist[ix-1].end()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>flist[ix-1].start()</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>flist[ix-1].start</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>flist[ix-1]</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
+      <expression>
+        <expression-string>self.slist</expression-string>
+        <language-id>Python</language-id>
+        <evaluation-mode>EXPRESSION</evaluation-mode>
+      </expression>
       <expression>
         <expression-string>slist.slist[-1].clist[-1].time</expression-string>
         <language-id>Python</language-id>
@@ -843,31 +916,6 @@
       </expression>
       <expression>
         <expression-string>slist.slist[-1]</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>slist.slist[0].clist[0].time</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>slist.slist[0].clist[0]</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>slist.slist[0].clist</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>slist.slist[0]</expression-string>
-        <language-id>Python</language-id>
-        <evaluation-mode>EXPRESSION</evaluation-mode>
-      </expression>
-      <expression>
-        <expression-string>slist.slist</expression-string>
         <language-id>Python</language-id>
         <evaluation-mode>EXPRESSION</evaluation-mode>
       </expression>
@@ -926,13 +974,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/config.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="404">
-          <caret line="61" column="52" selection-start-line="61" selection-start-column="52" selection-end-line="61" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$USER_HOME$/miniconda3/lib/python3.7/codecs.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="369">
@@ -942,25 +983,85 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/candlelist.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="227">
-          <caret line="237" column="48" lean-forward="true" selection-start-line="237" selection-start-column="48" selection-end-line="237" selection-end-column="48" />
+        <state relative-caret-position="167">
+          <caret line="216" column="49" selection-start-line="216" selection-start-column="49" selection-end-line="216" selection-end-column="49" />
           <folding>
             <element signature="e#0#23#0" expanded="true" />
+            <element signature="e#2068#2476#0" />
+            <element signature="e#2510#2521#0" />
+            <element signature="e#2555#2715#0" />
+            <element signature="e#2816#5721#0" />
+            <element signature="e#5775#6539#0" />
+            <element signature="e#6587#7430#0" />
+            <element signature="e#7490#9059#0" />
+            <element signature="e#9129#10172#0" />
+            <element signature="e#10232#10630#0" />
+            <element signature="e#10684#11135#0" />
+            <element signature="e#11197#13991#0" />
+            <element signature="e#14033#16003#0" />
+            <element signature="e#16047#16243#0" />
+            <element signature="e#16300#17162#0" />
+            <element signature="e#17262#19265#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/pivotlist.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="30">
-          <caret line="2" selection-start-line="2" selection-end-line="2" />
+        <state relative-caret-position="-2">
+          <caret line="26" column="17" lean-forward="true" selection-start-line="26" selection-start-column="17" selection-end-line="26" selection-end-column="17" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/caca.png">
+      <provider selected="true" editor-type-id="images" />
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_SegmentList.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="554">
+          <caret line="105" column="23" selection-start-line="105" selection-start-column="23" selection-end-line="105" selection-end-column="23" />
+          <folding>
+            <element signature="e#0#32#0" expanded="true" />
+            <element signature="e#179#768#0" />
+            <element signature="e#1437#2026#0" />
+            <element signature="e#2066#2659#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/config.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="419">
+          <caret line="61" column="52" selection-start-line="61" selection-start-column="52" selection-end-line="61" selection-end-column="52" />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_Counter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state>
+          <folding>
+            <element signature="e#7#42#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Pattern/counter.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="122">
+          <caret line="198" column="54" lean-forward="true" selection-start-line="198" selection-start-column="54" selection-end-line="198" selection-end-column="54" />
+          <folding>
+            <element signature="e#0#10#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/scripts/consolidate_segment.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="300">
-          <caret line="20" selection-start-line="20" selection-end-line="20" />
+        <state relative-caret-position="120">
+          <caret line="8" lean-forward="true" selection-start-line="8" selection-end-line="8" />
           <folding>
             <element signature="e#0#30#0" expanded="true" />
           </folding>
@@ -969,30 +1070,16 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/segmentlist.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="86" column="11" selection-start-line="86" selection-start-column="11" selection-end-line="86" selection-end-column="11" />
+        <state relative-caret-position="349">
+          <caret line="208" column="26" selection-start-line="208" selection-start-column="26" selection-end-line="208" selection-end-column="26" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#622#1726#0" />
-            <element signature="e#1809#6711#0" />
-            <element signature="e#5958#6279#0" />
+            <element signature="e#1946#2573#0" />
             <element signature="e#6310#6598#0" />
             <element signature="e#6627#6908#0" />
             <element signature="e#6942#6962#0" />
             <element signature="e#6995#7128#0" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_SegmentList.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="338">
-          <caret line="104" column="28" selection-start-line="104" selection-start-column="28" selection-end-line="104" selection-end-column="28" />
-          <folding>
-            <element signature="e#0#32#0" expanded="true" />
-            <element signature="e#179#768#0" />
-            <element signature="e#1437#2026#0" />
-            <element signature="e#2066#2659#0" />
           </folding>
         </state>
       </provider>

@@ -179,14 +179,15 @@ class SegmentList(object):
         # SegmentLists
         [x.calc_diff() for x in flist]
         prev_sign=None
-        ix=0
+        flistb=[]
         for slist in flist:
+            #print("{0}-{1}:{2}".format(slist.start(),slist.end(),slist.diff))
             if prev_sign is None:
-                ix+=1
                 if slist.diff>0:
                     prev_sign='-'
                 else:
                     prev_sign='+'
+                flistb.append(slist)
             else:
                 merge=False
                 if slist.diff>0 and prev_sign is '-':
@@ -201,13 +202,16 @@ class SegmentList(object):
                     else:
                         prev_sign = '+'
                 if merge is True:
-                    nlist = flist[ix-1].slist
+                    nlist = flistb[-1].slist
                     nlist.extend(slist.slist)
                     nslist = SegmentList(instrument=self.instrument, slist=nlist)
-                    flist[ix-1] = nslist
-                    del flist[ix]
-                ix+=1
-
+                    flistb[-1] = nslist
+                    if slist.diff > 0:
+                        prev_sign = '-'
+                    else:
+                        prev_sign = '+'
+                else:
+                    flistb.append(slist)
         # the code below is just to plot the merged segments
         if outfile is not None:
             x = [*range(0, len(dates), 1)]
@@ -217,7 +221,7 @@ class SegmentList(object):
             ix_end=[]
             # iterate over each of the SegmentLists representing
             # each merged segment
-            for ms in flist:
+            for ms in flistb:
                 ix_start.append(np.where(dates == np.datetime64(ms.start()))[0][0]) # get the ix in dates of the start of merged
                                                                                     # segment
                 ix_end.append(np.where(dates == np.datetime64(ms.end()))[0][0]) # get the ix in dates of the end of merged
@@ -233,7 +237,7 @@ class SegmentList(object):
             plt.plot(xarr[[fixs]], yarr[[fixs]], 'k-')
             fig.savefig(outfile, format='png')
 
-        return flist
+        return flistb
 
     def length(self):
         '''

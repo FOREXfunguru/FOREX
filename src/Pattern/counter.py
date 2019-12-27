@@ -193,8 +193,15 @@ class Counter(object):
         It will set the bounces attribute
         '''
 
-        pivotlist = self.clist_period.get_pivotlist(th_up=config.CT['threshold_bounces'],
-                                                    th_down=-config.CT['threshold_bounces'])
+        pivotlist = self.clist_period.get_pivotlist(
+                outfile='premerge.png',
+                th_up=config.CT['threshold_bounces'],
+                th_down=-config.CT['threshold_bounces'])
+
+        slist = pivotlist.slist
+        mslist = slist.merge_segments(min_n_candles=10, diff_in_pips=1000000, outfile="caca.png")
+
+        pdb.set_trace()
 
         bounces = pivotlist.plist
 
