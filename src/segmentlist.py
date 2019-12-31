@@ -181,7 +181,7 @@ class SegmentList(object):
         prev_sign=None
         flistb=[]
         for slist in flist:
-            #print("{0}-{1}:{2}".format(slist.start(),slist.end(),slist.diff))
+        #    print("{0}-{1}:{2}".format(slist.start(),slist.end(),slist.diff))
             if prev_sign is None:
                 if slist.diff>0:
                     prev_sign='-'
