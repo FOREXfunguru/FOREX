@@ -316,10 +316,11 @@ class OandaAPI(object):
         candlelist=[]
 
         for c in self.data['candles']:
-            
             if "openBid" in c:
                 
                 cd=BidAskCandle(representation="bidask")
+                cd.instrument=self.instrument
+                cd.granularity=self.granularity
                 for k,v in c.items():
                     if k=="time":
                         pd.datetime.strptime(v, '%Y-%m-%dT%H:%M:%S.%fZ')

@@ -3,30 +3,13 @@ from oanda_api import OandaAPI
 from candlelist import CandleList
 
 import pytest
+import glob
+import os
+import datetime
 import pdb
 
 @pytest.fixture
 def cl_object():
-    '''Returns CandleList object'''
-
-    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                     instrument='AUD_USD',
-                     granularity='D',
-                     alignmentTimezone='Europe/London',
-                     dailyAlignment=22)
-
-    oanda.run(start='2017-12-08T22:00:00',
-              end='2018-01-29T22:00:00',
-              roll=True)
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list, instrument='AUD_USD', type='long')
-
-    return cl
-
-@pytest.fixture
-def cl_object1():
     '''Returns CandleList object'''
 
     oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
@@ -45,19 +28,75 @@ def cl_object1():
 
     return cl
 
-def test_get_pivotlist(cl_object1):
+@pytest.fixture
+def clean_tmp():
+    yield
+    print("Cleanup files")
+    files = glob.glob('data/tmp/*')
+    for f in files:
+        os.remove(f)
+"""
+def test_get_pivotlist(cl_object):
     '''Obtain a pivotlist'''
 
-    pl=cl_object1.get_pivotlist(outfile='test.png',th_up=0.01, th_down=-0.01)
+    pl=cl_object.get_pivotlist(outfile='data/tmp/test.png',
+                                th_up=0.01, th_down=-0.01)
 
-    assert pl.slist.slist[0].type==1
-    assert len(pl.plist)==35
+    assert len(pl.plist)==120
+    assert pl.plist[10].candle.openAsk==0.72472
+    assert len(pl.plist[10].pre.clist)==10
+    assert len(pl.plist[10].aft.clist) == 1
 
-def test_mslist_attr(cl_object1):
+def test_fetch_by_time(cl_object):
+    '''Obtain a Pivot object by datetime'''
+    pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
+                                 th_up=0.01, th_down=-0.01)
+
+    adt = datetime.datetime(2016, 2, 2, 22, 0)
+
+    rpt=pl.fetch_by_time(adt)
+
+    assert rpt.candle.time==adt
+
+def test_fetch_pre(cl_object):
+    '''Obtain the 'pre' Segment'''
+
+    pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
+                                 th_up=0.01, th_down=-0.01)
+
+    adt = datetime.datetime(2016, 1, 18, 22, 0)
+
+    rpt = pl.fetch_by_time(adt)
+
+    assert len(rpt.pre.clist) == 12
+
+def test_merge_pre(cl_object):
+    pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
+                                 th_up=0.01, th_down=-0.01)
+
+    adt = datetime.datetime(2016, 1, 18, 22, 0)
+
+    rpt = pl.fetch_by_time(adt)
+
+    rpt.merge_pre(slist=pl.slist, n_candles=5)
+"""
+def test_merge_aft(cl_object):
+    pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
+                                 th_up=0.01, th_down=-0.01)
+
+    adt = datetime.datetime(2016, 1, 18, 22, 0)
+
+    rpt = pl.fetch_by_time(adt)
+
+    rpt.merge_aft(slist=pl.slist, n_candles=5)
+
+"""
+def test_mslist_attr(cl_object, clean_tmp):
     '''
     Check if mslist attribute has been
     correctly initialized
     '''
 
-    pl = cl_object1.get_pivotlist(outfile='test.png', th_up=0.01, th_down=-0.01)
+    pl = cl_object.get_pivotlist(outfile='data/tmp/test.png', th_up=0.01, th_down=-0.01)
     assert len(pl.mslist)==19
+"""

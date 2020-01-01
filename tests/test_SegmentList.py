@@ -95,6 +95,7 @@ def pl_object3():
 
     return pl
 
+"""
 def test_calc_diff(pl_object):
     '''
     Function to test the 'calc_diff' function
@@ -116,7 +117,6 @@ def test_merge_segments3(pl_object3):
 
     assert len(mslist)==4
 
-"""
 def test_merge_segments2(pl_object2):
     '''Test merge_segments method'''
 
@@ -163,3 +163,23 @@ def test_end(pl_object):
 
     assert slist.end() == datetime.datetime(2019, 8, 8, 21, 0)
 """
+def test_fetch_by_start(pl_object):
+    '''Test fetch_by_start'''
+
+    slist = pl_object.slist
+
+    adt = datetime.datetime(2019, 4, 15, 21, 0)
+    s=slist.fetch_by_start(adt)
+
+    assert s.start()==adt
+
+def test_fetch_by_end(pl_object):
+    '''Test fetch_by_end'''
+
+    slist = pl_object.slist
+
+    adt = datetime.datetime(2019, 6, 17, 21, 0)
+
+    s=slist.fetch_by_end(adt)
+
+    assert s.end() == adt

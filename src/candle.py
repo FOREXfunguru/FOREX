@@ -22,16 +22,21 @@ class Candle(object):
         Is the candle complete?
     formation : candle formation
         Possible values are:
+    instrument : string
+                pair for this candle. Optional
+    granularity : D, H12, H8, etc...
     """
 
-    def __init__(self, representation=None, time=None, volume=0, complete=True, formation=None):
+    def __init__(self, representation=None, time=None, volume=0, complete=True,
+                 instrument=None, formation=None, granularity=None):
         self.representation=representation
         self.time=time
         self.volume=volume
         if complete not in [True, False] : raise Exception(("complete %s is not valid. Complete should be True or False")) % complete
         self.complete=complete
         self.formation=formation
-
+        self.instrument=instrument
+        self.granularity=granularity
 
 class BidAskCandle(Candle):
     '''

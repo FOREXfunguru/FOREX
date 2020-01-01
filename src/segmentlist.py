@@ -287,6 +287,52 @@ class SegmentList(object):
 
         return end
 
+    def fetch_by_start(self, dt):
+        '''
+        Function to get a certain Segment by
+        the start Datetime
+
+        Parameters
+        ----------
+        dt: Datetime
+            Start of segment datetime used
+            for fetching the Segment
+
+        Returns
+        -------
+        Segment object. None if not found
+        '''
+
+        for s in self.slist:
+            if s.start()==dt:
+                return s
+
+        return None
+
+
+    def fetch_by_end(self, dt):
+        '''
+        Function to get a certain Segment by
+        the end Datetime
+
+        Parameters
+        ----------
+        dt: Datetime
+            End of segment datetime used
+            for fetching the Segment
+
+        Returns
+        -------
+        Segment object. None if not found
+        '''
+
+        for s in self.slist:
+            if s.end()==dt:
+                return s
+
+        return None
+
+
     def __repr__(self):
         return "SegmentList"
 
@@ -334,11 +380,13 @@ class Segment(object):
 
         Returns
         -------
-        Nothing
+        self
         '''
 
         self.clist=s.clist+self.clist
         self.count=len(self.clist)
+
+        return self
 
     def calc_diff(self, part="openAsk"):
         '''

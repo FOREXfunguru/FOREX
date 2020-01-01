@@ -1,6 +1,7 @@
 import pdb
 from zigzag import *
 from segmentlist import *
+from utils import *
 
 class PivotList(object):
     '''
@@ -10,14 +11,10 @@ class PivotList(object):
     Class variables
     ---------------
     plist : list, Required
-            List of pivots obtained using the 'peak_valley_pivots' function from Zigzag indicator
-    slist : SegmentList object, Derived
-            List of Segment objects connecting the pivot points. For obtaining these segments
-            I use the function 'pivots_to_modes' implemented in the Zigzag indicator
-    mslist : List of SegmentList objects, each of the SegmentList object will be merged (obtained
-             by running the function 'segmentlist.merge_segments()', Derived
+            List of pivot objects obtained using the 'peak_valley_pivots' function from Zigzag indicator
     clist : CandleList object
             CandleList for this PivotList
+    slist : SegmentList object
     '''
 
     def __init__(self, plist, clist):
@@ -28,6 +25,7 @@ class PivotList(object):
 
         segs = [] # this list will hold the Segment objects
         plist_o = [] # this list will hold the Pivot objects
+        pre_s=None # Variable that will hold pre Segments
         ix=0
         pr_ix=0 # record the ix of 1st candle in segment
         count = 0 # record how many candles of a certain type
@@ -47,28 +45,43 @@ class PivotList(object):
                                 count=count,
                                 clist=clist.clist[pr_ix:ix],
                                 instrument=clist.instrument)
-                    pdb.set_trace()
-                    # create Pivot and append it to list
-                    plist_o.append(Pivot(type=type,candle=clist.clist[pr_ix]))
+                    # create Pivot object
+                    pobj=Pivot(type=type, candle=clist.clist[pr_ix], pre=pre_s, aft=s)
+                    # Append it to list
+                    plist_o.append(pobj)
                     type = i # type has changed
                     count = 1
                     segs.append(s)
                     pr_ix = ix # new ix for 1st candle
+                    pre_s=s # new s for previous Segment
             ix += 1
 
         #add last Segment
-        segs.append(Segment(type=type,
+        ls=Segment(type=type,
                             count=count,
                             clist=clist.clist[pr_ix:ix],
-                            instrument=clist.instrument))
+                            instrument=clist.instrument)
+        segs.append(ls)
         #add last Pivot
-        plist_o.append(Pivot(type=type,candle=clist.clist[pr_ix]))
+        plist_o.append(Pivot(type=type,candle=clist.clist[pr_ix], pre=pre_s, aft=ls))
+        self.plist=plist_o
+        self.slist=SegmentList(slist=segs, instrument=plist_o[0].candle.instrument)
 
-        self.slist=SegmentList(slist=segs, instrument=clist.instrument)
+    def fetch_by_time(self, d):
+        '''
+        Function to fetch a Pivot object using a
+        datetime
 
-        #initialize merged Segment Lists
-        self.mslist = self.slist.merge_segments(outfile="testAft.png", min_n_candles=20,
-                                                diff_in_pips=20000)
+        Returns
+        -------
+        Pivot object
+              None if not Pivot found
+        '''
+
+        for p in self.plist:
+            if p.candle.time==d:
+                return p
+        return None
 
 class Pivot(object):
     '''
@@ -81,11 +94,89 @@ class Pivot(object):
            Type of pivot. It can be 1 or -1
     candle : Candle Object
              Candle representing the pivot
+    pre : Segment object
+          Segment object before this pivot
+    aft : Segment object
+          Segment object after this pivot
     '''
 
-    def __init__(self, type, candle):
+    def __init__(self, type, candle, pre, aft):
         self.type = type
         self.candle = candle
+        self.pre = pre
+        self.aft = aft
+
+    def merge_pre(self, slist, n_candles):
+        '''
+        Function to merge 'pre' Segment. It will merge self.pre with previous segment
+        if self.pre and previous segment are of the same type (1 or -1) or count of
+        previous segment is less than 'n_candles'
+
+        Parameters
+        ----------
+        slist : SegmentList object
+                SegmentList for PivotList of this Pivot.
+                Required
+        n_candles : int
+                    Skip merge if Segment is less than 'n_candles'.
+                    Required
+
+        Returns
+        -------
+        Nothing
+        '''
+
+        # reduce start of self.pre by one candle
+        start_dt=self.pre.start()-periodToDelta(1, self.candle.granularity)
+
+        # fetch previous segment
+        s=slist.fetch_by_end(start_dt)
+
+        if self.pre.type == s.type:
+            # merge
+            self.pre=self.pre.merge(s)
+        elif self.pre.type != s.type and s.count<n_candles:
+            # merge
+            self.pre=self.pre.merge(s)
+
+    def merge_aft(self, slist, n_candles):
+        '''
+        Function to merge 'aft' Segment. It will merge self.aft with next segment
+        if self.aft and next segment are of the same type (1 or -1) or count of
+        next segment is less than 'n_candles'
+
+        Parameters
+        ----------
+        slist : SegmentList object
+                SegmentList for PivotList of this Pivot.
+                Required
+        n_candles : int
+                    Skip merge if Segment is less than 'n_candles'.
+                    Required
+
+        Returns
+        -------
+        Nothing
+        '''
+
+        pdb.set_trace()
+        extension_needed=True
+        while extension_needed is True:
+            # increase end of self.aft by one candle
+            start_dt=self.aft.end()+periodToDelta(1, self.candle.granularity)
+
+            # fetch next segment
+            s=slist.fetch_by_start(start_dt)
+
+            if self.aft.type == s.type:
+                # merge
+                self.aft=self.aft.merge(s)
+            elif self.aft.type != s.type and s.count<n_candles:
+                # merge
+                self.aft=self.aft.merge(s)
+            else:
+                extension_needed = False
+
 
     def __repr__(self):
         return "Pivot"
