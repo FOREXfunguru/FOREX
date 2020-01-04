@@ -126,18 +126,22 @@ class Pivot(object):
         Nothing
         '''
 
-        # reduce start of self.pre by one candle
-        start_dt=self.pre.start()-periodToDelta(1, self.candle.granularity)
+        extension_needed = True
+        while extension_needed is True:
+            # reduce start of self.pre by one candle
+            start_dt = self.pre.start() - periodToDelta(1, self.candle.granularity)
 
-        # fetch previous segment
-        s=slist.fetch_by_end(start_dt)
+            # fetch previous segment
+            s = slist.fetch_by_end(start_dt)
 
-        if self.pre.type == s.type:
-            # merge
-            self.pre=self.pre.merge(s)
-        elif self.pre.type != s.type and s.count<n_candles:
-            # merge
-            self.pre=self.pre.merge(s)
+            if self.pre.type == s.type:
+                # merge
+                self.pre = self.pre.merge(s)
+            elif self.pre.type != s.type and s.count < n_candles:
+                # merge
+                self.pre = self.pre.merge(s)
+            else:
+                extension_needed = False
 
     def merge_aft(self, slist, n_candles):
         '''
@@ -159,7 +163,6 @@ class Pivot(object):
         Nothing
         '''
 
-        pdb.set_trace()
         extension_needed=True
         while extension_needed is True:
             # increase end of self.aft by one candle
@@ -170,10 +173,10 @@ class Pivot(object):
 
             if self.aft.type == s.type:
                 # merge
-                self.aft=self.aft.merge(s)
+                self.aft=self.aft.append(s)
             elif self.aft.type != s.type and s.count<n_candles:
                 # merge
-                self.aft=self.aft.merge(s)
+                self.aft=self.aft.append(s)
             else:
                 extension_needed = False
 

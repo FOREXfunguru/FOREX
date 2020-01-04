@@ -302,9 +302,8 @@ class SegmentList(object):
         -------
         Segment object. None if not found
         '''
-
         for s in self.slist:
-            if s.start()==dt:
+            if s.start()==dt or s.start()>dt:
                 return s
 
         return None
@@ -326,8 +325,8 @@ class SegmentList(object):
         Segment object. None if not found
         '''
 
-        for s in self.slist:
-            if s.end()==dt:
+        for s in reversed(self.slist):
+            if s.end()==dt or s.end()<dt:
                 return s
 
         return None
@@ -368,9 +367,9 @@ class Segment(object):
         self.instrument = instrument
         self.diff = diff
 
-    def merge(self, s):
+    def prepend(self, s):
         '''
-        Function to merge self to s. The merge will be done by
+        Function to prepend s to self. The merge will be done by
         concatenating s.clist to self.clist and increasing self.count to
         self.count+s.count
 
@@ -385,6 +384,22 @@ class Segment(object):
 
         self.clist=s.clist+self.clist
         self.count=len(self.clist)
+
+        return self
+
+    def append(self, s):
+        '''
+        Function to append s to self. The merge will be done by
+        concatenating self.clist to self.clist and increasing self.count to
+        self.count+s.count
+
+        Returns
+        -------
+        self
+        '''
+
+        self.clist = self.clist+s.clist
+        self.count = len(self.clist)
 
         return self
 

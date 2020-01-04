@@ -3,13 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" id="acf00513-f291-4dee-af88-60a0ac736156" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/candle.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/candle.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/oanda_api.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/oanda_api.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/pivotlist.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/pivotlist.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/segmentlist.py" beforeDir="false" afterPath="$PROJECT_DIR$/src/segmentlist.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test.png" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test.png" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/tests/test_PivotList.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_PivotList.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/tests/test_SegmentList.py" beforeDir="false" afterPath="$PROJECT_DIR$/tests/test_SegmentList.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -25,8 +21,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/segmentlist.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="365">
-              <caret line="382" column="12" selection-start-line="382" selection-start-column="12" selection-end-line="382" selection-end-column="12" />
+            <state relative-caret-position="436">
+              <caret line="328" column="40" selection-start-line="328" selection-start-column="40" selection-end-line="328" selection-end-column="40" />
               <folding>
                 <element signature="e#0#19#0" expanded="true" />
                 <element signature="e#791#1895#0" />
@@ -35,8 +31,6 @@
                 <element signature="e#9036#9357#0" />
                 <element signature="e#9388#9676#0" />
                 <element signature="e#9705#9986#0" />
-                <element signature="e#10030#10444#0" />
-                <element signature="e#10458#10857#0" />
               </folding>
             </state>
           </provider>
@@ -45,8 +39,8 @@
       <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/tests/test_SegmentList.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="403">
-              <caret line="182" column="24" selection-start-line="182" selection-start-column="12" selection-end-line="182" selection-end-column="24" />
+            <state relative-caret-position="-592">
+              <caret line="119" column="14" selection-start-line="119" selection-start-column="9" selection-end-line="119" selection-end-column="14" />
               <folding>
                 <element signature="e#0#32#0" expanded="true" />
                 <element signature="e#179#768#0" />
@@ -78,11 +72,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="false">
+      <file pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/tests/test_PivotList.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="381">
-              <caret line="90" column="17" selection-start-line="90" selection-start-column="17" selection-end-line="90" selection-end-column="17" />
+            <state relative-caret-position="306">
+              <caret line="98" selection-start-line="98" selection-end-line="98" />
               <folding>
                 <element signature="e#0#32#0" expanded="true" />
               </folding>
@@ -90,11 +84,11 @@
           </provider>
         </entry>
       </file>
-      <file pinned="false" current-in-tab="true">
+      <file pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/pivotlist.py">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="426">
-              <caret line="175" column="25" lean-forward="true" selection-start-line="175" selection-start-column="25" selection-end-line="175" selection-end-column="25" />
+            <state relative-caret-position="378">
+              <caret line="165" selection-start-line="165" selection-end-line="165" />
               <folding>
                 <element signature="e#0#10#0" expanded="true" />
                 <element signature="e#2323#2647#0" />
@@ -121,6 +115,7 @@
       <find>major_segment</find>
       <find>peak_valley_pivots</find>
       <find>fetch_by</find>
+      <find>merge</find>
     </findStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -181,9 +176,9 @@
         <option value="$PROJECT_DIR$/tests/test_SegmentList.py" />
         <option value="$PROJECT_DIR$/src/candle.py" />
         <option value="$PROJECT_DIR$/src/oanda_api.py" />
-        <option value="$PROJECT_DIR$/tests/test_PivotList.py" />
         <option value="$PROJECT_DIR$/src/segmentlist.py" />
         <option value="$PROJECT_DIR$/src/pivotlist.py" />
+        <option value="$PROJECT_DIR$/tests/test_PivotList.py" />
       </list>
     </option>
   </component>
@@ -360,13 +355,6 @@
       <option name="presentableId" value="Default" />
       <updated>1551960563181</updated>
       <workItem from="1576565490708" duration="23131000" />
-    </task>
-    <task id="LOCAL-00078" summary="Adding init_trend_function to Counter2">
-      <created>1562744073947</created>
-      <option name="number" value="00078" />
-      <option name="presentableId" value="LOCAL-00078" />
-      <option name="project" value="LOCAL" />
-      <updated>1562744073967</updated>
     </task>
     <task id="LOCAL-00079" summary="Test new branch">
       <created>1562744270366</created>
@@ -704,7 +692,14 @@
       <option name="project" value="LOCAL" />
       <updated>1577784535832</updated>
     </task>
-    <option name="localTasksCounter" value="127" />
+    <task id="LOCAL-00127" summary="working in PivotList2 pre and aft merge">
+      <created>1577917418572</created>
+      <option name="number" value="00127" />
+      <option name="presentableId" value="LOCAL-00127" />
+      <option name="project" value="LOCAL" />
+      <updated>1577917418575</updated>
+    </task>
+    <option name="localTasksCounter" value="128" />
     <servers />
   </component>
   <component name="TodoView">
@@ -728,11 +723,11 @@
       <window_info anchor="bottom" id="Debug" order="3" sideWeight="0.76109934" weight="0.29001367" />
       <window_info anchor="bottom" id="Cvs" order="4" weight="0.25" />
       <window_info anchor="bottom" id="Inspection" order="5" weight="0.4" />
-      <window_info anchor="bottom" id="TODO" order="6" weight="0.32891566" />
+      <window_info anchor="bottom" id="TODO" order="6" weight="0.32831737" />
       <window_info anchor="bottom" id="Version Control" order="7" weight="0.10240964" />
       <window_info anchor="bottom" id="Terminal" order="8" sideWeight="0.8787879" visible="true" weight="0.250342" />
       <window_info anchor="bottom" id="Event Log" order="9" sideWeight="0.121212125" side_tool="true" weight="0.250342" />
-      <window_info anchor="bottom" id="Python Console" order="10" weight="0.32771084" />
+      <window_info anchor="bottom" id="Python Console" order="10" weight="0.3269494" />
       <window_info anchor="right" id="Commander" internal_type="SLIDING" order="0" type="SLIDING" weight="0.4" />
       <window_info anchor="right" id="Ant Build" order="1" weight="0.25" />
       <window_info anchor="right" content_ui="combo" id="Hierarchy" order="2" weight="0.25" />
@@ -793,7 +788,6 @@
     </option>
   </component>
   <component name="VcsManagerConfiguration">
-    <MESSAGE value="Working on consolidation of segments" />
     <MESSAGE value="Working on consolidation of segments1" />
     <MESSAGE value="Working on consolidation of segments2" />
     <MESSAGE value="Working on consolidation of segments3" />
@@ -818,7 +812,8 @@
     <MESSAGE value="working in merge of segments" />
     <MESSAGE value="working in merge of segments1" />
     <MESSAGE value="working in PivotList" />
-    <option name="LAST_COMMIT_MESSAGE" value="working in PivotList" />
+    <MESSAGE value="working in PivotList2 pre and aft merge" />
+    <option name="LAST_COMMIT_MESSAGE" value="working in PivotList2 pre and aft merge" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -993,15 +988,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_Candle.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state>
-          <folding>
-            <element signature="e#0#13#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/candle.py">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-2242">
@@ -1026,20 +1012,19 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/tests/test_PivotList.py">
+    <entry file="file://$PROJECT_DIR$/tests/test_Candle.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="381">
-          <caret line="90" column="17" selection-start-line="90" selection-start-column="17" selection-end-line="90" selection-end-column="17" />
+        <state>
           <folding>
-            <element signature="e#0#32#0" expanded="true" />
+            <element signature="e#0#13#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/tests/test_SegmentList.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="403">
-          <caret line="182" column="24" selection-start-line="182" selection-start-column="12" selection-end-line="182" selection-end-column="24" />
+        <state relative-caret-position="-592">
+          <caret line="119" column="14" selection-start-line="119" selection-start-column="9" selection-end-line="119" selection-end-column="14" />
           <folding>
             <element signature="e#0#32#0" expanded="true" />
             <element signature="e#179#768#0" />
@@ -1052,8 +1037,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/segmentlist.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="365">
-          <caret line="382" column="12" selection-start-line="382" selection-start-column="12" selection-end-line="382" selection-end-column="12" />
+        <state relative-caret-position="436">
+          <caret line="328" column="40" selection-start-line="328" selection-start-column="40" selection-end-line="328" selection-end-column="40" />
           <folding>
             <element signature="e#0#19#0" expanded="true" />
             <element signature="e#791#1895#0" />
@@ -1062,19 +1047,27 @@
             <element signature="e#9036#9357#0" />
             <element signature="e#9388#9676#0" />
             <element signature="e#9705#9986#0" />
-            <element signature="e#10030#10444#0" />
-            <element signature="e#10458#10857#0" />
           </folding>
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/pivotlist.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="426">
-          <caret line="175" column="25" lean-forward="true" selection-start-line="175" selection-start-column="25" selection-end-line="175" selection-end-column="25" />
+        <state relative-caret-position="378">
+          <caret line="165" selection-start-line="165" selection-end-line="165" />
           <folding>
             <element signature="e#0#10#0" expanded="true" />
             <element signature="e#2323#2647#0" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/tests/test_PivotList.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="306">
+          <caret line="98" selection-start-line="98" selection-end-line="98" />
+          <folding>
+            <element signature="e#0#32#0" expanded="true" />
           </folding>
         </state>
       </provider>
