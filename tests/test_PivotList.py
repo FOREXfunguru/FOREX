@@ -35,7 +35,7 @@ def clean_tmp():
     files = glob.glob('data/tmp/*')
     for f in files:
         os.remove(f)
-"""
+
 def test_get_pivotlist(cl_object):
     '''Obtain a pivotlist'''
 
@@ -46,6 +46,16 @@ def test_get_pivotlist(cl_object):
     assert pl.plist[10].candle.openAsk==0.72472
     assert len(pl.plist[10].pre.clist)==10
     assert len(pl.plist[10].aft.clist) == 1
+
+def test_fetch_by_type(cl_object):
+    '''Obtain a pivotlist of a certain type'''
+
+    pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
+                                 th_up=0.01, th_down=-0.01)
+
+    newpl=pl.fetch_by_type(type=-1)
+
+    assert len(newpl.plist)==60
 
 def test_fetch_by_time(cl_object):
     '''Obtain a Pivot object by datetime'''
@@ -84,8 +94,11 @@ def test_merge_pre(cl_object):
     rpt.merge_pre(slist=pl.slist, n_candles=5)
 
     assert datetime.datetime(2019, 1, 2, 22, 0)==rpt.pre.end()
-"""
-def test_merge_aft(cl_object):
+
+def test_merge_aft(cl_object, clean_tmp):
+    '''
+    Test function to merge 'aft' Segment
+    '''
     pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
                                  th_up=0.01, th_down=-0.01)
 
@@ -96,14 +109,3 @@ def test_merge_aft(cl_object):
     rpt.merge_aft(slist=pl.slist, n_candles=5)
 
     assert datetime.datetime(2016, 3, 17, 21, 0)== rpt.aft.end()
-
-"""
-def test_mslist_attr(cl_object, clean_tmp):
-    '''
-    Check if mslist attribute has been
-    correctly initialized
-    '''
-
-    pl = cl_object.get_pivotlist(outfile='data/tmp/test.png', th_up=0.01, th_down=-0.01)
-    assert len(pl.mslist)==19
-"""

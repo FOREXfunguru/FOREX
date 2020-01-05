@@ -617,7 +617,7 @@ class CandleList(object):
 
         pivots = peak_valley_pivots(yarr, th_up, th_down)
 
-        pl=PivotList(plist=pivots,
+        pl=PivotList(parray=pivots,
                      clist=self)
 
         if outfile is not None:

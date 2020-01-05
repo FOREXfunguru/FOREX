@@ -18,7 +18,8 @@ def counter_object():
         SR=1.87074,
         SL=1.87384,
         TP=1.83942,
-        trend_i='2018-08-08 21:00:00')
+        trend_i='2018-08-08 21:00:00',
+        png_prefix='data/tmp/test')
     return c
 
 def counter_object_notrendi():
@@ -46,6 +47,7 @@ def test_bounces_attr(counter_object):
     assert counter_object.bounces[0].midAsk==1.8763
     assert len(counter_object.bounces)==1
 
+"""
 def test_lasttime_attr(counter_object):
     '''
     Check that self.lasttime class attribute
@@ -63,8 +65,6 @@ def test_bounces_lasttime_attr(counter_object):
 
     assert len(counter_object.bounces_lasttime)==0
 
-
-"""
 def test_calc_itrend(counter_object_notrendi):
 
     counter_object_notrendi.calc_itrend()

@@ -10,62 +10,69 @@ class PivotList(object):
 
     Class variables
     ---------------
-    plist : list, Required
-            List of pivot objects obtained using the 'peak_valley_pivots' function from Zigzag indicator
     clist : CandleList object
-            CandleList for this PivotList
-    slist : SegmentList object
+            CandleList for this PivotList. Required
+    parray : Array of 1s and -1s obtained directly using the Zigzag indicator. Optional
+    plist : list of Pivot objects, Optional
+            List of pivot objects obtained using the 'peak_valley_pivots' function from Zigzag indicator
+    slist : SegmentList object, Optional
     '''
 
-    def __init__(self, plist, clist):
+    def __init__(self, clist, parray=None, plist=None, slist=None):
+
         self.clist = clist
 
-        # pivots_to_modes function from the Zigzag indicator
-        modes = pivots_to_modes(plist)
+        if parray is not None:
+            # pivots_to_modes function from the Zigzag indicator
+            modes = pivots_to_modes(parray)
 
-        segs = [] # this list will hold the Segment objects
-        plist_o = [] # this list will hold the Pivot objects
-        pre_s=None # Variable that will hold pre Segments
-        ix=0
-        pr_ix=0 # record the ix of 1st candle in segment
-        count = 0 # record how many candles of a certain type
-        type = None # record previous type
-        for i in modes:
-            if type is None:
-                type = i
-                count += 1
-                ix += 1
-                continue
-            else:
-                if i == type:
+            segs = [] # this list will hold the Segment objects
+            plist_o = [] # this list will hold the Pivot objects
+            pre_s=None # Variable that will hold pre Segments
+            ix=0
+            pr_ix=0 # record the ix of 1st candle in segment
+            count = 0 # record how many candles of a certain type
+            type = None # record previous type
+            for i in modes:
+                if type is None:
+                    type = i
                     count += 1
+                    ix += 1
+                    continue
                 else:
-                    # create Segment
-                    s = Segment(type=type,
-                                count=count,
-                                clist=clist.clist[pr_ix:ix],
-                                instrument=clist.instrument)
-                    # create Pivot object
-                    pobj=Pivot(type=type, candle=clist.clist[pr_ix], pre=pre_s, aft=s)
-                    # Append it to list
-                    plist_o.append(pobj)
-                    type = i # type has changed
-                    count = 1
-                    segs.append(s)
-                    pr_ix = ix # new ix for 1st candle
-                    pre_s=s # new s for previous Segment
-            ix += 1
+                    if i == type:
+                        count += 1
+                    else:
+                        # create Segment
+                        s = Segment(type=type,
+                                    count=count,
+                                    clist=clist.clist[pr_ix:ix],
+                                    instrument=clist.instrument)
+                        # create Pivot object
+                        pobj=Pivot(type=type, candle=clist.clist[pr_ix], pre=pre_s, aft=s)
+                        # Append it to list
+                        plist_o.append(pobj)
+                        type = i # type has changed
+                        count = 1
+                        segs.append(s)
+                        pr_ix = ix # new ix for 1st candle
+                        pre_s=s # new s for previous Segment
+                ix += 1
 
-        #add last Segment
-        ls=Segment(type=type,
-                            count=count,
-                            clist=clist.clist[pr_ix:ix],
-                            instrument=clist.instrument)
-        segs.append(ls)
-        #add last Pivot
-        plist_o.append(Pivot(type=type,candle=clist.clist[pr_ix], pre=pre_s, aft=ls))
-        self.plist=plist_o
-        self.slist=SegmentList(slist=segs, instrument=plist_o[0].candle.instrument)
+            #add last Segment
+            ls=Segment(type=type,
+                       count=count,
+                       clist=clist.clist[pr_ix:ix],
+                     instrument=clist.instrument)
+            segs.append(ls)
+            #add last Pivot
+            plist_o.append(Pivot(type=type,candle=clist.clist[pr_ix], pre=pre_s, aft=ls))
+            self.plist=plist_o
+            self.slist = SegmentList(slist=segs, instrument=plist_o[0].candle.instrument)
+        else:
+            self.plist=plist
+            self.slist=slist
+
 
     def fetch_by_time(self, d):
         '''
@@ -82,6 +89,32 @@ class PivotList(object):
             if p.candle.time==d:
                 return p
         return None
+
+    def fetch_by_type(self, type):
+        '''
+        Function to get all pivots from a certain type
+
+        Parameters
+        ----------
+        type : int
+               1 or -1
+
+        Returns
+        -------
+        PivotList of the desired type
+        '''
+
+        pl=[]
+        cl=[]
+        sl=[]
+        for (p, c, s) in zip(self.plist, self.clist.clist, self.slist.slist):
+            if p.type==type:
+                pl.append(p)
+                cl.append(c)
+                sl.append(s)
+
+        return PivotList(plist=pl,clist=cl, slist=sl)
+
 
 class Pivot(object):
     '''

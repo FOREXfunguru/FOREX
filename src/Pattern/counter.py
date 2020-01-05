@@ -11,6 +11,7 @@ from oanda_api import OandaAPI
 from candlelist import CandleList
 from utils import *
 from harea import HArea
+from pivotlist import *
 
 class Counter(object):
     '''
@@ -46,6 +47,8 @@ class Counter(object):
          Support/Resistance area
     bounces: list, Optional
              List with Candle objects for price bounces at self.SR
+    png_prefix: str, Required
+                Output prefix
     clist_period: CandleList, Optional
                   Candlelist extending back (defined by 'period') in time since the start of the pattern
     clist_trend: CandleList, Optional
@@ -73,7 +76,7 @@ class Counter(object):
           Is there SMA support for this trade. Values: 'Y'/'N'
     '''
 
-    def __init__(self, pair, period= 3000, HR_pips=200, **kwargs):
+    def __init__(self, pair, png_prefix, period= 3000, HR_pips=200, **kwargs):
 
         allowed_keys = [ 'id','start','timeframe','period','entry','trend_i', 'type', 'SL',
                         'TP','SR','RR','bounces','clist_period','clist_trend','lasttime',
@@ -86,9 +89,11 @@ class Counter(object):
 
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         self.pair=pair
+        self.png_prefix=png_prefix
         self.period=period
         self.HR_pips = HR_pips
-        self.start = datetime.datetime.strptime(self.start, '%Y-%m-%d %H:%M:%S')
+        self.start = datetime.datetime.strptime(self.start,
+                                                '%Y-%m-%d %H:%M:%S')
 
         # init the CandleList from self.period to self.start
         self.__initclist()
@@ -106,7 +111,7 @@ class Counter(object):
         self.lasttime=self.clist_period.get_lasttime(resist)
 
         #initialize bounces Class attribute
-        self.set_bounces(doPlot=True)
+        self.set_bounces(doPlot=True, outfile=png_prefix+".bounces.png")
 
         # set bounces_lasttime Class attribute
         self.bounces_fromlasttime()
@@ -149,8 +154,7 @@ class Counter(object):
 
         Parameters
         ----------
-        bounces: list
-                 Containing the initial list of candles
+        bounces: PivotList
         HR_pips: int, Optional
                  Number of pips over/below S/R used for trying to identify bounces
                  Required.
@@ -165,23 +169,31 @@ class Counter(object):
         lower = substract_pips2price(self.pair, self.SR, HRpips)
         upper = add_pips2price(self.pair, self.SR, HRpips)
 
-        in_area_list = []
-        for c in bounces:
+        pl=[]
+        cl=[]
+        sl=[]
+        for (p, c, s) in zip(bounces.plist, bounces.clist, bounces.slist):
             # initialize candle features to be sure that midAsk or midBid are
             # initialized
             c.set_candle_features()
             price = getattr(c, part)
+            print("Price: {0}, upper: {1}, lower: {2}".format(price, upper, lower))
             if price >= lower and price <= upper:
-                in_area_list.append(c)
+                pdb.set_trace()
+                pl.append(p)
+                cl.append(c)
+                sl.append(s)
 
-        return in_area_list
+        return PivotList(plist=pl,clist=cl, slist=sl)
 
-    def set_bounces(self, part='midAsk', doPlot=False):
+    def set_bounces(self, outfile, part='midAsk', doPlot=False):
         '''
         Function to get the bounces. For this, Zigzag will be used
 
         Parameters
         ----------
+        outfile : file
+                  .png file for output. Required
         part: str
               Candle part used for the calculation. Default='midAsk'
         doPlot: boolean
@@ -193,29 +205,20 @@ class Counter(object):
         It will set the bounces attribute
         '''
 
+        pdb.set_trace()
         pivotlist = self.clist_period.get_pivotlist(
-                outfile='premerge.png',
+                outfile=outfile,
                 th_up=config.CT['threshold_bounces'],
                 th_down=-config.CT['threshold_bounces'])
 
-        slist = pivotlist.slist
-        mslist = slist.merge_segments(min_n_candles=10, diff_in_pips=1000000, outfile="caca.png")
-
-        pdb.set_trace()
-
-        bounces = pivotlist.plist
-
-        arr = np.array(self.clist_period.clist)
-
         # consider type of trade in order to select peaks or valleys
         if self.type == 'short':
-            bounce_candles = arr[bounces == 1]
+            bounces = pivotlist.fetch_by_type(type=1)
         elif self.type == 'long':
-            bounce_candles = arr[bounces == -1]
+            bounces = pivotlist.fetch_by_type(type=-1)
 
         # get bounces in area
-        in_area_list = []
-        in_area_list = self.__inarea_bounces(bounce_candles, part=part, HRpips=self.HR_pips)
+        in_area_list = self.__inarea_bounces(bounces, part=part, HRpips=self.HR_pips)
 
         self.bounces= in_area_list
 
