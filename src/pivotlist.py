@@ -30,49 +30,42 @@ class PivotList(object):
             plist_o = [] # this list will hold the Pivot objects
             pre_s=None # Variable that will hold pre Segments
             ix=0
-            pr_ix=0 # record the ix of 1st candle in segment
-            count = 0 # record how many candles of a certain type
-            type = None # record previous type
-            for i in modes:
-                if type is None:
-                    type = i
-                    count += 1
-                    ix += 1
-                    continue
-                else:
-                    if i == type:
-                        count += 1
-                    else:
-                        # create Segment
-                        s = Segment(type=type,
-                                    count=count,
-                                    clist=clist.clist[pr_ix:ix],
-                                    instrument=clist.instrument)
-                        # create Pivot object
-                        pobj=Pivot(type=type, candle=clist.clist[pr_ix], pre=pre_s, aft=s)
-                        # Append it to list
-                        plist_o.append(pobj)
-                        type = i # type has changed
-                        count = 1
-                        segs.append(s)
-                        pr_ix = ix # new ix for 1st candle
-                        pre_s=s # new s for previous Segment
-                ix += 1
-
-            #add last Segment
-            ls=Segment(type=type,
-                       count=count,
-                       clist=clist.clist[pr_ix:ix],
-                     instrument=clist.instrument)
-            segs.append(ls)
-            #add last Pivot
-            plist_o.append(Pivot(type=type,candle=clist.clist[pr_ix], pre=pre_s, aft=ls))
-            self.plist=plist_o
+            start_ix=None
+            end_ix=None
+            pre_i=None
+            ix=0
+            for i in parray:
+                if (i==1 or i==-1) and start_ix is None:
+                    # First pivot
+                    start_ix=ix
+                    pre_i=i
+                elif (i==1 or i==-1) and start_ix is not None:
+                    end_ix=ix
+                    submode=modes[start_ix+1:end_ix]
+                    #checking if all elements in submode are the same:
+                    assert len(np.unique(submode).tolist())==1, "more than one type in modes"
+                    # create Segment
+                    s = Segment(type=submode[0],
+                                count=end_ix-start_ix,
+                                clist=clist.clist[start_ix:end_ix],
+                                instrument=clist.instrument)
+                    # create Pivot object
+                    pobj = Pivot(type=pre_i, candle=clist.clist[start_ix], pre=pre_s, aft=s)
+                    # Append it to list
+                    plist_o.append(pobj)
+                    # Append it to segs
+                    segs.append(s)
+                    start_ix=ix
+                    pre_s=s
+                    pre_i=i
+                ix+=1
+            # add last Pivot
+            plist_o.append(Pivot(type=pre_i, candle=clist.clist[start_ix], pre=pre_s, aft=None))
+            self.plist = plist_o
             self.slist = SegmentList(slist=segs, instrument=plist_o[0].candle.instrument)
         else:
-            self.plist=plist
-            self.slist=slist
-
+            self.plist = plist
+            self.slist = slist
 
     def fetch_by_time(self, d):
         '''
@@ -105,15 +98,12 @@ class PivotList(object):
         '''
 
         pl=[]
-        cl=[]
-        sl=[]
-        for (p, c, s) in zip(self.plist, self.clist.clist, self.slist.slist):
+
+        for p in self.plist:
             if p.type==type:
                 pl.append(p)
-                cl.append(c)
-                sl.append(s)
 
-        return PivotList(plist=pl,clist=cl, slist=sl)
+        return PivotList(plist=pl,clist=self.clist, slist=self.slist)
 
 
 class Pivot(object):

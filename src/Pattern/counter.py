@@ -96,6 +96,7 @@ class Counter(object):
                                                 '%Y-%m-%d %H:%M:%S')
 
         # init the CandleList from self.period to self.start
+        # this will set the self.clist_period class attribute
         self.__initclist()
         # calc_rsi
         self.clist_period.calc_rsi()
@@ -107,14 +108,16 @@ class Counter(object):
 
         # instantiate an HArea object representing the self.SR in order to calculate the lasttime
         # price has been above/below SR
-        resist = HArea(price=self.SR, pips=100, instrument=self.pair, granularity=self.timeframe)
+        resist = HArea(price=self.SR, pips=100, instrument=self.pair,
+                       granularity=self.timeframe)
         self.lasttime=self.clist_period.get_lasttime(resist)
 
-        #initialize bounces Class attribute
-        self.set_bounces(doPlot=True, outfile=png_prefix+".bounces.png")
+        #initialize 'bounces' Class attribute
+        self.set_bounces(doPlot=True, outfile=png_prefix+".bounces.png",
+                         part='closeAsk')
 
         # set bounces_lasttime Class attribute
-        self.bounces_fromlasttime()
+       # self.bounces_fromlasttime()
 
 
     def __initclist(self):
@@ -143,7 +146,8 @@ class Counter(object):
 
         candle_list = oanda.fetch_candleset(vol_cutoff=0)
 
-        cl = CandleList(candle_list, self.pair, granularity=self.timeframe, id=self.id, type=self.type)
+        cl = CandleList(candle_list, self.pair, granularity=self.timeframe,
+                        id=self.id, type=self.type)
 
         self.clist_period=cl
 
@@ -170,21 +174,17 @@ class Counter(object):
         upper = add_pips2price(self.pair, self.SR, HRpips)
 
         pl=[]
-        cl=[]
-        sl=[]
-        for (p, c, s) in zip(bounces.plist, bounces.clist, bounces.slist):
+        for p in bounces.plist:
             # initialize candle features to be sure that midAsk or midBid are
             # initialized
-            c.set_candle_features()
-            price = getattr(c, part)
-            print("Price: {0}, upper: {1}, lower: {2}".format(price, upper, lower))
+            p.candle.set_candle_features()
+            price = getattr(p.candle, part)
+            print("Price: {0}; Upper: {1}; Lower: {2}; time: {3}".format(price, upper, lower, p.candle.time))
             if price >= lower and price <= upper:
-                pdb.set_trace()
+                print("inarea\n")
                 pl.append(p)
-                cl.append(c)
-                sl.append(s)
 
-        return PivotList(plist=pl,clist=cl, slist=sl)
+        return PivotList(plist=pl,clist=bounces.clist, slist=bounces.slist)
 
     def set_bounces(self, outfile, part='midAsk', doPlot=False):
         '''
@@ -205,28 +205,27 @@ class Counter(object):
         It will set the bounces attribute
         '''
 
-        pdb.set_trace()
+        # get PivotList using self.clist_period
         pivotlist = self.clist_period.get_pivotlist(
                 outfile=outfile,
                 th_up=config.CT['threshold_bounces'],
-                th_down=-config.CT['threshold_bounces'])
+                th_down=-config.CT['threshold_bounces'],
+                part=config.CT['part'])
 
         # consider type of trade in order to select peaks or valleys
-        if self.type == 'short':
-            bounces = pivotlist.fetch_by_type(type=1)
-        elif self.type == 'long':
-            bounces = pivotlist.fetch_by_type(type=-1)
+       # if self.type == 'short':
+       #     bounces = pivotlist.fetch_by_type(type=-1)
+       # elif self.type == 'long':
+       #     bounces = pivotlist.fetch_by_type(type=1)
 
         # get bounces in area
-        in_area_list = self.__inarea_bounces(bounces, part=part, HRpips=self.HR_pips)
+        in_area_list = self.__inarea_bounces(pivotlist, part=part, HRpips=self.HR_pips)
 
         self.bounces= in_area_list
 
         if doPlot is True:
-            outfile = "{0}/{1}.final_bounces.png".format(config.PNGFILES['bounces'],
-                                                         self.id.replace(' ', '_'))
-            outfile_rsi = "{0}/{1}.final_rsi.png".format(config.PNGFILES['rsi'],
-                                                         self.id.replace(' ', '_'))
+            outfile = self.png_prefix+".{0}.sel_pivots.png".format(self.id.replace(' ', '_'))
+            outfile_rsi = self.png_prefix+".{0}.final_rsi.png".format(self.id.replace(' ', '_'))
 
             self.plot_bounces(outfile_prices=outfile, outfile_rsi=outfile_rsi, part= config.CT['part'])
 
@@ -265,9 +264,26 @@ class Counter(object):
         ax.plot(datetimes, prices, color="black")
 
         final_bounces=self.bounces
-        for b in final_bounces:
-            dt = b.time
+        for p in final_bounces.plist:
+            dt = p.candle.time
             ix = datetimes.index(dt)
+            # prepare the plot for 'pre' segment
+            if p.pre is not None:
+                # merge pre segments
+                p.merge_pre(slist=final_bounces.slist, n_candles=5)
+                ix_pre_s = datetimes.index(p.pre.start())
+                plt.scatter(datetimes[ix_pre_s], prices[ix_pre_s], s=100, marker='v')
+                ix_pre_e = datetimes.index(p.pre.end())
+                plt.scatter(datetimes[ix_pre_e], prices[ix_pre_e], s=100, marker='v')
+            # prepare the plot for 'aft' segment
+            if p.aft is not None:
+                # merge aft segments
+                p.merge_aft(slist=final_bounces.slist, n_candles=5)
+                ix_aft_s = datetimes.index(p.aft.start())
+                plt.scatter(datetimes[ix_aft_s], prices[ix_aft_s], s=100, marker='v')
+                ix_aft_e = datetimes.index(p.aft.end())
+                plt.scatter(datetimes[ix_aft_e], prices[ix_aft_e], s=100, marker='v')
+            # plot
             plt.scatter(datetimes[ix], prices[ix], s=50)
 
         fig.savefig(outfile_prices, format='png')

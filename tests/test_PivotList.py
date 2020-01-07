@@ -47,6 +47,7 @@ def test_get_pivotlist(cl_object):
     assert len(pl.plist[10].pre.clist)==10
     assert len(pl.plist[10].aft.clist) == 1
 
+
 def test_fetch_by_type(cl_object):
     '''Obtain a pivotlist of a certain type'''
 

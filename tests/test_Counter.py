@@ -9,16 +9,16 @@ def counter_object():
     '''Returns Counter object'''
 
     c = Counter(
-        id='GBP_AUD 12OCT2018H12',
-        start='2018-10-11 21:00:00',
-        pair='GBP_AUD',
-        timeframe='H12',
+        id='EUR_GBP 13AUG2019D',
+        start='2019-08-12 22:00:00',
+        pair='EUR_GBP',
+        timeframe='D',
         type='short',
         period=1000,
-        SR=1.87074,
-        SL=1.87384,
-        TP=1.83942,
-        trend_i='2018-08-08 21:00:00',
+        SR=0.92909,
+        SL=0.93298,
+        TP=0.90366,
+        trend_i='2019-05-03 21:00:00',
         png_prefix='data/tmp/test')
     return c
 
