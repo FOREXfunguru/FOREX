@@ -44,8 +44,8 @@ def test_get_pivotlist(cl_object):
 
     assert len(pl.plist)==120
     assert pl.plist[10].candle.openAsk==0.72472
-    assert len(pl.plist[10].pre.clist)==10
-    assert len(pl.plist[10].aft.clist) == 1
+    assert len(pl.plist[7].pre.clist)==7
+    assert len(pl.plist[10].aft.clist)==2
 
 
 def test_fetch_by_type(cl_object):
@@ -75,11 +75,11 @@ def test_fetch_pre(cl_object):
     pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
                                  th_up=0.01, th_down=-0.01)
 
-    adt = datetime.datetime(2016, 1, 18, 22, 0)
+    adt = datetime.datetime(2015, 8, 16, 21, 0)
 
     rpt = pl.fetch_by_time(adt)
 
-    assert len(rpt.pre.clist) == 12
+    assert len(rpt.pre.clist) == 3
 
 def test_merge_pre(cl_object):
     '''
@@ -88,25 +88,40 @@ def test_merge_pre(cl_object):
     pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
                                  th_up=0.01, th_down=-0.01)
 
-    adt = datetime.datetime(2019, 1, 3, 22, 0)
+    adt = datetime.datetime(2015, 8, 16, 21, 0)
 
     rpt = pl.fetch_by_time(adt)
 
     rpt.merge_pre(slist=pl.slist, n_candles=5)
 
-    assert datetime.datetime(2019, 1, 2, 22, 0)==rpt.pre.end()
+    assert datetime.datetime(2015, 8, 13, 21, 0)==rpt.pre.end()
 
-def test_merge_aft(cl_object, clean_tmp):
+def test_merge_aft(cl_object):
     '''
     Test function to merge 'aft' Segment
     '''
     pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
                                  th_up=0.01, th_down=-0.01)
 
-    adt = datetime.datetime(2016, 1, 18, 22, 0)
+    adt = datetime.datetime(2015, 8, 16, 21, 0)
 
     rpt = pl.fetch_by_time(adt)
 
     rpt.merge_aft(slist=pl.slist, n_candles=5)
 
-    assert datetime.datetime(2016, 3, 17, 21, 0)== rpt.aft.end()
+    assert datetime.datetime(2015, 9, 6, 21, 0)== rpt.aft.end()
+
+def test_calc_score(cl_object, clean_tmp):
+    '''
+    Test function named 'calc_score'
+    '''
+    pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
+                                 th_up=0.01, th_down=-0.01)
+
+    adt = datetime.datetime(2015, 8, 16, 21, 0)
+
+    rpt = pl.fetch_by_time(adt)
+
+    score=rpt.calc_score()
+
+    assert score==19

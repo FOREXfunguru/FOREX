@@ -44,17 +44,17 @@ def test_bounces_attr(counter_object):
     has been initialized
     '''
 
-    assert counter_object.bounces[0].midAsk==1.8763
-    assert len(counter_object.bounces)==1
+    assert counter_object.bounces.plist[0].candle.midAsk==0.9365
+    assert len(counter_object.bounces.plist)==3
 
-"""
+
 def test_lasttime_attr(counter_object):
     '''
     Check that self.lasttime class attribute
     has been initialized
     '''
 
-    adatetime = datetime.datetime(2016, 6, 24, 9, 0)
+    adatetime = datetime.datetime(2009, 3, 22, 21, 0)
     assert counter_object.lasttime==adatetime
 
 def test_bounces_lasttime_attr(counter_object):
@@ -63,8 +63,9 @@ def test_bounces_lasttime_attr(counter_object):
     has been initialized
     '''
 
-    assert len(counter_object.bounces_lasttime)==0
+    assert len(counter_object.bounces_lasttime.plist)==3
 
+"""
 def test_calc_itrend(counter_object_notrendi):
 
     counter_object_notrendi.calc_itrend()

@@ -117,7 +117,7 @@ class Counter(object):
                          part='closeAsk')
 
         # set bounces_lasttime Class attribute
-       # self.bounces_fromlasttime()
+        self.bounces_fromlasttime()
 
 
     def __initclist(self):
@@ -179,9 +179,7 @@ class Counter(object):
             # initialized
             p.candle.set_candle_features()
             price = getattr(p.candle, part)
-            print("Price: {0}; Upper: {1}; Lower: {2}; time: {3}".format(price, upper, lower, p.candle.time))
             if price >= lower and price <= upper:
-                print("inarea\n")
                 pl.append(p)
 
         return PivotList(plist=pl,clist=bounces.clist, slist=bounces.slist)
@@ -212,16 +210,18 @@ class Counter(object):
                 th_down=-config.CT['threshold_bounces'],
                 part=config.CT['part'])
 
-        # consider type of trade in order to select peaks or valleys
-       # if self.type == 'short':
-       #     bounces = pivotlist.fetch_by_type(type=-1)
-       # elif self.type == 'long':
-       #     bounces = pivotlist.fetch_by_type(type=1)
-
         # get bounces in area
         in_area_list = self.__inarea_bounces(pivotlist, part=part, HRpips=self.HR_pips)
 
-        self.bounces= in_area_list
+        pdb.set_trace()
+
+        #calculate score for Pivots
+        pl=[]
+        for p in in_area_list.plist:
+            p.calc_score()
+            pl.append(p)
+
+        self.bounces=PivotList(plist=pl, clist=in_area_list.clist, slist=in_area_list.slist)
 
         if doPlot is True:
             outfile = self.png_prefix+".{0}.sel_pivots.png".format(self.id.replace(' ', '_'))
@@ -294,12 +294,16 @@ class Counter(object):
 
         Returns
         -------
-        Will set the bounces_lasttime class attribute
+        Will set the bounces_lasttime class attribute with a PivotList
+        of the pivots after lasttime
         '''
 
-        bounces = [n for n in self.bounces if n.time >= self.lasttime]
+        pl = []
+        for p in self.bounces.plist:
+            if p.candle.time>=self.lasttime:
+                pl.append(p)
 
-        self.bounces_lasttime = bounces
+        self.bounces_lasttime = PivotList(plist=pl, clist=self.bounces.clist, slist=self.bounces.slist)
 
     def __str__(self):
         sb = []

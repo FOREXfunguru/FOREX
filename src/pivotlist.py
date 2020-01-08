@@ -41,7 +41,10 @@ class PivotList(object):
                     pre_i=i
                 elif (i==1 or i==-1) and start_ix is not None:
                     end_ix=ix
-                    submode=modes[start_ix+1:end_ix]
+                    if parray[start_ix+1]==0:
+                        submode=modes[start_ix+1:end_ix]
+                    else:
+                        submode=[start_ix+1]
                     #checking if all elements in submode are the same:
                     assert len(np.unique(submode).tolist())==1, "more than one type in modes"
                     # create Segment
@@ -121,13 +124,17 @@ class Pivot(object):
           Segment object before this pivot
     aft : Segment object
           Segment object after this pivot
+    score : int
+            Result of adding the number
+            of candles of the 'pre' and 'aft' segment (if defined). Optional
     '''
 
-    def __init__(self, type, candle, pre, aft):
+    def __init__(self, type, candle, pre, aft, score=None):
         self.type = type
         self.candle = candle
         self.pre = pre
         self.aft = aft
+        self.score =score
 
     def merge_pre(self, slist, n_candles):
         '''
@@ -159,10 +166,10 @@ class Pivot(object):
 
             if self.pre.type == s.type:
                 # merge
-                self.pre = self.pre.merge(s)
+                self.pre = self.pre.prepend(s)
             elif self.pre.type != s.type and s.count < n_candles:
                 # merge
-                self.pre = self.pre.merge(s)
+                self.pre = self.pre.prepend(s)
             else:
                 extension_needed = False
 
@@ -203,6 +210,28 @@ class Pivot(object):
             else:
                 extension_needed = False
 
+    def calc_score(self):
+        '''
+        Function to calculate the score for this Pivot
+        The score will be the result of adding the number
+        of candles of the 'pre' and 'aft' segment (if defined)
+
+        Returns
+        -------
+        int Score and it will set the score class attribute
+        '''
+        if self.pre :
+            score_pre=len(self.pre.clist)
+        else:
+            score_pre=0
+        if self.aft:
+            score_aft=len(self.aft.clist)
+        else:
+            score_aft=0
+
+        self.score=score_pre+score_aft
+
+        return score_pre+score_aft
 
     def __repr__(self):
         return "Pivot"
