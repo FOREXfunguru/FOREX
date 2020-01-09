@@ -21,6 +21,6 @@ strats=args.strats.split(",")
 trade_list = td.fetch_trades(strats=strats,run=True)
 
 td.write_trades(trade_list, colnames=['id', 'start', 'strat', 'type', 'SMA', 'entry', 'TP', 'SL', 'SR','entry_time','outcome','pips','lasttime',
-                                      'bounces','bounces_lasttime'], sheetname= args.outsheet)
+                                      'bounces','bounces_lasttime', 'total_score', 'score_lasttime'], sheetname= args.outsheet)
 #td.write_trades(trade_list, colnames=['id', 'start', 'strat', 'type', 'SMA', 'entry', 'TP', 'SL', 'SR','entry_time','outcome','pips'], sheetname= args.strat+".calc")
 

@@ -42,7 +42,8 @@ CT = {
     'period' : 4000, # number of candles from self.start that will be considered in order to
                      # to look for peaks/valleys
     'threshold_bounces' : 0.05, # Threshold pivot detection for bounces
-    'part': 'openAsk'  # What part of the candles to use in the different calculations
+    'part': 'openAsk',  # What part of the candles to use in the different calculations
+    'png_prefix':  PROJECT['root'] + "/bounce_images/counter"
 }
 
 

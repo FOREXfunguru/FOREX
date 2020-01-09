@@ -47,7 +47,7 @@ class Counter(object):
          Support/Resistance area
     bounces: list, Optional
              List with Candle objects for price bounces at self.SR
-    png_prefix: str, Required
+    png_prefix: str, Optional
                 Output prefix
     clist_period: CandleList, Optional
                   Candlelist extending back (defined by 'period') in time since the start of the pattern
@@ -74,18 +74,25 @@ class Counter(object):
                  Length in number of pips for self.clist_trend
     SMA : str, Optional
           Is there SMA support for this trade. Values: 'Y'/'N'
+    total_score : int, Optional
+                  Total (sum of each pivot score) pivot score for all bounces (bounces class attr)
+    score_lasttime : int, Optional
+                     Sum of each pivot score for all pivots after lasttime (bounces_lasttime class attr)
+
     '''
 
-    def __init__(self, pair, png_prefix, period= 3000, HR_pips=200, **kwargs):
+    def __init__(self, pair, period= 3000, HR_pips=200, **kwargs):
 
         allowed_keys = [ 'id','start','timeframe','period','entry','trend_i', 'type', 'SL',
                         'TP','SR','RR','bounces','clist_period','clist_trend','lasttime',
                         'bounces_lasttime','slope','n_rsibounces','rsibounces_lengths',
-                        'divergence','entry_onrsi','length_candles','length_pips', 'SMA']
+                        'divergence','entry_onrsi','length_candles','length_pips', 'SMA',
+                        'total_score','score_lasttime','png_prefix']
 
         # get values from config file
         if 'period' in config.CT: period = config.CT['period']
         if 'HR_pips' in config.CT: HR_pips = config.CT['HR_pips']
+        if 'png_prefix' in config.CT: png_prefix = config.CT['png_prefix']
 
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         self.pair=pair
@@ -113,11 +120,15 @@ class Counter(object):
         self.lasttime=self.clist_period.get_lasttime(resist)
 
         #initialize 'bounces' Class attribute
-        self.set_bounces(doPlot=True, outfile=png_prefix+".bounces.png",
+        self.set_bounces(doPlot=True, outfile=self.png_prefix+".{0}.all_pivots.png".format(self.id.replace(' ','_')),
                          part='closeAsk')
+
+        # set total_score attr
+        self.calc_score()
 
         # set bounces_lasttime Class attribute
         self.bounces_fromlasttime()
+        self.calc_score_lasttime()
 
 
     def __initclist(self):
@@ -213,8 +224,6 @@ class Counter(object):
         # get bounces in area
         in_area_list = self.__inarea_bounces(pivotlist, part=part, HRpips=self.HR_pips)
 
-        pdb.set_trace()
-
         #calculate score for Pivots
         pl=[]
         for p in in_area_list.plist:
@@ -228,6 +237,19 @@ class Counter(object):
             outfile_rsi = self.png_prefix+".{0}.final_rsi.png".format(self.id.replace(' ', '_'))
 
             self.plot_bounces(outfile_prices=outfile, outfile_rsi=outfile_rsi, part= config.CT['part'])
+
+    def calc_score(self):
+        '''
+        Function to calculate the total (sum of each pivot score) pivot score for all bounces
+        It will set the 'total_score' class attribute
+        '''
+
+        tot_score=0
+        for p in self.bounces.plist:
+            tot_score+=p.score
+
+        self.total_score=tot_score
+
 
 
     def plot_bounces(self, outfile_prices, outfile_rsi, part='closeAsk'):
@@ -304,6 +326,18 @@ class Counter(object):
                 pl.append(p)
 
         self.bounces_lasttime = PivotList(plist=pl, clist=self.bounces.clist, slist=self.bounces.slist)
+
+    def calc_score_lasttime(self):
+        '''
+        Function to calculate the pivot score for all bounces from lasttime
+        It will set the 'score_lasttime' class attribute
+        '''
+
+        tot_score = 0
+        for p in self.bounces_lasttime.plist:
+            tot_score += p.score
+
+        self.score_lasttime = tot_score
 
     def __str__(self):
         sb = []

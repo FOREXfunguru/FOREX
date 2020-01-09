@@ -65,6 +65,16 @@ def test_bounces_lasttime_attr(counter_object):
 
     assert len(counter_object.bounces_lasttime.plist)==3
 
+def test_calc_score(counter_object):
+    '''Test 'calc_score' function to set the 'total_score' class attr'''
+
+    assert counter_object.total_score==580
+
+def test_calc_score_lasttime(counter_object):
+    '''Test 'calc_score_lasttime' function to set the 'score_lasttime' class attr'''
+
+    assert counter_object.score_lasttime==580
+
 """
 def test_calc_itrend(counter_object_notrendi):
 
