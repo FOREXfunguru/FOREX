@@ -162,7 +162,8 @@ class Counter(object):
 
         self.clist_period=cl
 
-    def __inarea_bounces(self, bounces, HRpips, part='midAsk'):
+    def __inarea_bounces(self, bounces, HRpips, part='midAsk', runmerge_pre=False,
+                         runmerge_aft=False):
         '''
         Function to identify the candles for which price is in the area defined
         by self.SR+HRpips and self.SR-HRpips
@@ -174,7 +175,11 @@ class Counter(object):
                  Number of pips over/below S/R used for trying to identify bounces
                  Required.
         part: str
-              Candle part used for the calculation. Default='midAsk'
+              Candle part used for the calculation. Default='midAsk'. Optional
+        runmerge_pre: Boolean
+                      Run PivotList's 'merge_pre' function. Default: False
+        runmerge_aft: Boolean
+                      Run PivotList's 'merge_aft' function. Default: False
 
         Returns
         -------
@@ -191,6 +196,10 @@ class Counter(object):
             p.candle.set_candle_features()
             price = getattr(p.candle, part)
             if price >= lower and price <= upper:
+                if runmerge_pre is True and p.pre is not None:
+                    p.merge_pre(slist=bounces.slist, n_candles=8)
+                if runmerge_aft is True and p.aft is not None:
+                    p.merge_aft(slist=bounces.slist, n_candles=8)
                 pl.append(p)
 
         return PivotList(plist=pl,clist=bounces.clist, slist=bounces.slist)
@@ -222,7 +231,8 @@ class Counter(object):
                 part=config.CT['part'])
 
         # get bounces in area
-        in_area_list = self.__inarea_bounces(pivotlist, part=part, HRpips=self.HR_pips)
+        in_area_list = self.__inarea_bounces(pivotlist, part=part, HRpips=self.HR_pips,runmerge_pre=True,
+                                             runmerge_aft=True)
 
         #calculate score for Pivots
         pl=[]
@@ -291,18 +301,10 @@ class Counter(object):
             ix = datetimes.index(dt)
             # prepare the plot for 'pre' segment
             if p.pre is not None:
-                # merge pre segments
-                p.merge_pre(slist=final_bounces.slist, n_candles=5)
                 ix_pre_s = datetimes.index(p.pre.start())
                 plt.scatter(datetimes[ix_pre_s], prices[ix_pre_s], s=100, marker='v')
-                ix_pre_e = datetimes.index(p.pre.end())
-                plt.scatter(datetimes[ix_pre_e], prices[ix_pre_e], s=100, marker='v')
             # prepare the plot for 'aft' segment
             if p.aft is not None:
-                # merge aft segments
-                p.merge_aft(slist=final_bounces.slist, n_candles=5)
-                ix_aft_s = datetimes.index(p.aft.start())
-                plt.scatter(datetimes[ix_aft_s], prices[ix_aft_s], s=100, marker='v')
                 ix_aft_e = datetimes.index(p.aft.end())
                 plt.scatter(datetimes[ix_aft_e], prices[ix_aft_e], s=100, marker='v')
             # plot

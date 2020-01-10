@@ -192,8 +192,6 @@ class TradeJournal(object):
         for t in trade_list:
             row=[]
             for a in colnames:
-                if a=='bounces_lasttime':
-                    pdb.set_trace()
                 value=None
                 try:
                     value=getattr(t, a)
@@ -201,7 +199,7 @@ class TradeJournal(object):
                         # iterate over PivotList
                         date_str=""
                         for p in value.plist:
-                            date_str+=p.candle.time.strftime('%m/%d/%Y:%H:%M')+","
+                            date_str+=p.candle.time.strftime('%d/%m/%Y:%H:%M')+","
                         value=date_str
                 except:
                     warnings.warn("Error getting value for attribute: {0}".format(a))
