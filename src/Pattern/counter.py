@@ -115,7 +115,7 @@ class Counter(object):
 
         # instantiate an HArea object representing the self.SR in order to calculate the lasttime
         # price has been above/below SR
-        resist = HArea(price=self.SR, pips=100, instrument=self.pair,
+        resist = HArea(price=self.SR, pips=config.CT['HR_pips'], instrument=self.pair,
                        granularity=self.timeframe)
         self.lasttime=self.clist_period.get_lasttime(resist)
 
@@ -162,7 +162,7 @@ class Counter(object):
 
         self.clist_period=cl
 
-    def __inarea_bounces(self, bounces, HRpips, part='midAsk', runmerge_pre=False,
+    def __inarea_bounces(self, bounces, HRpips, part_list=['midAsk'], runmerge_pre=False,
                          runmerge_aft=False):
         '''
         Function to identify the candles for which price is in the area defined
@@ -174,8 +174,9 @@ class Counter(object):
         HR_pips: int, Optional
                  Number of pips over/below S/R used for trying to identify bounces
                  Required.
-        part: str
-              Candle part used for the calculation. Default='midAsk'. Optional
+        part_list: List
+              List with candle parts used for the calculation. Default=['midAsk'].
+              Optional
         runmerge_pre: Boolean
                       Run PivotList's 'merge_pre' function. Default: False
         runmerge_aft: Boolean
@@ -194,13 +195,20 @@ class Counter(object):
             # initialize candle features to be sure that midAsk or midBid are
             # initialized
             p.candle.set_candle_features()
-            price = getattr(p.candle, part)
-            if price >= lower and price <= upper:
-                if runmerge_pre is True and p.pre is not None:
-                    p.merge_pre(slist=bounces.slist, n_candles=8)
-                if runmerge_aft is True and p.aft is not None:
-                    p.merge_aft(slist=bounces.slist, n_candles=8)
-                pl.append(p)
+            for part in part_list:
+                price = getattr(p.candle, part)
+                if price >= lower and price <= upper:
+                    if runmerge_pre is True and p.pre is not None:
+                        p.merge_pre(slist=bounces.slist, n_candles=8)
+                    if runmerge_aft is True and p.aft is not None:
+                        p.merge_aft(slist=bounces.slist, n_candles=8)
+                    #check if this Pivot already exist in pl
+                    p_seen=False
+                    for op in pl:
+                        if op.candle.time==p.candle.time:
+                            p_seen=True
+                    if p_seen is False:
+                        pl.append(p)
 
         return PivotList(plist=pl,clist=bounces.clist, slist=bounces.slist)
 
@@ -230,8 +238,14 @@ class Counter(object):
                 th_down=-config.CT['threshold_bounces'],
                 part=config.CT['part'])
 
-        # get bounces in area
-        in_area_list = self.__inarea_bounces(pivotlist, part=part, HRpips=self.HR_pips,runmerge_pre=True,
+        # get bounces in area for 2 different Candle parts
+        part_list=[config.CT['part']]
+        if self.type=='short':
+            part_list.append('highAsk')
+        elif self.type=='long':
+            part_list.append('lowAsk')
+
+        in_area_list = self.__inarea_bounces(pivotlist, part_list=part_list, HRpips=self.HR_pips,runmerge_pre=True,
                                              runmerge_aft=True)
 
         #calculate score for Pivots

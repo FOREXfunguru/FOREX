@@ -25,7 +25,6 @@ class PivotList(object):
         if parray is not None:
             # pivots_to_modes function from the Zigzag indicator
             modes = pivots_to_modes(parray)
-
             segs = [] # this list will hold the Segment objects
             plist_o = [] # this list will hold the Pivot objects
             pre_s=None # Variable that will hold pre Segments
@@ -44,7 +43,7 @@ class PivotList(object):
                     if parray[start_ix+1]==0:
                         submode=modes[start_ix+1:end_ix]
                     else:
-                        submode=[start_ix+1]
+                        submode=[modes[start_ix+1]]
                     #checking if all elements in submode are the same:
                     assert len(np.unique(submode).tolist())==1, "more than one type in modes"
                     # create Segment

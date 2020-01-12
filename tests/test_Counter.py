@@ -22,21 +22,30 @@ def counter_object():
         png_prefix='data/tmp/test')
     return c
 
-def counter_object_notrendi():
+@pytest.fixture
+def counter_object1():
     '''Returns Counter object without the 'trend_i' initialised'''
 
     c = Counter(
-        id='GBP_AUD 12OCT2018H12',
-        start='2018-10-11 21:00:00',
-        pair='GBP_AUD',
+        id='GBP_USD 18NOV2019H12',
+        start='2019-11-18 22:00:00',
+        pair='GBP_USD',
         timeframe='H12',
         type='short',
         period=1000,
-        entry=1.85929,
-        SR=1.87074,
-        SL=1.87384,
+        entry=1.29352,
+        SR=1.29768,
+        SL=1.29935,
         RR=1.5)
     return c
+
+@pytest.fixture
+def clean_tmp():
+    yield
+    print("Cleanup files")
+    files = glob.glob('data/tmp/*')
+    for f in files:
+        os.remove(f)
 
 def test_bounces_attr(counter_object):
     '''
@@ -44,7 +53,7 @@ def test_bounces_attr(counter_object):
     has been initialized
     '''
 
-    assert counter_object.bounces.plist[0].candle.midAsk==0.9365
+    assert counter_object.bounces.plist[0].candle.midAsk==0.9398
     assert len(counter_object.bounces.plist)==3
 
 
@@ -68,12 +77,12 @@ def test_bounces_lasttime_attr(counter_object):
 def test_calc_score(counter_object):
     '''Test 'calc_score' function to set the 'total_score' class attr'''
 
-    assert counter_object.total_score==580
+    assert counter_object.total_score==511
 
 def test_calc_score_lasttime(counter_object):
     '''Test 'calc_score_lasttime' function to set the 'score_lasttime' class attr'''
 
-    assert counter_object.score_lasttime==580
+    assert counter_object.score_lasttime==511
 
 """
 def test_calc_itrend(counter_object_notrendi):
