@@ -192,9 +192,10 @@ class Pivot(object):
         Nothing
         '''
 
+        pdb.set_trace()
         extension_needed=True
         while extension_needed is True:
-            # increase end of self.aft by one candle
+            # increase end of self.aft by one candle§
             start_dt=self.aft.end()+periodToDelta(1, self.candle.granularity)
 
             # fetch next segment
