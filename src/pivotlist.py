@@ -2,6 +2,7 @@ import pdb
 from zigzag import *
 from segmentlist import *
 from utils import *
+import warnings
 
 class PivotList(object):
     '''
@@ -162,6 +163,12 @@ class Pivot(object):
 
             # fetch previous segment
             s = slist.fetch_by_end(start_dt)
+            if s is None:
+                warnings.warn("No Segment could be retrieved for pivot falling in time {0} "
+                              "by using s.fetch_by_end and date: {1} in function 'merge_pre'".format(self.candle.time,
+                                                                                                     start_dt))
+                extension_needed=False
+                continue
 
             if self.pre.type == s.type:
                 # merge
@@ -192,7 +199,6 @@ class Pivot(object):
         Nothing
         '''
 
-        pdb.set_trace()
         extension_needed=True
         while extension_needed is True:
             # increase end of self.aft by one candle§
@@ -200,6 +206,11 @@ class Pivot(object):
 
             # fetch next segment
             s=slist.fetch_by_start(start_dt)
+            if s is None:
+                warnings.warn("No Segment could be retrieved for pivot falling in time {0} by using s.fetch_by_"
+                              "start and date: {1} in function 'merge_aft'. ".format(self.candle.time, start_dt))
+                extension_needed = False
+                continue
 
             if self.aft.type == s.type:
                 # merge

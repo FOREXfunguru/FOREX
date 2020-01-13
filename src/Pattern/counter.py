@@ -199,9 +199,9 @@ class Counter(object):
                 price = getattr(p.candle, part)
                 if price >= lower and price <= upper:
                     if runmerge_pre is True and p.pre is not None:
-                        p.merge_pre(slist=bounces.slist, n_candles=20)
+                        p.merge_pre(slist=bounces.slist, n_candles=18)
                     if runmerge_aft is True and p.aft is not None:
-                        p.merge_aft(slist=bounces.slist, n_candles=20)
+                        p.merge_aft(slist=bounces.slist, n_candles=18)
                     #check if this Pivot already exist in pl
                     p_seen=False
                     for op in pl:
