@@ -41,7 +41,7 @@ CT = {
     'HR_pips': 50,  # number of pips over/below S/R used for trying to identify bounces
     'period' : 4000, # number of candles from self.start that will be considered in order to
                      # to look for peaks/valleys
-    'threshold_bounces' : 0.01, # Threshold pivot detection for bounces
+    'threshold_bounces' : 0.02, # Threshold pivot detection for bounces
     'part': 'closeAsk',  # What part of the candles to use in the different calculations
     'png_prefix':  PROJECT['root'] + "/bounce_images/counter"
 }
@@ -69,7 +69,7 @@ START_HIST = {
     'NZD_USD': datetime.datetime(2002, 9, 5, 21, 0),
     'USD_CAD': datetime.datetime(2002, 5, 19, 21, 0),
     'USD_CHF': datetime.datetime(2002, 6, 5, 21, 0),
-    'USD_JPY': datetime.datetime(2002, 6, 5, 21, 0),
+    'USD_JPY': datetime.datetime(2002, 5, 1, 21, 0),
     'AUD_CHF': datetime.datetime(2004, 6, 5, 21, 0),
 }
 
