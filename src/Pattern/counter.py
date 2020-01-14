@@ -162,7 +162,7 @@ class Counter(object):
 
         self.clist_period=cl
 
-    def __inarea_bounces(self, bounces, HRpips, part_list=['midAsk'], runmerge_pre=False,
+    def __inarea_bounces(self, bounces, HRpips, priceType='Ask', runmerge_pre=False,
                          runmerge_aft=False):
         '''
         Function to identify the candles for which price is in the area defined
@@ -174,8 +174,8 @@ class Counter(object):
         HR_pips: int, Optional
                  Number of pips over/below S/R used for trying to identify bounces
                  Required.
-        part_list: List
-              List with candle parts used for the calculation. Default=['midAsk'].
+        priceType: str
+              Type of price used for the calculation. Default='Ask'.
               Optional
         runmerge_pre: Boolean
                       Run PivotList's 'merge_pre' function. Default: False
@@ -189,9 +189,13 @@ class Counter(object):
         # get bounces in the horizontal SR area
         lower = substract_pips2price(self.pair, self.SR, HRpips)
         upper = add_pips2price(self.pair, self.SR, HRpips)
-
         pl=[]
         for p in bounces.plist:
+            part_list=['close{0}'.format(priceType)]
+            if p.type==1:
+                part_list.append('high{0}'.format(priceType))
+            elif p.type==-1:
+                part_list.append('low{0}'.format(priceType))
             # initialize candle features to be sure that midAsk or midBid are
             # initialized
             p.candle.set_candle_features()
@@ -238,14 +242,7 @@ class Counter(object):
                 th_down=-config.CT['threshold_bounces'],
                 part=config.CT['part'])
 
-        # get bounces in area for 2 different Candle parts
-        part_list=[config.CT['part']]
-        if self.type=='short':
-            part_list.append('highAsk')
-        elif self.type=='long':
-            part_list.append('lowAsk')
-
-        in_area_list = self.__inarea_bounces(pivotlist, part_list=part_list, HRpips=self.HR_pips,runmerge_pre=True,
+        in_area_list = self.__inarea_bounces(pivotlist, HRpips=self.HR_pips,runmerge_pre=True,
                                              runmerge_aft=True)
 
         #calculate score for Pivots
@@ -316,11 +313,11 @@ class Counter(object):
             # prepare the plot for 'pre' segment
             if p.pre is not None:
                 ix_pre_s = datetimes.index(p.pre.start())
-                plt.scatter(datetimes[ix_pre_s], prices[ix_pre_s], s=100, marker='v')
+                plt.scatter(datetimes[ix_pre_s], prices[ix_pre_s], s=200, c='green', marker='v')
             # prepare the plot for 'aft' segment
             if p.aft is not None:
                 ix_aft_e = datetimes.index(p.aft.end())
-                plt.scatter(datetimes[ix_aft_e], prices[ix_aft_e], s=100, marker='v')
+                plt.scatter(datetimes[ix_aft_e], prices[ix_aft_e], s=200, c='red', marker='v')
             # plot
             plt.scatter(datetimes[ix], prices[ix], s=50)
 
