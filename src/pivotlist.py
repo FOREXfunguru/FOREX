@@ -156,6 +156,9 @@ class Pivot(object):
         Nothing
         '''
 
+        pro=0 #variable that will hold the diff in pips in favour of trend
+        anti=0 #variable that will hold the diff in pips against the trend
+
         extension_needed = True
         while extension_needed is True:
             # reduce start of self.pre by one candle
@@ -169,6 +172,11 @@ class Pivot(object):
                                                                                                      start_dt))
                 extension_needed=False
                 continue
+            if self.type==1:
+                if s.type==1:
+                    pro+=s.diff
+                elif s.type==-1:
+                    anti+=s.diff
 
             if self.pre.type == s.type:
                 # merge
