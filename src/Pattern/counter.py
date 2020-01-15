@@ -190,22 +190,38 @@ class Counter(object):
         lower = substract_pips2price(self.pair, self.SR, HRpips)
         upper = add_pips2price(self.pair, self.SR, HRpips)
         pl=[]
+        last_seen=False
         for p in bounces.plist:
+            # treat the last pivot in bounces.plist differently, as the type (1 or -1) of this pivot
+            # is not well defined sometimes. This is why more candle parts will be considered for checking
+            # if the pivot is in_area for the last pivot
+            if bounces.plist[-1].candle.time == p.candle.time:
+                last_seen=True
             part_list=['close{0}'.format(priceType)]
             if p.type==1:
                 part_list.append('high{0}'.format(priceType))
+                # add additional candle part (it is the last pivot)
+                if last_seen is True: part_list.append('low{0}'.format(priceType))
             elif p.type==-1:
                 part_list.append('low{0}'.format(priceType))
+                # add additional candle part (it is the last pivot)
+                if last_seen is True: part_list.append('high{0}'.format(priceType))
+
+            # add additional candle part (it is the last pivot)
+            if last_seen is True: part_list.append('open{0}'.format(priceType))
+
             # initialize candle features to be sure that midAsk or midBid are
             # initialized
             p.candle.set_candle_features()
             for part in part_list:
                 price = getattr(p.candle, part)
                 if price >= lower and price <= upper:
+                  #  if p.candle.time==datetime.datetime(2009, 1, 3, 22, 0):
+                  #      pdb.set_trace()
                     if runmerge_pre is True and p.pre is not None:
-                        p.merge_pre(slist=bounces.slist, n_candles=18)
+                        p.merge_pre(slist=bounces.slist, n_candles=10)
                     if runmerge_aft is True and p.aft is not None:
-                        p.merge_aft(slist=bounces.slist, n_candles=18)
+                        p.merge_aft(slist=bounces.slist, n_candles=10)
                     #check if this Pivot already exist in pl
                     p_seen=False
                     for op in pl:
