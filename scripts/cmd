@@ -12,3 +12,6 @@ python crossvalidate.py --ifile out_scores_dbptpcont.ALL.tsv --outcom 'outcome 2
 
 #calculate outcome for all trades
 python calculate_counter.py --ifile  ~/Library/Mobile\ Documents/com~apple~CloudDocs/MYOWN/Backtesting1.xlsx --worksheet backtesting_23102019 --strat counter_b1,cont,counter_b2,counter,counter_b3,counter_b4 --outsheet counter_trades
+
+#detect SRareas
+python -m pdb detect_SRareas.py --instrument GBP_USD --granularity D --start '2019-08-12 22:00:00'
