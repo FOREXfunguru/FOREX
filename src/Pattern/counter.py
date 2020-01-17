@@ -9,7 +9,6 @@ import matplotlib.pyplot as plt
 
 from oanda_api import OandaAPI
 from candlelist import CandleList
-from utils import *
 from harea import HArea
 from pivotlist import *
 
@@ -34,7 +33,7 @@ class Counter(object):
              start of the trend
     period: int, Optional
             Period that will be checked back in time. Units used will be the ones dictated by self.timeframe.
-            Default : 1000
+            Default : None
     type: str, Optional
           What is the type of the trade (long,short)
     SL:  float, Optional
@@ -81,7 +80,7 @@ class Counter(object):
 
     '''
 
-    def __init__(self, pair, period= 3000, HR_pips=200, **kwargs):
+    def __init__(self, pair, period= None, HR_pips=200, png_prefix=None, **kwargs):
 
         allowed_keys = [ 'id','start','timeframe','period','entry','trend_i', 'type', 'SL',
                         'TP','SR','RR','bounces','clist_period','clist_trend','lasttime',
@@ -90,9 +89,10 @@ class Counter(object):
                         'total_score','score_lasttime','png_prefix']
 
         # get values from config file
-        if 'period' in config.CT: period = config.CT['period']
+        if period is None: period = config.CT['period']
         if 'HR_pips' in config.CT: HR_pips = config.CT['HR_pips']
-        if 'png_prefix' in config.CT: png_prefix = config.CT['png_prefix']
+
+        if png_prefix is None: png_prefix = config.CT['png_prefix']
 
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         self.pair=pair
