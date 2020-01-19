@@ -51,8 +51,8 @@ class HArea(object):
         self.price = price
         self.pips = pips
         self.granularity = granularity
-        self.upper=price+(pips/divisor)
-        self.lower=price-(pips/divisor)
+        self.upper=round(price+(pips/divisor),4)
+        self.lower=round(price-(pips/divisor),4)
 
     def last_time(self, clist, position, part='openAsk'):
         '''

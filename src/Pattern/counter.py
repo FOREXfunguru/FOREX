@@ -58,7 +58,7 @@ class Counter(object):
            Float with the slope of trend conducting to entry
     HR_pips: int, Optional
              Number of pips over/below S/R used for trying to identify bounces
-             Default: 200
+             Optional
     n_rsibounces: int, Optional
                   Number of rsi bounces for trend conducting to start
     rsibounces_lengths: list, Optional
@@ -80,7 +80,7 @@ class Counter(object):
 
     '''
 
-    def __init__(self, pair, period= None, HR_pips=200, png_prefix=None, **kwargs):
+    def __init__(self, pair, period= None, HR_pips=None, png_prefix=None, **kwargs):
 
         allowed_keys = [ 'id','start','timeframe','period','entry','trend_i', 'type', 'SL',
                         'TP','SR','RR','bounces','clist_period','clist_trend','lasttime',
@@ -90,7 +90,7 @@ class Counter(object):
 
         # get values from config file
         if period is None: period = config.CT['period']
-        if 'HR_pips' in config.CT: HR_pips = config.CT['HR_pips']
+        if HR_pips is None: HR_pips = config.CT['HR_pips']
 
         if png_prefix is None: png_prefix = config.CT['png_prefix']
 
@@ -115,8 +115,9 @@ class Counter(object):
 
         # instantiate an HArea object representing the self.SR in order to calculate the lasttime
         # price has been above/below SR
-        resist = HArea(price=self.SR, pips=config.CT['HR_pips'], instrument=self.pair,
+        resist = HArea(price=self.SR, pips=self.HR_pips, instrument=self.pair,
                        granularity=self.timeframe)
+        print("{0}-{1}".format(resist.upper,resist.lower))
         self.lasttime=self.clist_period.get_lasttime(resist)
 
         #initialize 'bounces' Class attribute
