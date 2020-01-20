@@ -48,24 +48,74 @@ for p in np.arange(float(args.ll), float(args.ul), increment_price):
         SR=p,
         SL=SL,
         RR=1.5,
-        png_prefix='/Users/ernesto/projects/FOREX/CT/detectSR/test.{0}'.format(p))
+        png_prefix='/Users/ernesto/projects/FOREX/CT/detect_srareas/test.{0}'.format(p))
     file.write("{0}\t{1}\t{2}\t{3}\n".format(round(p,5),len(c.bounces.plist),c.total_score,round(c.total_score/len(c.bounces.plist),2)))
     prices.append(round(p,5))
     bounces.append(len(c.bounces.plist))
     score_per_bounce.append(round(c.total_score/len(c.bounces.plist),2))
 
-data={'prices': prices,
+file.close()
+
+data={'price': prices,
       'bounces': bounces,
       'scores': score_per_bounce}
 
 df = pd.DataFrame(data=data)
-pdb.set_trace()
 # establishing bounces threshold as the 0.75 quantile
 bounce_th=df.bounces.quantile(0.75)
 score_th=df.scores.quantile(0.75)
 
 # selecting records over threshold
 dfsel=df.loc[(df['bounces']>bounce_th) | (df['scores']>score_th)]
-file.close()
 
+def calc_diff(df_loc):
 
+    prev_price=None
+    prev_row=None
+    tog_seen=False
+    for index, row in df_loc.iterrows():
+        if prev_price is None:
+            prev_price=float(row['price'])
+            prev_row=row
+        else:
+            diff=round(float(row['price'])-prev_price,4)
+            if diff<=0.015:
+                tog_seen=True
+                if row['bounces']<=prev_row['bounces'] and row['scores']<prev_row['scores']:
+                    #remove current row
+                    df_loc.drop(index, inplace=True)
+                elif row['bounces']>=prev_row['bounces'] and row['scores']>prev_row['scores']:
+                    #remove previous row
+                    df_loc.drop(index-1,inplace=True)
+                    prev_price = float(row['price'])
+                    prev_row = row
+                elif row['bounces'] <=prev_row['bounces'] and row['scores']>prev_row['scores']:
+                    #remove previous row as scores in current takes precedence
+                    df_loc.drop(index-1,inplace=True)
+                    prev_price = float(row['price'])
+                    prev_row = row
+                elif row['bounces'] >=prev_row['bounces'] and row['scores']<prev_row['scores']:
+                    #remove current row as scores in current takes precedence
+                    df_loc.drop(index, inplace=True)
+                elif row['bounces']==prev_row['bounces'] and row['scores']==prev_row['scores']:
+                    #exactly same quality for row and prev_row
+                    #remove current arbitrarily
+                    df_loc.drop(index, inplace=True)
+                    pdb.set_trace()
+            else:
+                prev_price=float(row['price'])
+                prev_row=row
+
+    return df_loc,tog_seen
+
+#repeat until no overlap between prices
+ret=calc_diff(dfsel)
+dfsel=ret[0]
+tog_seen=ret[1]
+while tog_seen is True:
+    ret=calc_diff(dfsel)
+    dfsel=ret[0]
+    tog_seen=ret[1]
+
+#write final DF to file
+export_csv = dfsel.to_csv ('export_dataframe.csv', index = None, header=True, sep='\t')
