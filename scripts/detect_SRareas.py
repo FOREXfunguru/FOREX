@@ -72,11 +72,13 @@ def calc_diff(df_loc):
 
     prev_price=None
     prev_row=None
+    prev_ix=None
     tog_seen=False
     for index, row in df_loc.iterrows():
         if prev_price is None:
             prev_price=float(row['price'])
             prev_row=row
+            prev_ix=index
         else:
             diff=round(float(row['price'])-prev_price,4)
             if diff<=0.015:
@@ -86,14 +88,16 @@ def calc_diff(df_loc):
                     df_loc.drop(index, inplace=True)
                 elif row['bounces']>=prev_row['bounces'] and row['scores']>prev_row['scores']:
                     #remove previous row
-                    df_loc.drop(index-1,inplace=True)
+                    df_loc.drop(prev_ix,inplace=True)
                     prev_price = float(row['price'])
                     prev_row = row
+                    prev_ix = index
                 elif row['bounces'] <=prev_row['bounces'] and row['scores']>prev_row['scores']:
                     #remove previous row as scores in current takes precedence
-                    df_loc.drop(index-1,inplace=True)
+                    df_loc.drop(prev_ix,inplace=True)
                     prev_price = float(row['price'])
                     prev_row = row
+                    prev_ix = index
                 elif row['bounces'] >=prev_row['bounces'] and row['scores']<prev_row['scores']:
                     #remove current row as scores in current takes precedence
                     df_loc.drop(index, inplace=True)
@@ -101,11 +105,10 @@ def calc_diff(df_loc):
                     #exactly same quality for row and prev_row
                     #remove current arbitrarily
                     df_loc.drop(index, inplace=True)
-                    pdb.set_trace()
             else:
                 prev_price=float(row['price'])
                 prev_row=row
-
+                prev_ix=index
     return df_loc,tog_seen
 
 #repeat until no overlap between prices
