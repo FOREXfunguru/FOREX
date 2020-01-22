@@ -164,7 +164,7 @@ class Counter(object):
         self.clist_period=cl
 
     def __inarea_bounces(self, bounces, HRpips, priceType='Ask', runmerge_pre=False,
-                         runmerge_aft=False):
+                         runmerge_aft=False, consider_last_bounce=False ):
         '''
         Function to identify the candles for which price is in the area defined
         by self.SR+HRpips and self.SR-HRpips
@@ -182,6 +182,9 @@ class Counter(object):
                       Run PivotList's 'merge_pre' function. Default: False
         runmerge_aft: Boolean
                       Run PivotList's 'merge_aft' function. Default: False
+        consider_last_bounce: Boolean
+                              If true, then the last bounce will be considered as it is part
+                              of the setup. Default: False
 
         Returns
         -------
@@ -193,7 +196,7 @@ class Counter(object):
         pl=[]
         for p in bounces.plist:
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
-            if bounces.plist[-1].candle.time == p.candle.time:
+            if bounces.plist[-1].candle.time == p.candle.time and consider_last_bounce is True:
                 if runmerge_pre is True and p.pre is not None:
                     p.merge_pre(slist=bounces.slist, n_candles=18)
                 if runmerge_aft is True and p.aft is not None:
@@ -212,8 +215,6 @@ class Counter(object):
                 for part in part_list:
                     price = getattr(p.candle, part)
                     if price >= lower and price <= upper:
-                   #    if p.candle.time==datetime.datetime(2009, 1, 3, 22, 0):
-                 #        pdb.set_trace()
                         if runmerge_pre is True and p.pre is not None:
                             p.merge_pre(slist=bounces.slist, n_candles=18)
                         if runmerge_aft is True and p.aft is not None:

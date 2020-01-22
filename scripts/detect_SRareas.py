@@ -25,7 +25,7 @@ bounces=[]
 score_per_bounce=[]
 file.write("#price\tn_bounces\ttot_score\tscore_per_bounce\n")
 
-increment_price=0.004
+increment_price=0.006
 # the increment of price in number of pips is double the hr_extension
 for p in np.arange(float(args.ll), float(args.ul), increment_price):
 
@@ -43,16 +43,22 @@ for p in np.arange(float(args.ll), float(args.ul), increment_price):
         timeframe='D',
         type='short',
         period=5000,
-        HR_pips=20,
+        HR_pips=30,
         entry=entry,
         SR=p,
         SL=SL,
         RR=1.5,
         png_prefix='/Users/ernesto/projects/FOREX/CT/detectSR/test.{0}'.format(p))
-    file.write("{0}\t{1}\t{2}\t{3}\n".format(round(p,5),len(c.bounces.plist),c.total_score,round(c.total_score/len(c.bounces.plist),2)))
+
+    ratio=None
+    if len(c.bounces.plist)==0:
+        ratio=0
+    else:
+        ratio=round(c.total_score/len(c.bounces.plist),2)
+    file.write("{0}\t{1}\t{2}\t{3}\n".format(round(p,5),len(c.bounces.plist),c.total_score,ratio))
     prices.append(round(p,5))
     bounces.append(len(c.bounces.plist))
-    score_per_bounce.append(round(c.total_score/len(c.bounces.plist),2))
+    score_per_bounce.append(ratio)
 
 file.close()
 
@@ -81,7 +87,7 @@ def calc_diff(df_loc):
             prev_ix=index
         else:
             diff=round(float(row['price'])-prev_price,4)
-            if diff<=0.025:
+            if diff<=0.035:
                 tog_seen=True
                 if row['bounces']<=prev_row['bounces'] and row['scores']<prev_row['scores']:
                     #remove current row
