@@ -140,6 +140,7 @@ class Counter(object):
         This will set the self.clist_period class attribute
         '''
 
+        pdb.set_trace()
         delta_period=periodToDelta(self.period, self.timeframe)
         delta_1=periodToDelta(1, self.timeframe)
         start = self.start - delta_period # get the start datetime for this CandleList period
@@ -153,8 +154,7 @@ class Counter(object):
 
         oanda.run(start=start.isoformat(),
                   end=end.isoformat(),
-                  roll=True
-                  )
+                  roll=True)
 
         candle_list = oanda.fetch_candleset(vol_cutoff=0)
 

@@ -145,9 +145,12 @@ class OandaAPI(object):
         except ValueError:
             raise ValueError("Incorrect date format, should be %Y-%m-%dT%H:%M:%S")
 
+        patt = re.compile("\dD")
         nhours=None
         delta = None
-        if granularity == "D":
+        if patt.match(granularity):
+            raise Exception("{0} is not valid. Oanda rest service does not take it".format(granularity))
+        elif granularity=="D":
             nhours=24
             delta = datetime.timedelta(hours=24)
         else:
@@ -183,15 +186,16 @@ class OandaAPI(object):
 
         if nhours is not None:
             base= datetime.time(22, 00, 00)
+            # generate a list with valid times. For example, if granularity is H12, then it will be 22 and 10
             valid_time = [(datetime.datetime.combine(datetime.date(1, 1, 1), base) + datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
 
             # daylightime saving discrepancy
             base1 = datetime.time(21, 00, 00)
             valid_time1 = [(datetime.datetime.combine(datetime.date(1, 1, 1), base1) + datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
-            if (dateObj.time() not in valid_time) and (dateObj.time() not in valid_time1):
-                raise Exception("Time {0} not valid. Valid times for {1} granularity are: {2} or are: {3}".format(dateObj.time(),
-                                                                                                                  granularity, valid_time,
-                                                                                                                  valid_time1))
+          #  if (dateObj.time() not in valid_time) and (dateObj.time() not in valid_time1):
+          #      raise Exception("Time {0} not valid. Valid times for {1} granularity are: {2} or are: {3}".format(dateObj.time(),
+          #                                                                                                        granularity, valid_time,
+          #                                                                                                        valid_time1))
         return dateObj
 
 

@@ -1,4 +1,5 @@
 import datetime
+import re
 import pdb
 
 def calculate_pips(pair, price):
@@ -102,15 +103,19 @@ def periodToDelta(ncandles, timeframe):
     ----------
     ncandles: Number of candles for which the timedelta will be retrieved. Required
     timeframe: str, Required
-               Timeframe used for getting the delta object. Possible values are: D,H12,H10,H8,H4
+               Timeframe used for getting the delta object. Possible values are: 2D,D,H12,H10,H8,H4
 
     Returns
     -------
     datetime timedelta object
     '''
 
+    patt=re.compile("(\d)D")
+
     delta = None
-    if timeframe == "D":
+    if patt.match(timeframe):
+        raise Exception("{0} is not valid. Oanda rest service does not take it".format(timeframe))
+    elif timeframe=='D':
         delta = datetime.timedelta(hours=24 * ncandles)
     else:
         fgran = timeframe.replace('H', '')
