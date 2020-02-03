@@ -71,6 +71,10 @@ START_HIST = {
     'USD_CHF': datetime.datetime(2002, 6, 5, 21, 0),
     'USD_JPY': datetime.datetime(2002, 5, 1, 21, 0),
     'AUD_CHF': datetime.datetime(2004, 6, 5, 21, 0),
+    'USD_NOK': datetime.datetime(2004, 6, 5, 21, 0),
+    'USD_SEK': datetime.datetime(2004, 6, 5, 21, 0),
+    'CAD_CHF': datetime.datetime(2004, 6, 5, 21, 0),
+    'CHF_JPY': datetime.datetime(2004, 6, 5, 21, 0),
 }
 
 PNGFILES = {

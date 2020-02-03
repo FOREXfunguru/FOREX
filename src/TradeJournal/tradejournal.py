@@ -139,7 +139,8 @@ class TradeJournal(object):
             # behave depending on identified pattern
             c=None
             if row['strat']=="counter" or row['strat']=="counter_b1" or row['strat']=="counter_b2" or \
-                    row['strat']=="counter_b3" or row['strat']=="counter_b4" or row['strat']=='cont':
+                    row['strat']=="counter_b3" or row['strat']=="counter_b4" or row['strat']=='cont' or \
+                    row['strat']=='continuation':
                 c=Counter(pair=pair,**attrbs)
             elif row['strat']=="counter_doubletop":
                 c=CounterDbTp(pair=pair, **attrbs)
