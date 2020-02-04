@@ -108,6 +108,7 @@ class Trade(object):
 
         entered=False
         for d in date_list:
+            print(d)
             oanda = OandaAPI(url=config.OANDA_API['url'],
                              instrument=self.pair,
                              granularity=self.timeframe,
@@ -147,6 +148,7 @@ class Trade(object):
                     self.end=success_time
                     self.pips = float(calculate_pips(self.pair, abs(self.TP - self.entry)))
                     break
+        pdb.set_trace()
         try:
             assert getattr(self, 'outcome')
         except:
