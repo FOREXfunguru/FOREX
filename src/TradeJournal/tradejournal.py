@@ -63,7 +63,6 @@ class TradeJournal(object):
         for index, row in DF.iterrows():
             # get pair from id
             pair = row['id'].split(' ')[0]
-
             attrbs = row.to_dict()
 
             t = Trade(pair=pair, **attrbs)
