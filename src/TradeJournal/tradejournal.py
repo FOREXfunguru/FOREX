@@ -29,7 +29,7 @@ class TradeJournal(object):
         df = xls_file.parse(worksheet,converters={'start': str, 'end': str, 'trend_i': str})
         self.df=df
 
-    def print_winrate(self,write_xlsx=False,strat=None):
+    def print_winrate(self,write_xlsx=False,strat=None, worksheet_name=None):
         '''
         Function to print the win rate proportion and also the profit in pips
 
@@ -41,6 +41,8 @@ class TradeJournal(object):
         write_xlsx : Boolean
                      If true, then it will write a .xlsx with outcomes.
                      Default: False
+        worksheet_name : String, Optional
+                         Name given to output worksheet
 
         Returns
         -------
@@ -90,7 +92,12 @@ class TradeJournal(object):
         sum_pips=DF['pips'].sum()
 
         if write_xlsx is True:
-            sheet_name="outcome_{0}".format(strat)
+            sheet_name=None
+            if worksheet_name is not None:
+                sheet_name="outcome_{0}".format(worksheet_name)
+            else:
+                sheet_name="outcome_{0}".format(strat)
+
             book = load_workbook(self.url)
             writer = pd.ExcelWriter(self.url, engine='openpyxl')
             writer.book = book
