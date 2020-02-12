@@ -47,7 +47,7 @@ class Counter(object):
     bounces: list, Optional
              List with Candle objects for price bounces at self.SR
     png_prefix: str, Optional
-                Output prefix
+                Output prefix. i.e. /out/test
     clist_period: CandleList, Optional
                   Candlelist extending back (defined by 'period') in time since the start of the pattern
     clist_trend: CandleList, Optional
@@ -77,10 +77,13 @@ class Counter(object):
                   Total (sum of each pivot score) pivot score for all bounces (bounces class attr)
     score_lasttime : int, Optional
                      Sum of each pivot score for all pivots after lasttime (bounces_lasttime class attr)
-
+    threshold_bounces : float
+                        Values used by ZigZag to identify pivots. The lower the
+                        value the higher the sensitivity. Optinal
     '''
 
-    def __init__(self, pair, period= None, HR_pips=None, png_prefix=None, **kwargs):
+    def __init__(self, pair, period= None, HR_pips=None, threshold_bounces=None,
+                 png_prefix=None, **kwargs):
 
         allowed_keys = [ 'id','start','timeframe','period','entry','trend_i', 'type', 'SL',
                         'TP','SR','RR','bounces','clist_period','clist_trend','lasttime',
@@ -93,10 +96,12 @@ class Counter(object):
         if HR_pips is None: HR_pips = config.CT['HR_pips']
 
         if png_prefix is None: png_prefix = config.CT['png_prefix']
+        if threshold_bounces is None: threshold_bounces = config.CT['threshold_bounces']
 
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         self.pair=pair
         self.png_prefix=png_prefix
+        self.threshold_bounces=threshold_bounces
         self.period=period
         self.HR_pips = HR_pips
         self.start = datetime.datetime.strptime(self.start,
@@ -122,7 +127,7 @@ class Counter(object):
 
         #initialize 'bounces' Class attribute
         self.set_bounces(doPlot=True, outfile=self.png_prefix+".{0}.all_pivots.png".format(self.id.replace(' ','_')),
-                         part='closeAsk')
+                         threshold_bounces=threshold_bounces, part='closeAsk')
 
         # set total_score attr
         self.calc_score()
@@ -228,7 +233,7 @@ class Counter(object):
 
         return PivotList(plist=pl,clist=bounces.clist, slist=bounces.slist)
 
-    def set_bounces(self, outfile, part='midAsk', doPlot=False):
+    def set_bounces(self, outfile, threshold_bounces, part='midAsk', doPlot=False):
         '''
         Function to get the bounces. For this, Zigzag will be used
 
@@ -236,6 +241,9 @@ class Counter(object):
         ----------
         outfile : file
                   .png file for output. Required
+        threshold_bounces : float
+                            Values used by ZigZag to identify pivots. The lower the
+                            value the higher the sensitivity. Required
         part: str
               Candle part used for the calculation. Default='midAsk'
         doPlot: boolean
@@ -250,11 +258,13 @@ class Counter(object):
         # get PivotList using self.clist_period
         pivotlist = self.clist_period.get_pivotlist(
                 outfile=outfile,
-                th_up=config.CT['threshold_bounces'],
-                th_down=-config.CT['threshold_bounces'],
+                th_up=threshold_bounces,
+                th_down=-threshold_bounces,
                 part=config.CT['part'])
 
-        in_area_list = self.__inarea_bounces(pivotlist, HRpips=self.HR_pips,runmerge_pre=True,
+        in_area_list = self.__inarea_bounces(pivotlist,
+                                             HRpips=self.HR_pips,
+                                             runmerge_pre=True,
                                              runmerge_aft=True)
 
         #calculate score for Pivots
@@ -263,7 +273,9 @@ class Counter(object):
             p.calc_score()
             pl.append(p)
 
-        self.bounces=PivotList(plist=pl, clist=in_area_list.clist, slist=in_area_list.slist)
+        self.bounces = PivotList(plist=pl,
+                                 clist=in_area_list.clist,
+                                 slist=in_area_list.slist)
 
         if doPlot is True:
             outfile = self.png_prefix+".{0}.sel_pivots.png".format(self.id.replace(' ', '_'))

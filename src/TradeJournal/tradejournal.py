@@ -19,15 +19,22 @@ class TradeJournal(object):
     url: path to the .xlsx file with the trade journal
     worksheet: str, Required
                Name of the worksheet that will be used to create the object. i.e. trading_journal
+    outprefix: str, Optional
+               Prefix for output files. i.e. /out/test
+    threshold_bounces: float, Optional
+                       Value used by ZigZag to identify pivots. The lower the
+                       value the higher the sensitivity. Required
     '''
 
-    def __init__(self, url, worksheet):
+    def __init__(self, url, worksheet, outprefix=None, threshold_bounces=None):
         self.url=url
         self.worksheet=worksheet
         #read-in the 'trading_journal' worksheet from a .xlsx file into a pandas dataframe
         xls_file = pd.ExcelFile(url)
         df = xls_file.parse(worksheet,converters={'start': str, 'end': str, 'trend_i': str})
         self.df=df
+        self.outprefix=outprefix
+        self.threshold_bounces=threshold_bounces
 
     def print_winrate(self,write_xlsx=False,strat=None, worksheet_name=None):
         '''
@@ -147,7 +154,8 @@ class TradeJournal(object):
             if row['strat']=="counter" or row['strat']=="counter_b1" or row['strat']=="counter_b2" or \
                     row['strat']=="counter_b3" or row['strat']=="counter_b4" or row['strat']=='cont' or \
                     row['strat']=='continuation':
-                c=Counter(pair=pair,**attrbs)
+                c=Counter(pair=pair, png_prefix=self.outprefix,
+                          threshold_bounces=float(self.threshold_bounces), **attrbs)
             elif row['strat']=="counter_doubletop":
                 c=CounterDbTp(pair=pair, **attrbs)
 
