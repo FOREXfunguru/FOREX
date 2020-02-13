@@ -869,17 +869,23 @@ class CandleList(object):
 
         Returns
         -------
-        Will return the last time the price was above/below the self.SR
+        Will return the last time the price was above/below the self.SR.
+        Price is considered to be above (for short trades) the self.SR when candle's lowAsk is
+        above self.SR.upper and considered to be below (for long trades) the self.SR when candle's
+        highAsk is below sel.SR.below.
+
         Returned datetime will be the datetime for the first candle in self.clist
         if last time was not found
         '''
 
-        if self.type == "short": position = 'above'
-        if self.type == "long": position = 'below'
+        if self.type == "short":
+            position = 'above'
+            part='lowAsk'
+        if self.type == "long":
+            position = 'below'
+            part='highAsk'
 
-        last_time = None
-
-        last_time = hrarea.last_time(clist=self.clist, position=position)
+        last_time = hrarea.last_time(clist=self.clist, position=position, part=part)
 
         if last_time is None:
             last_time = self.clist[0].time

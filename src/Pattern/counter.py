@@ -123,6 +123,7 @@ class Counter(object):
         resist = HArea(price=self.SR, pips=self.HR_pips, instrument=self.pair,
                        granularity=self.timeframe)
         print("{0}-{1}".format(resist.upper,resist.lower))
+        pdb.set_trace()
         self.lasttime=self.clist_period.get_lasttime(resist)
 
         #initialize 'bounces' Class attribute

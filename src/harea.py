@@ -67,7 +67,8 @@ class HArea(object):
                     Possible values are: 'above' or 'below'
         part : str
                What part of the candle will be used for calculating the length in pips
-               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid'.
+               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid', 'lowAsk',
+               and 'highAsk'.
                Default: openAsk
 
         Return
@@ -78,6 +79,7 @@ class HArea(object):
         for c in reversed(clist):
             price=getattr(c, part)
             if position == 'above':
+                pdb.set_trace()
                 if price > self.upper:
                     return c.time
             elif position == 'below':

@@ -13,10 +13,12 @@ parser.add_argument('--strats', required=True, help='Strategy in --worksheet to 
 parser.add_argument('--outsheet', required=True, help='Worksheet name for calculated trades')
 parser.add_argument('--outprefix', required=True, help='Output prefix for files')
 parser.add_argument('--th_bounces', required=True, help='threshold for detecting bounces')
+parser.add_argument('--hr_pips', required=True, help='Number of pips above/below SR to identify bounces')
 
 args = parser.parse_args()
 
-td = TradeJournal(url=args.ifile, worksheet=args.worksheet, outprefix=args.outprefix, threshold_bounces=args.th_bounces)
+td = TradeJournal(url=args.ifile, worksheet=args.worksheet, outprefix=args.outprefix,
+                  threshold_bounces=args.th_bounces, hr_pips=args.hr_pips)
 
 strats=args.strats.split(",")
 

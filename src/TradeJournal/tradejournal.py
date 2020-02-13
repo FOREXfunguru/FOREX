@@ -23,10 +23,12 @@ class TradeJournal(object):
                Prefix for output files. i.e. /out/test
     threshold_bounces: float, Optional
                        Value used by ZigZag to identify pivots. The lower the
-                       value the higher the sensitivity. Required
+                       value the higher the sensitivity.
+    hr_pips: int, Optional
+             Number of pips above/below SR in order to detect bounces
     '''
 
-    def __init__(self, url, worksheet, outprefix=None, threshold_bounces=None):
+    def __init__(self, url, worksheet, outprefix=None, threshold_bounces=None, hr_pips=None):
         self.url=url
         self.worksheet=worksheet
         #read-in the 'trading_journal' worksheet from a .xlsx file into a pandas dataframe
@@ -35,6 +37,7 @@ class TradeJournal(object):
         self.df=df
         self.outprefix=outprefix
         self.threshold_bounces=threshold_bounces
+        self.hr_pips=hr_pips
 
     def print_winrate(self,write_xlsx=False,strat=None, worksheet_name=None):
         '''
@@ -155,7 +158,8 @@ class TradeJournal(object):
                     row['strat']=="counter_b3" or row['strat']=="counter_b4" or row['strat']=='cont' or \
                     row['strat']=='continuation':
                 c=Counter(pair=pair, png_prefix=self.outprefix,
-                          threshold_bounces=float(self.threshold_bounces), **attrbs)
+                          threshold_bounces=float(self.threshold_bounces),
+                          HR_pips=int(self.hr_pips), **attrbs)
             elif row['strat']=="counter_doubletop":
                 c=CounterDbTp(pair=pair, **attrbs)
 
