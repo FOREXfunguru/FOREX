@@ -46,15 +46,15 @@ class HArea(object):
             divisor=100
         else:
             round_number = 4
-            divisor=10000
+            divisor = 10000
         price = round(price, round_number)
         self.price = price
         self.pips = pips
         self.granularity = granularity
-        self.upper=round(price+(pips/divisor),4)
-        self.lower=round(price-(pips/divisor),4)
+        self.upper = round(price+(pips/divisor), 4)
+        self.lower = round(price-(pips/divisor), 4)
 
-    def last_time(self, clist, position, part='openAsk'):
+    def last_time(self, clist, position, part='openAsk', min=1):
         '''
         Function that returns the datetime of the moment where prices were over/below this HArea
 
@@ -70,16 +70,21 @@ class HArea(object):
                Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid', 'lowAsk',
                and 'highAsk'.
                Default: openAsk
+        min : int. Default: 1
+              Minimum number of candles from start to be required
 
         Return
         ------
         datetime object of the moment that the price crosses the HArea
         '''
 
+        count=0
         for c in reversed(clist):
+            count+=1
+            if count<=min:
+                continue
             price=getattr(c, part)
             if position == 'above':
-                pdb.set_trace()
                 if price > self.upper:
                     return c.time
             elif position == 'below':

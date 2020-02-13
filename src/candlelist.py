@@ -885,7 +885,10 @@ class CandleList(object):
             position = 'below'
             part='highAsk'
 
-        last_time = hrarea.last_time(clist=self.clist, position=position, part=part)
+        last_time = hrarea.last_time(clist=self.clist,
+                                     position=position,
+                                     part=part,
+                                     min=10)
 
         if last_time is None:
             last_time = self.clist[0].time
