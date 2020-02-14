@@ -168,7 +168,7 @@ class Counter(object):
         self.clist_period=cl
 
     def __inarea_bounces(self, bounces, HRpips, priceType='Ask', runmerge_pre=False,
-                         runmerge_aft=False, consider_last_bounce=False):
+                         runmerge_aft=False, consider_last_bounce=True):
         '''
         Function to identify the candles for which price is in the area defined
         by self.SR+HRpips and self.SR-HRpips
@@ -199,7 +199,6 @@ class Counter(object):
         upper = add_pips2price(self.pair, self.SR, HRpips)
         pl=[]
         for p in bounces.plist:
-            pdb.set_trace()
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
             if bounces.plist[-1].candle.time == p.candle.time and consider_last_bounce is True:
                 if runmerge_pre is True and p.pre is not None:
