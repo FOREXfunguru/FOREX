@@ -8,6 +8,8 @@ import warnings
 from zigzag import *
 from datetime import timedelta,datetime
 from oanda_api import OandaAPI
+from configparser import ConfigParser
+
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 
@@ -20,8 +22,6 @@ class HArea(object):
     price : float, Required
             Price in the chart used as the middle point that will be extended on both sides a certain
             number of pips
-    pips : float, Required
-          Number of pips to extend on each side
     instrument : str, Optional
                  Instrument for this CandleList (i.e. AUD_USD or EUR_USD etc...)
     granularity : str, Optional
@@ -33,28 +33,37 @@ class HArea(object):
     bounces : list of Candle Objects
               This list contains the candles for bounces bouncing in this area. This member class
               can be initialized using the 'inarea_bounces' method
+    settings : str, Required
+               Path to *.ini file with settings
     '''
 
-    def __init__(self, price, pips, instrument, granularity):
+    def __init__(self, price, instrument, granularity, settings):
 
         (first, second) = instrument.split("_")
-        self.instrument=instrument
+        self.instrument = instrument
         round_number = None
         divisor = None
         if first == 'JPY' or second == 'JPY':
             round_number = 2
-            divisor=100
+            divisor = 100
         else:
             round_number = 4
             divisor = 10000
         price = round(price, round_number)
         self.price = price
-        self.pips = pips
         self.granularity = granularity
+
+        # parse settings file (in .ini file)
+        parser = ConfigParser()
+        parser.read(settings)
+        self.settings = parser
+
+        assert self.settings.has_option('pivots', 'hr_pips'), "'hr_pips' needs to be defined"
+        pips = self.settings.get('pivots', 'hr_pips')
         self.upper = round(price+(pips/divisor), 4)
         self.lower = round(price-(pips/divisor), 4)
 
-    def last_time(self, clist, position, part='openAsk', min=1):
+    def last_time(self, clist, position, min=1):
         '''
         Function that returns the datetime of the moment where prices were over/below this HArea
 
@@ -65,11 +74,6 @@ class HArea(object):
         position    This parameter controls if price should cross the HArea.upper for 'above'
                     or HArea.lower for 'below'
                     Possible values are: 'above' or 'below'
-        part : str
-               What part of the candle will be used for calculating the length in pips
-               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid', 'lowAsk',
-               and 'highAsk'.
-               Default: openAsk
         min : int. Default: 1
               Minimum number of candles from start to be required
 
@@ -80,10 +84,10 @@ class HArea(object):
 
         count=0
         for c in reversed(clist):
-            count+=1
-            if count<=min:
+            count += 1
+            if count <= min:
                 continue
-            price=getattr(c, part)
+            price = getattr(c, self.settings('general','part'))
             if position == 'above':
                 if price > self.upper:
                     return c.time
@@ -108,21 +112,21 @@ class HArea(object):
                  when there is an artifactual jump in Oanda's data
         '''
         if candle.lowAsk <= self.price <= candle.highAsk:
-            delta=None
-            if self.granularity=="D":
+            delta = None
+            if self.granularity == "D":
                 delta = timedelta(hours=24)
             else:
-                fgran=self.granularity.replace('H','')
+                fgran = self.granularity.replace('H', '')
                 delta = timedelta(hours=int(fgran))
 
-            cstart=candle.time
-            cend=cstart+delta
+            cstart = candle.time
+            cend = cstart+delta
 
-            oanda = OandaAPI(url=config.OANDA_API['url'],
+            oanda = OandaAPI(url=self.settings.get('oanda_api', 'url'),
                              instrument=self.instrument,
                              granularity=granularity, # 'M30' in this case
-                             dailyAlignment=config.OANDA_API['dailyAlignment'],
-                             alignmentTimezone=config.OANDA_API['alignmentTimezone'])
+                             dailyAlignment=self.settings.get('oanda_api', 'dailyAlignment'),
+                             alignmentTimezone=self.settings.get('oanda_api', 'alignmentTimezone'))
 
             oanda.run(start=cstart.isoformat(),
                       end=cend.isoformat(),
@@ -135,7 +139,7 @@ class HArea(object):
         else:
             return 'n.a.'
 
-    def inarea_bounces(self, plist, part='closeAsk'):
+    def inarea_bounces(self, plist):
         '''
         Function to identify the candles for which price is in the area defined
         by self.upper and self.lower
@@ -145,8 +149,6 @@ class HArea(object):
         plist: PivotList
                Containing the PivotList for bounces (including the ones
                  that are not in HRarea)
-        part: str
-              Candle part used for the calculation. Default='closeAsk'
 
         Returns
         -------
@@ -155,17 +157,17 @@ class HArea(object):
         '''
 
         # get bounces in the horizontal area
-        carray=np.array(plist.clist.clist)
-        bounces=carray[np.logical_or(plist.plist == 1, plist.plist == -1)]
+        carray = np.array(plist.clist.clist)
+        bounces = carray[np.logical_or(plist.plist == 1, plist.plist == -1)]
 
         ix=0
         in_area_list = []
         for c in bounces:
-            price = getattr(c, part)
+            price = getattr(c, self.settings('general','part'))
             if price >= self.lower and price <= self.upper:
                 in_area_list.append(c)
-            ix+=1
+            ix += 1
 
-        self.bounces=in_area_list
+        self.bounces = in_area_list
 
         return in_area_list

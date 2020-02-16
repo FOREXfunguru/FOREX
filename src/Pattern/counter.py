@@ -1,6 +1,5 @@
 import pdb
 import datetime
-import config
 import numpy as np
 import matplotlib
 
@@ -11,6 +10,8 @@ from oanda_api import OandaAPI
 from candlelist import CandleList
 from harea import HArea
 from pivotlist import *
+from configparser import ConfigParser
+
 
 class Counter(object):
     '''
@@ -31,9 +32,6 @@ class Counter(object):
            entry price
     trend_i: datetime, Required
              start of the trend
-    period: int, Optional
-            Period that will be checked back in time. Units used will be the ones dictated by self.timeframe.
-            Default : None
     type: str, Optional
           What is the type of the trade (long,short)
     SL:  float, Optional
@@ -46,8 +44,6 @@ class Counter(object):
          Support/Resistance area
     bounces: list, Optional
              List with Candle objects for price bounces at self.SR
-    png_prefix: str, Optional
-                Output prefix. i.e. /out/test
     clist_period: CandleList, Optional
                   Candlelist extending back (defined by 'period') in time since the start of the pattern
     clist_trend: CandleList, Optional
@@ -56,9 +52,6 @@ class Counter(object):
                       With Candles representing the bounces
     slope: float, Optional
            Float with the slope of trend conducting to entry
-    HR_pips: int, Optional
-             Number of pips over/below S/R used for trying to identify bounces
-             Optional
     n_rsibounces: int, Optional
                   Number of rsi bounces for trend conducting to start
     rsibounces_lengths: list, Optional
@@ -77,33 +70,25 @@ class Counter(object):
                   Total (sum of each pivot score) pivot score for all bounces (bounces class attr)
     score_lasttime : int, Optional
                      Sum of each pivot score for all pivots after lasttime (bounces_lasttime class attr)
-    threshold_bounces : float
-                        Values used by ZigZag to identify pivots. The lower the
-                        value the higher the sensitivity. Optinal
+    settings : str, Required
+               Path to *.ini file with settings
     '''
 
-    def __init__(self, pair, period= None, HR_pips=None, threshold_bounces=None,
-                 png_prefix=None, **kwargs):
+    def __init__(self, pair, settings, **kwargs):
 
-        allowed_keys = [ 'id','start','timeframe','period','entry','trend_i', 'type', 'SL',
+        # parse settings file (in .ini file)
+        parser = ConfigParser()
+        parser.read(settings)
+        self.settings = parser
+
+        allowed_keys = [ 'id','start','timeframe','entry','trend_i', 'type', 'SL',
                         'TP','SR','RR','bounces','clist_period','clist_trend','lasttime',
                         'bounces_lasttime','slope','n_rsibounces','rsibounces_lengths',
                         'divergence','entry_onrsi','length_candles','length_pips', 'SMA',
-                        'total_score','score_lasttime','png_prefix']
-
-        # get values from config file
-        if period is None: period = config.CT['period']
-        if HR_pips is None: HR_pips = config.CT['HR_pips']
-
-        if png_prefix is None: png_prefix = config.CT['png_prefix']
-        if threshold_bounces is None: threshold_bounces = config.CT['threshold_bounces']
+                        'total_score','score_lasttime']
 
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
-        self.pair=pair
-        self.png_prefix=png_prefix
-        self.threshold_bounces=threshold_bounces
-        self.period=period
-        self.HR_pips = HR_pips
+        self.pair = pair
         self.start = datetime.datetime.strptime(self.start,
                                                 '%Y-%m-%d %H:%M:%S')
 
@@ -114,20 +99,24 @@ class Counter(object):
         self.clist_period.calc_rsi()
 
         if not hasattr(self, 'TP'):
-            if not hasattr(self, 'RR'): raise Exception("Neither the RR not the TP is defined. Please provide RR")
-            diff=(self.entry-self.SL)*self.RR
-            self.TP=round(self.entry+diff,4)
+            if not hasattr(self, 'RR'): raise Exception("Neither the RR not the TP "
+                                                        "is defined. Please provide RR")
+            diff = (self.entry-self.SL)*self.RR
+            self.TP = round(self.entry+diff, 4)
 
         # instantiate an HArea object representing the self.SR in order to calculate the lasttime
         # price has been above/below SR
-        resist = HArea(price=self.SR, pips=self.HR_pips, instrument=self.pair,
+        resist = HArea(price=self.SR,
+                       instrument=self.pair,
                        granularity=self.timeframe)
-        print("{0}-{1}".format(resist.upper,resist.lower))
-        self.lasttime=self.clist_period.get_lasttime(resist)
+
+        self.lasttime = self.clist_period.get_lasttime(resist)
 
         #initialize 'bounces' Class attribute
-        self.set_bounces(doPlot=True, outfile=self.png_prefix+".{0}.all_pivots.png".format(self.id.replace(' ','_')),
-                         threshold_bounces=threshold_bounces, part='closeAsk')
+        self.set_bounces(doPlot=True,
+                         outfile=self.+".{0}."
+                                                 "all_pivots.png".
+                         format(self.id.replace(' ', '_')), part=self.settings('general','part'))
 
         # set total_score attr
         self.calc_score()
@@ -135,7 +124,6 @@ class Counter(object):
         # set bounces_lasttime Class attribute
         self.bounces_fromlasttime()
         self.calc_score_lasttime()
-
 
     def __initclist(self):
         '''
@@ -145,8 +133,8 @@ class Counter(object):
         This will set the self.clist_period class attribute
         '''
 
-        delta_period=periodToDelta(self.period, self.timeframe)
-        delta_1=periodToDelta(1, self.timeframe)
+        delta_period = periodToDelta(self.period, self.timeframe)
+        delta_1 = periodToDelta(1, self.timeframe)
         start = self.start - delta_period # get the start datetime for this CandleList period
         end = self.start + delta_1 # increase self.start by one candle to include self.start
 
@@ -165,9 +153,9 @@ class Counter(object):
         cl = CandleList(candle_list, self.pair, granularity=self.timeframe,
                         id=self.id, type=self.type)
 
-        self.clist_period=cl
+        self.clist_period = cl
 
-    def __inarea_bounces(self, bounces, HRpips, priceType='Ask', runmerge_pre=False,
+    def __inarea_bounces(self, bounces, priceType='Ask', runmerge_pre=False,
                          runmerge_aft=False, consider_last_bounce=True):
         '''
         Function to identify the candles for which price is in the area defined
@@ -208,9 +196,9 @@ class Counter(object):
                 pl.append(p)
             else:
                 part_list=['close{0}'.format(priceType)]
-                if p.type==1:
+                if p.type == 1:
                     part_list.append('high{0}'.format(priceType))
-                elif p.type==-1:
+                elif p.type == -1:
                     part_list.append('low{0}'.format(priceType))
 
                 # initialize candle features to be sure that midAsk or midBid are
@@ -226,14 +214,14 @@ class Counter(object):
                         #check if this Pivot already exist in pl
                         p_seen=False
                         for op in pl:
-                            if op.candle.time==p.candle.time:
+                            if op.candle.time == p.candle.time:
                                 p_seen=True
                         if p_seen is False:
                             pl.append(p)
 
-        return PivotList(plist=pl,clist=bounces.clist, slist=bounces.slist)
+        return PivotList(plist=pl, clist=bounces.clist, slist=bounces.slist)
 
-    def set_bounces(self, outfile, threshold_bounces, part='midAsk', doPlot=False):
+    def set_bounces(self, doPlot= False):
         '''
         Function to get the bounces. For this, Zigzag will be used
 
@@ -241,11 +229,6 @@ class Counter(object):
         ----------
         outfile : file
                   .png file for output. Required
-        threshold_bounces : float
-                            Values used by ZigZag to identify pivots. The lower the
-                            value the higher the sensitivity. Required
-        part: str
-              Candle part used for the calculation. Default='midAsk'
         doPlot: boolean
                 If true, then generate a plot with bounces and a plot with rsi.
                 Default: False
@@ -258,9 +241,9 @@ class Counter(object):
         # get PivotList using self.clist_period
         pivotlist = self.clist_period.get_pivotlist(
                 outfile=outfile,
-                th_up=threshold_bounces,
-                th_down=-threshold_bounces,
-                part=config.CT['part'])
+                th_up=self.settings('pivots', 'th_bounces'),
+                th_down=-self.settings('pivots', 'th_bounces'),
+                part=self.settings('general','part'))
 
         in_area_list = self.__inarea_bounces(pivotlist,
                                              HRpips=self.HR_pips,
@@ -289,15 +272,13 @@ class Counter(object):
         It will set the 'total_score' class attribute
         '''
 
-        tot_score=0
+        tot_score = 0
         for p in self.bounces.plist:
-            tot_score+=p.score
+            tot_score += p.score
 
-        self.total_score=tot_score
+        self.total_score = tot_score
 
-
-
-    def plot_bounces(self, outfile_prices, outfile_rsi, part='closeAsk'):
+    def plot_bounces(self, outfile_prices, outfile_rsi):
         '''
         Function to plot all bounces, the start of the trend and rsi values for this trade
 
@@ -307,8 +288,6 @@ class Counter(object):
                          for output file for prices plot
         outfile_rsi : filename
                       for output file for rsi plot
-        part: str
-              Candle part used for the calculation. Default='closeAsk'
         '''
 
         prices = []
@@ -330,7 +309,7 @@ class Counter(object):
         ax = plt.axes()
         ax.plot(datetimes, prices, color="black")
 
-        final_bounces=self.bounces
+        final_bounces = self.bounces
         for p in final_bounces.plist:
             dt = p.candle.time
             ix = datetimes.index(dt)

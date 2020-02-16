@@ -3,11 +3,11 @@ import pdb
 import re
 import math
 import warnings
-import config
 from TradeJournal.trade import Trade
 from openpyxl import load_workbook
 from Pattern.counter import Counter
 from Pattern.counter_dbtp import CounterDbTp
+from configparser import ConfigParser
 
 class TradeJournal(object):
     '''
@@ -18,28 +18,25 @@ class TradeJournal(object):
     
     url: path to the .xlsx file with the trade journal
     worksheet: str, Required
-               Name of the worksheet that will be used to create the object. i.e. trading_journal
-    outprefix: str, Optional
-               Prefix for output files. i.e. /out/test
-    threshold_bounces: float, Optional
-                       Value used by ZigZag to identify pivots. The lower the
-                       value the higher the sensitivity.
-    hr_pips: int, Optional
-             Number of pips above/below SR in order to detect bounces
+               Name of the worksheet that will be used to create the object.
+               i.e. trading_journal
+    settings : str, Required
+               Path to *.ini file with settings
     '''
 
-    def __init__(self, url, worksheet, outprefix=None, threshold_bounces=None, hr_pips=None):
-        self.url=url
-        self.worksheet=worksheet
+    def __init__(self, url, worksheet, settings):
+        self.url = url
+        self.worksheet = worksheet
         #read-in the 'trading_journal' worksheet from a .xlsx file into a pandas dataframe
         xls_file = pd.ExcelFile(url)
-        df = xls_file.parse(worksheet,converters={'start': str, 'end': str, 'trend_i': str})
-        self.df=df
-        self.outprefix=outprefix
-        self.threshold_bounces=threshold_bounces
-        self.hr_pips=hr_pips
+        df = xls_file.parse(worksheet, converters={'start': str, 'end': str, 'trend_i': str})
+        self.df = df
+        # parse settings file (in .ini file)
+        parser = ConfigParser()
+        parser.read(settings)
+        self.settings = parser
 
-    def print_winrate(self,write_xlsx=False,strat=None, worksheet_name=None):
+    def print_winrate(self, write_xlsx=False, strat=None, worksheet_name=None):
         '''
         Function to print the win rate proportion and also the profit in pips
 
@@ -61,14 +58,14 @@ class TradeJournal(object):
         Number of observations
         '''
 
-        DF=None
+        DF = None
         if strat is not None:
             # check if strat is valid
             if strat not in config.VALID_STRATS:
                 raise Exception("No valid strat: {0}".format(strat))
-            DF=self.df[self.df['strat'] == strat]
+            DF = self.df[self.df['strat'] == strat]
         else:
-            DF=self.df
+            DF = self.df
 
         print("Number of records: {0}".format(DF.shape[0]))
 
@@ -78,7 +75,7 @@ class TradeJournal(object):
             attrbs = row.to_dict()
 
             t = Trade(pair=pair, **attrbs)
-            outcome_seen=True
+            outcome_seen = True
 
             if not hasattr(t, 'outcome'):
                 outcome_seen=False
@@ -88,7 +85,8 @@ class TradeJournal(object):
                     outcome_seen = False
 
             if not hasattr(t, 'TP') or math.isnan(t.TP) is True:
-                assert hasattr(t, 'RR'), "Neither the RR not the TP is defined. Please provide RR"
+                assert hasattr(t, 'RR'), "Neither the RR not" \
+                                         " the TP is defined. Please provide RR"
                 diff = (t.entry - t.SL) * t.RR
                 t.TP = round(t.entry + diff, 4)
 
@@ -98,15 +96,15 @@ class TradeJournal(object):
                 DF.loc[index, 'pips'] = t.pips
                 DF.loc[index, 'TP'] = t.TP
 
-        outcome_prop=DF.loc[:,'outcome'].value_counts()
-        sum_pips=DF['pips'].sum()
+        outcome_prop = DF.loc[:,'outcome'].value_counts()
+        sum_pips = DF['pips'].sum()
 
         if write_xlsx is True:
-            sheet_name=None
+            sheet_name = None
             if worksheet_name is not None:
-                sheet_name="outcome_{0}".format(worksheet_name)
+                sheet_name = "outcome_{0}".format(worksheet_name)
             else:
-                sheet_name="outcome_{0}".format(strat)
+                sheet_name = "outcome_{0}".format(strat)
 
             book = load_workbook(self.url)
             writer = pd.ExcelWriter(self.url, engine='openpyxl')
@@ -115,53 +113,45 @@ class TradeJournal(object):
             DF.to_excel(writer, sheet_name)
             writer.save()
 
-        return (outcome_prop,sum_pips,DF.shape[0])
+        return (outcome_prop, sum_pips, DF.shape[0])
 
-
-    def fetch_trades(self,strats,run=False):
+    def fetch_trades(self, run=False):
         '''
-        This function will fetch the trades that are in this TradingJournal and will create an independent
-        Trade object for each record
+        This function will fetch the trades that are in this TradingJournal
+        and will create an independent Trade object for each record
 
         Parameters
         ----------
-        strats : List of strings, Required
-                 Strategies to be analysed.
         run : bool, Optional
               Execute trade. Default=False
 
         Returns
-        ------
+        -------
         list
              List with Trade objects
         '''
 
-        trades_seen=False
-        trade_list=[]
-        for index,row in self.df.iterrows():
+        # get strats to analyse from settings
+        assert self.settings.has_option('trade_journal', 'strats'), "'strats' needs to be defined"
+        strats = self.settings.get('trade_journal', 'strats').split(",")
+
+        trades_seen = False
+        trade_list = []
+        for index, row in self.df.iterrows():
             print("Processing trade with id: {0}".format(row['id']))
             if row['strat'] not in strats:
                 continue
             else:
-                trades_seen=True
+                trades_seen = True
 
             #get pair from id
-            pair=row['id'].split(' ')[0]
+            pair = row['id'].split(' ')[0]
 
             attrbs={}
             for items in row.iteritems():
-                attrbs[items[0]]=items[1]
+                attrbs[items[0]] = items[1]
 
-            # behave depending on identified pattern
-            c=None
-            if row['strat']=="counter" or row['strat']=="counter_b1" or row['strat']=="counter_b2" or \
-                    row['strat']=="counter_b3" or row['strat']=="counter_b4" or row['strat']=='cont' or \
-                    row['strat']=='continuation':
-                c=Counter(pair=pair, png_prefix=self.outprefix,
-                          threshold_bounces=float(self.threshold_bounces),
-                          HR_pips=int(self.hr_pips), **attrbs)
-            elif row['strat']=="counter_doubletop":
-                c=CounterDbTp(pair=pair, **attrbs)
+            c = Counter(pair=pair, **attrbs)
 
             p = re.compile('clist_')
             attrbs1={}
@@ -172,12 +162,12 @@ class TradeJournal(object):
                     if attr == 'rsibounces_lengths':
                         attrbs1[attr] = value
                     else:
-                        attrbs1[attr]=len(value)
+                        attrbs1[attr] = len(value)
                 else:
                     attrbs1[attr] = value
 
             # instantiate a Trade object with attributes of 'c'
-            t=Trade(strat=row['strat'],**attrbs1)
+            t = Trade(strat=row['strat'], **attrbs1)
             if run is True:
                 t.run_trade()
                 
@@ -186,7 +176,7 @@ class TradeJournal(object):
         assert trades_seen is True, "No trades retrieved for strats: {0}".format(",".join(strats))
         return trade_list
 
-    def write_trades(self, trade_list, colnames, sheetname='calculated_trades'):
+    def write_trades(self, trade_list):
         '''
         Write the trade_list to the Excel spreadsheet
         pointed by the TradeJournal
@@ -195,43 +185,45 @@ class TradeJournal(object):
         ----------
         trade_list : list, Required
                      List with Trade objects
-        colnames : list, Required
-                    Column names that will set the order and the columns that
-                    will be written to the final spreadsheet
-        sheetname : str, Optional
-                    Default: 'calculated_trades'
 
         Returns
         -------
         Nothing
         '''
 
+        assert self.settings.has_option('trade_journal', 'worksheet_name'), \
+            "'worksheet_name' needs to be defined"
+
+        # get colnames to print in output worksheet from settings
+        assert self.settings.has_option('trade_journal', 'colnames'), "'colnames' needs to be defined"
+        colnames = self.settings.get('trade_journal', 'colnames').split(",")
+
         pt = re.compile('bounces')
-        data=[]
+        data = []
         for t in trade_list:
-            row=[]
+            row = []
             for a in colnames:
-                value=None
+                value = None
                 try:
-                    value=getattr(t, a)
+                    value = getattr(t, a)
                     if pt.match(a):
                         # iterate over PivotList
-                        date_str=""
+                        date_str = ""
                         for p in value.plist:
-                            date_str+=p.candle.time.strftime('%d/%m/%Y:%H:%M')+","
-                        value=date_str
+                            date_str += p.candle.time.strftime('%d/%m/%Y:%H:%M')+","
+                        value = date_str
                 except:
                     warnings.warn("Error getting value for attribute: {0}".format(a))
-                    value="n.a."
+                    value = "n.a."
                 row.append(value)
             data.append(row)
-        df = pd.DataFrame(data, columns=colnames)
+        df = pd.DataFrame(data, columns=self.settings.get('trade_journal', 'colnames'))
 
         book = load_workbook(self.url)
         writer = pd.ExcelWriter(self.url, engine='openpyxl')
         writer.book = book
         writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
-        df.to_excel(writer, sheetname)
+        df.to_excel(writer, )
         writer.save()
 
     def add_trend_momentum(self):
