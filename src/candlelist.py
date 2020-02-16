@@ -242,28 +242,30 @@ class CandleList(object):
             delta = datetime.timedelta(hours=int(fgran))
             delta_period = datetime.timedelta(hours=int(fgran)*period)
 
-        if period==0:
-            sel_c=None
+        if period == 0:
+            sel_c = None
             for c in self.clist:
-                start=c.time
-                end=start+delta
-                if d>=start and d < end:
-                    sel_c=c
+                start = c.time
+                end = start+delta
+                if d >= start and d < end:
+                    sel_c = c
 
             if sel_c is None:
-                raise Exception("No candle was selected with time: {0}\n. It is good to check if the marked is closed".format(datetime))
+                raise Exception("No candle was selected with time: {0}\n."
+                                " It is good to check if the marked is closed".format(datetime))
             return sel_c
         elif period>0:
-            start=d-delta_period
-            end=d+delta_period
+            start = d-delta_period
+            end = d+delta_period
             sel_c = []
             for c in self.clist:
                 if c.time >= start and c.time <= end:
                     sel_c.append(c)
-            if len(sel_c)==0: raise Exception("No candle was selected for range: {0}-{1}".format(start,end))
+            if len(sel_c) == 0: raise Exception("No candle was selected"
+                                                " for range: {0}-{1}".format(start, end))
             return sel_c
 
-    def __get_number_of_double0s(self,seq1,seq2,norm=True):
+    def __get_number_of_double0s(self, seq1, seq2, norm=True):
         '''
         This function will detect the columns having 2 0s in an alignment.
         For example:
@@ -283,18 +285,18 @@ class CandleList(object):
         -------
         A float
         '''
-        list1=list(seq1)
-        list2=list(seq2)
+        list1 = list(seq1)
+        list2 = list(seq2)
 
         if len(list1) != len(list2):
             raise Exception("Lengths of seq1 and seq2 are not equal")
 
-        number_of_double0s=0
+        number_of_double0s = 0
         for i, j in zip(list1, list2):
             if i is "N" or j is "N":
                 print("Skipping this column as there is a N in the binary seq")
                 continue
-            if int(i)==0 and int(j)==0:
+            if int(i) == 0 and int(j) == 0:
                 number_of_double0s=number_of_double0s+1
 
         if norm is True:
@@ -308,11 +310,11 @@ class CandleList(object):
         class members
         '''
 
-        high_low=self.__get_number_of_double0s(self.seq['high'], self.seq['low'], norm=norm)
-        open_close=self.__get_number_of_double0s(self.seq['open'], self.seq['close'], norm=norm)
+        high_low = self.__get_number_of_double0s(self.seq['high'], self.seq['low'], norm=norm)
+        open_close = self.__get_number_of_double0s(self.seq['open'], self.seq['close'], norm=norm)
         
-        self.highlow_double0s=high_low
-        self.openclose_double0s=open_close
+        self.highlow_double0s = high_low
+        self.openclose_double0s = open_close
         
     def calc_longest_stretch(self):
         '''
@@ -505,22 +507,22 @@ class CandleList(object):
         '''
 
 
-        start_cl=self.clist[0]
-        end_cl=self.clist[-1]
+        start_cl = self.clist[0]
+        end_cl = self.clist[-1]
 
-        (first,second)=self.instrument.split("_")
-        round_number=None
-        if first=='JPY' or second=='JPY':
-            round_number=2
+        (first,second) = self.instrument.split("_")
+        round_number = None
+        if first == 'JPY' or second == 'JPY':
+            round_number = 2
         else:
-            round_number=4
+            round_number = 4
 
-        start_price=round(getattr(start_cl,part),round_number)
-        end_price=round(getattr(end_cl,part),round_number)
+        start_price = round(getattr(start_cl, part), round_number)
+        end_price = round(getattr(end_cl, part), round_number)
 
-        diff=(start_price-end_price)*10**round_number
+        diff = (start_price-end_price)*10**round_number
 
-        return abs(int(round(diff,0)))
+        return abs(int(round(diff, 0)))
 
     def fit_reg_line(self, outfile, part='openAsk', smooth='rolling_average', k_perc=25):
         '''
@@ -606,14 +608,14 @@ class CandleList(object):
         PivotList object
         '''
 
-        x=[]
-        values=[]
+        x = []
+        values = []
         for i in range(len(self.clist)):
             x.append(i)
             values.append(getattr(self.clist[i], part))
 
-        xarr=np.array(x)
-        yarr=np.array(values)
+        xarr = np.array(x)
+        yarr = np.array(values)
 
         pivots = peak_valley_pivots(yarr, th_up, th_down)
 

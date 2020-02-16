@@ -28,25 +28,25 @@ class PivotList(object):
             modes = pivots_to_modes(parray)
             segs = [] # this list will hold the Segment objects
             plist_o = [] # this list will hold the Pivot objects
-            pre_s=None # Variable that will hold pre Segments
-            ix=0
-            start_ix=None
-            end_ix=None
-            pre_i=None
-            ix=0
+            pre_s = None # Variable that will hold pre Segments
+            ix = 0
+            start_ix = None
+            end_ix = None
+            pre_i = None
+            ix = 0
             for i in parray:
-                if (i==1 or i==-1) and start_ix is None:
+                if (i == 1 or i == -1) and start_ix is None:
                     # First pivot
-                    start_ix=ix
-                    pre_i=i
-                elif (i==1 or i==-1) and start_ix is not None:
+                    start_ix = ix
+                    pre_i = i
+                elif (i == 1 or i == -1) and start_ix is not None:
                     end_ix=ix
-                    if parray[start_ix+1]==0:
-                        submode=modes[start_ix+1:end_ix]
+                    if parray[start_ix+1] == 0:
+                        submode = modes[start_ix+1:end_ix]
                     else:
-                        submode=[modes[start_ix+1]]
+                        submode = [modes[start_ix+1]]
                     #checking if all elements in submode are the same:
-                    assert len(np.unique(submode).tolist())==1, "more than one type in modes"
+                    assert len(np.unique(submode).tolist()) == 1, "more than one type in modes"
                     # create Segment
                     s = Segment(type=submode[0],
                                 count=end_ix-start_ix,
@@ -58,10 +58,10 @@ class PivotList(object):
                     plist_o.append(pobj)
                     # Append it to segs
                     segs.append(s)
-                    start_ix=ix
-                    pre_s=s
-                    pre_i=i
-                ix+=1
+                    start_ix = ix
+                    pre_s = s
+                    pre_i = i
+                ix += 1
             # add last Pivot
             plist_o.append(Pivot(type=pre_i, candle=clist.clist[start_ix], pre=pre_s, aft=None))
             self.plist = plist_o
@@ -106,8 +106,9 @@ class PivotList(object):
             if p.type==type:
                 pl.append(p)
 
-        return PivotList(plist=pl,clist=self.clist, slist=self.slist)
-
+        return PivotList(plist=pl,
+                         clist=self.clist,
+                         slist=self.slist)
 
 class Pivot(object):
     '''
@@ -147,9 +148,6 @@ class Pivot(object):
         slist : SegmentList object
                 SegmentList for PivotList of this Pivot.
                 Required
-        n_candles : int
-                    Skip merge if Segment is less than 'n_candles'.
-                    Required
 
         Returns
         -------

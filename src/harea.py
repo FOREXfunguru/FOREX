@@ -1,14 +1,12 @@
 import numpy as np
 import pdb
 import matplotlib
-import config
 import peakutils
 import traceback
 import warnings
 from zigzag import *
 from datetime import timedelta,datetime
 from oanda_api import OandaAPI
-from configparser import ConfigParser
 
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
@@ -33,8 +31,8 @@ class HArea(object):
     bounces : list of Candle Objects
               This list contains the candles for bounces bouncing in this area. This member class
               can be initialized using the 'inarea_bounces' method
-    settings : str, Required
-               Path to *.ini file with settings
+    settings : ConfigParser, Required
+               ConfigParser object with settings
     '''
 
     def __init__(self, price, instrument, granularity, settings):
@@ -52,14 +50,10 @@ class HArea(object):
         price = round(price, round_number)
         self.price = price
         self.granularity = granularity
-
-        # parse settings file (in .ini file)
-        parser = ConfigParser()
-        parser.read(settings)
-        self.settings = parser
+        self.settings = settings
 
         assert self.settings.has_option('pivots', 'hr_pips'), "'hr_pips' needs to be defined"
-        pips = self.settings.get('pivots', 'hr_pips')
+        pips = self.settings.getint('pivots', 'hr_pips')
         self.upper = round(price+(pips/divisor), 4)
         self.lower = round(price-(pips/divisor), 4)
 
@@ -82,12 +76,12 @@ class HArea(object):
         datetime object of the moment that the price crosses the HArea
         '''
 
-        count=0
+        count = 0
         for c in reversed(clist):
             count += 1
             if count <= min:
                 continue
-            price = getattr(c, self.settings('general','part'))
+            price = getattr(c, self.settings.get('general', 'part'))
             if position == 'above':
                 if price > self.upper:
                     return c.time
@@ -160,7 +154,7 @@ class HArea(object):
         carray = np.array(plist.clist.clist)
         bounces = carray[np.logical_or(plist.plist == 1, plist.plist == -1)]
 
-        ix=0
+        ix = 0
         in_area_list = []
         for c in bounces:
             price = getattr(c, self.settings('general','part'))

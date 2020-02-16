@@ -70,16 +70,13 @@ class Counter(object):
                   Total (sum of each pivot score) pivot score for all bounces (bounces class attr)
     score_lasttime : int, Optional
                      Sum of each pivot score for all pivots after lasttime (bounces_lasttime class attr)
-    settings : str, Required
-               Path to *.ini file with settings
+    settings : ConfigParser, Required
+               ConfigParser object with settings
     '''
 
     def __init__(self, pair, settings, **kwargs):
 
-        # parse settings file (in .ini file)
-        parser = ConfigParser()
-        parser.read(settings)
-        self.settings = parser
+        self.settings = settings
 
         allowed_keys = [ 'id','start','timeframe','entry','trend_i', 'type', 'SL',
                         'TP','SR','RR','bounces','clist_period','clist_trend','lasttime',
@@ -108,15 +105,17 @@ class Counter(object):
         # price has been above/below SR
         resist = HArea(price=self.SR,
                        instrument=self.pair,
-                       granularity=self.timeframe)
+                       granularity=self.timeframe,
+                       settings=settings)
 
         self.lasttime = self.clist_period.get_lasttime(resist)
 
         #initialize 'bounces' Class attribute
         self.set_bounces(doPlot=True,
-                         outfile=self.+".{0}."
-                                                 "all_pivots.png".
-                         format(self.id.replace(' ', '_')), part=self.settings('general','part'))
+                         outfile=self.settings('general',
+                                               'outfile')+".{0}.all_pivots.png".
+                         format(self.id.replace(' ', '_')),
+                         part=self.settings('general', 'part'))
 
         # set total_score attr
         self.calc_score()
@@ -133,16 +132,17 @@ class Counter(object):
         This will set the self.clist_period class attribute
         '''
 
-        delta_period = periodToDelta(self.period, self.timeframe)
+        delta_period = periodToDelta(self.settings.getint('counter', 'period'),
+                                     self.timeframe)
         delta_1 = periodToDelta(1, self.timeframe)
         start = self.start - delta_period # get the start datetime for this CandleList period
         end = self.start + delta_1 # increase self.start by one candle to include self.start
 
-        oanda = OandaAPI(url=config.OANDA_API['url'],
+        oanda = OandaAPI(url=self.settings.get('oanda_api', 'url'),
                          instrument=self.pair,
                          granularity=self.timeframe,
-                         alignmentTimezone=config.OANDA_API['alignmentTimezone'],
-                         dailyAlignment=config.OANDA_API['dailyAlignment'])
+                         alignmentTimezone=self.settings.get('oanda_api', 'alignmentTimezone'),
+                         dailyAlignment=self.settings.get('oanda_api', 'dailyAlignment'))
 
         oanda.run(start=start.isoformat(),
                   end=end.isoformat(),
@@ -150,13 +150,16 @@ class Counter(object):
 
         candle_list = oanda.fetch_candleset(vol_cutoff=0)
 
-        cl = CandleList(candle_list, self.pair, granularity=self.timeframe,
-                        id=self.id, type=self.type)
+        cl = CandleList(candle_list, self.pair,
+                        granularity=self.timeframe,
+                        id=self.id,
+                        type=self.type)
 
         self.clist_period = cl
 
-    def __inarea_bounces(self, bounces, priceType='Ask', runmerge_pre=False,
-                         runmerge_aft=False, consider_last_bounce=True):
+    def __inarea_bounces(self,
+                         bounces,
+                         consider_last_bounce=True):
         '''
         Function to identify the candles for which price is in the area defined
         by self.SR+HRpips and self.SR-HRpips
@@ -164,12 +167,6 @@ class Counter(object):
         Parameters
         ----------
         bounces: PivotList
-        HR_pips: int, Optional
-                 Number of pips over/below S/R used for trying to identify bounces
-                 Required.
-        priceType: str
-              Type of price used for the calculation. Default='Ask'.
-              Optional
         runmerge_pre: Boolean
                       Run PivotList's 'merge_pre' function. Default: False
         runmerge_aft: Boolean
@@ -183,34 +180,41 @@ class Counter(object):
         list with bounces that are in the area
         '''
         # get bounces in the horizontal SR area
-        lower = substract_pips2price(self.pair, self.SR, HRpips)
-        upper = add_pips2price(self.pair, self.SR, HRpips)
-        pl=[]
+        lower = substract_pips2price(self.pair,
+                                     self.SR,
+                                     self.settings.getint('pivots','hr_pips'))
+        upper = add_pips2price(self.pair,
+                               self.SR,
+                               self.settings.getint('pivots','hr_pips'))
+        pl = []
         for p in bounces.plist:
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
             if bounces.plist[-1].candle.time == p.candle.time and consider_last_bounce is True:
-                if runmerge_pre is True and p.pre is not None:
-                    p.merge_pre(slist=bounces.slist, n_candles=18)
-                if runmerge_aft is True and p.aft is not None:
-                    p.merge_aft(slist=bounces.slist, n_candles=18)
+                if self.settings.getboolean('counter', 'run_merge_pre') is True and p.pre is not None:
+                    p.merge_pre(slist=bounces.slist, n_candles=self.settings.getint('pivots', 'n_candles'))
+                if self.settings.getboolean('counter', 'run_merge_aft') is True and p.aft is not None:
+                    p.merge_aft(slist=bounces.slist, n_candles=self.settings.getint('pivots', 'n_candles'))
                 pl.append(p)
             else:
-                part_list=['close{0}'.format(priceType)]
+                part_list=['close{0}'.format(self.settings.get('general', 'part'))]
                 if p.type == 1:
-                    part_list.append('high{0}'.format(priceType))
+                    part_list.append('high{0}'.format(self.settings.get('general', 'part')))
                 elif p.type == -1:
-                    part_list.append('low{0}'.format(priceType))
+                    part_list.append('low{0}'.format(self.settings.get('general', 'part')))
 
                 # initialize candle features to be sure that midAsk or midBid are
                 # initialized
                 p.candle.set_candle_features()
                 for part in part_list:
-                    price = getattr(p.candle, part)
+                    price = getattr(p.candle, self.settings.get('general', 'part'))
                     if price >= lower and price <= upper:
-                        if runmerge_pre is True and p.pre is not None:
-                            p.merge_pre(slist=bounces.slist, n_candles=18)
-                        if runmerge_aft is True and p.aft is not None:
-                            p.merge_aft(slist=bounces.slist, n_candles=18)
+                        if self.settings.get('counter', 'run_'
+                                                        'merge_pre') is True and p.pre is not None:
+                            p.merge_pre(slist=bounces.slist,
+                                        n_candles=self.settings.getint('pivots', 'n_candles'))
+                        if self.settings.get('counter', 'runmerge_aft') is True and p.aft is not None:
+                            p.merge_aft(slist=bounces.slist,
+                                        n_candles=self.settings.getint('pivots', 'n_candles'))
                         #check if this Pivot already exist in pl
                         p_seen=False
                         for op in pl:
@@ -219,7 +223,9 @@ class Counter(object):
                         if p_seen is False:
                             pl.append(p)
 
-        return PivotList(plist=pl, clist=bounces.clist, slist=bounces.slist)
+        return PivotList(plist=pl,
+                         clist=bounces.clist,
+                         slist=bounces.slist)
 
     def set_bounces(self, doPlot= False):
         '''
@@ -241,9 +247,9 @@ class Counter(object):
         # get PivotList using self.clist_period
         pivotlist = self.clist_period.get_pivotlist(
                 outfile=outfile,
-                th_up=self.settings('pivots', 'th_bounces'),
-                th_down=-self.settings('pivots', 'th_bounces'),
-                part=self.settings('general','part'))
+                th_up=self.settings.getfloat('pivots', 'th_bounces'),
+                th_down=-self.settings.getfloat('pivots', 'th_bounces'),
+                part=self.settings.get('general','part'))
 
         in_area_list = self.__inarea_bounces(pivotlist,
                                              HRpips=self.HR_pips,
@@ -264,7 +270,9 @@ class Counter(object):
             outfile = self.png_prefix+".{0}.sel_pivots.png".format(self.id.replace(' ', '_'))
             outfile_rsi = self.png_prefix+".{0}.final_rsi.png".format(self.id.replace(' ', '_'))
 
-            self.plot_bounces(outfile_prices=outfile, outfile_rsi=outfile_rsi, part= config.CT['part'])
+            self.plot_bounces(outfile_prices=outfile,
+                              outfile_rsi=outfile_rsi,
+                              part= self.settings('general', 'part'))
 
     def calc_score(self):
         '''
@@ -294,7 +302,7 @@ class Counter(object):
         rsi = []
         datetimes = []
         for c in self.clist_period.clist:
-            prices.append(getattr(c, part))
+            prices.append(getattr(c, self.settings('general', 'part')))
             rsi.append(getattr(c,'rsi'))
             datetimes.append(c.time)
 

@@ -151,7 +151,7 @@ class TradeJournal(object):
             for items in row.iteritems():
                 attrbs[items[0]] = items[1]
 
-            c = Counter(pair=pair, **attrbs)
+            c = Counter(pair=pair, **attrbs, settings=self.settings)
 
             p = re.compile('clist_')
             attrbs1={}
