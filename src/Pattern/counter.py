@@ -10,8 +10,6 @@ from oanda_api import OandaAPI
 from candlelist import CandleList
 from harea import HArea
 from pivotlist import *
-from configparser import ConfigParser
-
 
 class Counter(object):
     '''

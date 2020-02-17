@@ -12,6 +12,7 @@ import pandas as pd
 import datetime
 import config
 import time
+from configparser import ConfigParser
 
 from candle import BidAskCandle
 
@@ -20,7 +21,7 @@ class OandaAPI(object):
     Class representing the content returned by a GET request to Oanda's REST API
     '''
 
-    def __init__(self, instrument, granularity, url=None, data=None, **kwargs):
+    def __init__(self, instrument, granularity, settingf, data=None, **kwargs):
         '''
         Constructor
 
@@ -28,21 +29,24 @@ class OandaAPI(object):
         ---------------
         instrument: AUD_USD. Required
         granularity: 'D'. Required
-        url : string
-              Oanda's REST service url
         data : object
                Deserialized content returned by requests' 'get'
-        dailyAlignment: int
-        alignmentTimezone: 'Europe/London'
+        settingf : str
+                   Path to *.ini file with settings
+        settings : ConfigParser object generated using 'settingf'
         '''
 
-        self.instrument=instrument
-        self.granularity=granularity
-        self.url=url
-        self.data=data
+        self.instrument = instrument
+        self.granularity = granularity
+        self.data = data
+        self.settingf = settingf
 
-        allowed_keys = ['dailyAlignment','granularity',
-                        'alignmentTimezone']
+        # parse settings file (in .ini file)
+        parser = ConfigParser()
+        parser.read(settingf)
+        self.settings = parser
+
+        allowed_keys = ['granularity']
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
 
     def retry(cooloff=5, exc_type=None):
@@ -69,7 +73,7 @@ class OandaAPI(object):
         return real_decorator
 
     @retry()
-    def run(self, start, end=None, count=None,roll=False):
+    def run(self, start, end=None, count=None):
         '''
         Function to run a particular REST query. It will set self.data with the data response
 
@@ -83,37 +87,34 @@ class OandaAPI(object):
         count: int
                If end is not defined, then this controls the number of candles from the start
                that will be retrieved
-        roll: bool
-               If True, then extend the end date, which falls on close market, to the next period for which
-               the market is open. Default=False
 
         Returns
         -------
         int: Response code of the REST query
         '''
 
-        startObj = self.validate_datetime(start, self.granularity, roll=roll)
+        startObj = self.validate_datetime(start, self.granularity)
         start = startObj.isoformat()
-        params={}
+        params = {}
         params['instrument'] = self.instrument
         params['granularity'] = self.granularity
         params['start'] = start
         endObj = None
         if end is not None and count is None:
-            endObj = self.validate_datetime(end, self.granularity, roll=roll)
+            endObj = self.validate_datetime(end, self.granularity)
 
             # Increase end time by one minute to make the last candle end time match the params['end']
             min = datetime.timedelta(minutes=1)
             endObj = endObj + min
             end = endObj.isoformat()
-            params['end']=end
+            params['end'] = end
         elif count is not None:
             params['count'] = count
         elif end is None and count is None:
             raise Exception("You need to set at least the 'end' or the 'count' attribute")
 
-        if self.url:
-            resp = requests.get(url=self.url, params=params)
+        if self.settings.has_option('oanda_api', 'url'):
+            resp = requests.get(url=self.settings.get('oanda_api', 'url'), params=params)
 
             if resp.status_code != 200:
                 # This means something went wrong.
@@ -121,9 +122,8 @@ class OandaAPI(object):
                 raise Exception('GET /candles {}'.format(resp.status_code))
 
             self.data = json.loads(resp.content.decode("utf-8"))
-           # if 'end' in params: self.__validate_end(endObj - min)
 
-    def validate_datetime(self,datestr,granularity,roll=False):
+    def validate_datetime(self, datestr, granularity):
         '''
         Function to parse a string datetime to return a datetime object and to validate the datetime
 
@@ -133,9 +133,6 @@ class OandaAPI(object):
                   String representing a date
         granularity : string
                       Timeframe
-        roll : bool
-               If True, then extend the end date, which falls on close market, to the next period for which
-               the market is open. Default=False
         '''
 
         # Generate a datetime object from string
@@ -146,11 +143,11 @@ class OandaAPI(object):
             raise ValueError("Incorrect date format, should be %Y-%m-%dT%H:%M:%S")
 
         patt = re.compile("\dD")
-        nhours=None
+        nhours = None
         delta = None
         if patt.match(granularity):
             raise Exception("{0} is not valid. Oanda rest service does not take it".format(granularity))
-        elif granularity=="D":
+        elif granularity == "D":
             nhours=24
             delta = datetime.timedelta(hours=24)
         else:
@@ -167,35 +164,33 @@ class OandaAPI(object):
                 delta = datetime.timedelta(minutes=int(nmins))
 
         # increment dateObj by one period. This is necessary in order to query Oanda
-        endObj=dateObj+delta
+        endObj = dateObj+delta
 
-        #check if datestr returns a candle
+        # check if datestr returns a candle
         params = {}
         params['instrument'] = self.instrument
         params['granularity'] = self.granularity
         params['start'] = datestr
         params['end'] = endObj.isoformat()
 
-        resp = requests.get(url=self.url, params=params)
+        resp = requests.get(url=self.settings.get('oanda_api', 'url'), params=params)
         # 204 code means 'no_content'
-        if resp.status_code==204:
-            if roll is True:
-                dateObj=self.__roll_datetime(dateObj,granularity)
+        if resp.status_code == 204:
+            if self.settings.getboolean('oanda_api', 'roll') is True:
+                dateObj = self.__roll_datetime(dateObj, granularity)
             else:
                 raise Exception("Date {0} is not valid and falls on closed market".format(datestr))
 
         if nhours is not None:
             base= datetime.time(22, 00, 00)
             # generate a list with valid times. For example, if granularity is H12, then it will be 22 and 10
-            valid_time = [(datetime.datetime.combine(datetime.date(1, 1, 1), base) + datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
+            valid_time = [(datetime.datetime.combine(datetime.date(1, 1, 1), base) +
+                           datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
 
             # daylightime saving discrepancy
             base1 = datetime.time(21, 00, 00)
-            valid_time1 = [(datetime.datetime.combine(datetime.date(1, 1, 1), base1) + datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
-          #  if (dateObj.time() not in valid_time) and (dateObj.time() not in valid_time1):
-          #      raise Exception("Time {0} not valid. Valid times for {1} granularity are: {2} or are: {3}".format(dateObj.time(),
-          #                                                                                                        granularity, valid_time,
-          #                                                                                                        valid_time1))
+            valid_time1 = [(datetime.datetime.combine(datetime.date(1, 1, 1), base1) +
+                            datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
         return dateObj
 
 
@@ -231,7 +226,7 @@ class OandaAPI(object):
         if granularity == "D":
             delta = datetime.timedelta(hours=24)
         else:
-            nhours=None
+            nhours = None
             p1 = re.compile('^H')
             m1 = p1.match(granularity)
             if m1:

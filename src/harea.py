@@ -57,7 +57,7 @@ class HArea(object):
         self.upper = round(price+(pips/divisor), 4)
         self.lower = round(price-(pips/divisor), 4)
 
-    def last_time(self, clist, position, min=1):
+    def last_time(self, clist, position):
         '''
         Function that returns the datetime of the moment where prices were over/below this HArea
 
@@ -68,8 +68,6 @@ class HArea(object):
         position    This parameter controls if price should cross the HArea.upper for 'above'
                     or HArea.lower for 'below'
                     Possible values are: 'above' or 'below'
-        min : int. Default: 1
-              Minimum number of candles from start to be required
 
         Return
         ------

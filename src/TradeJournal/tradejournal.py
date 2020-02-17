@@ -15,7 +15,6 @@ class TradeJournal(object):
 
     Class variables
     ---------------
-    
     url: path to the .xlsx file with the trade journal
     worksheet: str, Required
                Name of the worksheet that will be used to create the object.
@@ -31,23 +30,18 @@ class TradeJournal(object):
         xls_file = pd.ExcelFile(url)
         df = xls_file.parse(worksheet, converters={'start': str, 'end': str, 'trend_i': str})
         self.df = df
+
         # parse settings file (in .ini file)
         parser = ConfigParser()
         parser.read(settings)
-        self.settings = parser
+        self.settingsO = settingsO
 
-    def print_winrate(self, write_xlsx=False, strat=None, worksheet_name=None):
+    def print_winrate(self, worksheet_name=None):
         '''
         Function to print the win rate proportion and also the profit in pips
 
         Parameters
         ----------
-        strat : String, Optional
-                If defined, then select all trades of a certain type.
-                Possible values are: config.VALID_STRATS
-        write_xlsx : Boolean
-                     If true, then it will write a .xlsx with outcomes.
-                     Default: False
         worksheet_name : String, Optional
                          Name given to output worksheet
 
@@ -55,21 +49,21 @@ class TradeJournal(object):
         -------
         Proportion of outcome
         Total sum of pips
-        Number of observations
+        Number of observations and a .xlsx with a worksheet with output
         '''
 
-        DF = None
-        if strat is not None:
-            # check if strat is valid
-            if strat not in config.VALID_STRATS:
-                raise Exception("No valid strat: {0}".format(strat))
-            DF = self.df[self.df['strat'] == strat]
-        else:
-            DF = self.df
+        # get strats to analyse from settings
+        assert self.settings.has_option('trade_journal', 'strats'), "'strats' needs to be defined"
+        strats = self.settings.get('trade_journal', 'strats').split(",")
 
-        print("Number of records: {0}".format(DF.shape[0]))
+        print("Number of records: {0}".format(self.df.shape[0]))
+        trades_seen = False
+        for index, row in self.df.iterrows():
+            if row['strat'] not in strats:
+                continue
+            else:
+                trades_seen = True
 
-        for index, row in DF.iterrows():
             # get pair from id
             pair = row['id'].split(' ')[0]
             attrbs = row.to_dict()
@@ -78,7 +72,7 @@ class TradeJournal(object):
             outcome_seen = True
 
             if not hasattr(t, 'outcome'):
-                outcome_seen=False
+                outcome_seen = False
             else:
                 x = float(t.outcome)
                 if math.isnan(x):
@@ -92,14 +86,14 @@ class TradeJournal(object):
 
             if outcome_seen is False:
                 t.run_trade()
-                DF.loc[index, 'outcome'] = t.outcome
-                DF.loc[index, 'pips'] = t.pips
-                DF.loc[index, 'TP'] = t.TP
+                self.df.loc[index, 'outcome'] = t.outcome
+                self.df.loc[index, 'pips'] = t.pips
+                self.df.loc[index, 'TP'] = t.TP
 
-        outcome_prop = DF.loc[:,'outcome'].value_counts()
-        sum_pips = DF['pips'].sum()
+        outcome_prop = self.df.loc[:, 'outcome'].value_counts()
+        sum_pips = self.df['pips'].sum()
 
-        if write_xlsx is True:
+        if self.settings('trading_journal', 'write_xlsx') is True:
             sheet_name = None
             if worksheet_name is not None:
                 sheet_name = "outcome_{0}".format(worksheet_name)

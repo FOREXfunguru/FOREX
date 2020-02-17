@@ -26,6 +26,8 @@ class CandleList(object):
     ---------------
     clist : list, Required
             List of Candle objects
+    settings : ConfigParser, Required
+               ConfigParser object with settings
     instrument : str, Optional
                  Instrument for this CandleList (i.e. AUD_USD or EUR_USD etc...)
     granularity : str, Optional
@@ -46,35 +48,34 @@ class CandleList(object):
           Number of double 0s in the open/close of the candles in CandleList
     entropy : Dict of Floats, Optional
           Entropy for each of the sequences in self.seq
-
-
     id : str, Optional
          Identifier for this CandleList (i.e. EUR_GBP 15MAY2007D)
     '''
 
-    def __init__(self, clist,instrument=None, granularity=None, type=None,seq=None, number_of_0s=None,
+    def __init__(self, clist, settings, instrument=None, granularity=None, type=None,seq=None, number_of_0s=None,
                  longest_stretch=None, highlow_double0s=None, last_time=None,
                  openclose_double0s=None, entropy=None, id=None):
-        self.clist=clist
-        self.instrument=instrument
-        self.granularity=granularity
-        self.type=type
-        self.len=len(clist)
-        self.seq=seq
-        self.number_of_0s=number_of_0s
-        self.longest_stretch=longest_stretch
-        self.highlow_double0s=highlow_double0s
-        self.openclose_double0s=openclose_double0s
-        self.entropy=entropy
-        self.id=id
-        self.ix=0
+        self.clist = clist
+        self.settings = settings
+        self.instrument = instrument
+        self.granularity = granularity
+        self.type = type
+        self.len = len(clist)
+        self.seq = seq
+        self.number_of_0s = number_of_0s
+        self.longest_stretch = longest_stretch
+        self.highlow_double0s = highlow_double0s
+        self.openclose_double0s = openclose_double0s
+        self.entropy = entropy
+        self.id = id
+        self.ix = 0
 
     def __iter__(self):
         return self
 
     def __next__(self):
         if self.ix < self.len:
-            candle=self.clist[self.ix]
+            candle = self.clist[self.ix]
             self.ix += 1
             return candle
         else:

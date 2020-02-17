@@ -7,15 +7,12 @@ from oanda_api import OandaAPI
 def oanda_object():
     '''Returns an  oanda object'''
  
-    oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                   instrument='AUD_USD',
+    oanda=OandaAPI(instrument='AUD_USD',
                    granularity='D',
-                   alignmentTimezone='Europe/London',
-                   dailyAlignment=22)
-
+                   settingf='data/settings.ini')
 
     return oanda
-"""
+
 def test_OandaAPI1(oanda_object):
     '''
     Test a simple query to Oanda's REST API using a start and end datetimes
@@ -34,16 +31,12 @@ def test_OandaAPI2(oanda_object):
     with pytest.raises(Exception):
         oanda_object.run(start='2018-11-16T22:00:00',
                          end='2018-11-20T22:00:00')
-
 def test_OandaAPI3():
     '''
     Test a simple query to Oanda's REST API using a H12 timeframe
     '''
-    oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                   instrument='AUD_USD',
-                   granularity='H12',
-                   alignmentTimezone='Europe/London',
-                   dailyAlignment=22)
+    oanda = OandaAPI(instrument='AUD_USD',
+                   granularity='H12')
 
     oanda.run(start='2018-11-12T10:00:00',
               end='2018-11-14T10:00:00')
@@ -56,8 +49,7 @@ def test_OandaAPI4():
     non conventional time that will raise an Exception
     '''
     with pytest.raises(Exception):
-        oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                       instrument='AUD_USD',
+        oanda=OandaAPI(instrument='AUD_USD',
                        granularity='H12',
                        alignmentTimezone='Europe/London',
                        dailyAlignment=22)
@@ -221,8 +213,6 @@ def test_OandaAPI12():
 
     assert 1
 
-"""
-
 def test_OandaAPI13():
     '''
 
@@ -238,7 +228,7 @@ def test_OandaAPI13():
     oanda.run(start='2007-05-29T16:00:00',
               end='2014-04-01T15:00:00',
               roll=True)
-"""
+
 def test_fetch_candleset(oanda_object):
     '''
     Test how a Candle list is retrieved
