@@ -2,12 +2,12 @@ from __future__ import division
 import datetime
 import pdb
 import re
-import config
 import warnings
 from oanda_api import OandaAPI
 from candlelist import CandleList
 from harea import HArea
 from utils import *
+from configparser import ConfigParser
 
 class Trade(object):
     '''
@@ -43,19 +43,29 @@ class Trade(object):
     pips:  int, Optional
            Number of pips of profit/loss. This number will be negative if outcome was failure
     strat: string, Required
-           What strategy was used for this trade. Possible values are defined in config.py
+           What strategy was used for this trade.
     id : str, Required
          Id used for this object
+    settingf : str
+               Path to *.ini file with settings
+    settings : ConfigParser object generated using 'settingf'
     '''
 
-    def __init__(self, strat, **kwargs):
+    def __init__(self, strat, settingf, **kwargs):
 
         self.__dict__.update(kwargs)
 
-        self.strat=strat
-        self.pair=re.sub('/','_',self.pair)
+        self.strat = strat
+        self.pair = re.sub('/', '_', self.pair)
+        self.strat = strat
         #remove potential whitespaces in timeframe
-        self.timeframe=re.sub(' ','',self.timeframe)
+        self.timeframe = re.sub(' ', '', self.timeframe)
+        self.settingf = settingf
+
+        # parse settings file (in .ini file)
+        parser = ConfigParser()
+        parser.read(settingf)
+        self.settings = parser
 
     def fetch_candlelist(self):
         '''
@@ -67,18 +77,14 @@ class Trade(object):
         A CandleList object
 
         '''
-        oanda = OandaAPI(url=config.OANDA_API['url'],
-                         instrument=self.pair,
-                         granularity=self.timeframe,
-                         alignmentTimezone=config.OANDA_API['alignmentTimezone'],
-                         dailyAlignment=config.OANDA_API['dailyAlignment'])
+        oanda = OandaAPI(instrument=self.pair,
+                         granularity=self.timeframe)
 
         oanda.run(start=datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S').isoformat(),
-                  end=datetime.datetime.strptime(self.end,'%Y-%m-%dT%H:%M:%S').isoformat(),
-                  roll=True)
+                  end=datetime.datetime.strptime(self.end,'%Y-%m-%dT%H:%M:%S').isoformat())
 
-        candle_list=oanda.fetch_candleset()
-        cl=CandleList(candle_list, type=self.type)
+        candle_list = oanda.fetch_candleset()
+        cl = CandleList(candle_list, type=self.type)
 
         return cl
 
@@ -89,35 +95,41 @@ class Trade(object):
 
         print("[INFO] Run run_trade with id: {0}".format(self.id))
 
-        entry = HArea(price=self.entry,pips=1, instrument=self.pair, granularity=self.timeframe)
-        SL = HArea(price=self.SL,pips=1, instrument=self.pair, granularity=self.timeframe)
-        TP = HArea(price=self.TP, pips=1, instrument=self.pair, granularity=self.timeframe)
+        entry = HArea(price=self.entry,
+                      instrument=self.pair,
+                      granularity=self.timeframe,
+                      settingf=self.settingf)
+        SL = HArea(price=self.SL,
+                   instrument=self.pair,
+                   granularity=self.timeframe,
+                   settingf=self.settingf)
+        TP = HArea(price=self.TP,
+                   instrument=self.pair,
+                   granularity=self.timeframe,
+                   settingf=self.settingf)
 
-        period=None
+        period = None
         if self.timeframe == "D":
-            period=24
+            period = 24
         else:
             period = int(self.timeframe.replace('H', ''))
 
         # generate a range of dates starting at self.start and ending numperiods later in order to assess the outcome
         # of trade and also the entry time
 
-        self.start=datetime.datetime.strptime(str(self.start),'%Y-%m-%d %H:%M:%S')
-        numperiods=300
-        date_list = [datetime.datetime.strptime(str(self.start.isoformat()),'%Y-%m-%dT%H:%M:%S') + datetime.timedelta(hours=x*period) for x in range(0, numperiods)]
+        self.start = datetime.datetime.strptime(str(self.start),'%Y-%m-%d %H:%M:%S')
+        numperiods = 300
+        date_list = [datetime.datetime.strptime(str(self.start.isoformat()),'%Y-%m-%dT%H:%M:%S')
+                     + datetime.timedelta(hours=x*period) for x in range(0, numperiods)]
 
-        entered=False
+        entered = False
         for d in date_list:
             print(d)
-            oanda = OandaAPI(url=config.OANDA_API['url'],
-                             instrument=self.pair,
-                             granularity=self.timeframe,
-                             dailyAlignment=config.OANDA_API['dailyAlignment'],
-                             alignmentTimezone=config.OANDA_API['alignmentTimezone'])
+            oanda = OandaAPI(instrument=self.pair,
+                             granularity=self.timeframe)
 
             oanda.run(start=d.isoformat(),
-                      count=1,
-                      roll=True)
+                      count=1)
 
             cl=oanda.fetch_candleset()[0]
 
@@ -128,7 +140,7 @@ class Trade(object):
                     self.entry_time = entry_time.isoformat()
                 else:
                     warnings.warn("No entry time was identified for this trade")
-                    entry_time=self.start
+                    entry_time = self.start
                     self.entry_time = entry_time
             if entry_time is not None and entry_time != 'n.a.':
                 entered=True
@@ -152,8 +164,8 @@ class Trade(object):
             assert getattr(self, 'outcome')
         except:
             warnings.warn("\tNo outcome could be calculated")
-            self.outcome="n.a."
-            self.pips=0
+            self.outcome = "n.a."
+            self.pips = 0
 
         warnings.warn("[INFO] Done run_trade")
 
