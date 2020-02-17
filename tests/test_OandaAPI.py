@@ -50,9 +50,7 @@ def test_OandaAPI4():
     '''
     with pytest.raises(Exception):
         oanda=OandaAPI(instrument='AUD_USD',
-                       granularity='H12',
-                       alignmentTimezone='Europe/London',
-                       dailyAlignment=22)
+                       granularity='H12')
 
         oanda.run(start='2018-11-12T10:00:00',
                   end='2018-11-14T11:00:00')
