@@ -46,12 +46,13 @@ class Trade(object):
            What strategy was used for this trade.
     id : str, Required
          Id used for this object
-    settingf : str
+    settingf : str, Optional
                Path to *.ini file with settings
     settings : ConfigParser object generated using 'settingf'
+               Optional
     '''
 
-    def __init__(self, strat, settingf, **kwargs):
+    def __init__(self, strat, settingf=None, settings=None, **kwargs):
 
         self.__dict__.update(kwargs)
 
@@ -61,6 +62,7 @@ class Trade(object):
         #remove potential whitespaces in timeframe
         self.timeframe = re.sub(' ', '', self.timeframe)
         self.settingf = settingf
+        self.settings = settings
 
         # parse settings file (in .ini file)
         parser = ConfigParser()
@@ -94,19 +96,20 @@ class Trade(object):
         '''
 
         print("[INFO] Run run_trade with id: {0}".format(self.id))
-
+        newsettings = self.settings
+        newsettings.set('pivots', 'hr_pips', '1')
         entry = HArea(price=self.entry,
                       instrument=self.pair,
                       granularity=self.timeframe,
-                      settingf=self.settingf)
+                      settings=newsettings)
         SL = HArea(price=self.SL,
                    instrument=self.pair,
                    granularity=self.timeframe,
-                   settingf=self.settingf)
+                   settings=newsettings)
         TP = HArea(price=self.TP,
                    instrument=self.pair,
                    granularity=self.timeframe,
-                   settingf=self.settingf)
+                   settings=newsettings)
 
         period = None
         if self.timeframe == "D":
