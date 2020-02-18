@@ -14,7 +14,8 @@ def t_object():
         type="long",
         timeframe="H8",
         strat="counter_b2",
-        id= "AUD_USD 20APR2017H8"
+        id= "AUD_USD 20APR2017H8",
+        settingf="data/settings.ini"
         )
     return td
 
@@ -31,7 +32,8 @@ def unfisished_t_object():
         type="long",
         timeframe="H12",
         strat="counter_b2",
-        id="EUR_AUD 12DEC2018H12"
+        id="EUR_AUD 12DEC2018H12",
+        settingf="data/settings.ini"
     )
     return td
 

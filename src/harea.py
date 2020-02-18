@@ -31,11 +31,13 @@ class HArea(object):
     bounces : list of Candle Objects
               This list contains the candles for bounces bouncing in this area. This member class
               can be initialized using the 'inarea_bounces' method
-    settings : ConfigParser, Required
+    settingf : str, Optional
+               Path to *.ini file with settings
+    settings : ConfigParser, Optional
                ConfigParser object with settings
     '''
 
-    def __init__(self, price, instrument, granularity, settings):
+    def __init__(self, price, instrument, granularity, settingf=None, settings=None):
 
         (first, second) = instrument.split("_")
         self.instrument = instrument
@@ -50,6 +52,7 @@ class HArea(object):
         price = round(price, round_number)
         self.price = price
         self.granularity = granularity
+        self.settingf = settingf
         self.settings = settings
 
         assert self.settings.has_option('pivots', 'hr_pips'), "'hr_pips' needs to be defined"

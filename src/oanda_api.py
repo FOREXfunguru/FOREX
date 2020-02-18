@@ -35,7 +35,6 @@ class OandaAPI(object):
                    Path to *.ini file with settings
         settings : ConfigParser object generated using 'settingf'
         '''
-
         self.instrument = instrument
         self.granularity = granularity
         self.data = data
@@ -114,7 +113,8 @@ class OandaAPI(object):
             raise Exception("You need to set at least the 'end' or the 'count' attribute")
 
         if self.settings.has_option('oanda_api', 'url'):
-            resp = requests.get(url=self.settings.get('oanda_api', 'url'), params=params)
+            resp = requests.get(url=self.settings.get('oanda_api', 'url'),
+                                params=params)
 
             if resp.status_code != 200:
                 # This means something went wrong.
@@ -122,6 +122,8 @@ class OandaAPI(object):
                 raise Exception('GET /candles {}'.format(resp.status_code))
 
             self.data = json.loads(resp.content.decode("utf-8"))
+
+            return resp.status_code
 
     def validate_datetime(self, datestr, granularity):
         '''
@@ -193,7 +195,6 @@ class OandaAPI(object):
                             datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
         return dateObj
 
-
     def __roll_datetime(self,dateObj,granularity):
         '''
         Private function to roll the datetime, which falls on a closed market to the next period (set by granularity)
@@ -252,7 +253,8 @@ class OandaAPI(object):
             params['start'] = dateObj.isoformat()
             params['end'] = endObj.isoformat()
 
-            resp = requests.get(url=self.url, params=params)
+            resp = requests.get(url=self.settings.get('oanda_api', 'url'),
+                                params=params)
             resp_code=resp.status_code
 
         print("Time was rolled from {0} to {1}".format(dateObj,startObj))
@@ -288,7 +290,6 @@ class OandaAPI(object):
         else:
             return 1
 
-
     def print_url(self):
         '''
         Print url from requests module
@@ -312,21 +313,22 @@ class OandaAPI(object):
         A list of Candle objects
         
         '''
-        candlelist=[]
+        candlelist = []
 
         for c in self.data['candles']:
             if "openBid" in c:
                 
                 cd=BidAskCandle(representation="bidask")
-                cd.instrument=self.instrument
-                cd.granularity=self.granularity
+                cd.instrument = self.instrument
+                cd.granularity = self.granularity
                 for k,v in c.items():
-                    if k=="time":
+                    if k == "time":
                         pd.datetime.strptime(v, '%Y-%m-%dT%H:%M:%S.%fZ')
-                        setattr(cd,k,pd.datetime.strptime(v, '%Y-%m-%dT%H:%M:%S.%fZ'))
+                        setattr(cd, k, pd.datetime.strptime(v, '%Y-%m-%dT%H:%M:%S.%fZ'))
                     else:
-                        setattr(cd,k,v)
-                if cd.volume > vol_cutoff: candlelist.append(cd)
+                        setattr(cd, k, v)
+                if cd.volume > vol_cutoff:
+                    candlelist.append(cd)
         return candlelist
     
     def fetch_candles_from_file(self, file):
