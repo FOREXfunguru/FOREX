@@ -129,7 +129,8 @@ class Trade(object):
         for d in date_list:
             print(d)
             oanda = OandaAPI(instrument=self.pair,
-                             granularity=self.timeframe)
+                             granularity=self.timeframe,
+                             settingf=self.settingf)
 
             oanda.run(start=d.isoformat(),
                       count=1)
