@@ -6,10 +6,9 @@ from oanda_api import OandaAPI
 def oanda_object():
     '''Returns an  oanda object'''
 
-    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                     instrument='AUD_USD',
+    oanda = OandaAPI(instrument='AUD_USD',
                      granularity='D',
-                     alignmentTimezone='Europe/London')
+                     settingf='data/settings.ini')
 
     oanda.run(start='2015-01-25T22:00:00',
               end='2015-01-26T22:00:00')

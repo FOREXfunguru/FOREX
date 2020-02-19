@@ -29,14 +29,15 @@ class Candle(object):
 
     def __init__(self, representation=None, time=None, volume=0, complete=True,
                  instrument=None, formation=None, granularity=None):
-        self.representation=representation
-        self.time=time
-        self.volume=volume
-        if complete not in [True, False] : raise Exception(("complete %s is not valid. Complete should be True or False")) % complete
-        self.complete=complete
-        self.formation=formation
-        self.instrument=instrument
-        self.granularity=granularity
+        self.representation = representation
+        self.time = time
+        self.volume = volume
+        if complete not in [True, False]:
+            raise Exception(("complete %s is not valid. Complete should be True or False")) % complete
+        self.complete = complete
+        self.formation = formation
+        self.instrument = instrument
+        self.granularity = granularity
 
 class BidAskCandle(Candle):
     '''
@@ -83,11 +84,6 @@ class BidAskCandle(Candle):
         '''
         Set basic candle features based on price
         i.e. self.colour, upper_wick, midAsk or midBid, etc...
-
-        Returns
-        ------
-        None
-
         '''
         if not self.openBid or not self.closeBid:
             raise Exception("Either self.openBid or self.closeBid need to be set to invoke set_candle_pattern")
@@ -123,11 +119,6 @@ class BidAskCandle(Candle):
         Note: These are the conventions I will follow:
 
         DOJI: Body is <=10% of the total candle height
-
-        Returns
-        ------
-        None
-
         '''
         if self.openBid is None or self.closeBid is None:
             raise Exception("Either self.openBid or self.closeBid need to be set to invoke set_candle_pattern")

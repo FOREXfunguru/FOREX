@@ -4,6 +4,7 @@ from zigzag import *
 from pivotlist import PivotList
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
+from configparser import ConfigParser
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 import pandas as pd
@@ -26,8 +27,8 @@ class CandleList(object):
     ---------------
     clist : list, Required
             List of Candle objects
-    settings : ConfigParser, Required
-               ConfigParser object with settings
+    settingf : str, Required
+               Path to *.ini file with settings
     instrument : str, Optional
                  Instrument for this CandleList (i.e. AUD_USD or EUR_USD etc...)
     granularity : str, Optional
@@ -52,11 +53,18 @@ class CandleList(object):
          Identifier for this CandleList (i.e. EUR_GBP 15MAY2007D)
     '''
 
-    def __init__(self, clist, settings, instrument=None, granularity=None, type=None,seq=None, number_of_0s=None,
-                 longest_stretch=None, highlow_double0s=None, last_time=None,
+    def __init__(self, clist, settingf, instrument=None, granularity=None,
+                 type=None,seq=None, number_of_0s=None,
+                 longest_stretch=None, highlow_double0s=None,
                  openclose_double0s=None, entropy=None, id=None):
         self.clist = clist
-        self.settings = settings
+        self.settingf = settingf
+
+        # parse settings file (in .ini file)
+        parser = ConfigParser()
+        parser.read(settingf)
+        self.settings = parser
+
         self.instrument = instrument
         self.granularity = granularity
         self.type = type
@@ -338,60 +346,40 @@ class CandleList(object):
 
         self.longest_stretch=a_dict
 
-    def calc_rsi(self, period=2000, rsi_period=14):
+    def calc_rsi(self):
         '''
         Calculate the RSI for a certain candle list
-
-        Parameters
-        ----------
-        period : int
-                 Number of candles before this CandleList start for which close price data will be fetched.
-                 The larger the number of candles the more accurate the ewm calculation will be, as the exponential
-                 moving average calculated for each of the windows (of size=rsi_period) will be
-                 directly affected by the previous windows in the series. Default=2000
-        rsi_period : int
-                     Number of candles used for calculating the RSI. Default=14
-
-        Returns
-        -------
-        Nothing
         '''
 
-        start_time=self.clist[0].time
-        end_time=self.clist[-1].time
+        start_time = self.clist[0].time
+        end_time = self.clist[-1].time
 
         delta_period = None
         if self.granularity == "D":
-            delta_period = datetime.timedelta(hours=24 * period)
+            delta_period = datetime.timedelta(hours=24 * self.settings.getint('candlelist', 'period'))
         else:
             fgran = self.granularity.replace('H', '')
-            delta_period = datetime.timedelta(hours=int(fgran) * period)
+            delta_period = datetime.timedelta(hours=int(fgran) * self.settings.getint('candlelist', 'period'))
 
         start_calc_time = start_time - delta_period
 
-
         #fetch candle set from start_calc_time
-        oanda = OandaAPI(url=config.OANDA_API['url'],
-                         instrument=self.instrument,
+        oanda = OandaAPI(instrument=self.instrument,
                          granularity=self.granularity,
-                         alignmentTimezone=config.OANDA_API['alignmentTimezone'],
-                         dailyAlignment=config.OANDA_API['dailyAlignment'])
-
+                         settingf=self.settingf)
         '''
         Get candlelist from start_calc_time to (start_time-1)
         This 2-step API call is necessary in order to avoid
         maximum number of candles errors
         '''
-
         oanda.run(start=start_calc_time.isoformat(),
-                  end=start_time.isoformat(),
-                  roll=True)
+                  end=start_time.isoformat())
+
         cl1 = oanda.fetch_candleset()
 
         '''Get candlelist from start_time to end_time'''
         oanda.run(start=start_time.isoformat(),
-                  end=end_time.isoformat(),
-                  roll=True)
+                  end=end_time.isoformat())
 
         cl2 = oanda.fetch_candleset()
 
@@ -400,7 +388,6 @@ class CandleList(object):
 
         candle_list = cl1 + cl2
 
-        series=[]
         series = [c.closeAsk for c in candle_list]
 
         df = pd.DataFrame({'close': series})
@@ -409,6 +396,7 @@ class CandleList(object):
         gain = chg.mask(chg < 0, 0)
         loss = chg.mask(chg > 0, 0)
 
+        rsi_period = self.settings.getint('candlelist', 'rsi_period')
         avg_gain = gain.ewm(com=rsi_period - 1, min_periods=rsi_period).mean()
         avg_loss = loss.ewm(com=rsi_period - 1, min_periods=rsi_period).mean()
 
@@ -416,12 +404,12 @@ class CandleList(object):
 
         rsi = 100 - (100 / (1 + rs))
 
-        rsi4cl=rsi[-len(self.clist):]
+        rsi4cl = rsi[-len(self.clist):]
         # set rsi attribute in each candle of the CandleList
-        ix=0
-        for c,v in zip(self.clist,rsi4cl):
-            self.clist[ix].rsi=v
-            ix+=1
+        ix = 0
+        for c, v in zip(self.clist, rsi4cl):
+            self.clist[ix].rsi = v
+            ix += 1
 
     def calc_rsi_bounces(self):
         '''
