@@ -107,6 +107,83 @@ def test_get_length_functions():
     assert cl.get_length_candles() == 28
     assert cl.get_length_pips() == 532
 
+def test_fit_reg_line():
+
+    oanda = OandaAPI(instrument='EUR_AUD',
+                     granularity='D',
+                     settingf='data/settings.ini')
+
+    oanda.run(start='2016-05-23T23:00:00',
+              end='2016-07-19T23:00:00')
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list,
+                    instrument='AUD_USD',
+                    granularity='D',
+                    settingf='data/settings.ini')
+
+    (fitted_model, regression_model_mse) = cl.fit_reg_line()
+
+    assert regression_model_mse==5.70224448953761e-06
+
+def test_fetch_by_time():
+
+    oanda = OandaAPI(instrument='EUR_AUD',
+                     granularity='D',
+                     settingf='data/settings.ini')
+
+    oanda.run(start='2016-05-23T23:00:00',
+              end='2016-07-19T23:00:00')
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list,
+                    instrument='AUD_USD',
+                    granularity='D',
+                    settingf='data/settings.ini')
+
+    adatetime = datetime.datetime(2016, 6, 1, 22, 0)
+
+    c=cl.fetch_by_time(adatetime)
+
+    assert c.openAsk == 1.54196
+    assert c.highAsk == 1.55438
+
+def test_slice_with_start():
+
+    oanda = OandaAPI(instrument='EUR_AUD',
+                     granularity='D',
+                     settingf='data/settings.ini')
+
+    oanda.run(start='2016-05-23T23:00:00',
+              end='2016-07-19T23:00:00')
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list,
+                    instrument='EUR_AUD',
+                    granularity='D',
+                    settingf='data/settings.ini')
+
+    adatetime = datetime.datetime(2017, 12, 20, 22, 0)
+
+    cl.slice(start=adatetime)
+
+    assert 0
+
+def test_slice_with_start_end(trend_oanda_object):
+
+    candle_list = trend_oanda_object.fetch_candleset()
+
+    cl = CandleList(candle_list, instrument='AUD_USD', granularity='D')
+
+    startdatetime = datetime.datetime(2017, 12, 20, 22, 0)
+    endatetime = datetime.datetime(2018, 1, 20, 22, 0)
+
+    cl.slice(start=startdatetime,end=endatetime)
+
+"""
 def test_check_if_divergence():
 
     oanda = OandaAPI(instrument='EUR_AUD',
@@ -135,24 +212,6 @@ def test_check_if_divergence():
 
     assert cl.check_if_divergence(direction=direction) == True
 
-def test_fit_reg_line():
-
-    oanda = OandaAPI(instrument='EUR_AUD',
-                     granularity='D',
-                     settingf='data/settings.ini')
-
-    oanda.run(start='2016-05-23T23:00:00',
-              end='2016-07-19T23:00:00')
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list,
-                    instrument='AUD_USD',
-                    granularity='D')
-
-    (model,outfile) = cl.fit_reg_line()
-
-"""
 def get_dictionary(k, v):
     d = dict([x, ord(x)] for x in  string.printable)
     d[k] = v
@@ -279,16 +338,6 @@ def test_check_if_divergence():
 
     assert cl.check_if_divergence(direction=direction)==True
 
-def test_fetch_by_time(trend_oanda_object):
-
-    candle_list = trend_oanda_object.fetch_candleset()
-
-    cl = CandleList(candle_list, instrument='AUD_USD', granularity='D')
-
-    adatetime=datetime.datetime(2017,12,10,22,0)
-
-    c=cl.fetch_by_time(adatetime)
-
 def test_get_pivots(trend_oanda_object):
 
     candle_list = trend_oanda_object.fetch_candleset()
@@ -300,24 +349,4 @@ def test_get_pivots(trend_oanda_object):
     assert pivots[0] == -1
     assert pivots[-1] == -1
 
-def test_slice_with_start(trend_oanda_object):
-
-    candle_list = trend_oanda_object.fetch_candleset()
-
-    cl = CandleList(candle_list, instrument='AUD_USD', granularity='D')
-
-    adatetime = datetime.datetime(2017, 12, 20, 22, 0)
-
-    cl.slice(start=adatetime)
-
-def test_slice_with_start_end(trend_oanda_object):
-
-    candle_list = trend_oanda_object.fetch_candleset()
-
-    cl = CandleList(candle_list, instrument='AUD_USD', granularity='D')
-
-    startdatetime = datetime.datetime(2017, 12, 20, 22, 0)
-    endatetime = datetime.datetime(2018, 1, 20, 22, 0)
-
-    cl.slice(start=startdatetime,end=endatetime)
 """

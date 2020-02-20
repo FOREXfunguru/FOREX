@@ -271,7 +271,7 @@ class CandleList(object):
                 raise Exception("No candle was selected with time: {0}\n."
                                 " It is good to check if the marked is closed".format(datetime))
             return sel_c
-        elif period>0:
+        elif period > 0:
             start = d-delta_period
             end = d+delta_period
             sel_c = []
@@ -560,7 +560,6 @@ class CandleList(object):
         regression_model_mse = mean_squared_error(y_pred, np.array(prices).reshape(-1, 1))
 
         # generate output file with fitted regression line
-        pdb.set_trace()
         # parse string from parser object into a tuple
         figsize = literal_eval(self.settings.get('images', 'size'))
         fig = plt.figure(figsize=figsize)
@@ -707,8 +706,7 @@ class CandleList(object):
         Exception
             If start > end
         '''
-
-        sliced_clist=[]
+        sliced_clist = []
         if start is not None and end is None:
             sliced_clist = [c for c in self.clist if c.time >= start]
         elif start is not None and end is not None:
@@ -718,12 +716,15 @@ class CandleList(object):
         elif start is None and end is not None:
             sliced_clist = [c for c in self.clist if c.time <= end]
 
-        cl = CandleList(sliced_clist, instrument=self.instrument, granularity=self.granularity,
-                        id=self.id, type=self.type)
+        cl = CandleList(sliced_clist,
+                        instrument=self.instrument,
+                        granularity=self.granularity,
+                        id=self.id,
+                        type=self.type)
 
         return cl
 
-    def improve_resolution(self,price,min_dist,part='closeAsk'):
+    def improve_resolution(self, price, min_dist, part='closeAsk'):
         '''
         Function used to improve the resolution of the identified maxima/minima. This function will select
         the candle closer to 'price' when there are 2 candles less than 'min_dist' apart
