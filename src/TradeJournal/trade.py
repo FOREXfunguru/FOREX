@@ -80,13 +80,16 @@ class Trade(object):
 
         '''
         oanda = OandaAPI(instrument=self.pair,
-                         granularity=self.timeframe)
+                         granularity=self.timeframe,
+                         settingf=self.settingf)
 
         oanda.run(start=datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S').isoformat(),
                   end=datetime.datetime.strptime(self.end,'%Y-%m-%dT%H:%M:%S').isoformat())
 
         candle_list = oanda.fetch_candleset()
-        cl = CandleList(candle_list, type=self.type)
+        cl = CandleList(candle_list,
+                        type=self.type,
+                        settingf=self.settingf)
 
         return cl
 
@@ -135,7 +138,7 @@ class Trade(object):
             oanda.run(start=d.isoformat(),
                       count=1)
 
-            cl=oanda.fetch_candleset()[0]
+            cl = oanda.fetch_candleset()[0]
 
             if entered is False:
                 entry_time = entry.get_cross_time(candle=cl)

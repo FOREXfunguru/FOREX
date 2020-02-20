@@ -21,7 +21,7 @@ class OandaAPI(object):
     Class representing the content returned by a GET request to Oanda's REST API
     '''
 
-    def __init__(self, instrument, granularity, settingf, data=None, **kwargs):
+    def __init__(self, instrument, granularity, settingf=None, settings=None, data=None, **kwargs):
         '''
         Constructor
 
@@ -31,7 +31,7 @@ class OandaAPI(object):
         granularity: 'D'. Required
         data : object
                Deserialized content returned by requests' 'get'
-        settingf : str
+        settingf : str, Optional
                    Path to *.ini file with settings
         settings : ConfigParser object generated using 'settingf'
         '''
@@ -40,10 +40,14 @@ class OandaAPI(object):
         self.data = data
         self.settingf = settingf
 
-        # parse settings file (in .ini file)
-        parser = ConfigParser()
-        parser.read(settingf)
-        self.settings = parser
+        if self.settingf is not None:
+            # parse settings file (in .ini file)
+            parser = ConfigParser()
+            parser.read(settingf)
+            self.settings = parser
+        else:
+            self.settings = settings
+
 
         allowed_keys = ['granularity']
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)

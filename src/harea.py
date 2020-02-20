@@ -104,7 +104,7 @@ class HArea(object):
         ------
         datetime object with crossing time.
                  n.a. if crossing time could not retrieved. This can happens
-                 when there is an artifactual jump in Oanda's data
+                 when there is an artefactual jump in Oanda's data
         '''
         if candle.lowAsk <= self.price <= candle.highAsk:
             delta = None
@@ -117,15 +117,20 @@ class HArea(object):
             cstart = candle.time
             cend = cstart+delta
 
-            oanda = OandaAPI(url=self.settings.get('oanda_api', 'url'),
-                             instrument=self.instrument,
-                             granularity=granularity, # 'M30' in this case
-                             dailyAlignment=self.settings.get('oanda_api', 'dailyAlignment'),
-                             alignmentTimezone=self.settings.get('oanda_api', 'alignmentTimezone'))
+            oanda = None
+            if self.settingf is None and self.settings is None:
+                raise Exception("No 'settings' nor 'settingf' definded for this object")
+            elif self.settingf is None and self.settings is not None:
+                oanda = OandaAPI(instrument=self.instrument,
+                                 granularity=granularity,  # 'M30' in this case
+                                 settings=self.settings)
+            elif self.settingf is not None and self.settings is None:
+                oanda = OandaAPI(instrument=self.instrument,
+                                 granularity=granularity,  # 'M30' in this case
+                                 settingf=self.settingf)
 
             oanda.run(start=cstart.isoformat(),
-                      end=cend.isoformat(),
-                      roll=True)
+                      end=cend.isoformat())
 
             candle_list = oanda.fetch_candleset()
             for c in candle_list:

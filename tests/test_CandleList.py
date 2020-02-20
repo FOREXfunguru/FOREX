@@ -25,19 +25,19 @@ def test_CandleList():
                   type='long')
 
     one_c=cl.next()
-    assert one_c.highBid==0.79329
-    assert one_c.openBid==0.7873
-    assert one_c.lowBid==0.7857
-    assert one_c.representation=='bidask'
-    assert one_c.lowAsk==0.786
-    assert one_c.complete==True
-    assert one_c.openAsk==0.7889
-    assert one_c.highAsk==0.79347
-    assert one_c.highBid==0.79329
-    assert one_c.volume==12619
-    assert one_c.closeBid==0.79204
-    assert one_c.closeAsk==0.79258
-    assert one_c.openBid==0.7873
+    assert one_c.highBid == 0.79329
+    assert one_c.openBid == 0.7873
+    assert one_c.lowBid == 0.7857
+    assert one_c.representation == 'bidask'
+    assert one_c.lowAsk == 0.786
+    assert one_c.complete is True
+    assert one_c.openAsk == 0.7889
+    assert one_c.highAsk == 0.79347
+    assert one_c.highBid == 0.79329
+    assert one_c.volume == 12619
+    assert one_c.closeBid == 0.79204
+    assert one_c.closeAsk == 0.79258
+    assert one_c.openBid == 0.7873
 
 def test_calc_rsi():
 
@@ -68,6 +68,7 @@ def test_rsibounces():
 
     oanda.run(start='2012-01-31T23:00:00',
               end='2012-03-23T23:00:00')
+
     candle_list = oanda.fetch_candleset()
 
     cl = CandleList(candle_list,
@@ -76,13 +77,80 @@ def test_rsibounces():
                     settingf='data/settings.ini')
 
     cl.calc_rsi()
-    dict1=cl.calc_rsi_bounces()
+    dict1 = cl.calc_rsi_bounces()
 
-    dict2 = {'number': 3,
-             'lengths': [10, 5, 6]}
+    dict2 = {'number': 0,
+             'lengths': []}
 
     assert dict1 == dict2
 
+def test_get_length_functions():
+    '''
+    This test check the functions for getting the length of
+    the CandleList in number of pips and candles
+    '''
+
+    oanda = OandaAPI(instrument='USD_CAD',
+                     granularity='D',
+                     settingf='data/settings.ini')
+
+    oanda.run(start='2018-02-01T23:00:00',
+              end='2018-03-12T23:00:00')
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list,
+                    instrument='USD_CAD',
+                    granularity='D',
+                    settingf='data/settings.ini')
+
+    assert cl.get_length_candles() == 28
+    assert cl.get_length_pips() == 532
+
+def test_check_if_divergence():
+
+    oanda = OandaAPI(instrument='EUR_AUD',
+                     granularity='D',
+                     settingf='data/settings.ini')
+
+    oanda.run(start='2016-05-23T23:00:00',
+              end='2016-07-19T23:00:00')
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list,
+                    instrument='CAD_JPY',
+                    granularity='D',
+                    settingf='data/settings.ini')
+
+    cl.calc_rsi()
+
+    (model, outfile) = cl.fit_reg_line()
+
+    direction = None
+    if model.coef_[0, 0] > 0:
+        direction = 'up'
+    else:
+        direction = 'down'
+
+    assert cl.check_if_divergence(direction=direction) == True
+
+def test_fit_reg_line():
+
+    oanda = OandaAPI(instrument='EUR_AUD',
+                     granularity='D',
+                     settingf='data/settings.ini')
+
+    oanda.run(start='2016-05-23T23:00:00',
+              end='2016-07-19T23:00:00')
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list,
+                    instrument='AUD_USD',
+                    granularity='D')
+
+    (model,outfile) = cl.fit_reg_line()
 
 """
 def get_dictionary(k, v):
@@ -185,58 +253,6 @@ def test_get_entropy(oanda_object):
 
     assert len(shared_items) == 5
 
-def test_entryonrsi():
-
-    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                     instrument='CAD_JPY',
-                     granularity='D',
-                     alignmentTimezone='Europe/London',
-                     dailyAlignment=22,
-                     start='2012-01-31T23:00:00',
-                     end='2012-03-23T23:00:00')
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list, instrument='CAD_JPY', granularity='D')
-
-    cl.calc_rsi(period=1000)
-
-    assert cl.entry_on_rsi()==False
-
-def test_get_length_candles():
-
-    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                     instrument='USD_CAD',
-                     granularity='D',
-                     alignmentTimezone='Europe/London',
-                     dailyAlignment=22,
-                     start='2018-02-01T23:00:00',
-                     end='2018-03-12T23:00:00')
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list, instrument='USD_CAD', granularity='D')
-
-    assert cl.get_length_candles()==29
-
-def test_get_length_pips():
-
-    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                     instrument='USD_CAD',
-                     granularity='D',
-                     alignmentTimezone='Europe/London',
-                     dailyAlignment=22,
-                     start='2018-02-01T23:00:00',
-                     end='2018-03-12T23:00:00')
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list, instrument='USD_CAD', granularity='D')
-
-    no_pips=cl.get_length_pips()
-
-    assert no_pips==571
-
 def test_check_if_divergence():
 
     oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
@@ -262,14 +278,6 @@ def test_check_if_divergence():
         direction='down'
 
     assert cl.check_if_divergence(direction=direction)==True
-
-def test_fit_reg_line(trend_oanda_object):
-
-    candle_list = trend_oanda_object.fetch_candleset()
-
-    cl = CandleList(candle_list, instrument='AUD_USD', granularity='D')
-
-    (model,outfile)=cl.fit_reg_line()
 
 def test_fetch_by_time(trend_oanda_object):
 

@@ -44,8 +44,8 @@ def test_fetch_candlelist(t_object):
     '''
     
     cl=t_object.fetch_candlelist()
-    assert cl.clist[0].openBid==0.7521
-    assert cl.clist[0].highBid==0.75464
+    assert cl.clist[0].openBid == 0.7521
+    assert cl.clist[0].highBid == 0.75464
 
 def test_run_trade(unfisished_t_object):
     '''
@@ -55,5 +55,5 @@ def test_run_trade(unfisished_t_object):
     '''
 
     unfisished_t_object.run_trade()
-    assert unfisished_t_object.outcome=='success'
+    assert unfisished_t_object.outcome == 'success'
 

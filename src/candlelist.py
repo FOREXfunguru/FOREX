@@ -6,6 +6,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from configparser import ConfigParser
 from pandas.plotting import register_matplotlib_converters
+from ast import literal_eval
 register_matplotlib_converters()
 import pandas as pd
 import pdb
@@ -13,7 +14,6 @@ import datetime
 import re
 import numpy as np
 import matplotlib
-import config
 from utils import *
 
 matplotlib.use('PS')
@@ -64,10 +64,18 @@ class CandleList(object):
         parser = ConfigParser()
         parser.read(settingf)
         self.settings = parser
+        # set type if not defined depending on
+        # the price diff betweeen clist[0] and clist[-1]
+        if type is None:
+            price_1st = getattr(clist[0], self.settings.get('general', 'part'))
+            price_last = getattr(clist[-1], self.settings.get('general', 'part'))
+            if price_1st > price_last:
+                self.type = 'short'
+            elif price_1st < price_last:
+                self.type = 'long'
 
         self.instrument = instrument
         self.granularity = granularity
-        self.type = type
         self.len = len(clist)
         self.seq = seq
         self.number_of_0s = number_of_0s
@@ -480,15 +488,9 @@ class CandleList(object):
 
         return len(self.clist)
 
-    def get_length_pips(self, part='openAsk'):
+    def get_length_pips(self):
         '''
         Function to calculate the length of CandleList in number of pips
-
-        Parameters
-        ----------
-        part : str
-               What part of the candle will be used for calculating the length in pips
-               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid'
 
         Returns
         -------
@@ -499,35 +501,27 @@ class CandleList(object):
         start_cl = self.clist[0]
         end_cl = self.clist[-1]
 
-        (first,second) = self.instrument.split("_")
+        (first, second) = self.instrument.split("_")
         round_number = None
         if first == 'JPY' or second == 'JPY':
             round_number = 2
         else:
             round_number = 4
 
-        start_price = round(getattr(start_cl, part), round_number)
-        end_price = round(getattr(end_cl, part), round_number)
+        start_price = round(getattr(start_cl, self.settings.get('general', 'part')), round_number)
+        end_price = round(getattr(end_cl, self.settings.get('general', 'part')), round_number)
 
         diff = (start_price-end_price)*10**round_number
 
         return abs(int(round(diff, 0)))
 
-    def fit_reg_line(self, outfile, part='openAsk', smooth='rolling_average', k_perc=25):
+    def fit_reg_line(self, smooth='rolling_average', k_perc=25):
         '''
-        Function to fit a linear regression
-        line on candle list. This can be used in order to assess the direction of
-        the trend (upward, downward)
+        Function to fit a linear regression line on candle list.
+        This can be used in order to assess the direction of the trend (upwards, downwards)
 
         Parameters
         ----------
-
-        outfile : file
-                  Path to .png output file
-        part : str
-               What entity will be used for fitting the line.
-               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid', 'rsi'
-               Default: openAsk
         smooth : str
                  What method will be used in order to smooth the data
                  Possible values are: 'rolling_average'
@@ -541,34 +535,40 @@ class CandleList(object):
         Fitted model, regression_model_mse
         '''
 
-        prices=[]
-        x=[]
+        prices = []
+        x = []
         for i in range(len(self.clist)):
             x.append(i)
-            prices.append(getattr(self.clist[i],part))
+            prices.append(getattr(self.clist[i], self.settings.get('general', 'part')))
 
         model = LinearRegression(fit_intercept=True)
 
-        if smooth=='rolling_average':
-            k=int(abs((k_perc*len(self.clist)/100)))
+        if smooth == 'rolling_average':
+            k = int(abs((k_perc*len(self.clist)/100)))
             d = {'x': x, 'prices': prices}
             df = pd.DataFrame(data=d)
             df['prices_norm'] = df[['prices']].rolling(k).mean()
             df = df.dropna()
-            prices=df['prices_norm']
-            x=df['x']
+            prices = df['prices_norm']
+            x = df['x']
 
-        model.fit(np.array(x).reshape(-1,1), np.array(prices).reshape(-1,1))
+        model.fit(np.array(x).reshape(-1, 1), np.array(prices).reshape(-1, 1))
 
-        y_pred = model.predict(np.array(x).reshape(-1,1))
+        y_pred = model.predict(np.array(x).reshape(-1, 1))
 
         # Evaluation of the model with MSE
         regression_model_mse = mean_squared_error(y_pred, np.array(prices).reshape(-1, 1))
 
-        fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
+        # generate output file with fitted regression line
+        pdb.set_trace()
+        # parse string from parser object into a tuple
+        figsize = literal_eval(self.settings.get('images', 'size'))
+        fig = plt.figure(figsize=figsize)
         plt.scatter(x, prices)
         plt.plot(x, y_pred, color='red')
 
+        outfile = "{0}/fitted_line/{1}.fitted.png".format(self.settings.get('images', 'outdir'),
+                                                          self.instrument.replace(' ', '_'))
         fig.savefig(outfile, format='png')
 
         return model, regression_model_mse
@@ -622,16 +622,13 @@ class CandleList(object):
 
         return pl
 
-    def check_if_divergence(self, part='openAsk', number_of_bounces=3):
+    def check_if_divergence(self, number_of_bounces=3):
         '''
         Function to check if there is divergence between prices
         and RSI indicator
 
         Parameters
         ----------
-        part : str
-               What part of the candle to use for the calculation
-               Default: 'openAsk'
         number_of_bounces : int
                             Number of rsi bounces from last (most recent)
                             to consider for calculating divergence. Default=3
@@ -664,8 +661,11 @@ class CandleList(object):
             print("WARN: No enough bounces after the trend start were found. Divergence assessment will be skipped")
             return "n.a."
 
-        cl = CandleList(candles_rsi, instrument=self.instrument, granularity=self.granularity,
-                        id=self.id, type=self.type)
+        cl = CandleList(candles_rsi,
+                        instrument=self.instrument,
+                        granularity=self.granularity,
+                        id=self.id,
+                        type=self.type)
 
         # fit a regression line for rsi bounces
         outfile_rsi = "{0}/{1}.reg_rsi.png".format(config.PNGFILES['div'],
