@@ -14,7 +14,7 @@ def cl_object():
 
     oanda = OandaAPI(instrument='AUD_USD',
                      granularity='D',
-                     settingf='/data/settings.ini')
+                     settingf='data/settings.ini')
 
     oanda.run(start='2015-06-24T22:00:00',
               end='2019-06-21T22:00:00')
@@ -24,7 +24,7 @@ def cl_object():
     cl = CandleList(candle_list,
                     instrument='AUD_USD',
                     type='long',
-                    settingf='/data/settings.ini')
+                    settingf='data/settings.ini')
 
     return cl
 
@@ -37,32 +37,32 @@ def clean_tmp():
         os.remove(f)
 
 def test_get_pivotlist(cl_object):
-    '''Obtain a pivotlist'''
+    """Obtain a pivotlist"""
 
     pl=cl_object.get_pivotlist()
 
-    assert len(pl.plist) == 120
-    assert pl.plist[10].candle.openAsk == 0.72472
-    assert len(pl.plist[7].pre.clist) == 7
-    assert len(pl.plist[10].aft.clist) == 2
+    assert len(pl.plist) == 50
+    assert pl.plist[10].candle.openAsk == 0.72522
+    assert len(pl.plist[7].pre.clist) == 21
+    assert len(pl.plist[10].aft.clist) == 13
 
 
 def test_fetch_by_type(cl_object):
-    '''Obtain a pivotlist of a certain type'''
+    """Obtain a pivotlist of a certain type"""
 
     pl = cl_object.get_pivotlist()
 
     newpl = pl.fetch_by_type(type=-1)
 
-    assert len(newpl.plist) == 60
+    assert len(newpl.plist) == 24
 
 def test_fetch_by_time(cl_object):
-    '''Obtain a Pivot object by datetime'''
-    pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
-                                 th_up=0.01, th_down=-0.01)
+    """Obtain a Pivot object by datetime"""
 
-    adt = datetime.datetime(2016, 2, 2, 22, 0)
+    pl = cl_object.get_pivotlist()
 
-    rpt=pl.fetch_by_time(adt)
+    adt = datetime.datetime(2015, 12, 28, 22, 0)
 
-    assert rpt.candle.time==adt
+    rpt = pl.fetch_by_time(adt)
+
+    assert rpt.candle.time == adt

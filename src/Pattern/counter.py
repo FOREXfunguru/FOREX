@@ -11,6 +11,7 @@ from candlelist import CandleList
 from harea import HArea
 from pivotlist import *
 
+
 class Counter(object):
     '''
     This class represents a trade showing Counter pattern

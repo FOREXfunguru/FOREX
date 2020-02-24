@@ -7,16 +7,16 @@ from TradeJournal.trade import Trade
 def t_object():
     '''Returns a Trade object'''
 
-    td=Trade(
-        start="2017-04-20T14:00:00",
-        end="2017-04-26T14:00:00",
-        pair="AUD/USD",
-        type="long",
-        timeframe="H8",
-        strat="counter_b2",
-        id= "AUD_USD 20APR2017H8",
-        settingf="data/settings.ini"
-        )
+    td = Trade(
+         start="2017-04-20T14:00:00",
+         end="2017-04-26T14:00:00",
+         pair="AUD/USD",
+         type="long",
+         timeframe="H8",
+         strat="counter_b2",
+         id= "AUD_USD 20APR2017H8",
+         settingf="data/settings.ini"
+         )
     return td
 
 @pytest.fixture

@@ -19,6 +19,7 @@ from utils import *
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 
+
 class CandleList(object):
     '''
     Class that represents a list of candles

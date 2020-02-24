@@ -4,7 +4,7 @@ from segmentlist import *
 from pivot import Pivot
 from segment import Segment
 from configparser import ConfigParser
-import traceback
+
 
 class PivotList(object):
     '''

@@ -2,8 +2,9 @@ import warnings
 from utils import *
 from configparser import ConfigParser
 
+
 class Pivot(object):
-    '''
+    """
     Class that represents a single Pivot as identified
     by the Zigzag indicator
 
@@ -23,7 +24,7 @@ class Pivot(object):
     settingf : str, Optional
                Path to *.ini file with settings
     settings : ConfigParser object generated using 'settingf'
-    '''
+    """
 
     def __init__(self, type, candle, pre, aft,
                  settingf=None, settings=None,
@@ -45,7 +46,7 @@ class Pivot(object):
             self.settings = settings
 
     def merge_pre(self, slist):
-        '''
+        """
         Function to merge 'pre' Segment. It will merge self.pre with previous segment
         if self.pre and previous segment are of the same type (1 or -1) or count of
         previous segment is less than self.settings.getint('pivots', 'n_candles')
@@ -59,7 +60,7 @@ class Pivot(object):
         Returns
         -------
         Nothing
-        '''
+        """
 
         extension_needed = True # if extension_needed is False then no further attempts of extending this self.pre
                                 # will be tried
@@ -90,7 +91,7 @@ class Pivot(object):
                 extension_needed = False
 
     def merge_aft(self, slist):
-        '''
+        """
         Function to merge 'aft' Segment. It will merge self.aft with next segment
         if self.aft and next segment are of the same type (1 or -1) or count of
         next segment is less than 'n_candles'
@@ -104,7 +105,7 @@ class Pivot(object):
         Returns
         -------
         Nothing
-        '''
+        """
 
         extension_needed = True
         while extension_needed is True:
@@ -129,7 +130,7 @@ class Pivot(object):
                 extension_needed = False
 
     def calc_score(self):
-        '''
+        """
         Function to calculate the score for this Pivot
         The score will be the result of adding the number
         of candles of the 'pre' and 'aft' segments (if defined)
@@ -138,7 +139,7 @@ class Pivot(object):
         -------
         int  with the score of this pivot.
              It will also set the score class attribute
-        '''
+        """
         if self.pre :
             score_pre = len(self.pre.clist)
         else:

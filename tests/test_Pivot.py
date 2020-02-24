@@ -77,34 +77,32 @@ def test_merge_pre(cl_object):
     # Check pivot.pre.start() after running 'merge_pre'
 
     assert datetime.datetime(2015, 6, 24, 21, 0) == pivot.pre.start()
-"""
+
 def test_merge_aft(cl_object):
     '''
     Test function to merge 'aft' Segment
     '''
-    pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
-                                 th_up=0.01, th_down=-0.01)
+    pl = cl_object.get_pivotlist()
 
-    adt = datetime.datetime(2015, 8, 16, 21, 0)
+    pivot = pl.plist[3]
 
-    rpt = pl.fetch_by_time(adt)
+    # Check pivot.aft.end() before running 'merge_aft'
+    assert datetime.datetime(2015, 9, 14, 21, 0) == pivot.aft.end()
 
-    rpt.merge_aft(slist=pl.slist, n_candles=5)
+    # run 'merge_aft' function
+    pivot.merge_aft(slist=pl.slist)
 
-    assert datetime.datetime(2015, 9, 6, 21, 0)== rpt.aft.end()
+    # Check pivot.aft.end() after running 'merge_aft'
+
+    assert datetime.datetime(2015, 10, 8, 21, 0) == pivot.aft.end()
 
 def test_calc_score(cl_object, clean_tmp):
     '''
     Test function named 'calc_score'
     '''
-    pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
-                                 th_up=0.01, th_down=-0.01)
+    pl = cl_object.get_pivotlist()
 
-    adt = datetime.datetime(2015, 8, 16, 21, 0)
+    pivot = pl.plist[3]
+    score = pivot.calc_score()
 
-    rpt = pl.fetch_by_time(adt)
-
-    score=rpt.calc_score()
-
-    assert score==19
-"""
+    assert score == 28

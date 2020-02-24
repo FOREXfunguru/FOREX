@@ -15,17 +15,18 @@ import time
 from configparser import ConfigParser
 from candle import BidAskCandle
 
+
 class OandaAPI(object):
-    '''
+    """
     Class representing the content returned by a GET request to Oanda's REST API
-    '''
+    """
 
     def __init__(self, instrument, granularity,
                  settingf=None, settings=None, data=None, **kwargs):
         '''
         Constructor
 
-         Class variables
+        Class variables
         ---------------
         instrument: AUD_USD. Required
         granularity: 'D'. Required
