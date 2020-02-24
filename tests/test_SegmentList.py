@@ -1,6 +1,7 @@
 from pivotlist  import PivotList
 from oanda_api import OandaAPI
 from candlelist import CandleList
+
 import datetime
 
 import pytest
@@ -11,21 +12,21 @@ import pdb
 def pl_object():
     '''Returns PivotList object'''
 
-    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                     instrument='AUD_USD',
+    oanda = OandaAPI(instrument='AUD_USD',
                      granularity='D',
-                     alignmentTimezone='Europe/London',
-                     dailyAlignment=22)
+                     settingf='data/settings.ini')
 
     oanda.run(start='2019-03-08T22:00:00',
-              end='2019-08-09T22:00:00',
-              roll=True)
+              end='2019-08-09T22:00:00')
 
     candle_list = oanda.fetch_candleset()
 
-    cl = CandleList(candle_list, instrument='AUD_USD', type='long')
+    cl = CandleList(candle_list,
+                    instrument='AUD_USD',
+                    type='long',
+                    settingf='data/settings.ini')
 
-    pl = cl.get_pivotlist(outfile='test.png', th_up=0.02, th_down=-0.02)
+    pl = cl.get_pivotlist()
 
     return pl
 
@@ -105,7 +106,7 @@ def test_calc_diff(pl_object):
 
     #when diff is + it means that
     #the is a downtrend
-    assert slist.diff==232.5
+    assert slist.diff == 232.5
 """    
 
 def test_merge_segments3(pl_object3):

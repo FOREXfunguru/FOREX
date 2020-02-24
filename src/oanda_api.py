@@ -13,7 +13,6 @@ import datetime
 import config
 import time
 from configparser import ConfigParser
-
 from candle import BidAskCandle
 
 class OandaAPI(object):
@@ -21,7 +20,8 @@ class OandaAPI(object):
     Class representing the content returned by a GET request to Oanda's REST API
     '''
 
-    def __init__(self, instrument, granularity, settingf=None, settings=None, data=None, **kwargs):
+    def __init__(self, instrument, granularity,
+                 settingf=None, settings=None, data=None, **kwargs):
         '''
         Constructor
 
@@ -178,8 +178,8 @@ class OandaAPI(object):
         params['granularity'] = self.granularity
         params['start'] = datestr
         params['end'] = endObj.isoformat()
-
-        resp = requests.get(url=self.settings.get('oanda_api', 'url'), params=params)
+        resp = requests.get(url=self.settings.get('oanda_api', 'url'),
+                            params=params)
         # 204 code means 'no_content'
         if resp.status_code == 204:
             if self.settings.getboolean('oanda_api', 'roll') is True:

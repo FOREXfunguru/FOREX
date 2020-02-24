@@ -166,22 +166,55 @@ def test_slice_with_start():
                     granularity='D',
                     settingf='data/settings.ini')
 
-    adatetime = datetime.datetime(2017, 12, 20, 22, 0)
+    adatetime = datetime.datetime(2016, 6, 19, 22, 0)
 
-    cl.slice(start=adatetime)
+    new_cl=cl.slice(start=adatetime)
 
-    assert 0
+    assert len(new_cl.clist) == 22
 
-def test_slice_with_start_end(trend_oanda_object):
+def test_slice_with_start_end():
 
-    candle_list = trend_oanda_object.fetch_candleset()
+    oanda = OandaAPI(instrument='AUD_USD',
+                     granularity='D',
+                     settingf='data/settings.ini')
 
-    cl = CandleList(candle_list, instrument='AUD_USD', granularity='D')
+    oanda.run(start='2016-05-23T23:00:00',
+              end='2016-07-19T23:00:00')
 
-    startdatetime = datetime.datetime(2017, 12, 20, 22, 0)
-    endatetime = datetime.datetime(2018, 1, 20, 22, 0)
+    candle_list = oanda.fetch_candleset()
 
-    cl.slice(start=startdatetime,end=endatetime)
+    cl = CandleList(candle_list,
+                    instrument='AUD_USD',
+                    granularity='D',
+                    settingf='data/settings.ini')
+
+    startdatetime = datetime.datetime(2016, 6, 20, 22, 0)
+    endatetime = datetime.datetime(2016, 7, 1, 22, 0)
+
+    cl.slice(start=startdatetime,
+             end=endatetime)
+
+    assert len(cl.clist) == 42
+
+def test_get_pivots():
+
+    oanda = OandaAPI(instrument='AUD_USD',
+                     granularity='D',
+                     settingf='data/settings.ini')
+
+    oanda.run(start='2016-05-23T23:00:00',
+              end='2016-07-19T23:00:00')
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list,
+                    instrument='AUD_USD',
+                    granularity='D',
+                    settingf='data/settings.ini')
+
+    pivots = cl.get_pivotlist()
+    assert pivots.plist[0].type == -1
+
 
 """
 def test_check_if_divergence():
@@ -337,16 +370,5 @@ def test_check_if_divergence():
         direction='down'
 
     assert cl.check_if_divergence(direction=direction)==True
-
-def test_get_pivots(trend_oanda_object):
-
-    candle_list = trend_oanda_object.fetch_candleset()
-
-    cl = CandleList(candle_list, instrument='AUD_USD', granularity='D',
-                    id='AUD_USD 29JAN2018D')
-
-    pivots=cl.get_pivots()
-    assert pivots[0] == -1
-    assert pivots[-1] == -1
 
 """

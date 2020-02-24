@@ -572,24 +572,11 @@ class CandleList(object):
 
         return model, regression_model_mse
 
-    def get_pivotlist(self, outfile=None, part='openAsk', th_up=0.5, th_down=-0.5):
+    def get_pivotlist(self):
         '''
         Function to obtain a pivotlist object containing pivots identified using the
         Zigzag indicator.
         It will also generate a .png image of the identified pivots
-
-        Parameters
-        ----------
-        outfile : str
-                  Name of output file. Optional
-        part : str
-               What entity will be used for calculating the pivots
-               Possible values are: 'openAsk', 'closeAsk', 'lowAsk', 'openBid', 'closeBid','rsi'
-               Default: openAsk
-        th_up: float
-               Up threshold for detecting peaks. Default: 0.5
-        th_down: float
-                 Down threshold for detecting valleys. Default: -0.5
 
         Return
         ------
@@ -600,24 +587,30 @@ class CandleList(object):
         values = []
         for i in range(len(self.clist)):
             x.append(i)
-            values.append(getattr(self.clist[i], part))
+            values.append(getattr(self.clist[i],
+                                  self.settings.get('general', 'part')))
 
         xarr = np.array(x)
         yarr = np.array(values)
 
-        pivots = peak_valley_pivots(yarr, th_up, th_down)
+        pivots = peak_valley_pivots(yarr, self.settings.getfloat('pivots', 'th_bounces'),
+                                    self.settings.getfloat('pivots', 'th_bounces')*-1)
 
-        pl=PivotList(parray=pivots,
-                     clist=self)
+        pl = PivotList(parray=pivots,
+                       clist=self,
+                       settingf=self.settingf)
 
-        if outfile is not None:
-            fig = plt.figure(figsize=config.PNGFILES['fig_sizes'])
-            plt.plot(xarr, yarr, 'k:', alpha=0.5)
-            plt.plot(xarr[pivots != 0], yarr[pivots != 0], 'k-')
-            plt.scatter(xarr[pivots == 1], yarr[pivots == 1], color='g')
-            plt.scatter(xarr[pivots == -1], yarr[pivots == -1], color='r')
+        outfile = "{0}/pivots/{1}.allpivots.png".format(self.settings.get('images', 'outdir'),
+                                                        self.instrument.replace(' ', '_'))
 
-            fig.savefig(outfile, format='png')
+        figsize = literal_eval(self.settings.get('images', 'size'))
+        fig = plt.figure(figsize=figsize)
+        plt.plot(xarr, yarr, 'k:', alpha=0.5)
+        plt.plot(xarr[pivots != 0], yarr[pivots != 0], 'k-')
+        plt.scatter(xarr[pivots == 1], yarr[pivots == 1], color='g')
+        plt.scatter(xarr[pivots == -1], yarr[pivots == -1], color='r')
+
+        fig.savefig(outfile, format='png')
 
         return pl
 
@@ -720,7 +713,8 @@ class CandleList(object):
                         instrument=self.instrument,
                         granularity=self.granularity,
                         id=self.id,
-                        type=self.type)
+                        type=self.type,
+                        settingf=self.settingf)
 
         return cl
 

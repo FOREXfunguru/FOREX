@@ -1,10 +1,11 @@
 from utils import *
-
 import config
 import numpy as np
 import matplotlib
+import traceback
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
+from configparser import ConfigParser
 
 class SegmentList(object):
     '''
@@ -19,15 +20,29 @@ class SegmentList(object):
     diff : int, Optional
            Diff in pips between first candle in first Segment
            and last candle in the last Segment
-
+    settingf : str, Optional
+               Path to *.ini file with settings
+    settings : ConfigParser object generated using 'settingf'
     '''
 
-    def __init__(self, slist, instrument):
+    def __init__(self, slist, instrument, settingf=None, settings=None):
+
+        self.settingf = settingf
+        pdb.set_trace()
+        traceback.print_stack()
+
+        if self.settingf is not None:
+            # parse settings file (in .ini file)
+            parser = ConfigParser()
+            parser.read(settingf)
+            self.settings = parser
+        else:
+            self.settings = settings
 
         # initialize the 'diff' attribute in each segment
-        self.slist=[s.calc_diff() for s in slist]
+        self.slist = [s.calc_diff() for s in slist]
         self.instrument = instrument
-        self.diff=self.calc_diff()
+        self.diff = self.calc_diff()
 
     def __trim_edge_segs(self, pip_th, candle_th):
         '''
@@ -64,27 +79,24 @@ class SegmentList(object):
             else:
                 nlist.pop()
 
-        self.slist=nlist
+        self.slist = nlist
 
         return nlist
 
-    def calc_diff(self, part="openAsk"):
+    def calc_diff(self):
         '''
         Function to calculate the difference in terms
         of number of pips betweeen the 1st candle in
         the 1st segment and the last candle in the
         last segment
 
-        Parameters
-        ---------
-        part : What part of the candles used for calculating the difference.
-               Default: 'openAsk'
-
         Returns
         -------
         float representing the diff in pips. It will be positive
         when it is a downtrend and negative otherwise
         '''
+        pdb.set_trace()
+        part = self.settings.get('general', 'part')
 
         diff = (getattr(self.slist[0].clist[0], part) -
                 getattr(self.slist[-1].clist[-1], part))
@@ -282,8 +294,8 @@ class SegmentList(object):
         A datetime object
         '''
 
-        end= self.slist[-1].clist[-1].time
-        self.end= end
+        end = self.slist[-1].clist[-1].time
+        self.end = end
 
         return end
 
@@ -303,7 +315,7 @@ class SegmentList(object):
         Segment object. None if not found
         '''
         for s in self.slist:
-            if s.start()==dt or s.start()>dt:
+            if s.start() == dt or s.start() > dt:
                 return s
 
         return None
@@ -326,7 +338,7 @@ class SegmentList(object):
         '''
 
         for s in reversed(self.slist):
-            if s.end()==dt or s.end()<dt:
+            if s.end() == dt or s.end() < dt:
                 return s
 
         return None
@@ -341,152 +353,3 @@ class SegmentList(object):
             out_str += "%s:%s " % (attr, value)
         return out_str
 
-
-class Segment(object):
-    '''
-    Class containing a Segment object identified using the function 'get_segment_list' from the PivotList
-
-    Class variables
-    ---------------
-    type : int, Required
-           1 or -1
-    count : int, Required
-            Number of entities of 'type'
-    clist : CandleList, Required
-            CandleList with list of candles for this Segment
-    instrument : str, Required
-                 Pair
-    diff : int, Optional
-           Diff in number of pips between the first and the last candles in this segment
-    '''
-
-    def __init__(self, type, count, clist, instrument, diff=None):
-        self.type = type
-        self.count = count
-        self.clist = clist
-        self.instrument = instrument
-        self.diff = diff
-
-    def prepend(self, s):
-        '''
-        Function to prepend s to self. The merge will be done by
-        concatenating s.clist to self.clist and increasing self.count to
-        self.count+s.count
-
-        Parameters
-        ----------
-        s : Segment object to be merge
-
-        Returns
-        -------
-        self
-        '''
-
-        self.clist=s.clist+self.clist
-        self.count=len(self.clist)
-
-        return self
-
-    def append(self, s):
-        '''
-        Function to append s to self. The merge will be done by
-        concatenating self.clist to self.clist and increasing self.count to
-        self.count+s.count
-
-        Returns
-        -------
-        self
-        '''
-
-        self.clist = self.clist+s.clist
-        self.count = len(self.clist)
-
-        return self
-
-    def calc_diff(self, part="openAsk"):
-        '''
-        Function to calculate the absolute difference in
-        number of pips between the first and the last candles
-        of this segment
-
-        Parameters
-        ---------
-        part : What part of the candles used for calculating the difference.
-               Default: 'openAsk'
-
-        Returns
-        -------
-        It will set the 'diff' class member attribute
-        '''
-
-        # calculate the diff in pips between the last and first candles of this segment
-        diff = abs(getattr(self.clist[-1],part) - getattr(self.clist[0],part))
-        diff_pips = float(calculate_pips(self.instrument, diff))
-
-        self.diff=diff_pips
-
-        return self
-
-    def is_short(self, min_n_candles, diff_in_pips):
-        '''
-        Function to check if segment is short (self.diff < pip_th or self.count < candle_th)
-
-        Parameters
-        ----------
-        min_n_candles: int, Required
-                       Minimum number of candles for this segment to be considered short
-        diff_in_pips: int, Required
-                      Minimum number of pips for this segment to be considered short
-
-        Returns
-        -------
-        True if is short
-        '''
-
-        if self.count < min_n_candles and self.diff < diff_in_pips:
-            return True
-        else:
-            return False
-
-    def length(self):
-        '''
-        Function to get the length of a segment
-
-        Returns
-        -------
-        int Number of candles of this segment
-        '''
-
-        return len(self.clist)
-
-    def start(self):
-        '''
-        Function that returns the start of this
-        Segment
-
-        Returns
-        -------
-        datetime
-        '''
-        return self.clist[0].time
-
-    def end(self):
-        '''
-        Function that returns the end of this
-        Segment
-
-        Returns
-        -------
-        datetime
-        '''
-        return self.clist[-1].time
-
-
-    def __repr__(self):
-        return "Segment"
-
-    def __str__(self):
-        out_str = ""
-        for attr, value in self.__dict__.items():
-            out_str += "%s:%s " % (attr, value)
-        return out_str
