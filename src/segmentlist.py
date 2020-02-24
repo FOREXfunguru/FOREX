@@ -2,7 +2,6 @@ from utils import *
 import config
 import numpy as np
 import matplotlib
-import traceback
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 from configparser import ConfigParser
@@ -28,8 +27,6 @@ class SegmentList(object):
     def __init__(self, slist, instrument, settingf=None, settings=None):
 
         self.settingf = settingf
-        pdb.set_trace()
-        traceback.print_stack()
 
         if self.settingf is not None:
             # parse settings file (in .ini file)
@@ -95,7 +92,6 @@ class SegmentList(object):
         float representing the diff in pips. It will be positive
         when it is a downtrend and negative otherwise
         '''
-        pdb.set_trace()
         part = self.settings.get('general', 'part')
 
         diff = (getattr(self.slist[0].clist[0], part) -

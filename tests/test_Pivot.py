@@ -9,8 +9,8 @@ import datetime
 import pdb
 
 @pytest.fixture
-def pv_object():
-    '''Returns Pivot object'''
+def cl_object():
+    '''Returns CandleList object'''
 
     oanda = OandaAPI(instrument='AUD_USD',
                      granularity='D',
@@ -25,12 +25,7 @@ def pv_object():
                     instrument='AUD_USD',
                     type='long',
                     settingf='data/settings.ini')
-
-    pdb.set_trace()
-
-    pl = cl.get_pivotlist()
-
-    return pl[0]
+    return cl
 
 @pytest.fixture
 def clean_tmp():
@@ -40,44 +35,49 @@ def clean_tmp():
     for f in files:
         os.remove(f)
 
-def test_fetch_by_time(pv_object):
-    '''Obtain a Pivot object by datetime'''
+def test_pre_aft_lens(cl_object):
+    '''
+    Check if 'pre' and 'aft' Segments have the
+    correct number of candles
+    '''
 
-    pdb.set_trace()
-    adt = datetime.datetime(2016, 2, 2, 22, 0)
+    pl = cl_object.get_pivotlist()
 
-    rpt = pv_object.fetch_by_time(adt)
+    pivot = pl.plist[3]
 
-    assert rpt.candle.time == adt
-    assert 0
-"""
-def test_fetch_pre(cl_object):
-    '''Obtain the 'pre' Segment'''
+    assert len(pivot.pre.clist) == 20
+    assert len(pivot.aft.clist) == 8
 
-    pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
-                                 th_up=0.01, th_down=-0.01)
+def test_pre_aft_start(cl_object):
+    '''
+    Check if 'pre' and 'aft' Segments have the
+    correct start Datetimes
+    '''
 
-    adt = datetime.datetime(2015, 8, 16, 21, 0)
+    pl = cl_object.get_pivotlist()
 
-    rpt = pl.fetch_by_time(adt)
+    pivot = pl.plist[3]
 
-    assert len(rpt.pre.clist) == 3
+    assert datetime.datetime(2015, 8, 6, 21, 0) == pivot.pre.start()
+    assert datetime.datetime(2015, 9, 3, 21, 0) == pivot.aft.start()
 
 def test_merge_pre(cl_object):
     '''
-    Test function to merge 'pre' Segment
+    Test function 'merge_pre' to merge the 'pre' Segment
     '''
-    pl = cl_object.get_pivotlist(outfile='data/tmp/test.png',
-                                 th_up=0.01, th_down=-0.01)
+    pl = cl_object.get_pivotlist()
 
-    adt = datetime.datetime(2015, 8, 16, 21, 0)
+    pivot = pl.plist[3]
+    # Check pivot.pre.start() before running 'merge_pre'
+    assert datetime.datetime(2015, 8, 6, 21, 0) == pivot.pre.start()
 
-    rpt = pl.fetch_by_time(adt)
+    # run 'merge_pre' function
+    pivot.merge_pre(slist=pl.slist)
 
-    rpt.merge_pre(slist=pl.slist, n_candles=5)
+    # Check pivot.pre.start() after running 'merge_pre'
 
-    assert datetime.datetime(2015, 8, 13, 21, 0)==rpt.pre.end()
-
+    assert datetime.datetime(2015, 6, 24, 21, 0) == pivot.pre.start()
+"""
 def test_merge_aft(cl_object):
     '''
     Test function to merge 'aft' Segment

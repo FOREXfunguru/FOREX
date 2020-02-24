@@ -44,11 +44,56 @@ class Pivot(object):
         else:
             self.settings = settings
 
-    def merge_pre(self, slist, n_candles):
+    def merge_pre(self, slist):
         '''
         Function to merge 'pre' Segment. It will merge self.pre with previous segment
         if self.pre and previous segment are of the same type (1 or -1) or count of
-        previous segment is less than 'n_candles'
+        previous segment is less than self.settings.getint('pivots', 'n_candles')
+
+        Parameters
+        ----------
+        slist : SegmentList object
+                SegmentList for PivotList of this Pivot.
+                Required
+
+        Returns
+        -------
+        Nothing
+        '''
+
+        extension_needed = True # if extension_needed is False then no further attempts of extending this self.pre
+                                # will be tried
+        while extension_needed is True:
+            # reduce start of self.pre by one candle in order to retrieve the previous segment
+            # by its end
+            start_dt = self.pre.start() - periodToDelta(1, self.candle.granularity)
+
+            # fetch previous segment
+            s = slist.fetch_by_end(start_dt)
+            if s is None:
+                warnings.warn("No Segment could be retrieved for pivot falling in time {0} "
+                              "by using s.fetch_by_end and date: {1} in function 'merge_pre'".format(self.candle.time,
+                                                                                                     start_dt))
+                extension_needed = False
+                continue
+
+            if self.pre.type == s.type:
+                # merge if type of previous (s) is equal to self.pre
+                self.pre = self.pre.prepend(s)
+            elif self.pre.type != s.type and s.count < self.settings.getint('pivots', 'n_candles'):
+                # merge if types of previous (s) and self.pre are different but
+                # s.count is less than self.settings.getint('pivots', 'n_candles')
+                self.pre = self.pre.prepend(s)
+            else:
+                # exit the while loop, as type of previous (s) and self.pre are different
+                # and s.count is greater than self.settings.getint('pivots', 'n_candles')
+                extension_needed = False
+
+    def merge_aft(self, slist):
+        '''
+        Function to merge 'aft' Segment. It will merge self.aft with next segment
+        if self.aft and next segment are of the same type (1 or -1) or count of
+        next segment is less than 'n_candles'
 
         Parameters
         ----------
@@ -63,54 +108,11 @@ class Pivot(object):
 
         extension_needed = True
         while extension_needed is True:
-            # reduce start of self.pre by one candle
-            start_dt = self.pre.start() - periodToDelta(1, self.candle.granularity)
-
-            # fetch previous segment
-            s = slist.fetch_by_end(start_dt)
-            if s is None:
-                warnings.warn("No Segment could be retrieved for pivot falling in time {0} "
-                              "by using s.fetch_by_end and date: {1} in function 'merge_pre'".format(self.candle.time,
-                                                                                                     start_dt))
-                extension_needed=False
-                continue
-
-            if self.pre.type == s.type:
-                # merge
-                self.pre = self.pre.prepend(s)
-            elif self.pre.type != s.type and s.count < n_candles:
-                # merge
-                self.pre = self.pre.prepend(s)
-            else:
-                extension_needed = False
-
-    def merge_aft(self, slist, n_candles):
-        '''
-        Function to merge 'aft' Segment. It will merge self.aft with next segment
-        if self.aft and next segment are of the same type (1 or -1) or count of
-        next segment is less than 'n_candles'
-
-        Parameters
-        ----------
-        slist : SegmentList object
-                SegmentList for PivotList of this Pivot.
-                Required
-        n_candles : int
-                    Skip merge if Segment is less than 'n_candles'.
-                    Required
-
-        Returns
-        -------
-        Nothing
-        '''
-
-        extension_needed=True
-        while extension_needed is True:
             # increase end of self.aft by one candle§
             start_dt = self.aft.end()+periodToDelta(1, self.candle.granularity)
 
             # fetch next segment
-            s=slist.fetch_by_start(start_dt)
+            s = slist.fetch_by_start(start_dt)
             if s is None:
                 warnings.warn("No Segment could be retrieved for pivot falling in time {0} by using s.fetch_by_"
                               "start and date: {1} in function 'merge_aft'. ".format(self.candle.time, start_dt))
@@ -120,7 +122,7 @@ class Pivot(object):
             if self.aft.type == s.type:
                 # merge
                 self.aft = self.aft.append(s)
-            elif self.aft.type != s.type and s.count<n_candles:
+            elif self.aft.type != s.type and s.count < self.settings.getint('pivots', 'n_candles'):
                 # merge
                 self.aft = self.aft.append(s)
             else:
@@ -130,11 +132,12 @@ class Pivot(object):
         '''
         Function to calculate the score for this Pivot
         The score will be the result of adding the number
-        of candles of the 'pre' and 'aft' segment (if defined)
+        of candles of the 'pre' and 'aft' segments (if defined)
 
         Returns
         -------
-        int Score and it will set the score class attribute
+        int  with the score of this pivot.
+             It will also set the score class attribute
         '''
         if self.pre :
             score_pre = len(self.pre.clist)
