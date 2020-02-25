@@ -3,50 +3,20 @@ import pdb
 
 from oanda_api import OandaAPI
 from candlelist import CandleList
+from harea import HArea
+
 import datetime
 
-def test_CandleList():
-    '''
-    Test the creation of a CandleList object
-
-    '''
-    # time must be in a valid datetime format
-    oanda=OandaAPI(instrument='AUD_USD',
-                   granularity='D',
-                   settingf='data/settings.ini')
-
-    oanda.run(start='2015-01-25T22:00:00',
-             end='2015-01-26T22:00:00')
-
-    candle_list=oanda.fetch_candleset()
-
-    cl=CandleList(candle_list,
-                  settingf='data/settings.ini',
-                  type='long')
-
-    one_c=cl.next()
-    assert one_c.highBid == 0.79329
-    assert one_c.openBid == 0.7873
-    assert one_c.lowBid == 0.7857
-    assert one_c.representation == 'bidask'
-    assert one_c.lowAsk == 0.786
-    assert one_c.complete is True
-    assert one_c.openAsk == 0.7889
-    assert one_c.highAsk == 0.79347
-    assert one_c.highBid == 0.79329
-    assert one_c.volume == 12619
-    assert one_c.closeBid == 0.79204
-    assert one_c.closeAsk == 0.79258
-    assert one_c.openBid == 0.7873
-
-def test_calc_rsi():
+@pytest.fixture
+def clO():
+    """Returns a CandleList object"""
 
     oanda = OandaAPI(instrument='AUD_USD',
                      granularity='D',
                      settingf='data/settings.ini')
 
-    oanda.run(start='2015-01-20T22:00:00',
-              end='2015-01-29T22:00:00')
+    oanda.run(start='2019-03-06T23:00:00',
+              end='2020-01-03T23:00:00')
 
     candle_list = oanda.fetch_candleset()
 
@@ -54,25 +24,41 @@ def test_calc_rsi():
                     instrument='AUD_USD',
                     granularity='D',
                     settingf='data/settings.ini')
+    return cl
 
-    cl.calc_rsi()
+def test_CandleList(clO):
+    """
+    Test the creation of a CandleList object
+    """
 
-    assert cl.clist[4].rsi == 29.756531523276152
+    one_c = clO.next()
+    assert one_c.highBid == 0.70507
+    assert one_c.openBid == 0.70308
+    assert one_c.lowBid == 0.70047
+    assert one_c.representation == 'bidask'
+    assert one_c.lowAsk == 0.7006
+    assert one_c.complete is True
+    assert one_c.openAsk == 0.70331
+    assert one_c.highAsk == 0.70521
+    assert one_c.highBid == 0.70507
+    assert one_c.volume == 5937
+    assert one_c.closeBid == 0.70149
 
-def test_rsibounces():
+def test_calc_rsi(clO):
 
+    clO.calc_rsi()
 
-    oanda = OandaAPI(instrument='CAD_JPY',
-                     granularity='D',
-                     settingf='data/settings.ini')
+    assert clO.clist[4].rsi == 48.197810051105556
 
-    oanda.run(start='2012-01-31T23:00:00',
-              end='2012-03-23T23:00:00')
+def test_rsibounces(oandaO):
 
-    candle_list = oanda.fetch_candleset()
+    oandaO.run(start='2012-01-31T23:00:00',
+               end='2012-03-23T23:00:00')
+
+    candle_list = oandaO.fetch_candleset()
 
     cl = CandleList(candle_list,
-                    instrument='CAD_JPY',
+                    instrument='AUD_USD',
                     granularity='D',
                     settingf='data/settings.ini')
 
@@ -84,28 +70,14 @@ def test_rsibounces():
 
     assert dict1 == dict2
 
-def test_get_length_functions():
+def test_get_length_functions(clO):
     '''
     This test check the functions for getting the length of
     the CandleList in number of pips and candles
     '''
 
-    oanda = OandaAPI(instrument='USD_CAD',
-                     granularity='D',
-                     settingf='data/settings.ini')
-
-    oanda.run(start='2018-02-01T23:00:00',
-              end='2018-03-12T23:00:00')
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list,
-                    instrument='USD_CAD',
-                    granularity='D',
-                    settingf='data/settings.ini')
-
-    assert cl.get_length_candles() == 28
-    assert cl.get_length_pips() == 532
+    assert clO.get_length_candles() == 28
+    assert clO.get_length_pips() == 532
 
 def test_fit_reg_line():
 
@@ -195,6 +167,26 @@ def test_slice_with_start_end():
              end=endatetime)
 
     assert len(cl.clist) == 42
+
+def test_get_lasttime(oandaO):
+
+    oandaO.run(start='2019-03-06T23:00:00',
+               end='2020-01-03T23:00:00')
+
+    candle_list = oandaO.fetch_candleset()
+
+    cl = CandleList(candle_list,
+                    instrument='AUD_USD',
+                    granularity='D',
+                    settingf='data/settings.ini')
+
+    resist = HArea(price=0.70151,
+                   instrument='AUD_USD',
+                   granularity='D',
+                   settingf='data/settings.ini')
+
+    self.lasttime = cl.get_lasttime(resist)
+    assert 0
 
 def test_get_pivots():
 

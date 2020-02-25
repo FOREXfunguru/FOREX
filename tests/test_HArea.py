@@ -32,7 +32,7 @@ def test_last_time(oanda_object):
 
     resist = HArea(price=0.92216, pips=50, instrument='EUR_AUD', granularity='D')
 
-    lt=resist.last_time(clist=cl.clist, position='above')
+    lt = resist.last_time(clist=cl.clist, position='above')
 
     assert lt == datetime.datetime(2016, 8, 15, 21, 0)
 

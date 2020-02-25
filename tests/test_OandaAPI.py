@@ -24,7 +24,7 @@ def test_OandaAPI(i, g, s, e, resp):
                      granularity=g,
                      settingf='data/settings.ini')
     respl = oanda.run(start=s,
-                    end=e)
+                      end=e)
 
     assert respl == resp
 

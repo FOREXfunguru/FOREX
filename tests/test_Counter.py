@@ -3,40 +3,33 @@ from Pattern.counter import Counter
 import pytest
 import pdb
 import datetime
+import glob
+import os
+from TradeJournal.trade import Trade
 
 @pytest.fixture
 def counter_object():
     '''Returns Counter object'''
 
-    c = Counter(
-        id='EUR_GBP 13AUG2019D',
+    t = Trade(
         start='2019-08-12 22:00:00',
         pair='EUR_GBP',
         timeframe='D',
         type='short',
-        period=1000,
         SR=0.92909,
         SL=0.93298,
         TP=0.90366,
-        trend_i='2019-05-03 21:00:00',
-        png_prefix='data/tmp/test')
-    return c
-
-@pytest.fixture
-def counter_object1():
-    '''Returns Counter object without the 'trend_i' initialised'''
+        strat='counter_b1',
+        settingf="data/settings.ini"
+    )
 
     c = Counter(
-        id='GBP_USD 18NOV2019H12',
-        start='2019-11-18 22:00:00',
-        pair='GBP_USD',
-        timeframe='H12',
-        type='short',
+        id='EUR_GBP 13AUG2019D',
+        trade=t,
         period=1000,
-        entry=1.29352,
-        SR=1.29768,
-        SL=1.29935,
-        RR=1.5)
+        trend_i='2019-05-03 21:00:00',
+        settingf='data/settings.ini'
+    )
     return c
 
 @pytest.fixture
@@ -47,35 +40,46 @@ def clean_tmp():
     for f in files:
         os.remove(f)
 
+def test_clist_period(counter_object):
+    """
+    Check that self.clist_period is correctly
+    initialized with self.__initclist()
+    """
+
+#    assert counter_object.clist_period.start
+    assert 0
+
 def test_bounces_attr(counter_object):
-    '''
+    """
     Check that self.bounces class attribute
     has been initialized
-    '''
+    """
 
     assert counter_object.bounces.plist[0].candle.midAsk==0.9398
     assert len(counter_object.bounces.plist)==3
 
 
 def test_lasttime_attr(counter_object):
-    '''
+    """
     Check that self.lasttime class attribute
     has been initialized
-    '''
+    """
 
     adatetime = datetime.datetime(2009, 3, 22, 21, 0)
     assert counter_object.lasttime==adatetime
 
 def test_bounces_lasttime_attr(counter_object):
-    '''
+    """
     Check that self.bounces_lasttime class attribute
     has been initialized
-    '''
+    """
 
     assert len(counter_object.bounces_lasttime.plist)==3
 
 def test_calc_score(counter_object):
-    '''Test 'calc_score' function to set the 'total_score' class attr'''
+    """
+    Test 'calc_score' function to set the 'total_score' class attr
+    """
 
     assert counter_object.total_score==511
 

@@ -55,7 +55,7 @@ class CandleList(object):
     '''
 
     def __init__(self, clist, settingf, instrument=None, granularity=None,
-                 type=None,seq=None, number_of_0s=None,
+                 type=None, seq=None, number_of_0s=None,
                  longest_stretch=None, highlow_double0s=None,
                  openclose_double0s=None, entropy=None, id=None):
         self.clist = clist
@@ -74,6 +74,8 @@ class CandleList(object):
                 self.type = 'short'
             elif price_1st < price_last:
                 self.type = 'long'
+        else:
+            self.type = type
 
         self.instrument = instrument
         self.granularity = granularity
@@ -444,11 +446,13 @@ class CandleList(object):
         lengths=[]
 
         for c in self.clist:
-            if c.rsi is None: raise Exception("RSI values are not defined for this Candlelist, "
-                                              "run calc_rsi first")
-            if self.type is None: raise Exception("type is not defined for this Candlelist")
+            if c.rsi is None:
+                raise Exception("RSI values are not defined for this Candlelist, "
+                                "run calc_rsi first")
+            if self.type is None:
+                raise Exception("type is not defined for this Candlelist")
 
-            if self.type=='short':
+            if self.type == 'short':
                 if c.rsi > 70 and adj is False:
                     num_times += 1
                     length = 1
@@ -741,11 +745,12 @@ class CandleList(object):
         min_distDelta=None
         if min_dist is not None:
             # convert the min_dist integer to a timedelta
-            min_distDelta=periodToDelta(ncandles=min_dist,timeframe=self.granularity)
+            min_distDelta = periodToDelta(ncandles=min_dist,
+                                          timeframe=self.granularity)
 
         list_c=self.clist
         res = [x.time - y.time for x, y in zip(list_c, list_c[1:])]
-        below = [] # below will contain the list_c indexes separated by <min_dist
+        below = []  # below will contain the list_c indexes separated by <min_dist
         ix = 0
         for i in res:
             i = abs(i)
@@ -840,13 +845,13 @@ class CandleList(object):
                         else:
                             return_seen = False
 
-        bounces=arr[np.logical_or(plist.plist == 1, plist.plist == -1)]
+        bounces = arr[np.logical_or(plist.plist == 1, plist.plist == -1)]
 
-        init_dtime=bounces[ix].time
+        init_dtime = bounces[ix].time
 
         return init_dtime
 
-    def get_lasttime(self,hrarea):
+    def get_lasttime(self, hrarea):
         '''
         Function to get the datetime for last time that price has been above/below a HArea
 
@@ -867,10 +872,10 @@ class CandleList(object):
 
         if self.type == "short":
             position = 'above'
-            part='lowAsk'
+            part = 'lowAsk'
         if self.type == "long":
             position = 'below'
-            part='highAsk'
+            part = 'highAsk'
 
         last_time = hrarea.last_time(clist=self.clist,
                                      position=position,

@@ -10,6 +10,7 @@ from oanda_api import OandaAPI
 from candlelist import CandleList
 from harea import HArea
 from pivotlist import *
+from configparser import ConfigParser
 
 
 class Counter(object):
@@ -21,26 +22,8 @@ class Counter(object):
 
     id : str, Required
          Id used for this object
-    start: datetime, Required
-           Time/date when the trade was taken. i.e. 20-03-2017 08:20:00s
-    pair: str, Required
-          Currency pair used in the trade. i.e. AUD_USD
-    timeframe: str, Required
-               Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
-    entry: float, Optional
-           entry price
     trend_i: datetime, Required
              start of the trend
-    type: str, Optional
-          What is the type of the trade (long,short)
-    SL:  float, Optional
-         Stop/Loss price
-    TP:  float, Optional
-         Take profit price
-    RR:  float, Optional
-         Risk ratio of the trade
-    SR:  float, Optional
-         Support/Resistance area
     bounces: list, Optional
              List with Candle objects for price bounces at self.SR
     clist_period: CandleList, Optional
@@ -69,43 +52,51 @@ class Counter(object):
                   Total (sum of each pivot score) pivot score for all bounces (bounces class attr)
     score_lasttime : int, Optional
                      Sum of each pivot score for all pivots after lasttime (bounces_lasttime class attr)
-    settings : ConfigParser, Required
-               ConfigParser object with settings
+    settingf : str, Optional
+               Path to *.ini file with settings
     '''
 
-    def __init__(self, pair, settings, **kwargs):
+    def __init__(self, trade, settingf=None, settings=None, **kwargs):
 
-        self.settings = settings
+        self.settingf = settingf
+        if self.settingf is not None:
+            # parse settings file (in .ini file)
+            parser = ConfigParser()
+            parser.read(settingf)
+            self.settings = parser
+        else:
+            self.settings = settings
 
-        allowed_keys = [ 'id','start','timeframe','entry','trend_i', 'type', 'SL',
-                        'TP','SR','RR','bounces','clist_period','clist_trend','lasttime',
-                        'bounces_lasttime','slope','n_rsibounces','rsibounces_lengths',
-                        'divergence','entry_onrsi','length_candles','length_pips', 'SMA',
-                        'total_score','score_lasttime']
+        allowed_keys = [ 'id', 'trend_i', 'bounces', 'clist_period', 'clist_trend','lasttime',
+                        'bounces_lasttime', 'slope', 'n_rsibounces', 'rsibounces_lengths',
+                        'divergence', 'entry_onrsi', 'length_candles', 'length_pips', 'SMA',
+                        'total_score', 'score_lasttime']
 
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
-        self.pair = pair
-        self.start = datetime.datetime.strptime(self.start,
-                                                '%Y-%m-%d %H:%M:%S')
+        self.trade = trade
 
-        # init the CandleList from self.period to self.start
+        # init the CandleList from self.period to self.trade.start
         # this will set the self.clist_period class attribute
         self.__initclist()
         # calc_rsi
         self.clist_period.calc_rsi()
 
-        if not hasattr(self, 'TP'):
-            if not hasattr(self, 'RR'): raise Exception("Neither the RR not the TP "
-                                                        "is defined. Please provide RR")
-            diff = (self.entry-self.SL)*self.RR
-            self.TP = round(self.entry+diff, 4)
+        if not hasattr(self.trade, 'TP'):
+            if not hasattr(self, 'RR'):
+                raise Exception("Neither the RR not the TP "
+                                "is defined. Please provide RR")
+
+            diff = (self.trade.entry-self.trade.SL)*self.trade.RR
+            self.trade.TP = round(self.trade.entry+diff, 4)
+
+        pdb.set_trace()
 
         # instantiate an HArea object representing the self.SR in order to calculate the lasttime
         # price has been above/below SR
-        resist = HArea(price=self.SR,
-                       instrument=self.pair,
-                       granularity=self.timeframe,
-                       settings=settings)
+        resist = HArea(price=self.trade.SR,
+                       instrument=self.trade.pair,
+                       granularity=self.trade.timeframe,
+                       settings=self.settings)
 
         self.lasttime = self.clist_period.get_lasttime(resist)
 
@@ -125,34 +116,34 @@ class Counter(object):
 
     def __initclist(self):
         '''
-        Private function to initialize the CandleList object that goes from self.start
+        Private function to initialize the CandleList object that goes from self.trade.start
         to self.period
 
         This will set the self.clist_period class attribute
         '''
 
         delta_period = periodToDelta(self.settings.getint('counter', 'period'),
-                                     self.timeframe)
-        delta_1 = periodToDelta(1, self.timeframe)
-        start = self.start - delta_period # get the start datetime for this CandleList period
-        end = self.start + delta_1 # increase self.start by one candle to include self.start
+                                     self.trade.timeframe)
+        delta_1 = periodToDelta(1, self.trade.timeframe)
+        start = self.trade.start - delta_period  # get the start datetime for this CandleList period
+        end = self.trade.start + delta_1  # increase self.start by one candle to include self.start
 
         oanda = OandaAPI(url=self.settings.get('oanda_api', 'url'),
-                         instrument=self.pair,
-                         granularity=self.timeframe,
-                         alignmentTimezone=self.settings.get('oanda_api', 'alignmentTimezone'),
-                         dailyAlignment=self.settings.get('oanda_api', 'dailyAlignment'))
+                         instrument=self.trade.pair,
+                         granularity=self.trade.timeframe,
+                         settingf=self.settingf)
 
         oanda.run(start=start.isoformat(),
-                  end=end.isoformat(),
-                  roll=True)
+                  end=end.isoformat())
 
-        candle_list = oanda.fetch_candleset(vol_cutoff=0)
-
-        cl = CandleList(candle_list, self.pair,
-                        granularity=self.timeframe,
+        candle_list = oanda.fetch_candleset()
+        pdb.set_trace()
+        cl = CandleList(candle_list,
+                        settingf=self.settingf,
+                        instrument=self.trade.pair,
+                        granularity=self.trade.timeframe,
                         id=self.id,
-                        type=self.type)
+                        type=self.trade.type)
 
         self.clist_period = cl
 

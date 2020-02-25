@@ -52,11 +52,13 @@ class Trade(object):
                Optional
     '''
 
-    def __init__(self, strat, settingf=None, settings=None, **kwargs):
+    def __init__(self, strat, start, settingf=None, settings=None, **kwargs):
 
         self.__dict__.update(kwargs)
 
         self.strat = strat
+        self.start = datetime.datetime.strptime(start,
+                                                '%Y-%m-%d %H:%M:%S')
         self.pair = re.sub('/', '_', self.pair)
         self.strat = strat
         #remove potential whitespaces in timeframe
