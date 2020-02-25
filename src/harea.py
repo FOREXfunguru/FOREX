@@ -1,12 +1,10 @@
-import numpy as np
 import pdb
 import matplotlib
-import peakutils
-import traceback
-import warnings
 from zigzag import *
-from datetime import timedelta,datetime
+from datetime import timedelta
 from oanda_api import OandaAPI
+from configparser import ConfigParser
+
 
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
@@ -53,7 +51,13 @@ class HArea(object):
         self.price = price
         self.granularity = granularity
         self.settingf = settingf
-        self.settings = settings
+        if self.settingf is not None:
+            # parse settings file (in .ini file)
+            parser = ConfigParser()
+            parser.read(settingf)
+            self.settings = parser
+        else:
+            self.settings = settings
 
         assert self.settings.has_option('pivots', 'hr_pips'), "'hr_pips' needs to be defined"
         pips = self.settings.getint('pivots', 'hr_pips')
@@ -80,7 +84,7 @@ class HArea(object):
         count = 0
         for c in reversed(clist):
             count += 1
-            if count <= min:
+            if count <= self.settings.getint('harea', 'min'):
                 continue
             price = getattr(c, self.settings.get('general', 'part'))
             if position == 'above':
@@ -138,36 +142,3 @@ class HArea(object):
                     return c.time
         else:
             return 'n.a.'
-
-    def inarea_bounces(self, plist):
-        '''
-        Function to identify the candles for which price is in the area defined
-        by self.upper and self.lower
-
-        Parameters
-        ----------
-        plist: PivotList
-               Containing the PivotList for bounces (including the ones
-                 that are not in HRarea)
-
-        Returns
-        -------
-        list with bounces that are in the area and will also initialize the
-        'bounces' member class
-        '''
-
-        # get bounces in the horizontal area
-        carray = np.array(plist.clist.clist)
-        bounces = carray[np.logical_or(plist.plist == 1, plist.plist == -1)]
-
-        ix = 0
-        in_area_list = []
-        for c in bounces:
-            price = getattr(c, self.settings('general','part'))
-            if price >= self.lower and price <= self.upper:
-                in_area_list.append(c)
-            ix += 1
-
-        self.bounces = in_area_list
-
-        return in_area_list

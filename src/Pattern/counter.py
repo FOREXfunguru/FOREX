@@ -1,6 +1,4 @@
 import pdb
-import datetime
-import numpy as np
 import matplotlib
 
 matplotlib.use('PS')

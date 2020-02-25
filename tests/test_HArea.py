@@ -7,49 +7,55 @@ from candlelist import CandleList
 import datetime
 
 @pytest.fixture
-def oanda_object():
-    '''Returns an  oanda object'''
+def cl_object():
+    '''Returns a CandleList object'''
 
-    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                     instrument='EUR_AUD',
+    oanda = OandaAPI(
+                     instrument='AUD_USD',
                      granularity='D',
-                     dailyAlignment=22,
-                     alignmentTimezone='Europe/London')
+                     settingf='data/settings.ini')
 
-    oanda.run(start='2015-08-26T22:00:00',
-              end='2016-08-15T22:00:00')
+    oanda.run(start='2019-03-06T23:00:00',
+              end='2020-01-03T23:00:00')
 
-    return oanda
+    candle_list = oanda.fetch_candleset()
 
-def test_last_time(oanda_object):
+    cl = CandleList(candle_list,
+                    instrument='AUD_USD',
+                    granularity='D',
+                    settingf='data/settings.ini')
+    return cl
+
+def test_last_time(cl_object):
     '''
     Test 'last_time' function from HArea
     '''
 
-    candle_list = oanda_object.fetch_candleset()
+    resist = HArea(price=1.44280,
+                   instrument='EUR_AUD',
+                   granularity='D',
+                   settingf='data/settings.ini')
 
-    cl = CandleList(candle_list, instrument='EUR_AUD', granularity='D')
+    lt = resist.last_time(clist=cl_object.clist, position='below')
 
-    resist = HArea(price=0.92216, pips=50, instrument='EUR_AUD', granularity='D')
+    assert lt == datetime.datetime(2015, 6, 1, 21, 0)
 
-    lt = resist.last_time(clist=cl.clist, position='above')
-
-    assert lt == datetime.datetime(2016, 8, 15, 21, 0)
-
-def test_get_cross_time(oanda_object):
+def test_get_cross_time(cl_object):
     '''
     Test 'get_cross_time' function from HArea
     for a single candle that crosses the 'resist' object
     that is centered at 1.57854
     '''
 
-    candle_list = oanda_object.fetch_candleset()
+    resist = HArea(price=1.46341,
+                   instrument='EUR_AUD',
+                   granularity='D',
+                   settingf='data/settings.ini')
 
-    resist = HArea(price=1.57854, pips=50, instrument='EUR_AUD', granularity='D')
-
-    # Candle that will be analysed for crossing is 27/08/2015
+    # Candle that will be analysed for crossing is 4/08/2016
     # which crosses 'resist'
-    cross_time = resist.get_cross_time(candle=candle_list[0])
+    pdb.set_trace()
+    cross_time = resist.get_cross_time(candle=cl_object.clist[-8])
 
     assert cross_time == datetime.datetime(2015, 8, 27, 9, 0)
 
