@@ -8,8 +8,8 @@ def t_object():
     '''Returns a Trade object'''
 
     td = Trade(
-         start="2017-04-20T14:00:00",
-         end="2017-04-26T14:00:00",
+         start="2017-04-20 14:00:00",
+         end="2017-04-26 14:00:00",
          pair="AUD/USD",
          type="long",
          timeframe="H8",

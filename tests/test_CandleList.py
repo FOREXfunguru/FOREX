@@ -104,14 +104,14 @@ def test_slice_with_start_end(clO):
 
 def test_get_lasttime(clO):
 
-    pdb.set_trace()
     resist = HArea(price=0.70151,
+                   pips=5,
                    instrument='AUD_USD',
                    granularity='D',
                    settingf='data/settings.ini')
 
     lasttime = clO.get_lasttime(resist)
-    assert 0
+    assert lasttime == datetime.datetime(2019, 7, 21, 21, 0)
 """
 def test_get_pivots():
 
@@ -259,31 +259,5 @@ def test_get_entropy(oanda_object):
     shared_items = set(dict1.items()) & set(dict2.items())
 
     assert len(shared_items) == 5
-
-def test_check_if_divergence():
-
-    oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                     instrument='EUR_AUD',
-                     granularity='D',
-                     alignmentTimezone='Europe/London',
-                     dailyAlignment=22,
-                     start='2016-05-23T23:00:00',
-                     end='2016-07-19T23:00:00')
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list, instrument='CAD_JPY', granularity='D')
-
-    cl.calc_rsi(period=1000)
-
-    (model,outfile)=cl.fit_reg_line()
-
-    direction=None
-    if model.coef_[0, 0]>0:
-        direction='up'
-    else:
-        direction='down'
-
-    assert cl.check_if_divergence(direction=direction)==True
 
 """

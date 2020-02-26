@@ -1,6 +1,5 @@
 import pdb
 import matplotlib
-from zigzag import *
 from datetime import timedelta
 from oanda_api import OandaAPI
 from configparser import ConfigParser
@@ -18,24 +17,23 @@ class HArea(object):
     price : float, Required
             Price in the chart used as the middle point that will be extended on both sides a certain
             number of pips
-    instrument : str, Optional
+    instrument : str, Required
                  Instrument for this CandleList (i.e. AUD_USD or EUR_USD etc...)
-    granularity : str, Optional
+    granularity : str, Required
                 Granularity for this CandleList (i.e. D, H12, H8 etc...)
+    pips : int, Required
+        Number of pips above/below self.price to calculate self.upper and self.lower
     upper : float, Optional
-           Upper limit of area
+           Upper limit price of area
     lower : float, Optional
-            Lower limit of area
-    bounces : list of Candle Objects
-              This list contains the candles for bounces bouncing in this area. This member class
-              can be initialized using the 'inarea_bounces' method
+            Lower limit price of area
     settingf : str, Optional
                Path to *.ini file with settings
     settings : ConfigParser, Optional
                ConfigParser object with settings
     '''
 
-    def __init__(self, price, instrument, granularity, settingf=None, settings=None):
+    def __init__(self, price, instrument, granularity, pips, settingf=None, settings=None):
 
         (first, second) = instrument.split("_")
         self.instrument = instrument
@@ -59,14 +57,12 @@ class HArea(object):
         else:
             self.settings = settings
 
-        assert self.settings.has_option('pivots', 'hr_pips'), "'hr_pips' needs to be defined"
-        pips = self.settings.getint('pivots', 'hr_pips')
         self.upper = round(price+(pips/divisor), 4)
         self.lower = round(price-(pips/divisor), 4)
 
     def last_time(self, clist, position):
         '''
-        Function that returns the datetime of the moment where prices were over/below this HArea
+        Function that returns the datetime of the moment where prices were over/below this HArea.
 
         Parameters
         ----------
@@ -86,11 +82,12 @@ class HArea(object):
             count += 1
             if count <= self.settings.getint('harea', 'min'):
                 continue
-            price = getattr(c, self.settings.get('general', 'part'))
             if position == 'above':
+                price = getattr(c, 'lowAsk')
                 if price > self.upper:
                     return c.time
             elif position == 'below':
+                price = getattr(c, 'highAsk')
                 if price < self.lower:
                     return c.time
 
@@ -123,12 +120,16 @@ class HArea(object):
 
             oanda = None
             if self.settingf is None and self.settings is None:
-                raise Exception("No 'settings' nor 'settingf' definded for this object")
+                raise Exception("No 'settings' nor 'settingf' defined for this object")
             elif self.settingf is None and self.settings is not None:
                 oanda = OandaAPI(instrument=self.instrument,
                                  granularity=granularity,  # 'M30' in this case
                                  settings=self.settings)
             elif self.settingf is not None and self.settings is None:
+                oanda = OandaAPI(instrument=self.instrument,
+                                 granularity=granularity,  # 'M30' in this case
+                                 settingf=self.settingf)
+            elif self.settingf is not None and self.settings is not None:
                 oanda = OandaAPI(instrument=self.instrument,
                                  granularity=granularity,  # 'M30' in this case
                                  settingf=self.settingf)

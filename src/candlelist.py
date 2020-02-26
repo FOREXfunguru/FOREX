@@ -872,16 +872,13 @@ class CandleList(object):
 
         if self.type == "short":
             position = 'above'
-            part = 'lowAsk'
         if self.type == "long":
             position = 'below'
-            part = 'highAsk'
 
         last_time = hrarea.last_time(clist=self.clist,
-                                     position=position,
-                                     part=part,
-                                     min=10)
+                                     position=position)
 
+        # if last_time is not defined in this CandleList then assign the time for the first candle
         if last_time is None:
             last_time = self.clist[0].time
 

@@ -85,8 +85,19 @@ class Trade(object):
                          granularity=self.timeframe,
                          settingf=self.settingf)
 
-        oanda.run(start=datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S').isoformat(),
-                  end=datetime.datetime.strptime(self.end,'%Y-%m-%dT%H:%M:%S').isoformat())
+        pdb.set_trace()
+        if isinstance(self.start, datetime.datetime) is True:
+            astart = self.start
+        else:
+            astart = datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S').isoformat()
+
+        if isinstance(self.end, datetime.datetime) is True:
+            anend = self.end
+        else:
+            anend = datetime.datetime.strptime(self.end, '%Y-%m-%dT%H:%M:%S').isoformat()
+
+        oanda.run(start=astart,
+                  end=anend)
 
         candle_list = oanda.fetch_candleset()
         cl = CandleList(candle_list,
@@ -101,20 +112,22 @@ class Trade(object):
         '''
 
         print("[INFO] Run run_trade with id: {0}".format(self.id))
-        newsettings = self.settings
-        newsettings.set('pivots', 'hr_pips', '1')
+
         entry = HArea(price=self.entry,
                       instrument=self.pair,
+                      pips=self.settings.getint('trade', 'hr_pips'),
                       granularity=self.timeframe,
-                      settings=newsettings)
+                      settings=self.settings)
         SL = HArea(price=self.SL,
                    instrument=self.pair,
+                   pips=self.settings.getint('trade', 'hr_pips'),
                    granularity=self.timeframe,
-                   settings=newsettings)
+                   settings=self.settings)
         TP = HArea(price=self.TP,
                    instrument=self.pair,
+                   pips=self.settings.getint('trade', 'hr_pips'),
                    granularity=self.timeframe,
-                   settings=newsettings)
+                   settings=self.settings)
 
         period = None
         if self.timeframe == "D":
