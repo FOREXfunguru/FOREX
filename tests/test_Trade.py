@@ -43,7 +43,7 @@ def test_fetch_candlelist(t_object):
     corresponding to this trade
     '''
     
-    cl=t_object.fetch_candlelist()
+    cl = t_object.fetch_candlelist()
     assert cl.clist[0].openBid == 0.7521
     assert cl.clist[0].highBid == 0.75464
 

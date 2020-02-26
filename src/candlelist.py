@@ -10,8 +10,7 @@ from ast import literal_eval
 register_matplotlib_converters()
 import pandas as pd
 import pdb
-import datetime
-import re
+from datetime import timedelta
 import numpy as np
 import matplotlib
 from utils import *
@@ -255,12 +254,12 @@ class CandleList(object):
         delta_period = None
 
         if self.granularity == "D":
-            delta = datetime.timedelta(hours=24)
-            delta_period = datetime.timedelta(hours=24*period)
+            delta = timedelta(hours=24)
+            delta_period = timedelta(hours=24*period)
         else:
             fgran = self.granularity.replace('H', '')
-            delta = datetime.timedelta(hours=int(fgran))
-            delta_period = datetime.timedelta(hours=int(fgran)*period)
+            delta = timedelta(hours=int(fgran))
+            delta_period = timedelta(hours=int(fgran)*period)
 
         if period == 0:
             sel_c = None
@@ -367,10 +366,10 @@ class CandleList(object):
 
         delta_period = None
         if self.granularity == "D":
-            delta_period = datetime.timedelta(hours=24 * self.settings.getint('candlelist', 'period'))
+            delta_period = timedelta(hours=24 * self.settings.getint('candlelist', 'period'))
         else:
             fgran = self.granularity.replace('H', '')
-            delta_period = datetime.timedelta(hours=int(fgran) * self.settings.getint('candlelist', 'period'))
+            delta_period = timedelta(hours=int(fgran) * self.settings.getint('candlelist', 'period'))
 
         start_calc_time = start_time - delta_period
 

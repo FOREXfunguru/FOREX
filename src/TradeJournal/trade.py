@@ -1,5 +1,5 @@
 from __future__ import division
-import datetime
+from datetime import timedelta
 import pdb
 import re
 import warnings
@@ -57,8 +57,8 @@ class Trade(object):
         self.__dict__.update(kwargs)
 
         self.strat = strat
-        self.start = datetime.datetime.strptime(start,
-                                                '%Y-%m-%d %H:%M:%S')
+        self.start = datetime.strptime(start,
+                                      '%Y-%m-%d %H:%M:%S')
         self.pair = re.sub('/', '_', self.pair)
         self.strat = strat
         #remove potential whitespaces in timeframe
@@ -85,21 +85,20 @@ class Trade(object):
                          granularity=self.timeframe,
                          settingf=self.settingf)
 
-        pdb.set_trace()
-        if isinstance(self.start, datetime.datetime) is True:
+        if isinstance(self.start, datetime) is True:
             astart = self.start
         else:
             astart=try_parsing_date(self.start)
       #      astart = datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S').isoformat()
 
-        if isinstance(self.end, datetime.datetime) is True:
+        if isinstance(self.end, datetime) is True:
             anend = self.end
         else:
             anend = try_parsing_date(self.end)
        #     anend = datetime.datetime.strptime(self.end, '%Y-%m-%dT%H:%M:%S').isoformat()
 
-        oanda.run(start=astart,
-                  end=anend)
+        oanda.run(start=astart.isoformat(),
+                  end=anend.isoformat())
 
         candle_list = oanda.fetch_candleset()
         cl = CandleList(candle_list,
@@ -140,10 +139,10 @@ class Trade(object):
         # generate a range of dates starting at self.start and ending numperiods later in order to assess the outcome
         # of trade and also the entry time
 
-        self.start = datetime.datetime.strptime(str(self.start),'%Y-%m-%d %H:%M:%S')
+        self.start = datetime.strptime(str(self.start), '%Y-%m-%d %H:%M:%S')
         numperiods = 300
-        date_list = [datetime.datetime.strptime(str(self.start.isoformat()),'%Y-%m-%dT%H:%M:%S')
-                     + datetime.timedelta(hours=x*period) for x in range(0, numperiods)]
+        date_list = [datetime.strptime(str(self.start.isoformat()), '%Y-%m-%dT%H:%M:%S')
+                     + timedelta(hours=x*period) for x in range(0, numperiods)]
 
         entered = False
         for d in date_list:
