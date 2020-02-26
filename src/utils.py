@@ -1,6 +1,22 @@
 import datetime
 import re
 import pdb
+from datetime import datetime
+
+def try_parsing_date(text):
+    '''
+    Function to parse a string that can be formatted in
+    different datetime formats
+
+    :returns
+    datetime object
+    '''
+    for fmt in ('%Y-%m-%dT%H:%M:%S', '%Y-%m-%d %H:%M:%S'):
+        try:
+            return datetime.strptime(text, fmt)
+        except ValueError:
+            pass
+    raise ValueError('no valid date format found')
 
 def calculate_pips(pair, price):
     '''

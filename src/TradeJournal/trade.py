@@ -89,12 +89,14 @@ class Trade(object):
         if isinstance(self.start, datetime.datetime) is True:
             astart = self.start
         else:
-            astart = datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S').isoformat()
+            astart=try_parsing_date(self.start)
+      #      astart = datetime.datetime.strptime(self.start,'%Y-%m-%dT%H:%M:%S').isoformat()
 
         if isinstance(self.end, datetime.datetime) is True:
             anend = self.end
         else:
-            anend = datetime.datetime.strptime(self.end, '%Y-%m-%dT%H:%M:%S').isoformat()
+            anend = try_parsing_date(self.end)
+       #     anend = datetime.datetime.strptime(self.end, '%Y-%m-%dT%H:%M:%S').isoformat()
 
         oanda.run(start=astart,
                   end=anend)
