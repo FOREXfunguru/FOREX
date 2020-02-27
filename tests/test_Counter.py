@@ -50,36 +50,42 @@ def test_clist_period(ct_object):
     # is correct
     assert datetime.datetime(2008, 8, 29, 21, 0) == ct_object.clist_period.clist[0].time
 
-@pytest.mark.parametrize("start,type,SR,SL,TP, lasttime", [('AUD_USD', 'D', '2015-01-25T22:00:00', '2015-01-26T22:00:00', 200),
-                                          ('AUD_USD', 'D', '2018-11-16T22:00:00', '2018-11-20T22:00:00', 200)])
-def test_lasttime_attr(counter_object):
+@pytest.mark.parametrize("start,"
+                         "type,"
+                         "SR,"
+                         "SL,"
+                         "TP,"
+                         "entry,"
+                         "lasttime", [('2018-12-03 22:00:00','long',1.54123,1.53398,1.55752,1.54334,datetime.datetime(2018, 6, 5, 21, 0)),
+                                      ('2018-09-11 22:00:00','short',1.63118,1.63633,1.60202,1.62763,datetime.datetime(2009, 11, 29, 22, 0)),
+                                      ('2017-05-05 22:00:00','short',1.48820,1.49191,1.46223,1.48004,datetime.datetime(2016, 9, 15, 21, 0)),
+                                      ('2019-05-23 22:00:00','short',1.62344,1.62682,1.60294,1.61739,datetime.datetime(2018, 10, 4, 21, 0))])
+def test_lasttime_attr(start, type, SR, SL, TP, entry, lasttime):
     """
     Check that self.lasttime class attribute
     has been initialized
     """
     t = Trade(
         start=start,
-        pair='EUR_GBP',
+        pair='EUR_AUD',
         timeframe='D',
-        type='short',
-        SR=0.92909,
-        SL=0.93298,
-        TP=0.90366,
+        type=type,
+        SR=SR,
+        SL=SL,
+        TP=TP,
+        entry=entry,
         strat='counter_b1',
         settingf="data/settings.ini"
     )
 
     c = Counter(
-        id='EUR_GBP 13AUG2019D',
+        id='test',
         trade=t,
         period=1000,
-        trend_i='2019-05-03 21:00:00',
         settingf='data/settings.ini'
     )
-
-
-    adatetime = datetime.datetime(2009, 3, 22, 21, 0)
-    assert counter_object.lasttime==adatetime
+    c.set_lasttime()
+    assert c.lasttime == lasttime
 
 def test_bounces_attr(counter_object):
     """
