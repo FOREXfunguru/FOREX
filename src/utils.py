@@ -1,7 +1,7 @@
 import datetime
 import re
 import pdb
-from datetime import datetime
+from datetime import datetime,timedelta
 
 def try_parsing_date(text):
     '''
@@ -132,10 +132,10 @@ def periodToDelta(ncandles, timeframe):
     if patt.match(timeframe):
         raise Exception("{0} is not valid. Oanda rest service does not take it".format(timeframe))
     elif timeframe=='D':
-        delta = datetime.timedelta(hours=24 * ncandles)
+        delta = timedelta(hours=24 * ncandles)
     else:
         fgran = timeframe.replace('H', '')
-        delta = datetime.timedelta(hours=int(fgran) * ncandles)
+        delta = timedelta(hours=int(fgran) * ncandles)
 
     return delta
 

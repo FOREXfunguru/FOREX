@@ -20,30 +20,32 @@ class Counter(object):
 
     id : str, Required
          Id used for this object
-    trend_i: datetime, Required
-             start of the trend
-    bounces: list, Optional
-             List with Candle objects for price bounces at self.SR
-    clist_period: CandleList, Optional
-                  Candlelist extending back (defined by 'period') in time since the start of the pattern
-    clist_trend: CandleList, Optional
-                 CandleList extending back to datetime defined by self.trend_i
-    bounces_lasttime: list, Optional
-                      With Candles representing the bounces
-    slope: float, Optional
-           Float with the slope of trend conducting to entry
-    n_rsibounces: int, Optional
-                  Number of rsi bounces for trend conducting to start
-    rsibounces_lengths: list, Optional
-                        List with lengths for each rsi bounce
-    divergence: bool, Optional
+    trend_i : datetime, Required
+              start of the trend
+    bounces : list, Optional
+              List with Candle objects for price bounces at self.SR
+    clist_period : CandleList, Optional
+                   Candlelist extending back (defined by 'period') in time since the start of the pattern
+    clist_trend : CandleList, Optional
+                  CandleList extending back to datetime defined by self.trend_i
+    bounces_lasttime : list, Optional
+                       With Candles representing the bounces
+    slope : float, Optional
+            Float with the slope of trend conducting to entry
+    n_rsibounces : int, Optional
+                   Number of rsi bounces for trend conducting to start
+    rsibounces_lengths : list, Optional
+                         List with lengths for each rsi bounce
+    divergence : bool, Optional
                 True is there is RSI divergence
-    entry_onrsi: bool, Optional
-                 Is entry candle on rsi territory
-    length_candles: int, Optional
-                    Number of candles in self.clist_trend
-    length_pips: int, Optional
-                 Length in number of pips for self.clist_trend
+    entry_onrsi : bool, Optional
+                  Is entry candle on rsi territory
+    lasttime : datetime, Optional
+               Last time price has been above/below self.trade.SR
+    length_candles : int, Optional
+                     Number of candles in self.clist_trend
+    length_pips : int, Optional
+                  Length in number of pips for self.clist_trend
     SMA : str, Optional
           Is there SMA support for this trade. Values: 'Y'/'N'
     total_score : int, Optional
@@ -65,7 +67,7 @@ class Counter(object):
         else:
             self.settings = settings
 
-        allowed_keys = [ 'id', 'trend_i', 'bounces', 'clist_period', 'clist_trend','lasttime',
+        allowed_keys = ['id', 'trend_i', 'bounces', 'clist_period', 'clist_trend','lasttime',
                         'bounces_lasttime', 'slope', 'n_rsibounces', 'rsibounces_lengths',
                         'divergence', 'entry_onrsi', 'length_candles', 'length_pips', 'SMA',
                         'total_score', 'score_lasttime']
@@ -87,30 +89,9 @@ class Counter(object):
             diff = (self.trade.entry-self.trade.SL)*self.trade.RR
             self.trade.TP = round(self.trade.entry+diff, 4)
 
-        pdb.set_trace()
-
-        # instantiate an HArea object representing the self.SR in order to calculate the lasttime
-        # price has been above/below SR
-        resist = HArea(price=self.trade.SR,
-                       instrument=self.trade.pair,
-                       granularity=self.trade.timeframe,
-                       settings=self.settings)
-
-        self.lasttime = self.clist_period.get_lasttime(resist)
-
-        #initialize 'bounces' Class attribute
-        self.set_bounces(doPlot=True,
-                         outfile=self.settings('general',
-                                               'outfile')+".{0}.all_pivots.png".
-                         format(self.id.replace(' ', '_')),
-                         part=self.settings('general', 'part'))
-
-        # set total_score attr
-        self.calc_score()
-
         # set bounces_lasttime Class attribute
-        self.bounces_fromlasttime()
-        self.calc_score_lasttime()
+#        self.bounces_fromlasttime()
+#        self.calc_score_lasttime()
 
     def __initclist(self):
         '''
@@ -135,7 +116,7 @@ class Counter(object):
                   end=end.isoformat())
 
         candle_list = oanda.fetch_candleset()
-        pdb.set_trace()
+
         cl = CandleList(candle_list,
                         settingf=self.settingf,
                         instrument=self.trade.pair,
@@ -144,6 +125,24 @@ class Counter(object):
                         type=self.trade.type)
 
         self.clist_period = cl
+
+    def set_lasttime(self):
+        '''
+        Function to set the lasttime class attribute
+
+        returns
+        -------
+        Nothing
+        '''
+        # instantiate an HArea object representing the self.SR in order to calculate the lasttime
+        # price has been above/below SR
+        resist = HArea(price=self.trade.SR,
+                       pips=self.settings.getint('trade', 'hr_pips'),
+                       instrument=self.trade.pair,
+                       granularity=self.trade.timeframe,
+                       settings=self.settings)
+
+        self.lasttime = self.clist_period.get_lasttime(resist)
 
     def __inarea_bounces(self,
                          bounces,
@@ -262,10 +261,14 @@ class Counter(object):
                               outfile_rsi=outfile_rsi,
                               part= self.settings('general', 'part'))
 
-    def calc_score(self):
+    def set_total_score(self):
         '''
         Function to calculate the total (sum of each pivot score) pivot score for all bounces
         It will set the 'total_score' class attribute
+
+        returns
+        -------
+        Nothing
         '''
 
         tot_score = 0

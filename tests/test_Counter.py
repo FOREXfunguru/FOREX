@@ -8,7 +8,7 @@ import os
 from TradeJournal.trade import Trade
 
 @pytest.fixture
-def counter_object():
+def ct_object():
     '''Returns Counter object'''
 
     t = Trade(
@@ -40,14 +40,46 @@ def clean_tmp():
     for f in files:
         os.remove(f)
 
-def test_clist_period(counter_object):
+def test_clist_period(ct_object):
     """
     Check that self.clist_period is correctly
     initialized with self.__initclist()
     """
 
-#    assert counter_object.clist_period.start
-    assert 0
+    # check that the start datetime of clist_period
+    # is correct
+    assert datetime.datetime(2008, 8, 29, 21, 0) == ct_object.clist_period.clist[0].time
+
+@pytest.mark.parametrize("start,type,SR,SL,TP, lasttime", [('AUD_USD', 'D', '2015-01-25T22:00:00', '2015-01-26T22:00:00', 200),
+                                          ('AUD_USD', 'D', '2018-11-16T22:00:00', '2018-11-20T22:00:00', 200)])
+def test_lasttime_attr(counter_object):
+    """
+    Check that self.lasttime class attribute
+    has been initialized
+    """
+    t = Trade(
+        start=start,
+        pair='EUR_GBP',
+        timeframe='D',
+        type='short',
+        SR=0.92909,
+        SL=0.93298,
+        TP=0.90366,
+        strat='counter_b1',
+        settingf="data/settings.ini"
+    )
+
+    c = Counter(
+        id='EUR_GBP 13AUG2019D',
+        trade=t,
+        period=1000,
+        trend_i='2019-05-03 21:00:00',
+        settingf='data/settings.ini'
+    )
+
+
+    adatetime = datetime.datetime(2009, 3, 22, 21, 0)
+    assert counter_object.lasttime==adatetime
 
 def test_bounces_attr(counter_object):
     """
@@ -57,16 +89,6 @@ def test_bounces_attr(counter_object):
 
     assert counter_object.bounces.plist[0].candle.midAsk==0.9398
     assert len(counter_object.bounces.plist)==3
-
-
-def test_lasttime_attr(counter_object):
-    """
-    Check that self.lasttime class attribute
-    has been initialized
-    """
-
-    adatetime = datetime.datetime(2009, 3, 22, 21, 0)
-    assert counter_object.lasttime==adatetime
 
 def test_bounces_lasttime_attr(counter_object):
     """
