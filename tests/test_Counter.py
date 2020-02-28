@@ -87,11 +87,14 @@ def test_lasttime_attr(start, type, SR, SL, TP, entry, lasttime):
     c.set_lasttime()
     assert c.lasttime == lasttime
 
-def test_bounces_attr(counter_object):
+def test_set_bounces(ct_object):
     """
     Check that self.bounces class attribute
     has been initialized
     """
+
+    ct_object.set_bounces()
+    assert 0
 
     assert counter_object.bounces.plist[0].candle.midAsk==0.9398
     assert len(counter_object.bounces.plist)==3

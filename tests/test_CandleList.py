@@ -112,26 +112,8 @@ def test_get_lasttime(clO):
 
     lasttime = clO.get_lasttime(resist)
     assert lasttime == datetime.datetime(2019, 7, 21, 21, 0)
+
 """
-def test_get_pivots():
-
-    oanda = OandaAPI(instrument='AUD_USD',
-                     granularity='D',
-                     settingf='data/settings.ini')
-
-    oanda.run(start='2016-05-23T23:00:00',
-              end='2016-07-19T23:00:00')
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list,
-                    instrument='AUD_USD',
-                    granularity='D',
-                    settingf='data/settings.ini')
-
-    pivots = cl.get_pivotlist()
-    assert pivots.plist[0].type == -1
-
 def test_check_if_divergence():
 
     oanda = OandaAPI(instrument='EUR_AUD',

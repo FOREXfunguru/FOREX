@@ -39,7 +39,7 @@ def clean_tmp():
 def test_get_pivotlist(cl_object):
     """Obtain a pivotlist"""
 
-    pl=cl_object.get_pivotlist()
+    pl = cl_object.get_pivotlist()
 
     assert len(pl.plist) == 50
     assert pl.plist[10].candle.openAsk == 0.72522

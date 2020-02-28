@@ -815,7 +815,7 @@ class CandleList(object):
             diff_pips=float(calculate_pips(self.instrument, diff))
             ix -= 1
             if self.type=="long":
-                if s.type == 1 :
+                if s.type == 1:
                     if diff_pips > diff_th:
                         break
                     else:
