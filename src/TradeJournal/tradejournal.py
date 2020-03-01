@@ -4,9 +4,8 @@ import re
 import math
 import warnings
 from TradeJournal.trade import Trade
+from TradeJournal.tradelist import TradeList
 from openpyxl import load_workbook
-from Pattern.counter import Counter
-from Pattern.counter_dbtp import CounterDbTp
 from configparser import ConfigParser
 
 class TradeJournal(object):
@@ -19,11 +18,11 @@ class TradeJournal(object):
     worksheet: str, Required
                Name of the worksheet that will be used to create the object.
                i.e. trading_journal
-    settings : str, Required
+    settingf : str, Required
                Path to *.ini file with settings
     '''
 
-    def __init__(self, url, worksheet, settings):
+    def __init__(self, url, worksheet, settingf):
         self.url = url
         self.worksheet = worksheet
         #read-in the 'trading_journal' worksheet from a .xlsx file into a pandas dataframe
@@ -33,8 +32,9 @@ class TradeJournal(object):
 
         # parse settings file (in .ini file)
         parser = ConfigParser()
-        parser.read(settings)
-        self.settingsO = settingsO
+        parser.read(settingf)
+        self.settingf = settingf
+        self.settings = parser
 
     def print_winrate(self, worksheet_name=None):
         '''
@@ -109,76 +109,45 @@ class TradeJournal(object):
 
         return (outcome_prop, sum_pips, DF.shape[0])
 
-    def fetch_trades(self, run=False):
+    def fetch_tradelist(self):
         '''
-        This function will fetch the trades that are in this TradingJournal
-        and will create an independent Trade object for each record
-
-        Parameters
-        ----------
-        run : bool, Optional
-              Execute trade. Default=False
+        This function will produce a TradeList object
+        using self.url
 
         Returns
         -------
-        list
-             List with Trade objects
+        TradeList
         '''
 
-        # get strats to analyse from settings
-        assert self.settings.has_option('trade_journal', 'strats'), "'strats' needs to be defined"
-        strats = self.settings.get('trade_journal', 'strats').split(",")
-
-        trades_seen = False
         trade_list = []
         for index, row in self.df.iterrows():
             print("Processing trade with id: {0}".format(row['id']))
-            if row['strat'] not in strats:
-                continue
-            else:
-                trades_seen = True
-
-            #get pair from id
-            pair = row['id'].split(' ')[0]
-
-            attrbs={}
-            for items in row.iteritems():
-                attrbs[items[0]] = items[1]
-
-            c = Counter(pair=pair, **attrbs, settings=self.settings)
-
-            p = re.compile('clist_')
-            attrbs1={}
-
-            for attr, value in c.__dict__.items():
-                if p.match(attr):continue
-                if type(value) is list:
-                    if attr == 'rsibounces_lengths':
-                        attrbs1[attr] = value
-                    else:
-                        attrbs1[attr] = len(value)
-                else:
-                    attrbs1[attr] = value
-
-            # instantiate a Trade object with attributes of 'c'
-            t = Trade(strat=row['strat'], **attrbs1)
-            if run is True:
-                t.run_trade()
-                
+            pair = row['id'].split(" ")[0]
+            t = Trade(
+                start=row['start'],
+                entry=row['entry'],
+                SL=row['SL'],
+                TP=row['TP'],
+                type=row['type'],
+                timeframe=row['timeframe'],
+                strat=row['strat'],
+                id=row['id'],
+                pair=pair,
+                settingf=self.settingf)
             trade_list.append(t)
 
-        assert trades_seen is True, "No trades retrieved for strats: {0}".format(",".join(strats))
-        return trade_list
+        tl = TradeList(settingf=self.settingf,
+                       tlist=trade_list)
+        return tl
 
-    def write_trades(self, trade_list):
+    def write_tradelist(self, trade_list):
         '''
-        Write the trade_list to the Excel spreadsheet
+        Write the TradeList to the Excel spreadsheet
         pointed by the TradeJournal
 
         Parameters
         ----------
-        trade_list : list, Required
-                     List with Trade objects
+        tradelist : TradeList, Required
 
         Returns
         -------

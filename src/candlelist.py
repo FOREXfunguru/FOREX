@@ -571,7 +571,7 @@ class CandleList(object):
         plt.plot(x, y_pred, color='red')
 
         outfile = "{0}/fitted_line/{1}.fitted.png".format(self.settings.get('images', 'outdir'),
-                                                          self.instrument.replace(' ', '_'))
+                                                          self.id.replace(' ', '_'))
         fig.savefig(outfile, format='png')
 
         return model, regression_model_mse
@@ -605,7 +605,7 @@ class CandleList(object):
                        settingf=self.settingf)
 
         outfile = "{0}/pivots/{1}.allpivots.png".format(self.settings.get('images', 'outdir'),
-                                                        self.instrument.replace(' ', '_'))
+                                                        self.id.replace(' ', '_'))
 
         figsize = literal_eval(self.settings.get('images', 'size'))
         fig = plt.figure(figsize=figsize)

@@ -9,14 +9,13 @@ def tj_counter_object():
 
     td = TradeJournal(url="data/testCounter.xlsx",
                       worksheet="trading_journal",
-                      settings="data/settings.ini")
+                      settingf="data/settings.ini")
     return td
 
-def test_fetch_counter_trades(tj_counter_object):
-    trade_list = tj_counter_object.fetch_trades()
+def test_fetch_tradelist(tj_counter_object):
+    trade_list = tj_counter_object.fetch_tradelist()
 
-    assert len(trade_list) == 1
-    assert trade_list[0].start.strftime('%Y-%m-%d') == '2018-10-11'
+    assert len(trade_list.tlist) == 1
 """
 
 def test_fetch_counter_doubletop_trades(tj_counter_doubletop_object):
