@@ -19,8 +19,6 @@ class Counter(object):
     Class variables
     ---------------
 
-    id : str, Required
-         Id used for this object
     trend_i : datetime, Required
               start of the trend
     pivots : PivotList, Optional
@@ -65,7 +63,7 @@ class Counter(object):
         else:
             self.settings = settings
 
-        allowed_keys = ['id', 'trend_i', 'pivots', 'clist_period','lasttime',
+        allowed_keys = ['trend_i', 'pivots', 'clist_period','lasttime',
                         'pivots_lasttime', 'n_rsibounces', 'rsibounces_lengths',
                         'entry_onrsi', 'length_candles', 'length_pips', 'SMA',
                         'total_score', 'score_lasttime']
@@ -121,7 +119,7 @@ class Counter(object):
                         settingf=self.settingf,
                         instrument=self.trade.pair,
                         granularity=self.trade.timeframe,
-                        id=self.id,
+                        id=self.trade.id,
                         type=self.trade.type)
 
         self.clist_period = cl
@@ -245,9 +243,9 @@ class Counter(object):
 
         if self.settings.getboolean('pivots', 'plot') is True:
             outfile = self.settings.\
-                          get('images', 'outdir')+"/pivots/{0}.sel_pivots.png".format(self.id.replace(' ', '_'))
+                          get('images', 'outdir')+"/pivots/{0}.sel_pivots.png".format(self.trade.id.replace(' ', '_'))
             outfile_rsi = self.settings.\
-                              get('images', 'outdir')+"/pivots/{0}.final_rsi.png".format(self.id.replace(' ', '_'))
+                              get('images', 'outdir')+"/pivots/{0}.final_rsi.png".format(self.trade.id.replace(' ', '_'))
 
             self.plot_pivots(outfile_prices=outfile,
                              outfile_rsi=outfile_rsi)

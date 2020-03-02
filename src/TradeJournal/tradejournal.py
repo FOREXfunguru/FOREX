@@ -128,6 +128,7 @@ class TradeJournal(object):
                 entry=row['entry'],
                 SL=row['SL'],
                 TP=row['TP'],
+                SR=row['SR'],
                 type=row['type'],
                 timeframe=row['timeframe'],
                 strat=row['strat'],

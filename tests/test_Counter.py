@@ -21,6 +21,7 @@ def ct_object():
     '''Returns Counter object'''
 
     t = Trade(
+        id='EUR_GBP_13AUG2019D',
         start='2019-08-12 22:00:00',
         pair='EUR_GBP',
         timeframe='D',
@@ -33,9 +34,7 @@ def ct_object():
     )
 
     c = Counter(
-        id='EUR_GBP_13AUG2019D',
         trade=t,
-        period=1000,
         settingf='data/settings.ini'
     )
     return c
@@ -79,6 +78,7 @@ def test_set_lasttime(start, type, SR, SL, TP, entry, lasttime):
     has been initialized
     """
     t = Trade(
+        id='test',
         start=start,
         pair='EUR_AUD',
         timeframe='D',
@@ -92,7 +92,6 @@ def test_set_lasttime(start, type, SR, SL, TP, entry, lasttime):
     )
 
     c = Counter(
-        id='test',
         trade=t,
         period=1000,
         settingf='data/settings.ini'
@@ -128,6 +127,7 @@ def test_set_pivots(pair, id, start, type, SR, SL, TP, entry, dates):
     """
 
     t = Trade(
+        id='test',
         start=start,
         pair=pair,
         timeframe='D',
@@ -141,7 +141,6 @@ def test_set_pivots(pair, id, start, type, SR, SL, TP, entry, dates):
     )
 
     c = Counter(
-        id=id,
         trade=t,
         period=1000,
         settingf='data/settings.ini'
@@ -186,6 +185,7 @@ def test_set_pivots_lasttime(pair, id, start, type, SR, SL, TP, entry, dates):
     has been initialized
     """
     t = Trade(
+        id=id,
         start=start,
         pair=pair,
         timeframe='D',
@@ -199,7 +199,6 @@ def test_set_pivots_lasttime(pair, id, start, type, SR, SL, TP, entry, dates):
     )
 
     c = Counter(
-        id=id,
         trade=t,
         period=1000,
         settingf='data/settings.ini'

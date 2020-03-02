@@ -4,7 +4,7 @@ import pdb
 from TradeJournal.tradejournal import TradeJournal
 
 @pytest.fixture
-def tj_counter_object():
+def tjO():
     '''Returns a TradeJournal object for a Counter trade'''
 
     td = TradeJournal(url="data/testCounter.xlsx",
@@ -12,8 +12,8 @@ def tj_counter_object():
                       settingf="data/settings.ini")
     return td
 
-def test_fetch_tradelist(tj_counter_object):
-    trade_list = tj_counter_object.fetch_tradelist()
+def test_fetch_tradelist(tjO):
+    trade_list = tjO.fetch_tradelist()
 
     assert len(trade_list.tlist) == 1
 """

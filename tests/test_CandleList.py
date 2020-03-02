@@ -19,9 +19,9 @@ def clO():
               end='2020-01-03T23:00:00')
 
     candle_list = oanda.fetch_candleset()
-
     cl = CandleList(candle_list,
                     instrument='AUD_USD',
+                    id='test_AUD_USD_clist',
                     granularity='D',
                     settingf='data/settings.ini')
     return cl

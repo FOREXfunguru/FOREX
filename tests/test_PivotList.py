@@ -23,6 +23,7 @@ def cl_object():
 
     cl = CandleList(candle_list,
                     instrument='AUD_USD',
+                    id='AUD_USD_testclist',
                     type='long',
                     settingf='data/settings.ini')
 
@@ -45,6 +46,14 @@ def test_get_pivotlist(cl_object):
     assert pl.plist[10].candle.openAsk == 0.72522
     assert len(pl.plist[7].pre.clist) == 21
     assert len(pl.plist[10].aft.clist) == 13
+
+def test_print_pivots_dates(cl_object):
+    pl = cl_object.get_pivotlist()
+
+    dtl = pl.print_pivots_dates()
+
+    assert len(dtl) == 50
+    assert 0
 
 
 def test_fetch_by_type(cl_object):
