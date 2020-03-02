@@ -53,8 +53,6 @@ def test_print_pivots_dates(cl_object):
     dtl = pl.print_pivots_dates()
 
     assert len(dtl) == 50
-    assert 0
-
 
 def test_fetch_by_type(cl_object):
     """Obtain a pivotlist of a certain type"""

@@ -155,6 +155,7 @@ class TradeJournal(object):
         Nothing
         '''
 
+        pdb.set_trace()
         assert self.settings.has_option('trade_journal', 'worksheet_name'), \
             "'worksheet_name' needs to be defined"
 
@@ -162,32 +163,31 @@ class TradeJournal(object):
         assert self.settings.has_option('trade_journal', 'colnames'), "'colnames' needs to be defined"
         colnames = self.settings.get('trade_journal', 'colnames').split(",")
 
-        pt = re.compile('bounces')
+        pt = re.compile('pivots')
         data = []
-        for t in trade_list:
+        for t in trade_list.tlist:
             row = []
             for a in colnames:
                 value = None
                 try:
                     value = getattr(t, a)
                     if pt.match(a):
-                        # iterate over PivotList
-                        date_str = ""
-                        for p in value.plist:
-                            date_str += p.candle.time.strftime('%d/%m/%Y:%H:%M')+","
-                        value = date_str
+                        dt_l=value.print_pivots_dates()
+
+                        #    date_str += p.candle.time.strftime('%d/%m/%Y:%H:%M')+","
+                        #value = date_str
                 except:
                     warnings.warn("Error getting value for attribute: {0}".format(a))
                     value = "n.a."
                 row.append(value)
             data.append(row)
-        df = pd.DataFrame(data, columns=self.settings.get('trade_journal', 'colnames'))
+        df = pd.DataFrame(data, columns=colnames)
 
         book = load_workbook(self.url)
         writer = pd.ExcelWriter(self.url, engine='openpyxl')
         writer.book = book
         writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
-        df.to_excel(writer, )
+        df.to_excel(writer, self.settings.get('trade_journal', 'worksheet_name'))
         writer.save()
 
     def add_trend_momentum(self):
