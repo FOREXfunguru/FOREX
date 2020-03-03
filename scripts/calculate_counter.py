@@ -17,5 +17,4 @@ trade_list = td.fetch_tradelist()
 trade_list.analyze()
 
 td.write_tradelist(trade_list)
-td.write_trades(trade_list)
 

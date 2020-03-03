@@ -48,7 +48,6 @@ class TradeJournal(object):
 
         trade_list = []
         for index, row in self.df.iterrows():
-            print("Processing trade with id: {0}".format(row['id']))
             pair = row['id'].split(" ")[0]
             t = Trade(
                 start=row['start'],
