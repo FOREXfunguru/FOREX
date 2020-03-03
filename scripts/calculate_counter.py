@@ -13,7 +13,9 @@ args = parser.parse_args()
 
 td = TradeJournal(url=args.ifile, worksheet=args.worksheet, settingf=args.settingf)
 
-trade_list = td.fetch_trades(run=True)
+trade_list = td.fetch_tradelist()
+trade_list.analyze()
 
+td.write_tradelist(trade_list)
 td.write_trades(trade_list)
 

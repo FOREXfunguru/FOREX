@@ -15,14 +15,13 @@ def tjO():
 def test_fetch_tradelist(tjO):
     trade_list = tjO.fetch_tradelist()
 
-    assert len(trade_list.tlist) == 1
+    assert len(trade_list.tlist) == 2
 
 def test_write_tradelist(tjO):
     trade_list = tjO.fetch_tradelist()
+    trade_list.analyze()
 
     tjO.write_tradelist(trade_list)
-
-    assert 0
 """
     
 def test_print_winrate(tj_counter_doubletop_object):

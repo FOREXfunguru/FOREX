@@ -24,3 +24,11 @@ def test_analyze(tlist_o):
 
     tlist_o.analyze()
     assert datetime.datetime(2016, 6, 23, 9, 0) == (getattr(tlist_o.tlist[0], 'lasttime'))
+
+def test_win_rate(tlist_o):
+
+    (number_s, number_f, tot_pips) = tlist_o.win_rate(strats="counter")
+
+    assert number_s == 2
+    assert number_f == 0
+    assert tot_pips == 349.2

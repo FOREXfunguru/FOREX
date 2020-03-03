@@ -88,6 +88,7 @@ class Counter(object):
         if init_feats is True:
             self.set_lasttime()
             self.set_pivots()
+            self.set_total_score()
             self.set_pivots_lasttime()
             self.set_score_lasttime()
 
