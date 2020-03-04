@@ -61,22 +61,46 @@ def test_pre_aft_start(cl_object):
     assert datetime.datetime(2015, 8, 6, 21, 0) == pivot.pre.start()
     assert datetime.datetime(2015, 9, 3, 21, 0) == pivot.aft.start()
 
-def test_merge_pre(cl_object):
+@pytest.mark.parametrize("ix,"
+                         "pair,"
+                         "timeframe,"
+                         "id,"
+                         "start,"
+                         "end",
+                         [(-1, 'NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-03-26T21:00:00',
+                           '2019-07-01T09:00:00')])
+def test_merge_pre(ix, pair, timeframe, id, start, end):
     '''
     Test function 'merge_pre' to merge the 'pre' Segment
     '''
-    pl = cl_object.get_pivotlist()
 
-    pivot = pl.plist[3]
+    oanda = OandaAPI(instrument=pair,
+                     granularity=timeframe,
+                     settingf='data/settings.ini')
+
+    oanda.run(start=start,
+              end=end)
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list,
+                    instrument=pair,
+                    id=id,
+                    settingf='data/settings.ini')
+
+    pl = cl.get_pivotlist()
+
+    pivot = pl.plist[ix]
     # Check pivot.pre.start() before running 'merge_pre'
-    assert datetime.datetime(2015, 8, 6, 21, 0) == pivot.pre.start()
+   # assert datetime.datetime(2015, 8, 6, 21, 0) == pivot.pre.start()
 
     # run 'merge_pre' function
     pivot.merge_pre(slist=pl.slist)
+    print("h")
 
     # Check pivot.pre.start() after running 'merge_pre'
 
-    assert datetime.datetime(2015, 6, 24, 21, 0) == pivot.pre.start()
+  #  assert datetime.datetime(2015, 6, 24, 21, 0) == pivot.pre.start()
 
 def test_merge_aft(cl_object):
     '''

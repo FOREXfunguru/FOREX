@@ -84,6 +84,9 @@ class Pivot(object):
             elif self.pre.type != s.type and s.count < self.settings.getint('pivots', 'n_candles'):
                 # merge if types of previous (s) and self.pre are different but
                 # s.count is less than self.settings.getint('pivots', 'n_candles')
+                pdb.set_trace()
+                (self.pre.diff
+                 s.diff
                 self.pre = self.pre.prepend(s)
             else:
                 # exit the while loop, as type of previous (s) and self.pre are different
