@@ -37,9 +37,11 @@ class Trade(object):
     SL:  float, Optional
          Stop/Loss price
     TP:  float, Optional
-         Take profit price
+         Take profit price. If not defined then it will calculated by using the RR
     SR:  float, Optional
          Support/Resistance area
+    RR:  float, Optional
+         Risk Ratio
     pips:  int, Optional
            Number of pips of profit/loss. This number will be negative if outcome was failure
     strat: string, Required
@@ -55,6 +57,12 @@ class Trade(object):
     def __init__(self, strat, start, settingf=None, settings=None, **kwargs):
 
         self.__dict__.update(kwargs)
+        if not hasattr(self, 'TP') and not hasattr(self, 'RR'):
+            raise Exception("Neither the RR not "
+                            "the TP is defined. Please provide RR")
+        elif hasattr(self, 'RR') and not hasattr(self, 'TP'):
+            diff = (self.entry - self.SL) * self.RR
+            self.TP = round(self.entry + diff, 4)
 
         self.strat = strat
         self.start = datetime.strptime(start,

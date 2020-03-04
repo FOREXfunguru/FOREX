@@ -71,8 +71,8 @@ class Counter(object):
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         self.trade = trade
 
-        # init the CandleList from self.period to self.trade.start
-        # this will set the self.clist_period class attribute
+        # init the CandleList from self.trade.start-self.settings.getint('counter', 'period')
+        # to self.trade.start this will set the self.clist_period class attribute
         self.__initclist()
         # calc_rsi
         self.clist_period.calc_rsi()
@@ -195,6 +195,7 @@ class Counter(object):
                 p.candle.set_candle_features()
                 for part in part_list:
                     price = getattr(p.candle, self.settings.get('general', 'part'))
+                    # only consider pivots in the area
                     if price >= lower and price <= upper:
                         if self.settings.get('counter', 'runmerge_pre') is True and p.pre is not None:
                             p.merge_pre(slist=pivots.slist)
@@ -226,7 +227,6 @@ class Counter(object):
         It will set the pivots attribute, which is a PivotList object with Pivots
         in the area
         '''
-
         # get PivotList using self.clist_period
         pivotlist = self.clist_period.get_pivotlist()
         # get PivotList in area

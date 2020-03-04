@@ -10,6 +10,9 @@ def t_object():
     td = Trade(
          start="2017-04-20 14:00:00",
          end="2017-04-26 14:00:00",
+         entry=0.75308,
+         TP=0.7594,
+         SL=0.74889,
          pair="AUD/USD",
          type="long",
          timeframe="H8",
@@ -18,6 +21,25 @@ def t_object():
          settingf="data/settings.ini"
          )
     return td
+
+def test_t_object_noTP():
+    '''Test the instantiation without TP and defined RR'''
+    td = Trade(
+        start="2017-04-20 14:00:00",
+        end="2017-04-26 14:00:00",
+        entry=0.75308,
+        SL=0.74889,
+        RR=1.5,
+        pair="AUD/USD",
+        type="long",
+        timeframe="H8",
+        strat="counter_b2",
+        id="AUD_USD 20APR2017H8",
+        settingf="data/settings.ini"
+    )
+
+    # check that td.TP has been calculated
+    assert td.TP == 0.7594
 
 def test_fetch_candlelist(t_object):
     '''
@@ -29,10 +51,10 @@ def test_fetch_candlelist(t_object):
     assert cl.clist[0].openBid == 0.7521
     assert cl.clist[0].highBid == 0.75464
 
-@pytest.mark.parametrize("start,type,SL,TP,entry, outcome", [('2018-12-03 22:00:00','long',1.53398,1.55752,1.54334,'success'),
-                                                             ('2018-09-11 22:00:00','short',1.63633,1.60202,1.62763,'success'),
-                                                             ('2017-05-05 22:00:00','short',1.49191,1.46223,1.48004,'failure'),
-                                                             ('2019-05-23 22:00:00','short',1.62682,1.60294,1.61739,'failure')])
+@pytest.mark.parametrize("start,type,SL,TP,entry, outcome", [('2018-12-03 22:00:00', 'long', 1.53398, 1.55752, 1.54334, 'success'),
+                                                             ('2018-09-11 22:00:00', 'short', 1.63633, 1.60202, 1.62763, 'success'),
+                                                             ('2017-05-05 22:00:00', 'short', 1.49191, 1.46223, 1.48004, 'failure'),
+                                                             ('2019-05-23 22:00:00', 'short', 1.62682, 1.60294, 1.61739, 'failure')])
 def test_run_trade(start, type, SL, TP, entry, outcome):
     '''
     This test checks the progression of the Trade
