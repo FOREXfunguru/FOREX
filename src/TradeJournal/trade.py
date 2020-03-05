@@ -152,7 +152,6 @@ class Trade(object):
 
         entered = False
         for d in date_list:
-            print(d)
             oanda = OandaAPI(instrument=self.pair,
                              granularity=self.timeframe,
                              settingf=self.settingf)
@@ -164,7 +163,7 @@ class Trade(object):
 
             if entered is False:
                 entry_time = entry.get_cross_time(candle=cl)
-                warnings.warn("\t[INFO] Trade entered")
+                print("\t[INFO] Trade entered")
                 if entry_time!='n.a.':
                     self.entry_time = entry_time.isoformat()
                 else:
@@ -179,13 +178,13 @@ class Trade(object):
                     self.outcome='failure'
                     self.end = failure_time
                     self.pips=float(calculate_pips(self.pair,abs(self.SL-self.entry)))*-1
-                    warnings.warn("\t[INFO] S/L was hit")
+                    print("\t[INFO] S/L was hit")
                     break
             if entered is True:
                 success_time = TP.get_cross_time(candle=cl)
                 if success_time is not None and success_time !='n.a.':
                     self.outcome = 'success'
-                    warnings.warn("\t[INFO] T/P was hit")
+                    print("\t[INFO] T/P was hit")
                     self.end=success_time
                     self.pips = float(calculate_pips(self.pair, abs(self.TP - self.entry)))
                     break
@@ -196,7 +195,7 @@ class Trade(object):
             self.outcome = "n.a."
             self.pips = 0
 
-        warnings.warn("[INFO] Done run_trade")
+        print("\t[INFO] Done run_trade")
 
     def __str__(self):
         sb = []
