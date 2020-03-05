@@ -84,10 +84,15 @@ class Pivot(object):
             elif self.pre.type != s.type and s.count < self.settings.getint('pivots', 'n_candles'):
                 # merge if types of previous (s) and self.pre are different but
                 # s.count is less than self.settings.getint('pivots', 'n_candles')
-                pdb.set_trace()
-                (self.pre.diff
-                 s.diff
-                self.pre = self.pre.prepend(s)
+                # calculate the % that s.diff is with respect to self.pre.diff
+                perc_diff = s.diff*100/self.pre.diff
+                # do not merge if perc_diff that s represents with respect
+                # to s.pre is > than the defined threshold
+                if perc_diff < self.settings.getint('pivots', 'diff_th'):
+                    self.pre = self.pre.prepend(s)
+                else:
+                    pdb.set_trace()
+                    extension_needed = False
             else:
                 # exit the while loop, as type of previous (s) and self.pre are different
                 # and s.count is greater than self.settings.getint('pivots', 'n_candles')
@@ -127,8 +132,15 @@ class Pivot(object):
                 # merge
                 self.aft = self.aft.append(s)
             elif self.aft.type != s.type and s.count < self.settings.getint('pivots', 'n_candles'):
-                # merge
-                self.aft = self.aft.append(s)
+                # calculate the % that s.diff is with respect to self.pre.diff
+                perc_diff = s.diff * 100 / self.aft.diff
+                # do not merge if perc_diff that s represents with respect
+                # to s.aft is > than the defined threshold
+                if perc_diff < self.settings.getint('pivots', 'diff_th'):
+                    self.aft = self.aft.prepend(s)
+                else:
+                    pdb.set_trace()
+                    extension_needed = False
             else:
                 extension_needed = False
 

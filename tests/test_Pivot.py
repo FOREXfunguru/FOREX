@@ -66,10 +66,14 @@ def test_pre_aft_start(cl_object):
                          "timeframe,"
                          "id,"
                          "start,"
-                         "end",
+                         "end,"
+                         "date_pre,"
+                         "date_post",
+                         # This date wil skip the merge, as %_diff is greater than threshold
                          [(-1, 'NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-03-26T21:00:00',
-                           '2019-07-01T09:00:00')])
-def test_merge_pre(ix, pair, timeframe, id, start, end):
+                           '2019-07-01T09:00:00', datetime.datetime(2019, 6, 14, 9, 0),
+                           datetime.datetime(2019, 6, 14, 9, 0))])
+def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post):
     '''
     Test function 'merge_pre' to merge the 'pre' Segment
     '''
@@ -92,15 +96,14 @@ def test_merge_pre(ix, pair, timeframe, id, start, end):
 
     pivot = pl.plist[ix]
     # Check pivot.pre.start() before running 'merge_pre'
-   # assert datetime.datetime(2015, 8, 6, 21, 0) == pivot.pre.start()
+    assert date_pre == pivot.pre.start()
 
     # run 'merge_pre' function
     pivot.merge_pre(slist=pl.slist)
     print("h")
 
     # Check pivot.pre.start() after running 'merge_pre'
-
-  #  assert datetime.datetime(2015, 6, 24, 21, 0) == pivot.pre.start()
+    assert datetime.datetime(2015, 6, 24, 21, 0) == pivot.pre.start()
 
 def test_merge_aft(cl_object):
     '''
