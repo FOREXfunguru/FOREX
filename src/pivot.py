@@ -61,6 +61,10 @@ class Pivot(object):
         -------
         Nothing
         """
+        if self.settings.getboolean('general', 'debug') is True:
+            print("[DEBUG] Running merge_pre")
+            print("[DEBUG] Analysis of pivot {0} - "
+                  "self.pre start pre-merge: {1}".format(self.candle.time, self.pre.start()))
 
         extension_needed = True # if extension_needed is False then no further attempts of extending this self.pre
                                 # will be tried
@@ -91,12 +95,15 @@ class Pivot(object):
                 if perc_diff < self.settings.getint('pivots', 'diff_th'):
                     self.pre = self.pre.prepend(s)
                 else:
-                    pdb.set_trace()
                     extension_needed = False
             else:
                 # exit the while loop, as type of previous (s) and self.pre are different
                 # and s.count is greater than self.settings.getint('pivots', 'n_candles')
                 extension_needed = False
+
+        if self.settings.getboolean('general', 'debug') is True:
+            print("[INFO] Done merge_pre")
+            print("[INFO] self.pre start after-merge: {0}".format(self.pre.start()))
 
     def merge_aft(self, slist):
         """
@@ -114,10 +121,15 @@ class Pivot(object):
         -------
         Nothing
         """
+        pdb.set_trace()
+        if self.settings.getboolean('general', 'debug') is True:
+            print("[DEBUG] Running merge_aft")
+            print("[DEBUG] Analysis of pivot {0} - "
+                  "self.aft end pre-merge: {1}".format(self.candle.time, self.aft.end()))
 
         extension_needed = True
         while extension_needed is True:
-            # increase end of self.aft by one candle§
+            # increase end of self.aft by one candle
             start_dt = self.aft.end()+periodToDelta(1, self.candle.granularity)
 
             # fetch next segment
@@ -139,10 +151,13 @@ class Pivot(object):
                 if perc_diff < self.settings.getint('pivots', 'diff_th'):
                     self.aft = self.aft.prepend(s)
                 else:
-                    pdb.set_trace()
                     extension_needed = False
             else:
                 extension_needed = False
+
+        if self.settings.getboolean('general', 'debug') is True:
+            print("[DEBUG] Done merge_aft")
+            print("[DEBUG] self.aft end after-merge: {0}".format(self.aft.end()))
 
     def calc_score(self):
         """
