@@ -178,6 +178,7 @@ class Counter(object):
                                self.trade.SR,
                                self.settings.getint('pivots',
                                                     'hr_pips'))
+
         pl = []
         for p in pivots.plist:
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
@@ -188,7 +189,7 @@ class Counter(object):
                     p.merge_aft(slist=pivots.slist)
                 pl.append(p)
             else:
-                part_list=['close{0}'.format(self.settings.get('pivots', 'bit'))]
+                part_list = ['close{0}'.format(self.settings.get('pivots', 'bit'))]
                 if p.type == 1:
                     part_list.append('high{0}'.format(self.settings.get('pivots', 'bit')))
                 elif p.type == -1:
@@ -201,22 +202,24 @@ class Counter(object):
                     price = getattr(p.candle, part)
                     # only consider pivots in the area
                     if price >= lower and price <= upper:
-                        pdb.set_trace()
-                        if self.settings.getboolean('general', 'debug') is True:
-                            print("Pivot {0} identified in area".format(p.candle.time))
-                        if self.settings.getboolean('counter', 'runmerge_pre') is True and p.pre is not None:
-                            p.merge_pre(slist=pivots.slist)
-                        if self.settings.getboolean('counter', 'runmerge_aft') is True and p.aft is not None:
-                            p.merge_aft(slist=pivots.slist)
-                        #check if this Pivot already exist in pl
-                        p_seen=False
+                        # check if this pivot already exists in pl
+                        p_seen = False
                         for op in pl:
                             if op.candle.time == p.candle.time:
-                                p_seen=True
+                                p_seen = True
+
                         if p_seen is False:
+                            if self.settings.getboolean('general', 'debug') is True:
+                                print("[DEBUG] Pivot {0} identified in area".format(p.candle.time))
+                            if self.settings.getboolean('counter', 'runmerge_pre') is True and p.pre is not None:
+                                p.merge_pre(slist=pivots.slist)
+                            if self.settings.getboolean('counter', 'runmerge_aft') is True and p.aft is not None:
+                                p.merge_aft(slist=pivots.slist)
                             pl.append(p)
 
+
         if self.settings.getboolean('general', 'debug') is True:
+            pdb.set_trace()
             print("[DEBUG] Done __inarea_pivots")
 
         return PivotList(plist=pl,

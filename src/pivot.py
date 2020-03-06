@@ -63,8 +63,8 @@ class Pivot(object):
         """
         if self.settings.getboolean('general', 'debug') is True:
             print("[DEBUG] Running merge_pre")
-            print("[DEBUG] Analysis of pivot {0} - "
-                  "self.pre start pre-merge: {1}".format(self.candle.time, self.pre.start()))
+            print("[DEBUG] Analysis of pivot {0}\n"
+                  "[DEBUG] self.pre start pre-merge: {1}".format(self.candle.time, self.pre.start()))
 
         extension_needed = True # if extension_needed is False then no further attempts of extending this self.pre
                                 # will be tried
@@ -84,6 +84,8 @@ class Pivot(object):
 
             if self.pre.type == s.type:
                 # merge if type of previous (s) is equal to self.pre
+                if self.settings.getboolean('general', 'debug') is True:
+                    print("[DEBUG] Merge because of same Segment type")
                 self.pre = self.pre.prepend(s)
             elif self.pre.type != s.type and s.count < self.settings.getint('pivots', 'n_candles'):
                 # merge if types of previous (s) and self.pre are different but
@@ -92,9 +94,15 @@ class Pivot(object):
                 perc_diff = s.diff*100/self.pre.diff
                 # do not merge if perc_diff that s represents with respect
                 # to s.pre is > than the defined threshold
-                if perc_diff < self.settings.getint('pivots', 'diff_th'):
+                if perc_diff < self.settings.getint('pivots', 'diff_th') and s.pre.count < \
+                        self.settings.getint('pivots', 'n_candles'):
+                    pdb.set_trace()
+                    if self.settings.getboolean('general', 'debug') is True:
+                        print("[DEBUG] Merge because of s.count < n_candles")
                     self.pre = self.pre.prepend(s)
                 else:
+                    if self.settings.getboolean('general', 'debug') is True:
+                        print("[DEBUG] Skipping merge because of %_diff")
                     extension_needed = False
             else:
                 # exit the while loop, as type of previous (s) and self.pre are different
@@ -102,8 +110,8 @@ class Pivot(object):
                 extension_needed = False
 
         if self.settings.getboolean('general', 'debug') is True:
-            print("[INFO] Done merge_pre")
-            print("[INFO] self.pre start after-merge: {0}".format(self.pre.start()))
+            print("[DEBUG] self.pre start after-merge: {0}".format(self.pre.start()))
+            print("[DEBUG] Done merge_pre")
 
     def merge_aft(self, slist):
         """
@@ -121,11 +129,10 @@ class Pivot(object):
         -------
         Nothing
         """
-        pdb.set_trace()
         if self.settings.getboolean('general', 'debug') is True:
             print("[DEBUG] Running merge_aft")
-            print("[DEBUG] Analysis of pivot {0} - "
-                  "self.aft end pre-merge: {1}".format(self.candle.time, self.aft.end()))
+            print("[DEBUG] Analysis of pivot {0}".format(self.candle.time))
+            print("[DEBUG] self.aft end before the merge: {0}".format(self.aft.end()))
 
         extension_needed = True
         while extension_needed is True:
@@ -141,6 +148,8 @@ class Pivot(object):
                 continue
 
             if self.aft.type == s.type:
+                if self.settings.getboolean('general', 'debug') is True:
+                    print("[DEBUG] Merge because of same Segment type")
                 # merge
                 self.aft = self.aft.append(s)
             elif self.aft.type != s.type and s.count < self.settings.getint('pivots', 'n_candles'):
@@ -149,15 +158,19 @@ class Pivot(object):
                 # do not merge if perc_diff that s represents with respect
                 # to s.aft is > than the defined threshold
                 if perc_diff < self.settings.getint('pivots', 'diff_th'):
-                    self.aft = self.aft.prepend(s)
+                    if self.settings.getboolean('general', 'debug') is True:
+                        print("[DEBUG] Merge because of s.count < n_candles")
+                    self.aft = self.aft.append(s)
                 else:
+                    if self.settings.getboolean('general', 'debug') is True:
+                        print("[DEBUG] Skipping merge because of %_diff")
                     extension_needed = False
             else:
                 extension_needed = False
 
         if self.settings.getboolean('general', 'debug') is True:
-            print("[DEBUG] Done merge_aft")
             print("[DEBUG] self.aft end after-merge: {0}".format(self.aft.end()))
+            print("[DEBUG] Done merge_aft")
 
     def calc_score(self):
         """
