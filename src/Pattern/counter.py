@@ -219,7 +219,6 @@ class Counter(object):
 
 
         if self.settings.getboolean('general', 'debug') is True:
-            pdb.set_trace()
             print("[DEBUG] Done __inarea_pivots")
 
         return PivotList(plist=pl,

@@ -42,17 +42,17 @@ def test_get_pivotlist(cl_object):
 
     pl = cl_object.get_pivotlist()
 
-    assert len(pl.plist) == 50
-    assert pl.plist[10].candle.openAsk == 0.72522
-    assert len(pl.plist[7].pre.clist) == 21
-    assert len(pl.plist[10].aft.clist) == 13
+    assert len(pl.plist) == 24
+    assert pl.plist[10].candle.openAsk == 0.76752
+    assert len(pl.plist[7].pre.clist) == 25
+    assert len(pl.plist[10].aft.clist) == 24
 
 def test_print_pivots_dates(cl_object):
     pl = cl_object.get_pivotlist()
 
     dtl = pl.print_pivots_dates()
 
-    assert len(dtl) == 50
+    assert len(dtl) == 24
 
 def test_fetch_by_type(cl_object):
     """Obtain a pivotlist of a certain type"""
@@ -61,14 +61,14 @@ def test_fetch_by_type(cl_object):
 
     newpl = pl.fetch_by_type(type=-1)
 
-    assert len(newpl.plist) == 24
+    assert len(newpl.plist) == 11
 
 def test_fetch_by_time(cl_object):
     """Obtain a Pivot object by datetime"""
 
     pl = cl_object.get_pivotlist()
 
-    adt = datetime.datetime(2015, 12, 28, 22, 0)
+    adt = datetime.datetime(2016, 1, 17, 22, 0)
 
     rpt = pl.fetch_by_time(adt)
 

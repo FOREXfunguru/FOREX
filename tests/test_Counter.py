@@ -111,26 +111,22 @@ def test_set_lasttime(start, type, SR, SL, TP, entry, lasttime):
                          "entry,"
                          "dates",
                          [('NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-07-01 09:00:00', 'short', 0.67095, 0.67258, 0.66328, 0.66887,
-                           [datetime.datetime(2009, 9, 1, 21, 0), datetime.datetime(2015, 7, 27, 21, 0), datetime.datetime(2015, 8, 20, 21, 0),
-                            datetime.datetime(2016, 2, 3, 22, 0), datetime.datetime(2016, 3, 24, 21, 0),
-                            datetime.datetime(2016, 5, 29, 21, 0), datetime.datetime(2018, 8, 28, 21, 0),
-                            datetime.datetime(2018, 9, 20, 21, 0), datetime.datetime(2019, 2, 10, 22, 0),
+                           [datetime.datetime(2016, 5, 29, 21, 0), datetime.datetime(2019, 1, 1, 22, 0),
                             datetime.datetime(2019, 7, 1, 21, 0)]),
                           ('EUR_AUD', 'D', 'EUR_AUD 04DEC2018D', '2018-12-03 22:00:00', 'long', 1.54123, 1.53398, 1.55752, 1.54334,
                           [datetime.datetime(2018, 12, 4, 22, 0)]),
                           ('EUR_AUD', 'D', 'EUR_AUD 06MAY2017D', '2017-05-05 22:00:00', 'short', 1.48820, 1.49191, 1.46223, 1.48004,
-                           [datetime.datetime(2010, 7, 17, 21, 0), datetime.datetime(2013, 8, 27, 21, 0),
-                            datetime.datetime(2015, 12, 30, 22, 0), datetime.datetime(2017, 5, 4, 21, 0)]),
+                           [datetime.datetime(2010, 7, 17, 21, 0), datetime.datetime(2013, 8, 1, 21, 0),
+                            datetime.datetime(2017, 5, 4, 21, 0)]),
                            ('EUR_AUD', 'D', 'EUR_AUD 24MAY2019D', '2019-05-23 22:00:00', 'short', 1.62344, 1.62682, 1.60294, 1.61739,
                            [datetime.datetime(2008, 7, 15, 21, 0), datetime.datetime(2015, 8, 23, 21, 0),
                             datetime.datetime(2018, 12, 30, 22, 0), datetime.datetime(2019, 5, 23, 21, 0)]),
                            ('GBP_USD', 'D', 'GBP_USD 18APR2018D', '2018-04-17 22:00:00', 'short', 1.43690, 1.43778, 1.41005, 1.42681,
-                           [datetime.datetime(2008, 12, 28, 22, 0), datetime.datetime(2010, 5, 17, 21, 0),
-                            datetime.datetime(2016, 5, 12, 21, 0), datetime.datetime(2018, 4, 18, 21, 0)])])
+                           [datetime.datetime(2008, 12, 28, 22, 0), datetime.datetime(2009, 4, 21, 21, 0),
+                            datetime.datetime(2010, 5, 17, 21, 0), datetime.datetime(2018, 4, 18, 21, 0)])])
 def test_set_pivots(pair, id, timeframe, start, type, SR, SL, TP, entry, dates):
     """
     Check that self.pivots class attribute
-    has been initialized
     """
 
     t = Trade(
@@ -166,7 +162,7 @@ def test_set_total_score(ct_object):
     """
     ct_object.set_pivots()
     ct_object.set_total_score()
-    assert ct_object.total_score == 188
+    assert ct_object.total_score == 367
 
 @pytest.mark.parametrize("pair,"
                          "id,"
@@ -228,7 +224,7 @@ def test_set_score_lasttime(ct_object, clean_tmp):
     ct_object.set_pivots_lasttime()
     ct_object.set_score_lasttime()
 
-    assert ct_object.score_lasttime == 188
+    assert ct_object.score_lasttime == 367
 
 """
 def test_calc_itrend(counter_object_notrendi):

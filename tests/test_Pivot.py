@@ -23,6 +23,7 @@ def cl_object():
 
     cl = CandleList(candle_list,
                     instrument='AUD_USD',
+                    id='AUD_USD_testclist',
                     type='long',
                     settingf='data/settings.ini')
     return cl
@@ -45,8 +46,8 @@ def test_pre_aft_lens(cl_object):
 
     pivot = pl.plist[3]
 
-    assert len(pivot.pre.clist) == 20
-    assert len(pivot.aft.clist) == 8
+    assert len(pivot.pre.clist) == 21
+    assert len(pivot.aft.clist) == 18
 
 def test_pre_aft_start(cl_object):
     '''
@@ -58,8 +59,8 @@ def test_pre_aft_start(cl_object):
 
     pivot = pl.plist[3]
 
-    assert datetime.datetime(2015, 8, 6, 21, 0) == pivot.pre.start()
-    assert datetime.datetime(2015, 9, 3, 21, 0) == pivot.aft.start()
+    assert datetime.datetime(2015, 10, 11, 21, 0) == pivot.pre.start()
+    assert datetime.datetime(2015, 11, 9, 22, 0) == pivot.aft.start()
 
 @pytest.mark.parametrize("ix,"
                          "pair,"
@@ -71,8 +72,8 @@ def test_pre_aft_start(cl_object):
                          "date_post",
                          # This date wil skip the merge, as %_diff is greater than threshold
                          [(-1, 'NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-03-26T21:00:00',
-                           '2019-07-01T09:00:00', datetime.datetime(2019, 6, 14, 9, 0),
-                           datetime.datetime(2019, 6, 14, 9, 0))])
+                           '2019-07-01T09:00:00', datetime.datetime(2019, 5, 22, 21, 0),
+                           datetime.datetime(2019, 5, 22, 21, 0))])
 def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post):
     '''
     Test function 'merge_pre' to merge the 'pre' Segment
@@ -96,14 +97,13 @@ def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post):
 
     pivot = pl.plist[ix]
     # Check pivot.pre.start() before running 'merge_pre'
-    assert date_pre == pivot.pre.start()
+    assert date_post == pivot.pre.start()
 
     # run 'merge_pre' function
     pivot.merge_pre(slist=pl.slist)
-    print("h")
 
     # Check pivot.pre.start() after running 'merge_pre'
-    assert datetime.datetime(2015, 6, 24, 21, 0) == pivot.pre.start()
+    assert datetime.datetime(2019, 5, 22, 21, 0) == pivot.pre.start()
 
 def test_merge_aft(cl_object):
     '''
@@ -114,14 +114,14 @@ def test_merge_aft(cl_object):
     pivot = pl.plist[3]
 
     # Check pivot.aft.end() before running 'merge_aft'
-    assert datetime.datetime(2015, 9, 14, 21, 0) == pivot.aft.end()
+    assert datetime.datetime(2015, 12, 2, 22, 0) == pivot.aft.end()
 
     # run 'merge_aft' function
     pivot.merge_aft(slist=pl.slist)
 
     # Check pivot.aft.end() after running 'merge_aft'
 
-    assert datetime.datetime(2015, 10, 8, 21, 0) == pivot.aft.end()
+    assert datetime.datetime(2015, 12, 2, 22, 0) == pivot.aft.end()
 
 def test_calc_score(cl_object, clean_tmp):
     '''
@@ -132,4 +132,4 @@ def test_calc_score(cl_object, clean_tmp):
     pivot = pl.plist[3]
     score = pivot.calc_score()
 
-    assert score == 28
+    assert score == 39

@@ -23,6 +23,7 @@ def pl_object():
 
     cl = CandleList(candle_list,
                     instrument='AUD_USD',
+                    id='AUD_USD_test',
                     type='long',
                     settingf='data/settings.ini')
 

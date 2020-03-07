@@ -94,9 +94,7 @@ class Pivot(object):
                 perc_diff = s.diff*100/self.pre.diff
                 # do not merge if perc_diff that s represents with respect
                 # to s.pre is > than the defined threshold
-                if perc_diff < self.settings.getint('pivots', 'diff_th') and s.pre.count < \
-                        self.settings.getint('pivots', 'n_candles'):
-                    pdb.set_trace()
+                if perc_diff < self.settings.getint('pivots', 'diff_th'):
                     if self.settings.getboolean('general', 'debug') is True:
                         print("[DEBUG] Merge because of s.count < n_candles")
                     self.pre = self.pre.prepend(s)
