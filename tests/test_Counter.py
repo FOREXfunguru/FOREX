@@ -110,7 +110,9 @@ def test_set_lasttime(start, type, SR, SL, TP, entry, lasttime):
                          "TP,"
                          "entry,"
                          "dates",
-                         [('NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-07-01 09:00:00', 'short', 0.67095, 0.67258, 0.66328, 0.66887,
+                         [('EUR_JPY', 'D', 'EUR_JPY 15JUL2009D', '2009-07-14 22:00:00', 'long', 127.766, 126.421, 137.232, 130.865,
+                           [datetime.datetime(2019, 6, 27, 21, 0)]),
+                          ('NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-07-01 09:00:00', 'short', 0.67095, 0.67258, 0.66328, 0.66887,
                            [datetime.datetime(2016, 5, 29, 21, 0), datetime.datetime(2019, 1, 1, 22, 0),
                             datetime.datetime(2019, 6, 27, 21, 0)]),
                           ('EUR_AUD', 'D', 'EUR_AUD 04DEC2018D', '2018-12-03 22:00:00', 'long', 1.54123, 1.53398, 1.55752, 1.54334,
