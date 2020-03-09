@@ -140,10 +140,14 @@ def test_calc_score(cl_object, clean_tmp):
                          "id,"
                          "start,"
                          "end,"
-                         "date_pre",
+                         "new_b",
                          [(-1, 'GBP_USD', 'D', 'GBP_USD 18APR2018D', '2018-03-01T22:00:00',
-                           '2018-04-18T22:00:00', datetime.datetime(2019, 5, 22, 21, 0))])
-def test_adjust_pivot(ix, pair, timeframe, id, start, end, date_pre):
+                           '2018-04-18T22:00:00', datetime.datetime(2018, 4, 15, 21, 0)),
+                          (-1, 'EUR_JPY', 'D', 'EUR_JPY 15JUL2009D', '2009-05-01T22:00:00',
+                           '2009-07-14T22:00:00', datetime.datetime(2009, 7, 11, 21, 0)),
+                          (-1, 'EUR_AUD', 'D', 'EUR_AUD 24MAY2019D', '2009-02-23T22:00:00',
+                           '2009-05-23T22:00:00',datetime.datetime(2009, 5, 18, 21, 0)) ])
+def test_adjust_pivot(ix, pair, timeframe, id, start, end, new_b):
     oanda = OandaAPI(instrument=pair,
                      granularity=timeframe,
                      settingf='data/settings.ini')
@@ -161,6 +165,6 @@ def test_adjust_pivot(ix, pair, timeframe, id, start, end, date_pre):
     pl = cl.get_pivotlist()
 
     p = pl.plist[ix]
-    p.adjust_pivot()
+    newp = p.adjust_pivot()
 
-    assert 0
+    assert new_b == newp.candle.time

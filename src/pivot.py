@@ -201,24 +201,27 @@ class Pivot(object):
         This is necessary as sometimes the Zigzag algorithm
         does not find the correct pivot
         :return:
+        New adjusted pivot
         '''
-        pdb.set_trace()
 
         clist = self.pre.clist
         last_ix = None
         new_pc = None
+        pre_colour = None
         it = True
         ix = -1
         while it is True:
             c = clist[ix]
             c.set_candle_features()
-            if self.pre.type == 1:
-               if c.colour == "red":
-                   ix -= 1
-               else:
-                   last_ix = ix + 1
-                   new_pc = c
-                   it = False
+            if pre_colour is None:
+                pre_colour = c.colour
+            elif c.colour == pre_colour:
+                ix -= 1
+            else:
+                # change in candle colour
+                last_ix = ix + 1
+                new_pc = c
+                it = False
 
         newclist = clist[0:last_ix]
         # Create new pre Segment
@@ -236,7 +239,8 @@ class Pivot(object):
                   settingf=self.settingf,
                   pre=s,
                   aft=self.aft)
-        print("h")
+
+        return p
 
     def __repr__(self):
         return "Pivot"
