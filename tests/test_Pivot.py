@@ -133,3 +133,34 @@ def test_calc_score(cl_object, clean_tmp):
     score = pivot.calc_score()
 
     assert score == 39
+
+@pytest.mark.parametrize("ix,"
+                         "pair,"
+                         "timeframe,"
+                         "id,"
+                         "start,"
+                         "end,"
+                         "date_pre",
+                         [(-1, 'GBP_USD', 'D', 'GBP_USD 18APR2018D', '2018-03-01T22:00:00',
+                           '2018-04-18T22:00:00', datetime.datetime(2019, 5, 22, 21, 0))])
+def test_adjust_pivot(ix, pair, timeframe, id, start, end, date_pre):
+    oanda = OandaAPI(instrument=pair,
+                     granularity=timeframe,
+                     settingf='data/settings.ini')
+
+    oanda.run(start=start,
+              end=end)
+
+    candle_list = oanda.fetch_candleset()
+
+    cl = CandleList(candle_list,
+                    instrument=pair,
+                    id=id,
+                    settingf='data/settings.ini')
+
+    pl = cl.get_pivotlist()
+
+    p = pl.plist[ix]
+    p.adjust_pivot()
+
+    assert 0

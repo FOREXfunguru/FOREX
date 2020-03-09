@@ -1,5 +1,6 @@
 import warnings
 from utils import *
+from segment import Segment
 from configparser import ConfigParser
 
 
@@ -193,6 +194,49 @@ class Pivot(object):
         self.score = score_pre+score_aft
 
         return score_pre+score_aft
+
+    def adjust_pivot(self):
+        '''
+        Function to adjust the pivot.
+        This is necessary as sometimes the Zigzag algorithm
+        does not find the correct pivot
+        :return:
+        '''
+        pdb.set_trace()
+
+        clist = self.pre.clist
+        last_ix = None
+        new_pc = None
+        it = True
+        ix = -1
+        while it is True:
+            c = clist[ix]
+            c.set_candle_features()
+            if self.pre.type == 1:
+               if c.colour == "red":
+                   ix -= 1
+               else:
+                   last_ix = ix + 1
+                   new_pc = c
+                   it = False
+
+        newclist = clist[0:last_ix]
+        # Create new pre Segment
+        s = Segment(type=self.pre.type,
+                    count=len(newclist),
+                    clist=newclist,
+                    instrument=self.pre.instrument,
+                    settingf=self.pre.settingf)
+        s.calc_diff()
+
+        # create new Pivot
+        p = Pivot(type=self.type,
+                  candle=new_pc,
+                  score=self.score,
+                  settingf=self.settingf,
+                  pre=s,
+                  aft=self.aft)
+        print("h")
 
     def __repr__(self):
         return "Pivot"

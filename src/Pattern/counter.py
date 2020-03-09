@@ -183,6 +183,7 @@ class Counter(object):
         for p in pivots.plist:
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
             if pivots.plist[-1].candle.time == p.candle.time and last_pivot is True:
+                pdb.set_trace()
                 if self.settings.getboolean('counter', 'runmerge_pre') is True and p.pre is not None:
                     p.merge_pre(slist=pivots.slist)
                 if self.settings.getboolean('counter', 'runmerge_aft') is True and p.aft is not None:
