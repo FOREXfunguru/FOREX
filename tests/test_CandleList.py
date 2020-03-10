@@ -1,11 +1,14 @@
 import pytest
 import pdb
+import os
 
 from oanda_api import OandaAPI
 from candlelist import CandleList
 from harea import HArea
 
 import datetime
+import glob
+import os
 
 @pytest.fixture
 def clO():
@@ -25,6 +28,14 @@ def clO():
                     granularity='D',
                     settingf='data/settings.ini')
     return cl
+
+@pytest.fixture
+def clean_tmp():
+    yield
+    print("Cleanup files")
+    files = glob.glob('data/IMGS/pivots/*.png')
+    for f in files:
+        os.remove(f)
 
 def test_CandleList(clO):
     """

@@ -2,14 +2,22 @@ from oanda_api import OandaAPI
 from candlelist import CandleList
 
 import pytest
-import traceback
 import glob
 import os
 import datetime
 import pdb
 
 @pytest.fixture
-def cl_object():
+def clean_tmp():
+    yield
+    print("Cleanup files")
+    files = glob.glob('data/IMGS/pivots/*')
+    for f in files:
+        os.remove(f)
+
+
+@pytest.fixture
+def cl_object(clean_tmp):
     '''Returns CandleList object'''
 
     oanda = OandaAPI(instrument='AUD_USD',
@@ -28,15 +36,7 @@ def cl_object():
                     settingf='data/settings.ini')
     return cl
 
-@pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    files = glob.glob('data/tmp/*')
-    for f in files:
-        os.remove(f)
-
-def test_pre_aft_lens(cl_object):
+def test_pre_aft_lens(cl_object, clean_tmp):
     '''
     Check if 'pre' and 'aft' Segments have the
     correct number of candles
@@ -49,7 +49,7 @@ def test_pre_aft_lens(cl_object):
     assert len(pivot.pre.clist) == 21
     assert len(pivot.aft.clist) == 18
 
-def test_pre_aft_start(cl_object):
+def test_pre_aft_start(cl_object, clean_tmp):
     '''
     Check if 'pre' and 'aft' Segments have the
     correct start Datetimes
@@ -74,7 +74,7 @@ def test_pre_aft_start(cl_object):
                          [(-1, 'NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-03-26T21:00:00',
                            '2019-07-01T09:00:00', datetime.datetime(2019, 5, 22, 21, 0),
                            datetime.datetime(2019, 5, 22, 21, 0))])
-def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post):
+def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post, clean_tmp):
     '''
     Test function 'merge_pre' to merge the 'pre' Segment
     '''
@@ -105,7 +105,7 @@ def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post):
     # Check pivot.pre.start() after running 'merge_pre'
     assert datetime.datetime(2019, 5, 22, 21, 0) == pivot.pre.start()
 
-def test_merge_aft(cl_object):
+def test_merge_aft(cl_object, clean_tmp):
     '''
     Test function to merge 'aft' Segment
     '''
@@ -147,7 +147,7 @@ def test_calc_score(cl_object, clean_tmp):
                            '2009-07-14T22:00:00', datetime.datetime(2009, 7, 11, 21, 0)),
                           (-1, 'EUR_AUD', 'D', 'EUR_AUD 24MAY2019D', '2009-02-23T22:00:00',
                            '2009-05-23T22:00:00',datetime.datetime(2009, 5, 18, 21, 0)) ])
-def test_adjust_pivot(ix, pair, timeframe, id, start, end, new_b):
+def test_adjust_pivottime(ix, pair, timeframe, id, start, end, new_b, clean_tmp):
     oanda = OandaAPI(instrument=pair,
                      granularity=timeframe,
                      settingf='data/settings.ini')
@@ -165,6 +165,6 @@ def test_adjust_pivot(ix, pair, timeframe, id, start, end, new_b):
     pl = cl.get_pivotlist()
 
     p = pl.plist[ix]
-    newp = p.adjust_pivot()
+    newt = p.adjust_pivottime()
 
-    assert new_b == newp.candle.time
+    assert new_b == newt

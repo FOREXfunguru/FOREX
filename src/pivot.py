@@ -195,17 +195,16 @@ class Pivot(object):
 
         return score_pre+score_aft
 
-    def adjust_pivot(self):
+    def adjust_pivottime(self):
         '''
-        Function to adjust the pivot.
+        Function to adjust the pivot time
         This is necessary as sometimes the Zigzag algorithm
         does not find the correct pivot
         :return:
-        New adjusted pivot
+        New adjusted datetime
         '''
 
         clist = self.pre.clist
-        last_ix = None
         new_pc = None
         pre_colour = None
         it = True
@@ -219,28 +218,10 @@ class Pivot(object):
                 ix -= 1
             else:
                 # change in candle colour
-                last_ix = ix + 1
                 new_pc = c
                 it = False
 
-        newclist = clist[0:last_ix]
-        # Create new pre Segment
-        s = Segment(type=self.pre.type,
-                    count=len(newclist),
-                    clist=newclist,
-                    instrument=self.pre.instrument,
-                    settingf=self.pre.settingf)
-        s.calc_diff()
-
-        # create new Pivot
-        p = Pivot(type=self.type,
-                  candle=new_pc,
-                  score=self.score,
-                  settingf=self.settingf,
-                  pre=s,
-                  aft=self.aft)
-
-        return p
+        return new_pc.time
 
     def __repr__(self):
         return "Pivot"

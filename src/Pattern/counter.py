@@ -152,11 +152,7 @@ class Counter(object):
 
         Parameters
         ----------
-        pivots: PivotList
-        runmerge_pre: Boolean
-                      Run PivotList's 'merge_pre' function. Default: False
-        runmerge_aft: Boolean
-                      Run PivotList's 'merge_aft' function. Default: False
+        pivots: PivotList will pivots
         last_pivot: Boolean
                     If true, then the last pivot will be considered as it is part
                     of the setup. Default: False
@@ -183,12 +179,17 @@ class Counter(object):
         for p in pivots.plist:
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
             if pivots.plist[-1].candle.time == p.candle.time and last_pivot is True:
-                adj_p = p.adjust_pivot()
-                if self.settings.getboolean('counter', 'runmerge_pre') is True and adj_p.pre is not None:
-                    adj_p.merge_pre(slist=pivots.slist)
-                if self.settings.getboolean('counter', 'runmerge_aft') is True and adj_p.aft is not None:
-                    adj_p.merge_aft(slist=pivots.slist)
-                pl.append(adj_p)
+                adj_t = p.adjust_pivottime()
+                # get new CandleList with new adjusted time for the end
+                newclist = pivots.clist.slice(start=pivots.clist.clist[0].time,
+                                              end=adj_t)
+                newp=newclist.get_pivotlist().plist[-1]
+
+                if self.settings.getboolean('counter', 'runmerge_pre') is True and newp.pre is not None:
+                    newp.merge_pre(slist=pivots.slist)
+                if self.settings.getboolean('counter', 'runmerge_aft') is True and newp.aft is not None:
+                    newp.merge_aft(slist=pivots.slist)
+                pl.append(newp)
             else:
                 part_list = ['close{0}'.format(self.settings.get('pivots', 'bit'))]
                 if p.type == 1:
