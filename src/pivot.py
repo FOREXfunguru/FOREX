@@ -82,7 +82,6 @@ class Pivot(object):
                                                                                                      start_dt))
                 extension_needed = False
                 continue
-
             if self.pre.type == s.type:
                 # merge if type of previous (s) is equal to self.pre
                 if self.settings.getboolean('general', 'debug') is True:

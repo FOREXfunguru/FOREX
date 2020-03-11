@@ -2,6 +2,7 @@ from utils import *
 import config
 import numpy as np
 import matplotlib
+import datetime
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 from configparser import ConfigParser
@@ -187,7 +188,7 @@ class SegmentList(object):
         '''
 
         for s in reversed(self.slist):
-            if s.end() == dt or s.end() < dt:
+            if s.end() == dt or s.end() < dt or s.end()-dt <= datetime.timedelta(0, 3600):
                 return s
 
         return None

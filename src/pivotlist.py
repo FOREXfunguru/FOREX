@@ -89,6 +89,7 @@ class PivotList(object):
                                  aft=None,
                                  settingf=self.settingf))
             self.plist = plist_o
+
             self.slist = SegmentList(slist=segs,
                                      instrument=plist_o[0].candle.instrument,
                                      settingf=self.settingf)

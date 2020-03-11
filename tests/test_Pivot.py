@@ -71,9 +71,13 @@ def test_pre_aft_start(cl_object, clean_tmp):
                          "date_pre,"
                          "date_post",
                          # This date wil skip the merge, as %_diff is greater than threshold
-                         [(-1, 'NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-03-26T21:00:00',
-                           '2019-07-01T09:00:00', datetime.datetime(2019, 5, 22, 21, 0),
-                           datetime.datetime(2019, 5, 22, 21, 0))])
+                         [
+                          #(-1, 'NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-03-26T21:00:00',
+                          # '2019-07-01T09:00:00', datetime.datetime(2019, 5, 22, 21, 0),
+                          # datetime.datetime(2019, 5, 22, 21, 0)),
+                          (-1, 'EUR_JPY', 'D', 'EUR_JPY 27OCT2009D', '2004-02-03T21:00:00',
+                           '2004-05-16T21:00:00', datetime.datetime(2004, 4, 4, 21, 0),
+                           datetime.datetime(2004, 4, 4, 21, 0))])
 def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post, clean_tmp):
     '''
     Test function 'merge_pre' to merge the 'pre' Segment
@@ -103,7 +107,7 @@ def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post, cle
     pivot.merge_pre(slist=pl.slist)
 
     # Check pivot.pre.start() after running 'merge_pre'
-    assert datetime.datetime(2019, 5, 22, 21, 0) == pivot.pre.start()
+    assert date_pre == pivot.pre.start()
 
 def test_merge_aft(cl_object, clean_tmp):
     '''
@@ -114,7 +118,7 @@ def test_merge_aft(cl_object, clean_tmp):
     pivot = pl.plist[3]
 
     # Check pivot.aft.end() before running 'merge_aft'
-    assert datetime.datetime(2015, 12, 2, 22, 0) == pivot.aft.end()
+    assert datetime.datetime(2015, 12, 4, 22, 0) == pivot.aft.end()
 
     # run 'merge_aft' function
     pivot.merge_aft(slist=pl.slist)
