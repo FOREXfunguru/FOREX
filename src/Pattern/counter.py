@@ -179,7 +179,7 @@ class Counter(object):
         for p in pivots.plist:
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
             if pivots.plist[-1].candle.time == p.candle.time and last_pivot is True:
-                adj_t = p.adjust_pivottime()
+                adj_t = p.adjust_pivottime(clistO=pivots.clist)
                 # get new CandleList with new adjusted time for the end
                 newclist = pivots.clist.slice(start=pivots.clist.clist[0].time,
                                               end=adj_t)

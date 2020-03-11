@@ -195,16 +195,20 @@ class Pivot(object):
 
         return score_pre+score_aft
 
-    def adjust_pivottime(self):
+    def adjust_pivottime(self, clistO):
         '''
         Function to adjust the pivot time
         This is necessary as sometimes the Zigzag algorithm
         does not find the correct pivot
+
+        Parameters
+        ----------
+        clistO : CandleList object used to identify the
+                PivotList, Required
         :return:
         New adjusted datetime
         '''
-
-        clist = self.pre.clist
+        clist = clistO.clist[:-1] # reduce index by 1 so start candle+1 is not included
         new_pc = None
         pre_colour = None
         it = True
@@ -214,8 +218,10 @@ class Pivot(object):
             c.set_candle_features()
             if pre_colour is None:
                 pre_colour = c.colour
+                ix -= 1
             elif c.colour == pre_colour:
                 ix -= 1
+                continue
             else:
                 # change in candle colour
                 new_pc = c
