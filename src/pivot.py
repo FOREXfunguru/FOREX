@@ -77,6 +77,8 @@ class Pivot(object):
             # fetch previous segment
             s = slist.fetch_by_end(start_dt)
             if s is None:
+                # This is not necessarily an error, it could be that there is not the required Segment in slist
+                # because it is out of the time period
                 warnings.warn("No Segment could be retrieved for pivot falling in time {0} "
                               "by using s.fetch_by_end and date: {1} in function 'merge_pre'".format(self.candle.time,
                                                                                                      start_dt))
@@ -140,6 +142,8 @@ class Pivot(object):
             # fetch next segment
             s = slist.fetch_by_start(start_dt)
             if s is None:
+                # This is not necessarily an error, it could be that there is not the required Segment in slist
+                # because it is out of the time period
                 warnings.warn("No Segment could be retrieved for pivot falling in time {0} by using s.fetch_by_"
                               "start and date: {1} in function 'merge_aft'. ".format(self.candle.time, start_dt))
                 extension_needed = False

@@ -183,15 +183,15 @@ class Counter(object):
                 # get new CandleList with new adjusted time for the end
                 newclist = pivots.clist.slice(start=pivots.clist.clist[0].time,
                                               end=adj_t)
-                newp=newclist.get_pivotlist().plist[-1]
-
+                newp = newclist.get_pivotlist().plist[-1]
                 if self.settings.getboolean('counter', 'runmerge_pre') is True and newp.pre is not None:
                     newp.merge_pre(slist=pivots.slist)
                 if self.settings.getboolean('counter', 'runmerge_aft') is True and newp.aft is not None:
                     newp.merge_aft(slist=pivots.slist)
                 pl.append(newp)
             else:
-                part_list = ['close{0}'.format(self.settings.get('pivots', 'bit'))]
+                part_list = ['close{0}'.format(self.settings.get('pivots', 'bit')),
+                             'mid{0}'.format(self.settings.get('pivots', 'bit'))]
                 if p.type == 1:
                     part_list.append('high{0}'.format(self.settings.get('pivots', 'bit')))
                 elif p.type == -1:

@@ -110,29 +110,35 @@ def test_set_lasttime(start, type, SR, SL, TP, entry, lasttime, clean_tmp):
                          "TP,"
                          "entry,"
                          "dates",
-                         [ ('EUR_JPY', 'D', 'EUR_JPY 27OCT2009D', '2009-10-26 22:00:00', 'short', 137.305, 138.66, 134.1, 136.852,
-                           [datetime.datetime(2003, 7, 27, 21, 0), datetime.datetime(2004, 1, 10, 22, 0),
-                            datetime.datetime(2004, 5, 16, 21, 0), datetime.datetime(2004, 8, 12, 21, 0),
-                            datetime.datetime(2006, 1, 11, 22, 0), datetime.datetime(2006, 2, 26, 22, 0),
-                            datetime.datetime(2009, 4, 5, 21, 0), datetime.datetime(2009, 10, 22, 21, 0)]),
-                           ('EUR_JPY', 'D', 'EUR_JPY 15JUL2009D', '2009-07-14 22:00:00', 'long', 127.766, 126.421, 137.232, 130.865,
-                           [datetime.datetime(2009, 1, 3, 22, 0), datetime.datetime(2009, 5, 16, 21, 0),
-                            datetime.datetime(2009, 7, 11, 21, 0)]),
-                          ('NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-07-01 09:00:00', 'short', 0.67095, 0.67258, 0.66328, 0.66887,
-                           [datetime.datetime(2016, 5, 29, 21, 0), datetime.datetime(2019, 1, 1, 22, 0),
-                            datetime.datetime(2019, 6, 27, 21, 0)]),
-                          ('EUR_AUD', 'D', 'EUR_AUD 04DEC2018D', '2018-12-03 22:00:00', 'long', 1.54123, 1.53398, 1.55752, 1.54334,
-                           [datetime.datetime(2018, 11, 29, 22, 0)]),
-                          ('EUR_AUD', 'D', 'EUR_AUD 08MAY2017D', '2017-05-08 22:00:00', 'short', 1.48820, 1.49191, 1.46223, 1.48004,
-                           [datetime.datetime(2010, 7, 17, 21, 0), datetime.datetime(2013, 8, 1, 21, 0),
-                            datetime.datetime(2017, 5, 7, 21, 0)]),
+                         [ ('EUR_JPY', 'D', 'EUR_JPY 06APR2010D', '2010-04-05 22:00:00', 'short', 126.909, 128.151,
+                            124.347, 126.627, [datetime.datetime(2008, 11, 3, 22, 0), datetime.datetime(2009, 3, 29, 21, 0),
+                                               datetime.datetime(2009, 4, 26, 21, 0), datetime.datetime(2010, 4, 3, 21, 0)]),
+                            ('EUR_JPY', 'D', 'EUR_JPY 27OCT2009D', '2009-10-26 22:00:00', 'short', 138.518, 138.66, 134.1, 136.852,
+                            [datetime.datetime(2004, 3, 6, 22, 0), datetime.datetime(2005, 8, 7, 21, 0),
+                             datetime.datetime(2006, 1, 11, 22, 0), datetime.datetime(2006, 2, 26, 22, 0),
+                             datetime.datetime(2009, 6, 11, 21, 0), datetime.datetime(2009, 8, 8, 21, 0),
+                             datetime.datetime(2009, 10, 24, 21, 0), datetime.datetime(2009, 10, 22, 21, 0)]),
+                            ('EUR_JPY', 'D', 'EUR_JPY 15JUL2009D', '2009-07-14 22:00:00', 'long', 127.766, 126.421, 137.232, 130.865,
+                            [datetime.datetime(2008, 11, 3, 22, 0), datetime.datetime(2009, 1, 3, 22, 0),
+                             datetime.datetime(2009, 5, 16, 21, 0), datetime.datetime(2009, 7, 11, 21, 0)]),
+                            ('NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-07-01 09:00:00', 'short', 0.67095, 0.67258, 0.66328, 0.66887,
+                            [datetime.datetime(2010, 5, 25, 21, 0), datetime.datetime(2010, 6, 6, 21, 0),
+                             datetime.datetime(2016, 5, 29, 21, 0), datetime.datetime(2019, 1, 1, 22, 0),
+                             datetime.datetime(2019, 6, 27, 21, 0)]),
+                            ('EUR_AUD', 'D', 'EUR_AUD 04DEC2018D', '2018-12-03 22:00:00', 'long', 1.54123, 1.53398, 1.55752, 1.54334,
+                            [datetime.datetime(2016, 1, 28, 22, 0), datetime.datetime(2018, 6, 3, 21, 0),
+                             datetime.datetime(2018, 11, 29, 22, 0)]),
+                            ('EUR_AUD', 'D', 'EUR_AUD 08MAY2017D', '2017-05-08 22:00:00', 'short', 1.48820, 1.49191, 1.46223, 1.48004,
+                            [datetime.datetime(2010, 7, 1, 21, 0), datetime.datetime(2010, 7, 17, 21, 0),
+                             datetime.datetime(2013, 8, 1, 21, 0), datetime.datetime(2015, 8, 3, 21, 0),
+                             datetime.datetime(2017, 5, 7, 21, 0)]),
                            ('EUR_AUD', 'D', 'EUR_AUD 24MAY2019D', '2019-05-23 22:00:00', 'short', 1.62344, 1.62682, 1.60294, 1.61739,
                             [datetime.datetime(2008, 7, 15, 21, 0), datetime.datetime(2015, 8, 23, 21, 0),
-                            datetime.datetime(2018, 12, 30, 22, 0), datetime.datetime(2019, 5, 21, 21, 0)]),
+                             datetime.datetime(2018, 12, 30, 22, 0), datetime.datetime(2019, 5, 21, 21, 0)]),
                            ('GBP_USD', 'D', 'GBP_USD 18APR2018D', '2018-04-17 22:00:00', 'short', 1.43690, 1.43778, 1.41005, 1.42681,
                            [datetime.datetime(2008, 12, 28, 22, 0), datetime.datetime(2009, 4, 21, 21, 0),
-                            datetime.datetime(2010, 5, 17, 21, 0), datetime.datetime(2018, 4, 15, 21, 0)])])
-def test_set_pivots(pair, id, timeframe, start, type, SR, SL, TP, entry, dates):
+                           datetime.datetime(2010, 5, 17, 21, 0), datetime.datetime(2018, 4, 15, 21, 0)])])
+def test_set_pivots(pair, id, timeframe, start, type, SR, SL, TP, entry, dates, clean_tmp):
     """
     Check that self.pivots class attribute
     """
@@ -170,7 +176,7 @@ def test_set_total_score(ct_object, clean_tmp):
     """
     ct_object.set_pivots()
     ct_object.set_total_score()
-    assert ct_object.total_score == 365
+    assert ct_object.total_score == 509
 
 @pytest.mark.parametrize("pair,"
                          "id,"

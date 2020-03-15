@@ -118,7 +118,7 @@ def test_merge_aft(cl_object, clean_tmp):
     pivot = pl.plist[3]
 
     # Check pivot.aft.end() before running 'merge_aft'
-    assert datetime.datetime(2015, 12, 4, 22, 0) == pivot.aft.end()
+    assert datetime.datetime(2015, 12, 2, 22, 0) == pivot.aft.end()
 
     # run 'merge_aft' function
     pivot.merge_aft(slist=pl.slist)
@@ -169,6 +169,6 @@ def test_adjust_pivottime(ix, pair, timeframe, id, start, end, new_b, clean_tmp)
     pl = cl.get_pivotlist()
 
     p = pl.plist[ix]
-    newt = p.adjust_pivottime()
+    newt = p.adjust_pivottime(clistO=cl)
 
     assert new_b == newt

@@ -166,7 +166,7 @@ class SegmentList(object):
         Segment object. None if not found
         '''
         for s in self.slist:
-            if s.start() == dt or s.start() > dt:
+            if s.start() == dt or s.start() > dt or abs(s.start()-dt) <= datetime.timedelta(0, 3600):
                 return s
 
         return None
