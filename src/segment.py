@@ -92,6 +92,9 @@ class Segment(object):
         diff = abs(getattr(self.clist[-1], part) - getattr(self.clist[0], part))
         diff_pips = float(calculate_pips(self.instrument, diff))
 
+        if diff_pips == 0:
+            diff_pips += 1
+
         self.diff = diff_pips
 
         return self
