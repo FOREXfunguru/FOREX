@@ -219,6 +219,10 @@ class Pivot(object):
         while it is True:
             c = clist[ix]
             c.set_candle_features()
+            if c.colour == "undefined":
+                it = False
+                new_pc = c
+                continue
             if pre_colour is None:
                 pre_colour = c.colour
                 ix -= 1

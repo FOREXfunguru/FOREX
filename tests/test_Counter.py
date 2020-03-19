@@ -110,7 +110,9 @@ def test_set_lasttime(start, type, SR, SL, TP, entry, lasttime, clean_tmp):
                          "TP,"
                          "entry,"
                          "dates",
-                         [  ('EUR_JPY', 'D', 'EUR_JPY 04MAY2016D', '2016-05-03 22:00:00', 'long', 122.173, 121.57,
+                         [  ('EUR_GBP', 'D', 'EUR_GBP 04JUN2004D', '2004-06-03 22:00:00', 'long', 0.66379, 0.66229, 0.67418,
+                             0.66704, [datetime.datetime(2004, 6, 2, 21, 0)]),
+                            ('EUR_JPY', 'D', 'EUR_JPY 04MAY2016D', '2016-05-03 22:00:00', 'long', 122.173, 121.57,
                              125.138, 123.021, [datetime.datetime(2008, 11, 3, 22, 0)]),
                             ('EUR_JPY', 'D', 'EUR_JPY 06APR2010D', '2010-04-05 22:00:00', 'short', 126.909, 128.151,
                             124.347, 126.627, [datetime.datetime(2008, 11, 3, 22, 0), datetime.datetime(2009, 3, 29, 21, 0),
@@ -140,7 +142,7 @@ def test_set_lasttime(start, type, SR, SL, TP, entry, lasttime, clean_tmp):
                            ('GBP_USD', 'D', 'GBP_USD 18APR2018D', '2018-04-17 22:00:00', 'short', 1.43690, 1.43778, 1.41005, 1.42681,
                            [datetime.datetime(2008, 12, 28, 22, 0), datetime.datetime(2009, 4, 21, 21, 0),
                            datetime.datetime(2010, 5, 17, 21, 0), datetime.datetime(2018, 4, 15, 21, 0)])])
-def test_set_pivots(pair, id, timeframe, start, type, SR, SL, TP, entry, dates):
+def test_set_pivots(pair, id, timeframe, start, type, SR, SL, TP, entry, dates, clean_tmp):
     """
     Check that self.pivots class attribute
     """

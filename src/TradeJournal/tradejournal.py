@@ -99,8 +99,7 @@ class TradeJournal(object):
                         dt_l = value.print_pivots_dates()
                         value = [d.strftime('%d/%m/%Y:%H:%M') for d in dt_l]
                 except:
-                    pdb.set_trace()
-                    warnings.warn("Error getting value for attribute: {0}".format(a))
+                    warnings.warn("No value for attribute: {0}".format(a))
                     value = "n.a."
                 row.append(value)
             data.append(row)
