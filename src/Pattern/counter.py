@@ -136,7 +136,7 @@ class Counter(object):
         # instantiate an HArea object representing the self.SR in order to calculate the lasttime
         # price has been above/below SR
         resist = HArea(price=self.trade.SR,
-                       pips=self.settings.getint('trade', 'hr_pips'),
+                       pips=self.settings.getint('harea', 'hr_pips'),
                        instrument=self.trade.pair,
                        granularity=self.trade.timeframe,
                        settings=self.settings)

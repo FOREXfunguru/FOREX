@@ -160,11 +160,10 @@ class Trade(object):
                       count=1)
 
             cl = oanda.fetch_candleset()[0]
-
             if entered is False:
                 entry_time = entry.get_cross_time(candle=cl)
                 print("\t[INFO] Trade entered")
-                if entry_time!='n.a.':
+                if entry_time != 'n.a.':
                     self.entry_time = entry_time.isoformat()
                 else:
                     warnings.warn("No entry time was identified for this trade")
@@ -173,6 +172,7 @@ class Trade(object):
             if entry_time is not None and entry_time != 'n.a.':
                 entered=True
             if entered is True:
+                pdb.set_trace()
                 failure_time = SL.get_cross_time(candle=cl)
                 if failure_time is not None and failure_time != 'n.a.':
                     self.outcome='failure'

@@ -1,12 +1,7 @@
 import pdb
-import matplotlib
 from datetime import timedelta
 from oanda_api import OandaAPI
 from configparser import ConfigParser
-
-
-matplotlib.use('PS')
-import matplotlib.pyplot as plt
 
 class HArea(object):
     '''
@@ -76,10 +71,11 @@ class HArea(object):
         ------
         datetime object of the moment that the price crosses the HArea
         '''
-
         count = 0
+
         for c in reversed(clist):
             count += 1
+            # Last time has to be at least self.settings.getint('harea', 'min') candles before
             if count <= self.settings.getint('harea', 'min'):
                 continue
             if position == 'above':
@@ -139,6 +135,7 @@ class HArea(object):
 
             candle_list = oanda.fetch_candleset()
             for c in candle_list:
+                pdb.set_trace()
                 if c.lowAsk <= self.price <= c.highAsk:
                     return c.time
         else:

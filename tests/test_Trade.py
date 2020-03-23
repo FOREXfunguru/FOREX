@@ -51,11 +51,12 @@ def test_fetch_candlelist(t_object):
     assert cl.clist[0].openBid == 0.7521
     assert cl.clist[0].highBid == 0.75464
 
-@pytest.mark.parametrize("start,type,SL,TP,entry, outcome", [('2018-12-03 22:00:00', 'long', 1.53398, 1.55752, 1.54334, 'success'),
-                                                             ('2018-09-11 22:00:00', 'short', 1.63633, 1.60202, 1.62763, 'success'),
-                                                             ('2017-05-05 22:00:00', 'short', 1.49191, 1.46223, 1.48004, 'failure'),
-                                                             ('2019-05-23 22:00:00', 'short', 1.62682, 1.60294, 1.61739, 'failure')])
-def test_run_trade(start, type, SL, TP, entry, outcome):
+@pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome", [('EUR/GBP','2004-06-03 22:00:00', 'long', 0.66229, 0.67418, 0.66704, 'failure'),
+                                                                  ('EUR/AUD','2018-12-03 22:00:00', 'long', 1.53398, 1.55752, 1.54334, 'success'),
+                                                                  ('EUR/AUD','2018-09-11 22:00:00', 'short', 1.63633, 1.60202, 1.62763, 'success'),
+                                                                  ('EUR/AUD','2017-05-05 22:00:00', 'short', 1.49191, 1.46223, 1.48004, 'failure'),
+                                                                  ('EUR/AUD','2019-05-23 22:00:00', 'short', 1.62682, 1.60294, 1.61739, 'failure')])
+def test_run_trade(pair, start, type, SL, TP, entry, outcome):
     '''
     This test checks the progression of the Trade
     and checks if the outcome attribute is correctly
@@ -66,7 +67,7 @@ def test_run_trade(start, type, SL, TP, entry, outcome):
             entry=entry,
             SL=SL,
             TP=TP,
-            pair="EUR/AUD",
+            pair=pair,
             type=type,
             timeframe="D",
             strat="counter_b2",

@@ -113,16 +113,30 @@ def test_slice_with_start_end(clO):
 
     assert len(clO.clist) == 215
 
-def test_get_lasttime(clO):
+def test_get_lasttime():
+    oanda = OandaAPI(instrument='AUD_CHF',
+                     granularity='H12',
+                     settingf='data/settings.ini')
 
-    resist = HArea(price=0.70151,
-                   pips=5,
-                   instrument='AUD_USD',
-                   granularity='D',
+    resist = HArea(price=1.00721,
+                   pips=45,
+                   instrument='AUD_CHF',
+                   granularity='H12',
                    settingf='data/settings.ini')
 
-    lasttime = clO.get_lasttime(resist)
-    assert lasttime == datetime.datetime(2019, 7, 21, 21, 0)
+    oanda.run(start='2004-11-07T10:00:00',
+              end='2010-04-30T09:00:00')
+
+    candle_list = oanda.fetch_candleset()
+    cl = CandleList(candle_list,
+                    instrument='AUD_CHF',
+                    id='test_AUD_CHF_clist',
+                    granularity='H12',
+                    type='short',
+                    settingf='data/settings.ini')
+
+    lasttime = cl.get_lasttime(resist)
+    assert lasttime == datetime.datetime(2007, 11, 9, 10, 0)
 
 """
 def test_check_if_divergence():
