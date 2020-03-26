@@ -25,9 +25,16 @@ class Counter(object):
               PivotList object with Pivots in the self.trade.SR
     clist_period : CandleList, Optional
                    Candlelist extending back (defined by 'period') in time since the start of the pattern
-
     pivots_lasttime : Pivotlist, Optional
                       PivotList with Pivots occurring after 'lasttime'
+    score_pivot : int, Optional
+                  Score per pivot.
+                  This will be the result of dividing the
+                  self.total_score/self.pivots
+    score_pivot_lasttime : int, Optional
+                           Score per pivot for all pivots_lasttime
+                           This will be the result of dividing the
+                           self.score_lasttime/self.pivots_lasttime
     init_feats : Bool, Optional
                  If true, then it will initialize several Counter feats
     n_rsibounces : int, Optional
@@ -76,7 +83,6 @@ class Counter(object):
         self.__initclist()
         # calc_rsi
         self.clist_period.calc_rsi()
-
         if not hasattr(self.trade, 'TP'):
             if not hasattr(self, 'RR'):
                 raise Exception("Neither the RR not the TP "
@@ -91,6 +97,8 @@ class Counter(object):
             self.set_total_score()
             self.set_pivots_lasttime()
             self.set_score_lasttime()
+            self.set_score_pivot()
+            self.set_score_pivot_lasttime()
 
     def __initclist(self):
         '''
@@ -280,6 +288,43 @@ class Counter(object):
             tot_score += p.score
 
         self.total_score = tot_score
+
+    def set_score_pivot(self):
+        '''
+        Function to calculate the score per pivot.
+        This will be the result of dividing the
+        self.total_score/self.pivots
+        It will set the 'score_pivot' class attribute
+
+        returns
+        -------
+        Nothing
+        '''
+        if not hasattr(self, 'pivots'):
+            raise Exception("'pivots' is not defined")
+        if not hasattr(self, 'total_score'):
+            raise Exception("'total_score' is not defined")
+
+        self.score_pivot = self.total_score/len(self.pivots.plist)
+
+    def set_score_pivot_lasttime(self):
+        '''
+        Function to calculate the score per pivot for all pivots_lasttime
+        This will be the result of dividing the
+        self.score_lasttime/self.pivots_lasttime
+        It will set the 'score_pivot_lasttime' class attribute
+
+        returns
+        -------
+        Nothing
+        '''
+
+        if not hasattr(self, 'pivots_lasttime'):
+            raise Exception("'pivots_lasttime' is not defined")
+        if not hasattr(self, 'score_lasttime'):
+            raise Exception("'score_lasttime' is not defined")
+
+        self.score_pivot_lasttime = self.score_lasttime / len(self.pivots_lasttime.plist)
 
     def plot_pivots(self, outfile_prices, outfile_rsi):
         '''

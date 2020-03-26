@@ -244,6 +244,23 @@ def test_set_score_lasttime(ct_object, clean_tmp):
 
     assert ct_object.score_lasttime == 365
 
+def test_set_score_pivot(ct_object, clean_tmp):
+    ct_object.set_pivots()
+    ct_object.set_total_score()
+    ct_object.set_score_pivot()
+
+    assert ct_object.score_pivot == 182.5
+
+def test_set_score_pivot_lasttime(ct_object, clean_tmp):
+    ct_object.set_pivots()
+    ct_object.set_total_score()
+    ct_object.set_lasttime()
+    ct_object.set_pivots_lasttime()
+    ct_object.set_score_lasttime()
+    ct_object.set_score_pivot_lasttime()
+
+    assert ct_object.score_pivot_lasttime == 182.5
+
 """
 def test_calc_itrend(counter_object_notrendi):
 

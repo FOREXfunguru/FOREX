@@ -135,7 +135,6 @@ class HArea(object):
 
             candle_list = oanda.fetch_candleset()
             for c in candle_list:
-                pdb.set_trace()
                 if c.lowAsk <= self.price <= c.highAsk:
                     return c.time
         else:

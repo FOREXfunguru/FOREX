@@ -1,6 +1,7 @@
 import pandas as pd
 import pdb
 import warnings
+import numpy as np
 from TradeJournal.trade import Trade
 from TradeJournal.tradelist import TradeList
 from openpyxl import load_workbook
@@ -27,6 +28,8 @@ class TradeJournal(object):
         #read-in the 'trading_journal' worksheet from a .xlsx file into a pandas dataframe
         xls_file = pd.ExcelFile(url)
         df = xls_file.parse(worksheet, converters={'start': str, 'end': str, 'trend_i': str})
+        # replace n.a. string by NaN
+        df = df.replace('n.a.', np.NaN)
         self.df = df
 
         # parse settings file (in .ini file)
@@ -48,13 +51,13 @@ class TradeJournal(object):
         trade_list = []
         for index, row in self.df.iterrows():
             pair = row['id'].split(" ")[0]
-
             t = Trade(
                 start=row['start'],
                 entry=row['entry'],
                 SL=row['SL'],
                 TP=row['TP'],
                 SR=row['SR'],
+                RR=row['RR'],
                 type=row['type'],
                 timeframe=row['timeframe'],
                 strat=row['strat'],

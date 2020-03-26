@@ -15,7 +15,7 @@ def tjO():
 def test_fetch_tradelist(tjO):
     trade_list = tjO.fetch_tradelist()
 
-    assert len(trade_list.tlist) == 3
+    assert len(trade_list.tlist) == 4
 
 def test_write_tradelist(tjO):
     trade_list = tjO.fetch_tradelist()

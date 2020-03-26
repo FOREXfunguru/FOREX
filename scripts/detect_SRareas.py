@@ -2,10 +2,11 @@ import argparse
 import numpy as np
 import pandas as pd
 from utils import *
+from TradeJournal.trade import Trade
+
 import pdb
 
 from Pattern.counter import Counter
-
 
 parser = argparse.ArgumentParser(description='Script to detect SR areas for a particular instrument/granularity')
 
@@ -18,61 +19,65 @@ parser.add_argument('--ll', required=True, help='Lower limit of the range of pri
 
 args = parser.parse_args()
 
-file = open('out_scores.txt','w')
+# out file
+file = open('out_scores.txt', 'w')
 
-prices=[]
-bounces=[]
-score_per_bounce=[]
+prices = []
+bounces = []
+score_per_bounce = []
 file.write("#price\tn_bounces\ttot_score\tscore_per_bounce\n")
 
-increment_price=0.006
+increment_price = 0.006
 # the increment of price in number of pips is double the hr_extension
 for p in np.arange(float(args.ll), float(args.ul), increment_price):
 
-    print("Processing S/R at {0}".format(round(p,4)))
-    #each of 'p' will become a S/R that will be tested for bounces
-    #set entry to price+30pips
-    entry=add_pips2price(args.instrument,p,30)
-    #set S/L to price-30pips
-    SL=substract_pips2price(args.instrument,p,30)
-
-    c = Counter(
+    print("Processing S/R at {0}".format(round(p, 4)))
+    # each of 'p' will become a S/R that will be tested for bounces
+    # set entry to price+30pips
+    entry = add_pips2price(args.instrument, p, 30)
+    # set S/L to price-30pips
+    SL = substract_pips2price(args.instrument, p, 30)
+    pdb.set_trace()
+    t = Trade(
         id='detect_sr',
         start=args.start,
         pair=args.instrument,
         timeframe='D',
         type='short',
-        period=5000,
-        HR_pips=30,
-        entry=entry,
         SR=p,
         SL=SL,
         RR=1.5,
-        png_prefix='/Users/ernesto/projects/FOREX/CT/detectSR/test.{0}'.format(p))
+        strat='counter_b1',
+        settingf="data/settings.ini")
 
-    ratio=None
-    if len(c.bounces.plist)==0:
-        ratio=0
+    c = Counter(
+        trade=t,
+        settingf='data/settings.ini'
+    )
+
+    ratio = None
+    if len(c.pivots.plist) == 0:
+        ratio = 0
     else:
-        ratio=round(c.total_score/len(c.bounces.plist),2)
-    file.write("{0}\t{1}\t{2}\t{3}\n".format(round(p,5),len(c.bounces.plist),c.total_score,ratio))
-    prices.append(round(p,5))
+        ratio = round(c.total_score/len(c.pivots.plist), 2)
+    file.write("{0}\t{1}\t{2}\t{3}\n".format(round(p,5), len(c.bounces.plist), c.total_score, ratio))
+    prices.append(round(p, 5))
     bounces.append(len(c.bounces.plist))
     score_per_bounce.append(ratio)
 
 file.close()
 
-data={'price': prices,
-      'bounces': bounces,
-      'scores': score_per_bounce}
+data = {'price': prices,
+         'bounces': bounces,
+          'scores': score_per_bounce}
 
 df = pd.DataFrame(data=data)
 # establishing bounces threshold as the 0.75 quantile
-bounce_th=df.bounces.quantile(0.75)
-score_th=df.scores.quantile(0.75)
+bounce_th = df.bounces.quantile(0.75)
+score_th = df.scores.quantile(0.75)
 
 # selecting records over threshold
-dfsel=df.loc[(df['bounces']>bounce_th) | (df['scores']>score_th)]
+dfsel = df.loc[(df['bounces'] > bounce_th) | (df['scores'] > score_th)]
 
 def calc_diff(df_loc):
 
