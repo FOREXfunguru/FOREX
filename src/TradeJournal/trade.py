@@ -2,6 +2,7 @@ from __future__ import division
 from datetime import timedelta
 import pdb
 
+import math
 import warnings
 from oanda_api import OandaAPI
 from candlelist import CandleList
@@ -55,13 +56,14 @@ class Trade(object):
     '''
 
     def __init__(self, strat, start, settingf=None, settings=None, **kwargs):
-
         self.__dict__.update(kwargs)
-        pdb.set_trace()
         if not hasattr(self, 'TP') and not hasattr(self, 'RR'):
             raise Exception("Neither the RR not "
                             "the TP is defined. Please provide RR")
-        elif hasattr(self, 'RR'):
+        elif not hasattr(self, 'TP') and math.isnan(self.RR):
+            raise Exception("Neither the RR not "
+                            "the TP is defined. Please provide RR")
+        elif hasattr(self, 'RR') and not math.isnan(self.RR):
             diff = (self.entry - self.SL) * self.RR
             self.TP = round(self.entry + diff, 4)
 

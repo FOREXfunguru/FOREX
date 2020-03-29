@@ -15,7 +15,7 @@ parser.add_argument('--granularity', required=True, help='Granularity')
 parser.add_argument('--start', required=True, help='Start time to detect SR areas in isoformat. Example: 2019-03-08 22:00:00')
 parser.add_argument('--ul', required=True, help='Upper limit of the range of prices')
 parser.add_argument('--ll', required=True, help='Lower limit of the range of prices')
-
+parser.add_argument('--settingf', required=True, help='Path to .ini file with settings')
 
 args = parser.parse_args()
 
@@ -23,7 +23,7 @@ args = parser.parse_args()
 file = open('out_scores.txt', 'w')
 
 prices = []
-bounces = []
+bounces = [] #contains the number of pivots per price level
 score_per_bounce = []
 file.write("#price\tn_bounces\ttot_score\tscore_per_bounce\n")
 
@@ -37,47 +37,52 @@ for p in np.arange(float(args.ll), float(args.ul), increment_price):
     entry = add_pips2price(args.instrument, p, 30)
     # set S/L to price-30pips
     SL = substract_pips2price(args.instrument, p, 30)
-    pdb.set_trace()
     t = Trade(
-        id='detect_sr',
+        id='detect_sr.{0}'.format(p),
         start=args.start,
         pair=args.instrument,
         timeframe='D',
         type='short',
+        entry=entry,
         SR=p,
         SL=SL,
         RR=1.5,
         strat='counter_b1',
-        settingf="data/settings.ini")
+        settingf=args.settingf)
 
     c = Counter(
         trade=t,
-        settingf='data/settings.ini'
+        init_feats=True,
+        settingf=args.settingf
     )
 
     ratio = None
     if len(c.pivots.plist) == 0:
         ratio = 0
+        mean_pivot = 0
     else:
-        ratio = round(c.total_score/len(c.pivots.plist), 2)
-    file.write("{0}\t{1}\t{2}\t{3}\n".format(round(p,5), len(c.bounces.plist), c.total_score, ratio))
+        mean_pivot = round(c.score_pivot, 2)
+    file.write("{0}\t{1}\t{2}\t{3}\n".format(round(p, 5), len(c.pivots.plist), c.total_score, mean_pivot))
     prices.append(round(p, 5))
-    bounces.append(len(c.bounces.plist))
-    score_per_bounce.append(ratio)
+    bounces.append(len(c.pivots.plist))
+    score_per_bounce.append(mean_pivot)
 
 file.close()
 
 data = {'price': prices,
-         'bounces': bounces,
-          'scores': score_per_bounce}
+        'bounces': bounces,
+        'scores': score_per_bounce}
 
 df = pd.DataFrame(data=data)
 # establishing bounces threshold as the 0.75 quantile
 bounce_th = df.bounces.quantile(0.75)
 score_th = df.scores.quantile(0.75)
+print("Selected number of pivot threshold: {0}".format(bounce_th))
+print("Selected score threshold: {0}".format(score_th))
+pdb.set_trace()
 
 # selecting records over threshold
-dfsel = df.loc[(df['bounces'] > bounce_th) | (df['scores'] > score_th)]
+dfsel = df.loc[(df['bounces'] >= bounce_th) | (df['scores'] >= score_th)]
 
 def calc_diff(df_loc):
 
@@ -91,28 +96,28 @@ def calc_diff(df_loc):
             prev_row=row
             prev_ix=index
         else:
-            diff=round(float(row['price'])-prev_price,4)
-            if diff<=0.035:
-                tog_seen=True
-                if row['bounces']<=prev_row['bounces'] and row['scores']<prev_row['scores']:
+            diff = round(float(row['price'])-prev_price, 4)
+            if diff <= 0.035:
+                tog_seen = True
+                if row['bounces'] <= prev_row['bounces'] and row['scores']<prev_row['scores']:
                     #remove current row
                     df_loc.drop(index, inplace=True)
-                elif row['bounces']>=prev_row['bounces'] and row['scores']>prev_row['scores']:
+                elif row['bounces'] >= prev_row['bounces'] and row['scores']>prev_row['scores']:
                     #remove previous row
-                    df_loc.drop(prev_ix,inplace=True)
+                    df_loc.drop(prev_ix, inplace=True)
                     prev_price = float(row['price'])
                     prev_row = row
                     prev_ix = index
-                elif row['bounces'] <=prev_row['bounces'] and row['scores']>prev_row['scores']:
+                elif row['bounces'] <= prev_row['bounces'] and row['scores']>prev_row['scores']:
                     #remove previous row as scores in current takes precedence
-                    df_loc.drop(prev_ix,inplace=True)
+                    df_loc.drop(prev_ix, inplace=True)
                     prev_price = float(row['price'])
                     prev_row = row
                     prev_ix = index
-                elif row['bounces'] >=prev_row['bounces'] and row['scores']<prev_row['scores']:
+                elif row['bounces'] >= prev_row['bounces'] and row['scores']<prev_row['scores']:
                     #remove current row as scores in current takes precedence
                     df_loc.drop(index, inplace=True)
-                elif row['bounces']==prev_row['bounces'] and row['scores']==prev_row['scores']:
+                elif row['bounces'] == prev_row['bounces'] and row['scores']==prev_row['scores']:
                     #exactly same quality for row and prev_row
                     #remove current arbitrarily
                     df_loc.drop(index, inplace=True)
@@ -120,16 +125,16 @@ def calc_diff(df_loc):
                 prev_price=float(row['price'])
                 prev_row=row
                 prev_ix=index
-    return df_loc,tog_seen
+    return df_loc, tog_seen
 
 #repeat until no overlap between prices
-ret=calc_diff(dfsel)
-dfsel=ret[0]
-tog_seen=ret[1]
+ret = calc_diff(dfsel)
+dfsel = ret[0]
+tog_seen = ret[1]
 while tog_seen is True:
-    ret=calc_diff(dfsel)
-    dfsel=ret[0]
-    tog_seen=ret[1]
+    ret = calc_diff(dfsel)
+    dfsel = ret[0]
+    tog_seen = ret[1]
 
 #write final DF to file
-export_csv = dfsel.to_csv ('export_dataframe.csv', index = None, header=True, sep='\t')
+export_csv = dfsel.to_csv('export_dataframe.csv', index = None, header=True, sep='\t')

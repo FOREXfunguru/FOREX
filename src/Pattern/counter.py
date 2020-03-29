@@ -162,8 +162,8 @@ class Counter(object):
         ----------
         pivots: PivotList will pivots
         last_pivot: Boolean
-                    If true, then the last pivot will be considered as it is part
-                    of the setup. Default: False
+                    If True, then the last pivot will be considered as it is part
+                    of the setup. Default: True
 
         Returns
         -------
@@ -182,6 +182,9 @@ class Counter(object):
                                self.trade.SR,
                                self.settings.getint('pivots',
                                                     'hr_pips'))
+
+        if self.settings.getboolean('general', 'debug') is True:
+            print("[DEBUG] SR U-limit: {0}; L-limit: {1}".format(round(upper, 4), round(lower, 4)))
 
         pl = []
         for p in pivots.plist:
@@ -251,7 +254,7 @@ class Counter(object):
         # get PivotList using self.clist_period
         pivotlist = self.clist_period.get_pivotlist()
         # get PivotList in area
-        in_area_list = self.__inarea_pivots(pivotlist)
+        in_area_list = self.__inarea_pivots(pivotlist, last_pivot = self.settings.getboolean('pivots', 'last_pivot'))
 
         #calculate score for Pivots
         pl = []
@@ -305,7 +308,10 @@ class Counter(object):
         if not hasattr(self, 'total_score'):
             raise Exception("'total_score' is not defined")
 
-        self.score_pivot = self.total_score/len(self.pivots.plist)
+        if len(self.pivots.plist) == 0:
+            self.score_pivot = 0
+        else:
+            self.score_pivot = self.total_score/len(self.pivots.plist)
 
     def set_score_pivot_lasttime(self):
         '''
@@ -324,7 +330,10 @@ class Counter(object):
         if not hasattr(self, 'score_lasttime'):
             raise Exception("'score_lasttime' is not defined")
 
-        self.score_pivot_lasttime = self.score_lasttime / len(self.pivots_lasttime.plist)
+        if len(self.pivots_lasttime.plist) == 0:
+            self.score_pivot_lasttime = 0
+        else:
+            self.score_pivot_lasttime = self.score_lasttime / len(self.pivots_lasttime.plist)
 
     def plot_pivots(self, outfile_prices, outfile_rsi):
         '''

@@ -14,5 +14,7 @@ python crossvalidate.py --ifile out_scores_dbptpcont.ALL.tsv --outcom 'outcome 2
 python calculate_counter.py --ifile  ~/Library/Mobile\ Documents/com~apple~CloudDocs/MYOWN/Backtesting1.xlsx --worksheet backtesting_23102019
 
 #detect SRareas
-python detect_SRareas.py --instrument GBP_USD --granularity D --start '2019-08-12 22:00:00' --ul 1.70216 --ll 1.19000
+python detect_SRareas.py --instrument GBP_USD --granularity D --start '2019-08-12 22:00:00' --ul 1.70216 --ll 1.19000 --settingf settings.scripts.ini
+python detect_SRareas.py --instrument GBP_USD --granularity D --start '2019-08-12 22:00:00' --ul 1.24580 --ll 1.17144 --settingf settings.scripts.ini
+
 
