@@ -35,7 +35,7 @@ def calculate_pips(pair, price):
           Number of pips
     '''
 
-    pips=None
+    pips = None
     (first, second) = pair.split("_")
     if first == 'JPY' or second == 'JPY':
         pips = price * 100
@@ -44,7 +44,7 @@ def calculate_pips(pair, price):
 
     return '%.1f' % pips
 
-def add_pips2price(pair,price,pips):
+def add_pips2price(pair, price, pips):
     '''
     Function that gets a price value and adds
     a certain number of pips to the price
