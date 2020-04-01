@@ -177,9 +177,9 @@ class Trade(object):
             if entered is True:
                 failure_time = SL.get_cross_time(candle=cl)
                 if failure_time is not None and failure_time != 'n.a.':
-                    self.outcome='failure'
+                    self.outcome = 'failure'
                     self.end = failure_time
-                    self.pips=float(calculate_pips(self.pair,abs(self.SL-self.entry)))*-1
+                    self.pips = float(calculate_pips(self.pair,abs(self.SL-self.entry)))*-1
                     print("\t[INFO] S/L was hit")
                     break
             if entered is True:
@@ -187,7 +187,7 @@ class Trade(object):
                 if success_time is not None and success_time !='n.a.':
                     self.outcome = 'success'
                     print("\t[INFO] T/P was hit")
-                    self.end=success_time
+                    self.end = success_time
                     self.pips = float(calculate_pips(self.pair, abs(self.TP - self.entry)))
                     break
         try:

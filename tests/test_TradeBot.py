@@ -1,8 +1,7 @@
-from Pattern.counter import Counter
+from tradebot import TradeBot
 
 import pytest
 import pdb
-import datetime
 import glob
 import os
 
@@ -17,32 +16,23 @@ def clean_tmp():
 @pytest.fixture
 def tb_object():
     '''Returns TradeBot object'''
-
-    t = Trade(
-        id='EUR_GBP_13AUG2019D',
-        start='2019-08-12 22:00:00',
+    tb = TradeBot(
         pair='EUR_GBP',
         timeframe='D',
-        type='short',
-        SR=0.92909,
-        SL=0.93298,
-        TP=0.90366,
-        strat='counter_b1',
         settingf="data/settings.ini"
     )
+    return tb
 
-    c = Counter(
-        trade=t,
-        settingf='data/settings.ini'
-    )
-    return c
-
-def test_run(tb_object, clean_tmp):
+def test_run(tb_object):
     """
-    Check that self.clist_period is correctly
-    initialized with self.__initclist()
+    Check 'run' function
+    """
+    tb_object.run(start='2019-08-12T22:00:00',
+                  end='2019-08-19T22:00:00')
+
+def test_calc_SR(tb_object):
     """
 
-    # check that the start datetime of clist_period
-    # is correct
-    assert datetime.datetime(2008, 8, 29, 21, 0) == ct_object.clist_period.clist[0].time
+    :param tb_object:
+    :return:
+    """

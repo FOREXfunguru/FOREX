@@ -76,9 +76,8 @@ while p <= float(args.ul):
     if prev_p is None:
         prev_p = p
     else:
-        pdb.set_trace()
         increment_price = round(p-prev_p, 5)
-        p = prev_p
+        prev_p = p
 
 file.close()
 
@@ -88,9 +87,13 @@ data = {'price': prices,
         'tot_scores': tot_scores}
 
 df = pd.DataFrame(data=data)
-# establishing bounces threshold as the args.th quantile
-bounce_th = df.bounces.quantile(float(args.th))
-score_th = df.tot_scores.quantile(float(args.th))
+### establishing bounces threshold as the args.th quantile
+# selecting only rows with at least one pivot and tot_score>0, so threshold selection considers only these rows
+# and selection is not biased when range of prices is wide
+dfgt1 = df.loc[(df['bounces'] > 0)]
+dfgt2 = df.loc[(df['tot_scores'] > 0)]
+bounce_th = dfgt1.bounces.quantile(float(args.th))
+score_th = dfgt2.tot_scores.quantile(float(args.th))
 print("Selected number of pivot threshold: {0}".format(bounce_th))
 print("Selected tot score threshold: {0}".format(score_th))
 

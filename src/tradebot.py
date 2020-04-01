@@ -1,5 +1,9 @@
 from oanda_api import OandaAPI
 from configparser import ConfigParser
+import pdb
+import pandas as pd
+import datetime
+import re
 
 class TradeBot(object):
     '''
@@ -7,10 +11,6 @@ class TradeBot(object):
 
     Class variables
     ---------------
-    start: datetime, Required
-           Datetime that this Bot will start operating. i.e. 20-03-2017 08:20:00s
-    end: datetime, Required
-         Datetime that this Bot will end operating. i.e. 20-03-2020 08:20:00s
     pair: str, Required
           Currency pair used in the trade. i.e. AUD_USD
     timeframe: str, Required
@@ -18,9 +18,7 @@ class TradeBot(object):
     settingf : str, Optional
                Path to *.ini file with settings
     '''
-    def __init__(self, start, end, pair, timeframe, settingf, settings=None):
-        self.start = start
-        self.end = end
+    def __init__(self, pair, timeframe, settingf, settings=None):
         self.pair = pair
         self.timeframe = timeframe
         self.settingf = settingf
@@ -33,12 +31,48 @@ class TradeBot(object):
             self.settings = settings
 
 
-    def run(self):
+    def run(self, start, end):
+        '''
+        This function will run the Bot from start to end
+        one candle at a time
+
+        Parameters
+        ----------
+        start: datetime, Required
+            Datetime that this Bot will start operating. i.e. 20-03-2017 08:20:00s
+        end: datetime, Required
+            Datetime that this Bot will end operating. i.e. 20-03-2020 08:20:00s
+        '''
         oanda = OandaAPI(instrument=self.pair,
                          granularity=self.timeframe,
                          settingf=self.settingf)
+        delta = None
+        nhours = None
+        if self.timeframe == "D":
+            nhours = 24
+            delta = datetime.timedelta(hours=24)
+        else:
+            p1 = re.compile('^H')
+            m1 = p1.match(self.timeframe)
+            if m1:
+                nhours = int(self.timeframe.replace('H', ''))
+                delta = datetime.timedelta(hours=int(nhours))
 
-        oanda.run(start=self.start,
-                  count=1)
+        startO = pd.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
+        endO = pd.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
 
-        candle_list = oanda.fetch_candleset()
+        while startO <= endO:
+            oanda.run(start=startO.isoformat(),
+                      count=1)
+
+            candle_list = oanda.fetch_candleset()
+            startO = startO+delta
+
+        print("h\n")
+    def calc_SR(self):
+        '''
+        Function to calculate S/R lines
+        :return:
+        '''
+
+        ul, ll = self.settings.get('tradebot', self.pair).split(",")
