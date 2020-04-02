@@ -19,6 +19,8 @@ def tb_object():
     tb = TradeBot(
         pair='EUR_GBP',
         timeframe='D',
+        start='2019-08-12 22:00:00',
+        end='2019-08-19 22:00:00',
         settingf="data/settings.ini"
     )
     return tb
@@ -27,12 +29,10 @@ def test_run(tb_object):
     """
     Check 'run' function
     """
-    tb_object.run(start='2019-08-12T22:00:00',
-                  end='2019-08-19T22:00:00')
+    tb_object.run()
 
 def test_calc_SR(tb_object):
     """
-
-    :param tb_object:
-    :return:
+    Check 'calc_SR' function
     """
+    tb_object.calc_SR()
