@@ -31,7 +31,7 @@ def test_run(tb_object):
     """
     tb_object.run()
 
-def test_calc_SR(tb_object):
+def test_calc_SR(tb_object, clean_tmp):
     """
     Check 'calc_SR' function
     """
