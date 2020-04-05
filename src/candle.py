@@ -71,8 +71,14 @@ class BidAskCandle(Candle):
     Inherits from Candle
     '''
 
-    def __init__(self, representation=None, **kwargs):
-        Candle.__init__(self, representation)
+    def __init__(self, time=None,
+                 instrument=None,
+                 granularity=None,
+                 representation=None, **kwargs):
+        Candle.__init__(self, time=time,
+                        representation=representation,
+                        instrument=instrument,
+                        granularity=granularity)
 
         allowed_keys = ['representation', 'openBid', 'openAsk', 'highBid', 'highAsk',
                         'lowBid', 'lowAsk', 'closeBid', 'closeAsk', 'upper_wick', 'lower_wick', 'colour',

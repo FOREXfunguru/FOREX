@@ -201,11 +201,11 @@ class Counter(object):
                     newp.merge_aft(slist=pivots.slist)
                 pl.append(newp)
             else:
-                part_list = ['close{0}'.format(self.settings.get('pivots', 'bit'))]
+                part_list = ['close{0}'.format(self.settings.get('general', 'bit'))]
                 if p.type == 1:
-                    part_list.append('high{0}'.format(self.settings.get('pivots', 'bit')))
+                    part_list.append('high{0}'.format(self.settings.get('general', 'bit')))
                 elif p.type == -1:
-                    part_list.append('low{0}'.format(self.settings.get('pivots', 'bit')))
+                    part_list.append('low{0}'.format(self.settings.get('general', 'bit')))
 
                 # initialize candle features to be sure that midAsk or midBid are
                 # initialized

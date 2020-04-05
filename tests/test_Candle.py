@@ -1,5 +1,7 @@
 import pytest
+import pdb
 
+from candle import *
 from oanda_api import OandaAPI
 
 @pytest.fixture
@@ -15,6 +17,28 @@ def oanda_object():
 
     return oanda
 
+def test_BidAskCandle_inst():
+    '''
+    Test BidAskCandle object instantiation
+    '''
+
+    candle = BidAskCandle(openAsk=0.7889,
+                          openBid=0.7889,
+                          granularity='D',
+                          instrument='AUD_USD',
+                          closeAsk=0.79258,
+                          closeBid=0.79258,
+                          highAsk=0.79347,
+                          highBid=0.79347,
+                          lowAsk=0.786,
+                          lowBid=0.786,
+                          complete=True,
+                          volume=12619,
+                          representation='bidask',
+                          time='2015-01-25 22:00:00')
+
+    assert candle.openAsk == 0.7889
+
 def test_set_candle_features(oanda_object):
     '''
     Test function to set basic candle features based on price
@@ -22,6 +46,7 @@ def test_set_candle_features(oanda_object):
     '''
 
     candle_list = oanda_object.fetch_candleset()
+    pdb.set_trace()
     candle_list[0].set_candle_features()
 
     assert candle_list[0].colour == "green"

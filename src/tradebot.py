@@ -2,6 +2,8 @@ from oanda_api import OandaAPI
 from configparser import ConfigParser
 from TradeJournal.trade import Trade
 from Pattern.counter import Counter
+from harea import HArea
+from harealist import HAreaList
 
 from utils import *
 import pdb
@@ -64,14 +66,38 @@ class TradeBot(object):
         startO = pd.datetime.strptime(self.start, '%Y-%m-%d %H:%M:%S')
         endO = pd.datetime.strptime(self.end, '%Y-%m-%d %H:%M:%S')
 
+        SRlst = None
+        loop = 0
         while startO <= endO:
+            if loop == 0:
+                SRlst = self.calc_SR()
+            elif loop == self.settings.getint('tradebot',
+                                              'period'):
+                SRlst = self.calc.SR()
+                loop = 0
             oanda.run(start=startO.isoformat(),
                       count=1)
 
             candle_list = oanda.fetch_candleset()
+            HAreaSel = SRlst.onArea(candle=candle_list[0])
+            pdb.set_trace()
             startO = startO+delta
+            loop += 1
 
-    def __calc_diff(self, df_loc):
+    def __calc_diff(self, df_loc, increment_price):
+        '''
+        Function to select the best S/R for areas that
+        are less than 3*increment_price
+
+        Parameters
+        ----------
+        df_loc : Pandas dataframe with S/R areas
+        increment_price : float
+
+        Returns
+        -------
+        Pandas dataframe with selected S/R
+        '''
 
         prev_price = None
         prev_row = None
@@ -85,27 +111,26 @@ class TradeBot(object):
             else:
                 diff = round(float(row['price']) - prev_price, 4)
                 if diff < 3 * increment_price:
-                    # if diff <= 0.035:
                     tog_seen = True
-                    if row['bounces'] <= prev_row['bounces'] and row['tot_scores'] < prev_row['tot_scores']:
+                    if row['bounces'] <= prev_row['bounces'] and row['tot_score'] < prev_row['tot_score']:
                         # remove current row
                         df_loc.drop(index, inplace=True)
-                    elif row['bounces'] >= prev_row['bounces'] and row['tot_scores'] > prev_row['tot_scores']:
+                    elif row['bounces'] >= prev_row['bounces'] and row['tot_score'] > prev_row['tot_score']:
                         # remove previous row
                         df_loc.drop(prev_ix, inplace=True)
                         prev_price = float(row['price'])
                         prev_row = row
                         prev_ix = index
-                    elif row['bounces'] <= prev_row['bounces'] and row['tot_scores'] > prev_row['tot_scores']:
+                    elif row['bounces'] <= prev_row['bounces'] and row['tot_score'] > prev_row['tot_score']:
                         # remove previous row as scores in current takes precedence
                         df_loc.drop(prev_ix, inplace=True)
                         prev_price = float(row['price'])
                         prev_row = row
                         prev_ix = index
-                    elif row['bounces'] >= prev_row['bounces'] and row['tot_scores'] < prev_row['tot_scores']:
+                    elif row['bounces'] >= prev_row['bounces'] and row['tot_score'] < prev_row['tot_score']:
                         # remove current row as scores in current takes precedence
                         df_loc.drop(index, inplace=True)
-                    elif row['bounces'] == prev_row['bounces'] and row['tot_scores'] == prev_row['tot_scores']:
+                    elif row['bounces'] == prev_row['bounces'] and row['tot_score'] == prev_row['tot_score']:
                         # exactly same quality for row and prev_row
                         # remove current arbitrarily
                         df_loc.drop(index, inplace=True)
@@ -118,7 +143,10 @@ class TradeBot(object):
     def calc_SR(self):
         '''
         Function to calculate S/R lines
-        :return:
+
+        Return
+        ------
+        HAreaList object
         '''
 
         if self.settings.getboolean('general', 'debug') is True:
@@ -129,7 +157,7 @@ class TradeBot(object):
         prices = []
         bounces = []  # contains the number of pivots per price level
         score_per_bounce = []
-        tot_scores = []
+        tot_score = []
         # the increment of price in number of pips is double the hr_extension
         prev_p = None
         p = float(ll)
@@ -141,7 +169,6 @@ class TradeBot(object):
             entry = add_pips2price(self.pair, p, 30)
             # set S/L to price-30pips
             SL = substract_pips2price(self.pair, p, 30)
-            pdb.set_trace()
             t = Trade(
                 id='{0}.detect_sr.{1}'.format(self.pair, round(p, 5)),
                 start=self.start,
@@ -170,9 +197,10 @@ class TradeBot(object):
 
             prices.append(round(p, 5))
             bounces.append(len(c.pivots.plist))
-            tot_scores.append(c.total_score)
+            tot_score.append(c.total_score)
             score_per_bounce.append(mean_pivot)
-            p = add_pips2price(args.instrument, p, 60)
+            # increment price to following price
+            p = add_pips2price(self.pair, p, 60)
             if prev_p is None:
                 prev_p = p
             else:
@@ -182,19 +210,49 @@ class TradeBot(object):
         data = {'price': prices,
                 'bounces': bounces,
                 'scores': score_per_bounce,
-                'tot_scores': tot_scores}
+                'tot_score': tot_score}
 
         df = pd.DataFrame(data=data)
         ### establishing bounces threshold as the args.th quantile
-        # selecting only rows with at least one pivot and tot_score>0, so threshold selection considers only these rows
+        # selecting only rows with at least one pivot and tot_score>0,
+        # so threshold selection considers only these rows
         # and selection is not biased when range of prices is wide
         dfgt1 = df.loc[(df['bounces'] > 0)]
-        dfgt2 = df.loc[(df['tot_scores'] > 0)]
+        dfgt2 = df.loc[(df['tot_score'] > 0)]
         bounce_th = dfgt1.bounces.quantile(self.settings.getfloat('tradebot', 'th'))
-        score_th = dfgt2.tot_scores.quantile(self.settings.getfloat('tradebot', 'th'))
+        score_th = dfgt2.tot_score.quantile(self.settings.getfloat('tradebot', 'th'))
         if self.settings.getboolean('general', 'debug') is True:
             print("[DEBUG] Selected number of pivot threshold: {0}".format(bounce_th))
             print("[DEBUG] Selected tot score threshold: {0}".format(score_th))
 
         # selecting records over threshold
-        dfsel = df.loc[(df['bounces'] > bounce_th) | (df['tot_scores'] > score_th)]
+        dfsel = df.loc[(df['bounces'] > bounce_th) | (df['tot_score'] > score_th)]
+
+        # repeat until no overlap between prices
+        ret = self.__calc_diff(dfsel, increment_price)
+        dfsel = ret[0]
+        tog_seen = ret[1]
+        while tog_seen is True:
+            ret = self.__calc_diff(dfsel, increment_price)
+            dfsel = ret[0]
+            tog_seen = ret[1]
+
+        # iterate over DF with selected SR to create a HAreaList
+        halist = []
+        for index, row in dfsel.iterrows():
+            resist = HArea(price=row['price'],
+                           pips=30,
+                           instrument=self.pair,
+                           granularity=self.timeframe,
+                           no_pivots=row['bounces'],
+                           tot_score=row['tot_score'],
+                           settingf=self.settingf)
+            halist.append(resist)
+
+        halist = HAreaList(
+            halist=halist,
+            settingf="data/settings.ini"
+        )
+
+        return halist
+

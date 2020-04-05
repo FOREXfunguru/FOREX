@@ -22,13 +22,19 @@ class HArea(object):
            Upper limit price of area
     lower : float, Optional
             Lower limit price of area
+    no_pivots : int, Optional
+                Number of pivots bouncing on self
+    tot_score : int, Optional
+                Total score, which is the sum of scores of all pivots
+                on this HArea
     settingf : str, Optional
                Path to *.ini file with settings
     settings : ConfigParser, Optional
                ConfigParser object with settings
     '''
 
-    def __init__(self, price, instrument, granularity, pips, settingf=None, settings=None):
+    def __init__(self, price, instrument, granularity, pips, no_pivots=None,
+                 tot_score=None, settingf=None, settings=None):
 
         (first, second) = instrument.split("_")
         self.instrument = instrument
@@ -43,6 +49,8 @@ class HArea(object):
         price = round(price, round_number)
         self.price = price
         self.granularity = granularity
+        self.no_pivots = no_pivots
+        self.tot_score = tot_score
         self.settingf = settingf
         if self.settingf is not None:
             # parse settings file (in .ini file)
@@ -139,3 +147,12 @@ class HArea(object):
                     return c.time
         else:
             return 'n.a.'
+
+    def __repr__(self):
+        return "HArea"
+
+    def __str__(self):
+        out_str = ""
+        for attr, value in self.__dict__.items():
+            out_str += "%s:%s " % (attr, value)
+        return out_str

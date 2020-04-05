@@ -35,4 +35,7 @@ def test_calc_SR(tb_object):
     """
     Check 'calc_SR' function
     """
-    tb_object.calc_SR()
+    harealst = tb_object.calc_SR()
+
+    # check the length of HAreaList.halist
+    assert len(harealst.halist) == 1
