@@ -70,6 +70,16 @@ def test_onArea(hlist_factory):
     #check if HArea.price is between candle.lowAsk and candle.HighAsk
     assert hrsel.price == 0.7132
 
+def test_print(hlist_factory):
+    '''Test 'print' function'''
+
+    halist = HAreaList(
+        halist=hlist_factory,
+        settingf="data/settings.ini"
+    )
+
+    halist.print()
+
 @pytest.fixture
 def clean_tmp():
     yield

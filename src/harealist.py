@@ -56,6 +56,26 @@ class HAreaList(object):
 
         return onArea_hr
 
+    def print(self):
+        '''
+        Function to print out basic information on each of the
+        HArea objects in the HAreaList
+
+        Returns
+        -------
+        Nothing
+        '''
+        print("#pair timeframe upper-price-lower no_pivots tot_score")
+        for harea in self.halist:
+            print("{0} {1} {2}-{3}-{4} {5} {5}".format(harea.instrument,
+                                                       harea.granularity,
+                                                       harea.upper,
+                                                       harea.price,
+                                                       harea.lower,
+                                                       harea.no_pivots,
+                                                       harea.tot_score))
+
+
     def __repr__(self):
         return "HAreaList"
 
