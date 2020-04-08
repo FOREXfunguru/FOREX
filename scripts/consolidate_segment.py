@@ -1,5 +1,5 @@
-from oanda_api import OandaAPI
-from candlelist import CandleList
+from apis.oanda_api import OandaAPI
+from candle.candlelist import CandleList
 
 oanda = OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
                      instrument='AUD_USD',
