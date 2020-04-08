@@ -84,3 +84,4 @@ class HAreaList(object):
         for attr, value in self.__dict__.items():
             out_str += "%s:%s " % (attr, value)
         return out_str
+print("this is test")
