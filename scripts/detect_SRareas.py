@@ -1,12 +1,9 @@
 import argparse
-import numpy as np
 import pandas as pd
 from utils import *
-from TradeJournal.trade import Trade
+from trade_journal import Trade
 
-import pdb
-
-from Pattern.counter import Counter
+from pattern.counter import Counter
 
 parser = argparse.ArgumentParser(description='Script to detect SR areas for a particular instrument/granularity')
 
