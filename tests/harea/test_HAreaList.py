@@ -1,5 +1,6 @@
 from harea.harealist import HAreaList
-from harea import HArea
+from harea.harea import HArea
+from candle.candle import BidAskCandle
 
 import pytest
 import glob
@@ -27,7 +28,7 @@ def hlist_factory():
                      pips=30,
                      instrument=instrument,
                      granularity=granularity,
-                     settingf='data/settings.ini')
+                     settingf='../../data/settings.ini')
         hlist.append(area)
 
     return hlist
@@ -46,7 +47,7 @@ def test_onArea(hlist_factory):
 
     halist = HAreaList(
         halist=hlist_factory,
-        settingf="data/settings.ini"
+        settingf="../../data/settings.ini"
     )
     candle = BidAskCandle(openAsk=0.71195,
                           openBid=0.71195,
@@ -72,7 +73,7 @@ def test_print(hlist_factory):
 
     halist = HAreaList(
         halist=hlist_factory,
-        settingf="data/settings.ini"
+        settingf="../../data/settings.ini"
     )
 
     halist.print()

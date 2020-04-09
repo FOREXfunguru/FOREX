@@ -1,7 +1,7 @@
 from zigzag import *
-from segment.segmentlist import *
-from pivot import Pivot
-from segment import Segment
+from segment.segmentlist import SegmentList
+from pivot.pivot import Pivot
+from segment.segment import Segment
 from configparser import ConfigParser
 
 

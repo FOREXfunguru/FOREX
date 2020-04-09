@@ -1,13 +1,15 @@
 import matplotlib
 
 matplotlib.use('PS')
+import matplotlib.pyplot as plt
 
 from ast import literal_eval
 from apis.oanda_api import OandaAPI
 from candle.candlelist import CandleList
-from harea import HArea
+from harea.harea import HArea
 from pivot.pivotlist import *
 from configparser import ConfigParser
+from utils import periodToDelta, substract_pips2price, add_pips2price
 
 
 class Counter(object):
@@ -415,12 +417,11 @@ class Counter(object):
 
         self.score_lasttime = tot_score
 
-        def __str__(self):
-            sb = []
-            for key in self.__dict__:
-                sb.append("{key}='{value}'".format(key=key,
-                                                   value=self.__dict__[key]))
-
+    def __str__(self):
+        sb = []
+        for key in self.__dict__:
+            sb.append("{key}='{value}'".format(key=key,
+                                               value=self.__dict__[key]))
         return ', '.join(sb)
 
     def __repr__(self):

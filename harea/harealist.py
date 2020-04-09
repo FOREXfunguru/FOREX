@@ -49,8 +49,8 @@ class HAreaList(object):
 
         onArea_hr = None
         for harea in self.halist:
-            highAttr = "high{0}".format(self.settings.get('general', 'bit'))
-            lowAttr = "low{0}".format(self.settings.get('general', 'bit'))
+            highAttr = "high{0}".format(harea.settings.get('general', 'bit'))
+            lowAttr = "low{0}".format(harea.settings.get('general', 'bit'))
             if harea.price <= getattr(candle, highAttr) and harea.price >= getattr(candle, lowAttr):
                     onArea_hr = harea
 
@@ -74,7 +74,6 @@ class HAreaList(object):
                                                        harea.lower,
                                                        harea.no_pivots,
                                                        harea.tot_score))
-
 
     def __repr__(self):
         return "HAreaList"

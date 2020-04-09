@@ -1,8 +1,8 @@
 from apis.oanda_api import OandaAPI
 from configparser import ConfigParser
-from trade_journal import Trade
+from trade_journal.trade import Trade
 from pattern.counter import Counter
-from harea import HArea
+from harea.harea import HArea
 from harea.harealist import HAreaList
 
 from utils import *
@@ -79,8 +79,22 @@ class TradeBot(object):
                       count=1)
 
             candle_list = oanda.fetch_candleset()
-            HAreaSel = SRlst.onArea(candle=candle_list[0])
+            c_candle = candle_list[0] # this is the current candle that
+                                      # is being checked
+
             pdb.set_trace()
+            if self.settings.getboolean('general', 'debug') is True:
+                print("[DEBUG] Identified HAreaList:")
+                SRlst.print()
+
+            #check if there is any HArea overlapping with c_candle
+            HAreaSel = SRlst.onArea(candle=candle_list[0])
+
+            if HAreaSel is not None:
+                c_candle.set_candle_features()
+                if c_candle.indecision_c() is True:
+                    print("Found it!!!")
+                    pdb.set_trace()
             startO = startO+delta
             loop += 1
 

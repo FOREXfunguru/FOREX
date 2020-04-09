@@ -1,6 +1,7 @@
 import pandas as pd
 import warnings
 import numpy as np
+import pdb
 from trade_journal.trade import Trade
 from trade_journal.trade_list import TradeList
 from openpyxl import load_workbook
@@ -50,19 +51,13 @@ class TradeJournal(object):
         trade_list = []
         for index, row in self.df.iterrows():
             pair = row['id'].split(" ")[0]
-            t = Trade(
-                start=row['start'],
-                entry=row['entry'],
-                SL=row['SL'],
-                TP=row['TP'],
-                SR=row['SR'],
-                RR=row['RR'],
-                type=row['type'],
-                timeframe=row['timeframe'],
-                strat=row['strat'],
-                id=row['id'],
-                pair=pair,
-                settingf=self.settingf)
+            args = {
+                'pair': pair,
+                'settingf': self.settingf
+            }
+            for c in row.keys():
+                args[c] = row[c]
+            t = Trade(**args)
             trade_list.append(t)
 
         tl = TradeList(settingf=self.settingf,

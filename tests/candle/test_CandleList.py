@@ -2,7 +2,7 @@ import pytest
 
 from apis.oanda_api import OandaAPI
 from candle.candlelist import CandleList
-from harea import HArea
+from harea.harea import HArea
 
 import datetime
 import glob
@@ -14,7 +14,7 @@ def clO():
 
     oanda = OandaAPI(instrument='AUD_USD',
                      granularity='D',
-                     settingf='data/settings.ini')
+                     settingf='../../data/settings.ini')
 
     oanda.run(start='2019-03-06T23:00:00',
               end='2020-01-03T23:00:00')
@@ -24,14 +24,14 @@ def clO():
                     instrument='AUD_USD',
                     id='test_AUD_USD_clist',
                     granularity='D',
-                    settingf='data/settings.ini')
+                    settingf='../../data/settings.ini')
     return cl
 
 @pytest.fixture
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('../data/IMGS/pivots/*.png')
+    files = glob.glob('../../data/IMGS/pivots/*.png')
     for f in files:
         os.remove(f)
 
@@ -114,13 +114,13 @@ def test_slice_with_start_end(clO):
 def test_get_lasttime():
     oanda = OandaAPI(instrument='AUD_CHF',
                      granularity='H12',
-                     settingf='data/settings.ini')
+                     settingf='../../data/settings.ini')
 
     resist = HArea(price=1.00721,
                    pips=45,
                    instrument='AUD_CHF',
                    granularity='H12',
-                   settingf='data/settings.ini')
+                   settingf='../../data/settings.ini')
 
     oanda.run(start='2004-11-07T10:00:00',
               end='2010-04-30T09:00:00')
@@ -131,7 +131,7 @@ def test_get_lasttime():
                     id='test_AUD_CHF_clist',
                     granularity='H12',
                     type='short',
-                    settingf='data/settings.ini')
+                    settingf='../../data/settings.ini')
 
     lasttime = cl.get_lasttime(resist)
     assert lasttime == datetime.datetime(2007, 11, 9, 10, 0)

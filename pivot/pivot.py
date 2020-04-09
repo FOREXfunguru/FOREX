@@ -1,6 +1,6 @@
 import warnings
 from utils import *
-from segment import Segment
+from segment.segment import Segment
 from configparser import ConfigParser
 
 

@@ -13,7 +13,7 @@ def cl_object():
 
     oanda = OandaAPI(instrument='AUD_USD',
                      granularity='D',
-                     settingf='data/settings.ini')
+                     settingf='../../data/settings.ini')
 
     oanda.run(start='2015-06-24T22:00:00',
               end='2019-06-21T22:00:00')
@@ -24,7 +24,7 @@ def cl_object():
                     instrument='AUD_USD',
                     id='AUD_USD_testclist',
                     type='long',
-                    settingf='data/settings.ini')
+                    settingf='../../data/settings.ini')
 
     return cl
 

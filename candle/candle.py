@@ -128,11 +128,16 @@ class BidAskCandle(Candle):
         body = abs(self.openBid - self.closeBid)
 
         # perc of total height that body will represent
-        perc_body = round((body * 100) / height, 2)
-        # perc of total height that 'upper_wick' will represent
-        perc_uwick = round((self.upper_wick * 100) / height, 2)
-        # perc of total height that 'lower_wick' will represent
-        perc_lwick = round((self.lower_wick * 100) / height, 2)
+        if height == 0 or body == 0:
+            perc_body = 0
+            perc_uwick = 0
+            perc_lwick = 0
+        else:
+            perc_body = round((body * 100) / height, 2)
+            # perc of total height that 'upper_wick' will represent
+            perc_uwick = round((self.upper_wick * 100) / height, 2)
+            # perc of total height that 'lower_wick' will represent
+            perc_lwick = round((self.lower_wick * 100) / height, 2)
 
         self.perc_body = perc_body
         self.perc_uwick = perc_uwick
@@ -167,7 +172,7 @@ class BidAskCandle(Candle):
 
         DOJI: Body is <=10% of the total candle height
         '''
-        pdb.set_trace()
+
         if self.openBid is None or self.closeBid is None:
             raise Exception("Either self.openBid or self.closeBid need to be set to invoke set_candle_pattern")
 

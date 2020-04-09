@@ -12,7 +12,7 @@ import datetime
 import config
 import time
 from configparser import ConfigParser
-from candle import BidAskCandle
+from candle.candle import BidAskCandle
 
 
 class OandaAPI(object):

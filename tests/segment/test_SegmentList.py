@@ -12,7 +12,7 @@ def pl_object():
 
     oanda = OandaAPI(instrument='AUD_USD',
                      granularity='D',
-                     settingf='data/settings.ini')
+                     settingf='../../data/settings.ini')
 
     oanda.run(start='2019-03-08T22:00:00',
               end='2019-08-09T22:00:00')
@@ -23,7 +23,7 @@ def pl_object():
                     instrument='AUD_USD',
                     id='AUD_USD_test',
                     type='long',
-                    settingf='data/settings.ini')
+                    settingf='../../data/settings.ini')
 
     pl = cl.get_pivotlist()
 

@@ -20,7 +20,7 @@ def tb_object():
         timeframe='D',
         start='2019-08-12 22:00:00',
         end='2019-08-19 22:00:00',
-        settingf="data/settings.ini"
+        settingf="../../data/settings.ini"
     )
     return tb
 

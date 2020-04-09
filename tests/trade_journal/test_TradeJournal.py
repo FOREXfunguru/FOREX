@@ -1,14 +1,14 @@
 import pytest
 
-from trade_journal import TradeJournal
+from trade_journal.trade_journal import TradeJournal
 
 @pytest.fixture
 def tjO():
     '''Returns a trade_journal object for a Counter trade'''
 
-    td = TradeJournal(url="data/testCounter.xlsx",
+    td = TradeJournal(url="../../data/testCounter.xlsx",
                       worksheet="trading_journal",
-                      settingf="data/settings.ini")
+                      settingf="../../data/settings.ini")
     return td
 
 def test_fetch_tradelist(tjO):

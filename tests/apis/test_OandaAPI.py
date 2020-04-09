@@ -13,7 +13,6 @@ from apis.oanda_api import OandaAPI
                                           ('AUD_USD', 'D', '2018-04-27T21:00:00', '2018-04-28T21:00:00', 200),
                                           # Start date before the start of historical record
                                           ('AUD_USD', 'H12', '2000-11-21T22:00:00', '2002-06-15T22:00:00', 200)])
-
 def test_OandaAPI(i, g, s, e, resp):
     '''
     Test a simple query to Oanda's REST API using a start and end datetimes
@@ -21,7 +20,7 @@ def test_OandaAPI(i, g, s, e, resp):
 
     oanda = OandaAPI(instrument=i,
                      granularity=g,
-                     settingf='data/settings.ini')
+                     settingf='../../data/settings.ini')
     respl = oanda.run(start=s,
                       end=e)
 
@@ -33,7 +32,7 @@ def test_OandaAPI_e():
     non conventional time that will raise an Exception
     '''
     with pytest.raises(Exception):
-        oanda=OandaAPI(instrument='AUD_USD',
+        oanda = OandaAPI(instrument='AUD_USD',
                        granularity='H12')
 
         oanda.run(start='2018-11-12T10:00:00',
@@ -62,7 +61,7 @@ def test_OandaAPI_count():
 
     oanda = OandaAPI(instrument='AUD_USD',
                      granularity='D',
-                     settingf='data/settings.ini')
+                     settingf='../../data/settings.ini')
 
     oanda.run(start='2018-05-21T22:00:00',
               count=1)
@@ -76,7 +75,7 @@ def test_OandaAPI_vol():
 
     oanda = OandaAPI(instrument='NZD_JPY',
                      granularity='H12',
-                     settingf='data/settings.ini')
+                     settingf='../../data/settings.ini')
 
     oanda.run(start='2011-09-02T21:00:00',
               end='2011-09-06T22:00:00')
@@ -88,7 +87,7 @@ def test_OandaAPI_vol():
 def test_fetch_one_candle():
     oanda = OandaAPI(instrument='AUD_USD',
                      granularity='D',
-                     settingf='data/settings.ini')
+                     settingf='../../data/settings.ini')
 
     oanda.run(start='2015-01-25T22:00:00',
               count=1)

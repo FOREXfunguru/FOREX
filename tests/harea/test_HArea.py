@@ -1,7 +1,7 @@
 import pytest
 
 from apis.oanda_api import OandaAPI
-from harea import HArea
+from harea.harea import HArea
 from candle.candlelist import CandleList
 import datetime
 
@@ -12,7 +12,7 @@ def cl_object():
     oanda = OandaAPI(
                      instrument='AUD_USD',
                      granularity='D',
-                     settingf='data/settings.ini')
+                     settingf='../../data/settings.ini')
 
     oanda.run(start='2019-03-06T23:00:00',
               end='2020-01-03T23:00:00')
@@ -22,7 +22,7 @@ def cl_object():
     cl = CandleList(candle_list,
                     instrument='AUD_USD',
                     granularity='D',
-                    settingf='data/settings.ini')
+                    settingf='../../data/settings.ini')
     return cl
 
 def test_last_time(cl_object):
@@ -34,7 +34,7 @@ def test_last_time(cl_object):
                    pips=5,
                    instrument='AUD_USD',
                    granularity='D',
-                   settingf='data/settings.ini')
+                   settingf='../../data/settings.ini')
 
     lt = resist.last_time(clist=cl_object.clist, position='above')
 
@@ -53,7 +53,7 @@ def test_get_cross_time(cl_object, clist_ix, price, dt):
                    pips=5,
                    instrument='AUD_USD',
                    granularity='D',
-                   settingf='data/settings.ini')
+                   settingf='../../data/settings.ini')
 
     cross_time = resist.get_cross_time(candle=cl_object.clist[clist_ix])
 

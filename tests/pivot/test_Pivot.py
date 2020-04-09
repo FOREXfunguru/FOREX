@@ -22,7 +22,7 @@ def cl_object(clean_tmp):
 
     oanda = OandaAPI(instrument='AUD_USD',
                      granularity='D',
-                     settingf='data/settings.ini')
+                     settingf='../../data/settings.ini')
 
     oanda.run(start='2015-06-24T22:00:00',
               end='2019-06-21T22:00:00')
@@ -33,7 +33,7 @@ def cl_object(clean_tmp):
                     instrument='AUD_USD',
                     id='AUD_USD_testclist',
                     type='long',
-                    settingf='data/settings.ini')
+                    settingf='../../data/settings.ini')
     return cl
 
 def test_pre_aft_lens(cl_object, clean_tmp):
@@ -85,7 +85,7 @@ def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post, cle
 
     oanda = OandaAPI(instrument=pair,
                      granularity=timeframe,
-                     settingf='data/settings.ini')
+                     settingf='../../data/settings.ini')
 
     oanda.run(start=start,
               end=end)
@@ -95,7 +95,7 @@ def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post, cle
     cl = CandleList(candle_list,
                     instrument=pair,
                     id=id,
-                    settingf='data/settings.ini')
+                    settingf='../../data/settings.ini')
 
     pl = cl.get_pivotlist()
 
@@ -154,7 +154,7 @@ def test_calc_score(cl_object, clean_tmp):
 def test_adjust_pivottime(ix, pair, timeframe, id, start, end, new_b, clean_tmp):
     oanda = OandaAPI(instrument=pair,
                      granularity=timeframe,
-                     settingf='data/settings.ini')
+                     settingf='../../data/settings.ini')
 
     oanda.run(start=start,
               end=end)
@@ -164,7 +164,7 @@ def test_adjust_pivottime(ix, pair, timeframe, id, start, end, new_b, clean_tmp)
     cl = CandleList(candle_list,
                     instrument=pair,
                     id=id,
-                    settingf='data/settings.ini')
+                    settingf='../../data/settings.ini')
 
     pl = cl.get_pivotlist()
 

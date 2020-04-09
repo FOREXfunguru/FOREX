@@ -4,7 +4,7 @@ import math
 import warnings
 from apis.oanda_api import OandaAPI
 from candle.candlelist import CandleList
-from harea import HArea
+from harea.harea import HArea
 from utils import *
 from configparser import ConfigParser
 
@@ -120,7 +120,6 @@ class Trade(object):
         '''
 
         print("[INFO] Run run_trade with id: {0}".format(self.id))
-
         entry = HArea(price=self.entry,
                       instrument=self.pair,
                       pips=self.settings.getint('trade', 'hr_pips'),

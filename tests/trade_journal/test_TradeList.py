@@ -1,15 +1,15 @@
 import pytest
 import datetime
 
-from trade_journal import TradeJournal
+from trade_journal.trade_journal import TradeJournal
 
 @pytest.fixture
 def tlist_o():
     '''Returns a TradeList object using the trade_journal.fetch_tradelist() function'''
 
-    td = TradeJournal(url="data/testCounter.xlsx",
+    td = TradeJournal(url="../../data/testCounter.xlsx",
                       worksheet="trading_journal",
-                      settingf="data/settings.ini")
+                      settingf="../../data/settings.ini")
 
     trade_list = td.fetch_tradelist()
     return trade_list
@@ -29,5 +29,5 @@ def test_win_rate(tlist_o):
     (number_s, number_f, tot_pips) = tlist_o.win_rate(strats="counter")
 
     assert number_s == 2
-    assert number_f == 0
-    assert tot_pips == 349.2
+    assert number_f == 1
+    assert tot_pips == 274.5

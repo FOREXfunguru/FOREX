@@ -4,14 +4,14 @@ import pytest
 import datetime
 import glob
 import os
-from trade_journal import Trade
+from trade_journal.trade import Trade
 
 
 @pytest.fixture
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('../data/IMGS/pivots/*')
+    files = glob.glob('../../data/IMGS/pivots/*')
     for f in files:
         os.remove(f)
 
@@ -29,12 +29,12 @@ def ct_object():
         SL=0.93298,
         TP=0.90366,
         strat='counter_b1',
-        settingf="data/settings.ini"
+        settingf="../../data/settings.ini"
     )
 
     c = Counter(
         trade=t,
-        settingf='data/settings.ini'
+        settingf='../../data/settings.ini'
     )
     return c
 
@@ -42,7 +42,7 @@ def ct_object():
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('../data/IMGS/pivots/*.png')
+    files = glob.glob('../../data/IMGS/pivots/*.png')
     for f in files:
         os.remove(f)
 
@@ -64,13 +64,13 @@ def test_clist_period(ct_object, clean_tmp):
                          "entry,"
                          "lasttime",
                          [('2018-12-03 22:00:00', 'long', 1.54123, 1.53398, 1.55752, 1.54334,
-                           datetime.datetime(2018, 6, 5, 21, 0)),
+                           datetime.datetime(2018, 1, 8, 22, 0)),
                           ('2018-09-11 22:00:00', 'short', 1.63118, 1.63633, 1.60202, 1.62763,
-                           datetime.datetime(2009, 11, 29, 22, 0)),
+                           datetime.datetime(2009, 11, 27, 22, 0)),
                           ('2017-05-05 22:00:00', 'short', 1.48820, 1.49191, 1.46223, 1.48004,
-                           datetime.datetime(2016, 9, 15, 21, 0)),
+                           datetime.datetime(2016, 9, 13, 21, 0)),
                           ('2019-05-23 22:00:00', 'short', 1.62344, 1.62682, 1.60294, 1.61739,
-                           datetime.datetime(2018, 10, 4, 21, 0))])
+                           datetime.datetime(2009, 11, 29, 22, 0))])
 def test_set_lasttime(start, type, SR, SL, TP, entry, lasttime, clean_tmp):
     """
     Check that self.lasttime class attribute
@@ -87,13 +87,13 @@ def test_set_lasttime(start, type, SR, SL, TP, entry, lasttime, clean_tmp):
         TP=TP,
         entry=entry,
         strat='counter_b1',
-        settingf="data/settings.ini"
+        settingf="../../data/settings.ini"
     )
 
     c = Counter(
         trade=t,
         period=1000,
-        settingf='data/settings.ini'
+        settingf='../../data/settings.ini'
     )
     c.set_lasttime()
     assert c.lasttime == lasttime
@@ -112,28 +112,23 @@ def test_set_lasttime(start, type, SR, SL, TP, entry, lasttime, clean_tmp):
                          [  ('EUR_GBP', 'D', 'EUR_GBP 04JUN2004D', '2004-06-03 22:00:00', 'long', 0.66379, 0.66229, 0.67418,
                              0.66704, [datetime.datetime(2004, 6, 2, 21, 0)]),
                             ('EUR_JPY', 'D', 'EUR_JPY 04MAY2016D', '2016-05-03 22:00:00', 'long', 122.173, 121.57,
-                             125.138, 123.021, [datetime.datetime(2008, 11, 3, 22, 0)]),
+                             125.138, 123.021, [datetime.datetime(2009, 1, 17, 22, 0), datetime.datetime(2016, 2, 28, 22, 0), datetime.datetime(2016, 5, 2, 21, 0)]),
                             ('EUR_JPY', 'D', 'EUR_JPY 06APR2010D', '2010-04-05 22:00:00', 'short', 126.909, 128.151,
-                            124.347, 126.627, [datetime.datetime(2008, 11, 3, 22, 0), datetime.datetime(2009, 3, 29, 21, 0),
-                                               datetime.datetime(2009, 4, 26, 21, 0), datetime.datetime(2010, 4, 3, 21, 0)]),
+                            124.347, 126.627, [datetime.datetime(2009, 3, 29, 21, 0), datetime.datetime(2010, 4, 3, 21, 0)]),
                             ('EUR_JPY', 'D', 'EUR_JPY 27OCT2009D', '2009-10-26 22:00:00', 'short', 138.518, 138.66, 134.1, 136.852,
                             [datetime.datetime(2004, 3, 6, 22, 0), datetime.datetime(2005, 8, 7, 21, 0),
-                             datetime.datetime(2006, 1, 11, 22, 0), datetime.datetime(2006, 2, 26, 22, 0),
                              datetime.datetime(2009, 6, 11, 21, 0), datetime.datetime(2009, 8, 8, 21, 0),
                              datetime.datetime(2009, 10, 24, 21, 0), datetime.datetime(2009, 10, 22, 21, 0)]),
                             ('EUR_JPY', 'D', 'EUR_JPY 15JUL2009D', '2009-07-14 22:00:00', 'long', 127.766, 126.421, 137.232, 130.865,
-                            [datetime.datetime(2008, 11, 3, 22, 0), datetime.datetime(2009, 1, 3, 22, 0),
-                             datetime.datetime(2009, 5, 16, 21, 0), datetime.datetime(2009, 7, 11, 21, 0)]),
+                            [datetime.datetime(2009, 1, 3, 22, 0), datetime.datetime(2009, 5, 16, 21, 0),
+                             datetime.datetime(2009, 7, 11, 21, 0)]),
                             ('NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-07-01 09:00:00', 'short', 0.67095, 0.67258, 0.66328, 0.66887,
-                            [datetime.datetime(2010, 5, 25, 21, 0), datetime.datetime(2010, 6, 6, 21, 0),
-                             datetime.datetime(2016, 5, 29, 21, 0), datetime.datetime(2019, 1, 1, 22, 0),
+                            [datetime.datetime(2016, 5, 29, 21, 0), datetime.datetime(2019, 1, 1, 22, 0),
                              datetime.datetime(2019, 6, 27, 21, 0)]),
                             ('EUR_AUD', 'D', 'EUR_AUD 04DEC2018D', '2018-12-03 22:00:00', 'long', 1.54123, 1.53398, 1.55752, 1.54334,
-                            [datetime.datetime(2016, 1, 28, 22, 0), datetime.datetime(2018, 6, 3, 21, 0),
-                             datetime.datetime(2018, 11, 29, 22, 0)]),
+                            [datetime.datetime(2018, 11, 29, 22, 0)]),
                             ('EUR_AUD', 'D', 'EUR_AUD 08MAY2017D', '2017-05-08 22:00:00', 'short', 1.48820, 1.49191, 1.46223, 1.48004,
-                            [datetime.datetime(2010, 7, 1, 21, 0), datetime.datetime(2010, 7, 17, 21, 0),
-                             datetime.datetime(2013, 8, 1, 21, 0), datetime.datetime(2015, 8, 3, 21, 0),
+                            [datetime.datetime(2010, 7, 17, 21, 0), datetime.datetime(2013, 8, 1, 21, 0),
                              datetime.datetime(2017, 5, 7, 21, 0)]),
                            ('EUR_AUD', 'D', 'EUR_AUD 24MAY2019D', '2019-05-23 22:00:00', 'short', 1.62344, 1.62682, 1.60294, 1.61739,
                             [datetime.datetime(2008, 7, 15, 21, 0), datetime.datetime(2015, 8, 23, 21, 0),
@@ -157,12 +152,12 @@ def test_set_pivots(pair, id, timeframe, start, type, SR, SL, TP, entry, dates, 
         TP=TP,
         entry=entry,
         strat='counter_b1',
-        settingf="data/settings.ini"
+        settingf="../../data/settings.ini"
     )
 
     c = Counter(
         trade=t,
-        settingf='data/settings.ini'
+        settingf='../../data/settings.ini'
     )
 
     c.set_pivots()
@@ -179,7 +174,7 @@ def test_set_total_score(ct_object, clean_tmp):
     """
     ct_object.set_pivots()
     ct_object.set_total_score()
-    assert ct_object.total_score == 509
+    assert ct_object.total_score == 365
 
 @pytest.mark.parametrize("pair,"
                          "id,"
@@ -195,7 +190,8 @@ def test_set_total_score(ct_object, clean_tmp):
                           ('EUR_AUD', 'EUR_AUD 08MAY2017D', '2017-05-08 22:00:00', 'short', 1.48820, 1.49191, 1.46223, 1.48004,
                            [datetime.datetime(2017, 5, 7, 21, 0)]),
                            ('EUR_AUD', 'EUR_AUD 24MAY2019D', '2019-05-23 22:00:00', 'short', 1.62344, 1.62682, 1.60294, 1.61739,
-                           [datetime.datetime(2018, 12, 30, 22, 0), datetime.datetime(2019, 5, 21, 21, 0)]),
+                           [datetime.datetime(2015, 8, 23, 21, 0), datetime.datetime(2018, 12, 30, 22, 0),
+                            datetime.datetime(2019, 5, 21, 21, 0)]),
                            ('GBP_USD', 'GBP_USD 18APR2018D', '2018-04-17 22:00:00', 'short', 1.43690, 1.43778, 1.41005, 1.42681,
                            [datetime.datetime(2018, 4, 15, 21, 0)])])
 def test_set_pivots_lasttime(pair, id, start, type, SR, SL, TP, entry, dates, clean_tmp):
@@ -214,13 +210,13 @@ def test_set_pivots_lasttime(pair, id, start, type, SR, SL, TP, entry, dates, cl
         TP=TP,
         entry=entry,
         strat='counter_b1',
-        settingf="data/settings.ini"
+        settingf="../../data/settings.ini"
     )
 
     c = Counter(
         trade=t,
         period=1000,
-        settingf='data/settings.ini'
+        settingf='../../data/settings.ini'
     )
 
     c.set_lasttime()

@@ -1,6 +1,6 @@
 import pytest
 
-from trade_journal import Trade
+from trade_journal.trade import Trade
 
 @pytest.fixture
 def t_object():
@@ -17,7 +17,7 @@ def t_object():
          timeframe="H8",
          strat="counter_b2",
          id="AUD_USD 20APR2017H8",
-         settingf="data/settings.ini"
+         settingf="../../data/settings.ini"
          )
     return td
 
@@ -34,7 +34,7 @@ def test_t_object_noTP():
         timeframe="H8",
         strat="counter_b2",
         id="AUD_USD 20APR2017H8",
-        settingf="data/settings.ini"
+        settingf="../../data/settings.ini"
     )
 
     # check that td.TP has been calculated
@@ -50,11 +50,11 @@ def test_fetch_candlelist(t_object):
     assert cl.clist[0].openBid == 0.7521
     assert cl.clist[0].highBid == 0.75464
 
-@pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome", [('EUR/GBP','2004-06-03 22:00:00', 'long', 0.66229, 0.67418, 0.66704, 'failure'),
-                                                                  ('EUR/AUD','2018-12-03 22:00:00', 'long', 1.53398, 1.55752, 1.54334, 'success'),
-                                                                  ('EUR/AUD','2018-09-11 22:00:00', 'short', 1.63633, 1.60202, 1.62763, 'success'),
-                                                                  ('EUR/AUD','2017-05-05 22:00:00', 'short', 1.49191, 1.46223, 1.48004, 'failure'),
-                                                                  ('EUR/AUD','2019-05-23 22:00:00', 'short', 1.62682, 1.60294, 1.61739, 'failure')])
+@pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome", [('EUR/GBP','2004-06-01 22:00:00', 'long', 0.6623, 0.67418, 0.66704, 'n.a.'),
+                                                                  ('EUR/AUD', '2018-12-03 22:00:00', 'long', 1.53398, 1.55752, 1.54334, 'success'),
+                                                                  ('EUR/AUD', '2018-09-11 22:00:00', 'short', 1.63633, 1.60202, 1.62763, 'success'),
+                                                                  ('EUR/AUD', '2017-05-05 22:00:00', 'short', 1.49191, 1.46223, 1.48004, 'failure'),
+                                                                  ('EUR/AUD', '2019-05-23 22:00:00', 'short', 1.62682, 1.60294, 1.61739, 'failure')])
 def test_run_trade(pair, start, type, SL, TP, entry, outcome):
     '''
     This test checks the progression of the Trade
@@ -71,7 +71,7 @@ def test_run_trade(pair, start, type, SL, TP, entry, outcome):
             timeframe="D",
             strat="counter_b2",
             id="test",
-            settingf="data/settings.ini"
+            settingf="../../data/settings.ini"
     )
 
     td.run_trade()

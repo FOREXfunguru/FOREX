@@ -1,6 +1,6 @@
 import pytest
 
-from candle import BidAskCandle
+from candle.candle import BidAskCandle
 from apis.oanda_api import OandaAPI
 
 def test_BidAskCandle_inst():
@@ -44,7 +44,7 @@ def test_set_candle_features(pair, timeframe, time, colour,
     '''
     oanda = OandaAPI(instrument=pair,
                      granularity=timeframe,
-                     settingf="data/settings.ini")
+                     settingf="../../data/settings.ini")
 
     oanda.run(start=time,
               count=1)
@@ -66,7 +66,7 @@ def test_set_candle_features(pair, timeframe, time, colour,
 def test_indecision_c(pair, timeframe, time, is_it):
     oanda = OandaAPI(instrument=pair,
                      granularity=timeframe,
-                     settingf="data/settings.ini")
+                     settingf="../../data/settings.ini")
 
     oanda.run(start=time,
               count=1)
