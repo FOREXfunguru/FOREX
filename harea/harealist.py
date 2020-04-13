@@ -67,7 +67,7 @@ class HAreaList(object):
         '''
         print("#pair timeframe upper-price-lower no_pivots tot_score")
         for harea in self.halist:
-            print("{0} {1} {2}-{3}-{4} {5} {5}".format(harea.instrument,
+            print("{0} {1} {2}-{3}-{4} {5} {6}".format(harea.instrument,
                                                        harea.granularity,
                                                        harea.upper,
                                                        harea.price,
@@ -83,4 +83,3 @@ class HAreaList(object):
         for attr, value in self.__dict__.items():
             out_str += "%s:%s " % (attr, value)
         return out_str
-print("this is master")

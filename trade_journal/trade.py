@@ -15,6 +15,9 @@ class Trade(object):
     Class variables
     ---------------
 
+    entered: Boolean, Optional
+             False if trade not taken (price did not cross self.entry). True otherwise
+             Default : False
     trend_i: datetime, Optional
              start of the trend
     start: datetime, Required
@@ -53,7 +56,7 @@ class Trade(object):
                Optional
     '''
 
-    def __init__(self, strat, start, settingf=None, settings=None, **kwargs):
+    def __init__(self, strat, start, settingf=None, settings=None, entered=False, **kwargs):
         self.__dict__.update(kwargs)
         if not hasattr(self, 'TP') and not hasattr(self, 'RR'):
             raise Exception("Neither the RR not "
@@ -74,6 +77,7 @@ class Trade(object):
         self.timeframe = re.sub(' ', '', self.timeframe)
         self.settingf = settingf
         self.settings = settings
+        self.entered = entered
 
         # parse settings file (in .ini file)
         parser = ConfigParser()
@@ -114,7 +118,7 @@ class Trade(object):
 
         return cl
 
-    def run_trade(self):
+    def run_trade(self, expires=None):
         '''
         Run the trade until conclusion from a start date
         '''
@@ -146,12 +150,20 @@ class Trade(object):
         # of trade and also the entry time
 
         self.start = datetime.strptime(str(self.start), '%Y-%m-%d %H:%M:%S')
-        numperiods = 300
+        numperiods = self.settings.getint('trade', 'numperiods')
+        # date_list will contain a list with datetimes that will be used for running self
         date_list = [datetime.strptime(str(self.start.isoformat()), '%Y-%m-%dT%H:%M:%S')
                      + timedelta(hours=x*period) for x in range(0, numperiods)]
 
-        entered = False
+        count = 0
+        self.entered = False
+
         for d in date_list:
+            count += 1
+            if expires is not None:
+                if count > expires and self.entered is False:
+                    self.outcome = 'n.a.'
+                    break
             oanda = OandaAPI(instrument=self.pair,
                              granularity=self.timeframe,
                              settingf=self.settingf)
@@ -160,18 +172,13 @@ class Trade(object):
                       count=1)
 
             cl = oanda.fetch_candleset()[0]
-            if entered is False:
+            if self.entered is False:
                 entry_time = entry.get_cross_time(candle=cl)
-                print("\t[INFO] Trade entered")
                 if entry_time != 'n.a.':
+                    print("\t[INFO] Trade entered")
                     self.entry_time = entry_time.isoformat()
-                else:
-                    warnings.warn("No entry time was identified for this trade")
-                    entry_time = self.start
-                    self.entry_time = entry_time
-            if entry_time is not None and entry_time != 'n.a.':
-                entered=True
-            if entered is True:
+                    self.entered = True
+            if self.entered is True:
                 failure_time = SL.get_cross_time(candle=cl)
                 if failure_time is not None and failure_time != 'n.a.':
                     self.outcome = 'failure'
@@ -179,13 +186,13 @@ class Trade(object):
                     self.pips = float(calculate_pips(self.pair,abs(self.SL-self.entry)))*-1
                     print("\t[INFO] S/L was hit")
                     break
-            if entered is True:
                 success_time = TP.get_cross_time(candle=cl)
                 if success_time is not None and success_time !='n.a.':
                     self.outcome = 'success'
                     print("\t[INFO] T/P was hit")
                     self.end = success_time
-                    self.pips = float(calculate_pips(self.pair, abs(self.TP - self.entry)))
+                    self.pips = float(calculate_pips(self.pair,
+                                                     abs(self.TP - self.entry)))
                     break
         try:
             assert getattr(self, 'outcome')

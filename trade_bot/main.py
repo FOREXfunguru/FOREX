@@ -1,6 +1,7 @@
-from trade_bot.trade_bot import TradeBot
+from trade_bot import TradeBot
 
 import argparse
+
 
 def main():
     parser = argparse.ArgumentParser(description='Trading bot')
@@ -22,6 +23,7 @@ def main():
     )
 
     tb.run()
+
 
 if __name__ == '__main__':
     main()

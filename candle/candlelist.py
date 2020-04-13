@@ -881,3 +881,40 @@ class CandleList(object):
 
         return last_time
 
+    def get_highest(self):
+        '''
+        Function to calculate the highest
+        price in this CandeList
+
+        Returns
+        -------
+        Float representing highest price
+        '''
+
+        max = 0.0
+        for c in self.clist:
+            price = getattr(c, self.settings.get('general', 'part'))
+            if price > max:
+                max = price
+
+        return max
+
+    def get_lowest(self):
+        '''
+        Function to calculate the lowest
+        price in this CandeList
+
+        Returns
+        -------
+        Float representing lowest price
+        '''
+
+        min = None
+        for c in self.clist:
+            price = getattr(c, self.settings.get('general', 'part'))
+            if min is None:
+                min = price
+            else:
+                if price < min:
+                    min = price
+        return min

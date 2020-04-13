@@ -2,6 +2,7 @@ from apis.oanda_api import OandaAPI
 from configparser import ConfigParser
 from trade_journal.trade import Trade
 from pattern.counter import Counter
+from candle.candlelist import CandleList
 from harea.harea import HArea
 from harea.harealist import HAreaList
 
@@ -42,6 +43,105 @@ class TradeBot(object):
         else:
             self.settings = settings
 
+    def __get_trade_type(self, ic, harea_sel, delta):
+        '''
+        Function to guess what is the trade type (short or long)
+        for this possible trade
+
+        Parameters
+        ----------
+        ic : Candle object
+             Indecision candle for this trade
+        harea_sel : HArea of this trade
+        delta : Timedelta object corresponding to
+                the time that needs to be increased
+
+        Returns
+        -------
+        str: Trade type (long or short)
+        '''
+
+        oanda = OandaAPI(instrument=self.pair,
+                         granularity=self.timeframe,
+                         settingf=self.settingf)
+
+        # n x delta controls how many candles to go back in time
+        # to check
+        start = ic.time - 5*delta
+        end = ic.time + delta  # increase self.start by one candle to include self.start
+
+        oanda.run(start=start.isoformat(),
+                  end=end.isoformat())
+
+        short_ct = 0
+        long_ct = 0
+        candle_list = oanda.fetch_candleset()
+        for c in candle_list:
+            price = getattr(c, self.settings.get('general', 'part'))
+            if price < harea_sel.price:
+                short_ct += 1
+            elif price > harea_sel.price:
+                long_ct += 1
+            elif price == harea_sel.price:
+                continue
+
+        if short_ct > long_ct:
+            return 'short'
+        elif short_ct < long_ct:
+            return 'long'
+        elif short_ct == long_ct:
+            raise Exception("Trade type undefined")
+
+
+    def prepare_trade(self, type, ic, harea_sel, delta):
+        '''
+        Prepare a Trade object
+        and check if it is taken
+
+        Parameters
+        ----------
+        type : str,
+               Type of trade. i.e. Counter
+        ic : Candle object
+             Indecision candle for this trade
+        harea_sel : HArea of this trade
+        delta : Timedelta object corresponding to
+                the time that needs to be increased
+
+        Returns
+        -------
+        Trade object
+        '''
+
+        startO = ic.time + delta
+        type = self.__get_trade_type(ic=ic, harea_sel=harea_sel, delta=delta)
+        if type == 'short':
+            # entry price will be the low of IC
+            # SL price wil the be the high of IC
+            entry_p = getattr(ic, "low{0}".format(self.settings.get('general', 'bit')))
+            SL_p = getattr(ic, "high{0}".format(self.settings.get('general', 'bit')))
+        elif type == 'long':
+            # entry price will be the high of IC
+            # SL price wil the be the low of IC
+            entry_p = getattr(ic, "high{0}".format(self.settings.get('general', 'bit')))
+            SL_p = getattr(ic, "low{0}".format(self.settings.get('general', 'bit')))
+
+        startO = ic.time+delta
+        t = Trade(
+            id='{0}.bot'.format(self.pair),
+            start=startO.strftime('%Y-%m-%d %H:%M:%S'),
+            pair=self.pair,
+            timeframe=self.timeframe,
+            type=type,
+            entry=entry_p,
+            SR=harea_sel.price,
+            SL=SL_p,
+            RR=self.settings.getfloat('trade_bot', 'RR'),
+            strat=type,
+            settingf=self.settingf)
+
+        return t
+
 
     def run(self):
         '''
@@ -68,12 +168,21 @@ class TradeBot(object):
 
         SRlst = None
         loop = 0
+
         while startO <= endO:
+            if self.settings.getboolean('general', 'debug') is True:
+                print("[DEBUG] Trade bot - analyzing candle:{0}".format(startO.isoformat()))
             if loop == 0:
-                SRlst = self.calc_SR()
-            elif loop == self.settings.getint('tradebot',
+                SRlst = self.calc_SR(adateObj=startO)
+                if self.settings.getboolean('general', 'debug') is True:
+                    print("[DEBUG] Identified HAreaList for time {0}:".format(startO.isoformat()))
+                    SRlst.print()
+            elif loop == self.settings.getint('trade_bot',
                                               'period'):
-                SRlst = self.calc.SR()
+                SRlst = self.calc_SR(adateObj=startO)
+                if self.settings.getboolean('general', 'debug') is True:
+                    print("[DEBUG] Identified HAreaList for time {0}:".format(startO.isoformat()))
+                    SRlst.print()
                 loop = 0
             oanda.run(start=startO.isoformat(),
                       count=1)
@@ -82,19 +191,19 @@ class TradeBot(object):
             c_candle = candle_list[0] # this is the current candle that
                                       # is being checked
 
-            pdb.set_trace()
-            if self.settings.getboolean('general', 'debug') is True:
-                print("[DEBUG] Identified HAreaList:")
-                SRlst.print()
-
             #check if there is any HArea overlapping with c_candle
             HAreaSel = SRlst.onArea(candle=candle_list[0])
 
             if HAreaSel is not None:
+                print("In Area: {0}".format(c_candle.time.isoformat()))
                 c_candle.set_candle_features()
-                if c_candle.indecision_c() is True:
-                    print("Found it!!!")
+                if c_candle.indecision_c(ic_perc=self.settings.getint('general', 'ic_perc')) is True:
+                    t = self.prepare_trade(type='counter',
+                                           ic=c_candle,
+                                           harea_sel=HAreaSel,
+                                           delta=delta)
                     pdb.set_trace()
+                    t.run_trade(expires=1)
             startO = startO+delta
             loop += 1
 
@@ -154,19 +263,75 @@ class TradeBot(object):
                     prev_ix = index
         return df_loc, tog_seen
 
-    def calc_SR(self):
+    def get_max_min(self, adateObj):
+        '''
+        Function to get the price range for identifying S/R by checking the max
+        and min price for CandleList starting in
+        'adateObj'- self.settings.getint('trade_bot', 'period_range') and ending in 'adateObj'
+
+        Parameters
+        ----------
+        datetime object used for identifying
+        S/R areas
+
+        Returns
+        -------
+        max, min floats
+        '''
+
+        oanda = OandaAPI(instrument=self.pair,
+                         granularity=self.timeframe,
+                         settingf=self.settingf)
+
+        delta_period = periodToDelta(self.settings.getint('trade_bot', 'period_range'),
+                                     self.timeframe)
+        delta_1 = periodToDelta(1, self.timeframe)
+
+        start = adateObj - delta_period  # get the start datetime for this CandleList period
+        end = adateObj + delta_1  # increase self.start by one candle to include self.start
+
+        oanda.run(start=start.isoformat(),
+                  end=end.isoformat())
+
+        candle_list = oanda.fetch_candleset()
+        cl = CandleList(candle_list,
+                        instrument=self.pair,
+                        id='test',
+                        granularity=self.timeframe,
+                        settingf=self.settingf)
+
+        max = cl.get_highest()
+        min = cl.get_lowest()
+
+        # add a number of pips to max,min to be sure that we
+        # also detect the extreme pivots
+        max = add_pips2price(self.pair, max, self.settings.getint('trade_bot', 'add'))
+        min = substract_pips2price(self.pair, min, self.settings.getint('trade_bot', 'add'))
+
+        return max, min
+
+    def calc_SR(self, adateObj):
         '''
         Function to calculate S/R lines
+
+        Parameters
+        ----------
+        datetime object used for identifying
+        S/R areas
 
         Return
         ------
         HAreaList object
         '''
 
-        if self.settings.getboolean('general', 'debug') is True:
-            print("[DEBUG] Running calc_SR")
+        # calculate price range for calculating S/R
+      #  ul, ll = self.get_max_min(adateObj)
 
-        ll, ul = self.settings.get('tradebot', self.pair).split(",")
+        ul = 0.88505
+        ll = 0.87463
+
+        if self.settings.getboolean('general', 'debug') is True:
+            print("[DEBUG] Running calc_SR for estimated range: {0}-{1}".format(ll, ul))
 
         prices = []
         bounces = []  # contains the number of pivots per price level
@@ -178,14 +343,14 @@ class TradeBot(object):
         while p <= float(ul):
             if self.settings.getboolean('general', 'debug') is True:
                 print("Processing S/R at {0}".format(round(p, 4)))
-                # each of 'p' will become a S/R that will be tested for bounces
-                # set entry to price+30pips
+            # each of 'p' will become a S/R that will be tested for bounces
+            # set entry to price+30pips
             entry = add_pips2price(self.pair, p, 30)
             # set S/L to price-30pips
             SL = substract_pips2price(self.pair, p, 30)
             t = Trade(
-                id='{0}.detect_sr.{1}'.format(self.pair, round(p, 5)),
-                start=self.start,
+                id='{0}.{1}.detect_sr.{2}'.format(self.pair, adateObj.isoformat(), round(p, 5)),
+                start=adateObj.strftime('%Y-%m-%d %H:%M:%S'),
                 pair=self.pair,
                 timeframe='D',
                 type='short',
@@ -202,9 +367,7 @@ class TradeBot(object):
                 settingf=self.settingf
             )
 
-            ratio = None
             if len(c.pivots.plist) == 0:
-                ratio = 0
                 mean_pivot = 0
             else:
                 mean_pivot = round(c.score_pivot, 2)
@@ -233,8 +396,8 @@ class TradeBot(object):
         # and selection is not biased when range of prices is wide
         dfgt1 = df.loc[(df['bounces'] > 0)]
         dfgt2 = df.loc[(df['tot_score'] > 0)]
-        bounce_th = dfgt1.bounces.quantile(self.settings.getfloat('tradebot', 'th'))
-        score_th = dfgt2.tot_score.quantile(self.settings.getfloat('tradebot', 'th'))
+        bounce_th = dfgt1.bounces.quantile(self.settings.getfloat('trade_bot', 'th'))
+        score_th = dfgt2.tot_score.quantile(self.settings.getfloat('trade_bot', 'th'))
         if self.settings.getboolean('general', 'debug') is True:
             print("[DEBUG] Selected number of pivot threshold: {0}".format(bounce_th))
             print("[DEBUG] Selected tot score threshold: {0}".format(score_th))

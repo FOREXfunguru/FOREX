@@ -2,6 +2,7 @@ from trade_journal.trade_journal import TradeJournal
 
 import argparse
 
+
 def main():
     parser = argparse.ArgumentParser(description='Script to calculate the features for Counter trades')
 
@@ -17,6 +18,7 @@ def main():
     trade_list.analyze()
 
     td.write_tradelist(trade_list)
+
 
 if __name__ == '__main__':
     main()

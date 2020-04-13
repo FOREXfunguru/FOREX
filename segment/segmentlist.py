@@ -1,5 +1,4 @@
 from utils import *
-import config
 import numpy as np
 import matplotlib
 import datetime

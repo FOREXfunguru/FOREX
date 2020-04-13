@@ -6,11 +6,12 @@ Created on 24 Nov 2016
 
 import re
 import os
+import pdb
 import requests,json
 import pandas as pd
 import datetime
-import config
 import time
+import utils
 from configparser import ConfigParser
 from candle.candle import BidAskCandle
 
@@ -199,7 +200,7 @@ class OandaAPI(object):
                             datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
         return dateObj
 
-    def __roll_datetime(self,dateObj,granularity):
+    def __roll_datetime(self, dateObj, granularity):
         '''
         Private function to roll the datetime, which falls on a closed market to the next period (set by granularity)
         with open market
@@ -218,11 +219,12 @@ class OandaAPI(object):
         '''
 
         # check if dateObj is previous to the start of historical data for self.instrument
-        if self.instrument not in config.START_HIST:
+        if not self.settings.has_option('pairs_start', self.instrument):
             raise Exception("Inexistent start of historical record info for {0}".format(self.instrument))
 
-        if dateObj < config.START_HIST[self.instrument]:
-            rolledateObj= config.START_HIST[self.instrument]
+        start_hist_dtObj = utils.try_parsing_date(self.settings.get('pairs_start', self.instrument))
+        if dateObj < start_hist_dtObj:
+            rolledateObj = start_hist_dtObj
             print("Date precedes the start of the historical record.\n"
                   "Time was rolled from {0} to {1}".format(dateObj, rolledateObj))
             return rolledateObj
@@ -244,12 +246,12 @@ class OandaAPI(object):
                 nmins = int(granularity.replace('M', ''))
                 delta = datetime.timedelta(minutes=int(nmins))
 
-        resp_code=204
-        startObj=dateObj
-        endObj=None
-        while resp_code==204:
-            startObj=startObj+delta
-            endObj=startObj+delta
+        resp_code = 204
+        startObj = dateObj
+        endObj = None
+        while resp_code == 204:
+            startObj = startObj+delta
+            endObj = startObj+delta
             #check if datestr returns a candle
             params = {}
             params['instrument'] = self.instrument
@@ -259,12 +261,12 @@ class OandaAPI(object):
 
             resp = requests.get(url=self.settings.get('oanda_api', 'url'),
                                 params=params)
-            resp_code=resp.status_code
+            resp_code = resp.status_code
 
-        print("Time was rolled from {0} to {1}".format(dateObj,startObj))
+        print("Time was rolled from {0} to {1}".format(dateObj, startObj))
         return startObj
 
-    def __validate_end(self,endObj):
+    def __validate_end(self, endObj):
         '''
         Private method to check that last candle time matches the 'end' time provided
         within params
@@ -278,16 +280,16 @@ class OandaAPI(object):
         1 if it validates
         '''
 
-        endFetched=pd.datetime.strptime(self.data['candles'][-1]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
-        if endObj!= endFetched:
+        endFetched = pd.datetime.strptime(self.data['candles'][-1]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        if endObj != endFetched:
             #check if discrepancy is not in the daylight savings period
-            fetched_time=endFetched.time()
-            passed_time=endObj.time()
+            fetched_time = endFetched.time()
+            passed_time = endObj.time()
             dateTimefetched = datetime.datetime.combine(datetime.date.today(), fetched_time)
             dateTimepassed = datetime.datetime.combine(datetime.date.today(), passed_time)
             dateTimeDifference = dateTimefetched - dateTimepassed
             dateTimeDifferenceInHours = dateTimeDifference.total_seconds() / 3600
-            if endFetched.date()==endObj.date() and abs(dateTimeDifferenceInHours)<=1:
+            if endFetched.date() == endObj.date() and abs(dateTimeDifferenceInHours) <= 1:
                 return 1
             else:
                 raise Exception("Last candle time does not match the provided end time")
@@ -352,15 +354,15 @@ class OandaAPI(object):
         
         with open(file) as f:
             for line in f:
-                line=line.rstrip("\n")
-                bits=line.split()
-                regex=re.compile("highAsk:*")
-                a_list=[m.group(0) for l in bits for m in [regex.search(l)] if m]
-                if len(a_list)>0:
+                line = line.rstrip("\n")
+                bits = line.split()
+                regex = re.compile("highAsk:*")
+                a_list = [m.group(0) for l in bits for m in [regex.search(l)] if m]
+                if len(a_list) > 0:
                     ba=BidAskCandle()
                     for b in bits:
-                        l=b.split(':')
-                        if len(l)==2:
+                        l = b.split(':')
+                        if len(l) == 2:
                             setattr(ba, l[0], l[1])
                     candlelist.append(ba)
         return candlelist

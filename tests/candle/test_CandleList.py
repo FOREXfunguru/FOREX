@@ -136,6 +136,16 @@ def test_get_lasttime():
     lasttime = cl.get_lasttime(resist)
     assert lasttime == datetime.datetime(2007, 11, 9, 10, 0)
 
+def test_get_highest(clO):
+    clO.get_highest()
+
+    assert clO.get_highest() == 0.718
+
+def test_get_lowest(clO):
+    clO.get_lowest()
+
+    assert clO.get_lowest() == 0.67047
+
 """
 def test_check_if_divergence():
 
