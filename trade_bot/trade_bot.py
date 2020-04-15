@@ -1,6 +1,7 @@
 from apis.oanda_api import OandaAPI
 from configparser import ConfigParser
 from trade_journal.trade import Trade
+from trade_journal.trade_list import TradeList
 from pattern.counter import Counter
 from candle.candlelist import CandleList
 from harea.harea import HArea
@@ -67,8 +68,8 @@ class TradeBot(object):
 
         # n x delta controls how many candles to go back in time
         # to check
-        start = ic.time - 5*delta
-        end = ic.time + delta  # increase self.start by one candle to include self.start
+        start = ic.time - 6*delta
+        end = ic.time
 
         oanda.run(start=start.isoformat(),
                   end=end.isoformat())
@@ -92,7 +93,6 @@ class TradeBot(object):
         elif short_ct == long_ct:
             raise Exception("Trade type undefined")
 
-
     def prepare_trade(self, type, ic, harea_sel, delta):
         '''
         Prepare a Trade object
@@ -101,7 +101,7 @@ class TradeBot(object):
         Parameters
         ----------
         type : str,
-               Type of trade. i.e. Counter
+               Type of trade. 'short' or 'long'
         ic : Candle object
              Indecision candle for this trade
         harea_sel : HArea of this trade
@@ -114,7 +114,6 @@ class TradeBot(object):
         '''
 
         startO = ic.time + delta
-        type = self.__get_trade_type(ic=ic, harea_sel=harea_sel, delta=delta)
         if type == 'short':
             # entry price will be the low of IC
             # SL price wil the be the high of IC
@@ -137,7 +136,7 @@ class TradeBot(object):
             SR=harea_sel.price,
             SL=SL_p,
             RR=self.settings.getfloat('trade_bot', 'RR'),
-            strat=type,
+            strat='counter',
             settingf=self.settingf)
 
         return t
@@ -147,6 +146,11 @@ class TradeBot(object):
         '''
         This function will run the Bot from start to end
         one candle at a time
+
+        Returns
+        -------
+        TradeList object with Trades taken. None if no trades
+        were taken
         '''
         oanda = OandaAPI(instrument=self.pair,
                          granularity=self.timeframe,
@@ -168,8 +172,16 @@ class TradeBot(object):
 
         SRlst = None
         loop = 0
-
+        tlist = []
+        tend = None
         while startO <= endO:
+            if tend is not None:
+                # this means that there is currently an active trade
+                if startO <= tend:
+                    startO = startO + delta
+                    continue
+                else:
+                    tend = None
             if self.settings.getboolean('general', 'debug') is True:
                 print("[DEBUG] Trade bot - analyzing candle:{0}".format(startO.isoformat()))
             if loop == 0:
@@ -195,17 +207,34 @@ class TradeBot(object):
             HAreaSel = SRlst.onArea(candle=candle_list[0])
 
             if HAreaSel is not None:
-                print("In Area: {0}".format(c_candle.time.isoformat()))
                 c_candle.set_candle_features()
+                # guess the if trade is 'long' or 'short'
+                type = self.__get_trade_type(ic=c_candle, harea_sel=HAreaSel, delta=delta)
+                prepare_trade = False
                 if c_candle.indecision_c(ic_perc=self.settings.getint('general', 'ic_perc')) is True:
-                    t = self.prepare_trade(type='counter',
+                    prepare_trade = True
+                elif type == 'short' and c_candle.colour == 'red':
+                    prepare_trade = True
+                elif type == 'long' and c_candle.colour == 'green':
+                    prepare_trade =True
+
+                if prepare_trade is True:
+                    t = self.prepare_trade(type=type,
                                            ic=c_candle,
                                            harea_sel=HAreaSel,
                                            delta=delta)
-                    pdb.set_trace()
                     t.run_trade(expires=1)
+                    if t.entered is True:
+                        tlist.append(t)
+                        tend = t.end
             startO = startO+delta
             loop += 1
+        if len(tlist) == 0:
+            return None
+        else:
+            tl = TradeList(tlist=tlist,
+                           settingf=self.settingf)
+            return tl
 
     def __calc_diff(self, df_loc, increment_price):
         '''
@@ -325,10 +354,7 @@ class TradeBot(object):
         '''
 
         # calculate price range for calculating S/R
-      #  ul, ll = self.get_max_min(adateObj)
-
-        ul = 0.88505
-        ll = 0.87463
+        ul, ll = self.get_max_min(adateObj)
 
         if self.settings.getboolean('general', 'debug') is True:
             print("[DEBUG] Running calc_SR for estimated range: {0}-{1}".format(ll, ul))

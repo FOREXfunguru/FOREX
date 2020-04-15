@@ -4,7 +4,7 @@ import numpy as np
 import pdb
 from trade_journal.trade import Trade
 from trade_journal.trade_list import TradeList
-from openpyxl import load_workbook
+from openpyxl import load_workbook, Workbook
 from configparser import ConfigParser
 from pivot.pivotlist import PivotList
 
@@ -26,11 +26,16 @@ class TradeJournal(object):
         self.url = url
         self.worksheet = worksheet
         #read-in the 'trading_journal' worksheet from a .xlsx file into a pandas dataframe
-        xls_file = pd.ExcelFile(url)
-        df = xls_file.parse(worksheet, converters={'start': str, 'end': str, 'trend_i': str})
-        # replace n.a. string by NaN
-        df = df.replace('n.a.', np.NaN)
-        self.df = df
+        try:
+            xls_file = pd.ExcelFile(url)
+            df = xls_file.parse(worksheet, converters={'start': str, 'end': str, 'trend_i': str})
+            # replace n.a. string by NaN
+            df = df.replace('n.a.', np.NaN)
+            self.df = df
+        except FileNotFoundError:
+            wb = Workbook()
+            wb.create_sheet(worksheet)
+            wb.save(str(self.url))
 
         # parse settings file (in .ini file)
         parser = ConfigParser()

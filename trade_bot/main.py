@@ -1,5 +1,6 @@
 from trade_bot import TradeBot
-
+from trade_journal.trade_journal import TradeJournal
+import pdb
 import argparse
 
 
@@ -10,6 +11,7 @@ def main():
     parser.add_argument('--timeframe', required=True, help="Timeframe used: i.e. 'D', 'H12', 'H8'")
     parser.add_argument('--start', required=True, help="Start time for this bot: i.e. 2019-08-12 22:00:00")
     parser.add_argument('--end', required=True, help="End time for this bot: i.e. 2019-08-19 22:00:00")
+    parser.add_argument('--url', required=True, help=".xlsx file used to write the Trades taken")
     parser.add_argument('--settingf', required=True, help='Path to .ini file with settings')
 
     args = parser.parse_args()
@@ -22,7 +24,15 @@ def main():
         settingf=args.settingf
     )
 
-    tb.run()
+    tl = tb.run()
+
+    td = TradeJournal(url=args.url,
+                      worksheet="trading_journal",
+                      settingf=args.settingf)
+
+    td.write_tradelist(tl)
+    pdb.set_trace()
+    print("h\n")
 
 
 if __name__ == '__main__':
