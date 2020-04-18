@@ -798,29 +798,26 @@ class CandleList(object):
         Will return a datetime object
         '''
 
-        outfile="{0}/{1}.itrend.png".format(config.PNGFILES['init_trend'],
-                                            self.id.replace(' ', '_'))
+        plist = self.get_pivotlist()
 
-        plist = self.get_pivotlist(outfile=outfile, th_up=th_up, th_down=th_down)
-
-        arr=np.array(self.clist)
-        slist=plist.slist
-        diff_th=config.TREND['diff_th']
-        return_seen=False
+        arr = np.array(self.clist)
+        slist = plist.slist
+        diff_th = config.TREND['diff_th']
+        return_seen = False
         ix = 0
         for s in reversed(slist):
-            diff=abs(s.clist[-1].openAsk-s.clist[0].openAsk)
-            diff_pips=float(calculate_pips(self.instrument, diff))
+            diff = abs(s.clist[-1].openAsk-s.clist[0].openAsk)
+            diff_pips = float(calculate_pips(self.instrument, diff))
             ix -= 1
-            if self.type=="long":
+            if self.type == "long":
                 if s.type == 1:
                     if diff_pips > diff_th:
                         break
                     else:
-                        return_seen=True
+                        return_seen = True
                         continue
             elif self.type == "short":
-                if s.type == -1 :
+                if s.type == -1:
                     if diff_pips > diff_th:
                         break
                     else:
@@ -828,14 +825,14 @@ class CandleList(object):
                         continue
             if return_seen is True:
                 if self.type == "long":
-                    if s.type == -1 :
+                    if s.type == -1:
                         if diff_pips < diff_th:
                             ix += 1
                             break
                         else:
                             return_seen = False
                 elif self.type == "short":
-                    if s.type == 1 :
+                    if s.type == 1:
                         if diff_pips < diff_th:
                             ix += 1
                             break

@@ -44,22 +44,23 @@ class TradeBot(object):
         else:
             self.settings = settings
 
-    def __get_trade_type(self, ic, harea_sel, delta):
+    def __get_trade_type(self, ic, delta):
         '''
         Function to guess what is the trade type (short or long)
-        for this possible trade
+        for this possible trade. It will also adjust the SL price
+        to the most recent highest high/lowest low
 
         Parameters
         ----------
         ic : Candle object
              Indecision candle for this trade
-        harea_sel : HArea of this trade
         delta : Timedelta object corresponding to
                 the time that needs to be increased
 
         Returns
         -------
         str: Trade type (long or short)
+        float: adjusted SL
         '''
 
         oanda = OandaAPI(instrument=self.pair,
@@ -68,32 +69,51 @@ class TradeBot(object):
 
         # n x delta controls how many candles to go back in time
         # to check
-        start = ic.time - 6*delta
+        start = ic.time - 20*delta
         end = ic.time
 
         oanda.run(start=start.isoformat(),
                   end=end.isoformat())
 
-        short_ct = 0
-        long_ct = 0
         candle_list = oanda.fetch_candleset()
-        for c in candle_list:
-            price = getattr(c, self.settings.get('general', 'part'))
-            if price < harea_sel.price:
-                short_ct += 1
-            elif price > harea_sel.price:
-                long_ct += 1
-            elif price == harea_sel.price:
+        clObj = CandleList(candle_list,
+                           instrument=self.pair,
+                           id='fit_reg',
+                           granularity=self.timeframe,
+                           settingf=self.settingf)
+        # fit a regression line in order to check its slope
+        # and guess the trade type
+        (fitted_model, regression_model_mse) = clObj.fit_reg_line()
+
+        slope = fitted_model.coef_[0][0]
+
+        if slope < 0:
+            type = 'long'
+        elif slope > 0:
+            type = 'short'
+
+        # adjust SL
+        if type == 'short':
+            part = 'high{0}'.format(self.settings.get('general', 'bit'))
+        elif type == 'long':
+            part = 'low{0}'.format(self.settings.get('general', 'bit'))
+
+        SL = None
+        for c in reversed(candle_list):
+            price = getattr(c, part)
+            if SL is None:
+                SL = price
                 continue
+            if type == 'short':
+                if price > SL:
+                    SL = price
+            if type == 'long':
+                if price < SL:
+                    SL = price
 
-        if short_ct > long_ct:
-            return 'short'
-        elif short_ct < long_ct:
-            return 'long'
-        elif short_ct == long_ct:
-            raise Exception("Trade type undefined")
+        return type, SL
 
-    def prepare_trade(self, type, ic, harea_sel, delta):
+    def prepare_trade(self, type, SL, ic, harea_sel, delta):
         '''
         Prepare a Trade object
         and check if it is taken
@@ -102,6 +122,8 @@ class TradeBot(object):
         ----------
         type : str,
                Type of trade. 'short' or 'long'
+        SL : float,
+             Adjusted (by '__get_trade_type') SL price
         ic : Candle object
              Indecision candle for this trade
         harea_sel : HArea of this trade
@@ -112,19 +134,13 @@ class TradeBot(object):
         -------
         Trade object
         '''
-
         startO = ic.time + delta
         if type == 'short':
             # entry price will be the low of IC
-            # SL price wil the be the high of IC
             entry_p = getattr(ic, "low{0}".format(self.settings.get('general', 'bit')))
-            SL_p = getattr(ic, "high{0}".format(self.settings.get('general', 'bit')))
         elif type == 'long':
             # entry price will be the high of IC
-            # SL price wil the be the low of IC
             entry_p = getattr(ic, "high{0}".format(self.settings.get('general', 'bit')))
-            SL_p = getattr(ic, "low{0}".format(self.settings.get('general', 'bit')))
-
         startO = ic.time+delta
         t = Trade(
             id='{0}.bot'.format(self.pair),
@@ -134,13 +150,12 @@ class TradeBot(object):
             type=type,
             entry=entry_p,
             SR=harea_sel.price,
-            SL=SL_p,
+            SL=SL,
             RR=self.settings.getfloat('trade_bot', 'RR'),
             strat='counter',
             settingf=self.settingf)
 
         return t
-
 
     def run(self):
         '''
@@ -203,13 +218,17 @@ class TradeBot(object):
             c_candle = candle_list[0] # this is the current candle that
                                       # is being checked
 
+            if c_candle.time == datetime.datetime(2017, 1, 9, 22, 0):
+                pdb.set_trace()
+                print("h\n")
+
             #check if there is any HArea overlapping with c_candle
             HAreaSel = SRlst.onArea(candle=candle_list[0])
 
             if HAreaSel is not None:
                 c_candle.set_candle_features()
                 # guess the if trade is 'long' or 'short'
-                type = self.__get_trade_type(ic=c_candle, harea_sel=HAreaSel, delta=delta)
+                type, SL = self.__get_trade_type(ic=c_candle, delta=delta)
                 prepare_trade = False
                 if c_candle.indecision_c(ic_perc=self.settings.getint('general', 'ic_perc')) is True:
                     prepare_trade = True
@@ -220,10 +239,18 @@ class TradeBot(object):
 
                 if prepare_trade is True:
                     t = self.prepare_trade(type=type,
+                                           SL=SL,
                                            ic=c_candle,
                                            harea_sel=HAreaSel,
                                            delta=delta)
-                    t.run_trade(expires=1)
+                    # calculate t.entry-t.SL in number of pips
+                    # and discard if it is over threshold
+                    diff = abs(t.entry-t.SL)
+                    number_pips = float(calculate_pips(self.pair, diff))
+                    if number_pips > self.settings.getint('trade_bot', 'SL_width'):
+                        continue
+                    pdb.set_trace()
+                    t.run_trade(expires=2)
                     if t.entered is True:
                         tlist.append(t)
                         tend = t.end

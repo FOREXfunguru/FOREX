@@ -2,6 +2,7 @@ from __future__ import division
 
 import math
 import warnings
+import pdb
 from apis.oanda_api import OandaAPI
 from candle.candlelist import CandleList
 from harea.harea import HArea
@@ -56,7 +57,8 @@ class Trade(object):
                Optional
     '''
 
-    def __init__(self, strat, start, settingf=None, settings=None, entered=False, **kwargs):
+    def __init__(self, strat, start, type=None, settingf=None,
+                 settings=None, entered=False, **kwargs):
         self.__dict__.update(kwargs)
         if not hasattr(self, 'TP') and not hasattr(self, 'RR'):
             raise Exception("Neither the RR not "
@@ -78,6 +80,7 @@ class Trade(object):
         self.settingf = settingf
         self.settings = settings
         self.entered = entered
+        self.type = type
 
         # parse settings file (in .ini file)
         parser = ConfigParser()
@@ -176,6 +179,9 @@ class Trade(object):
                 entry_time = entry.get_cross_time(candle=cl)
                 if entry_time != 'n.a.':
                     print("\t[INFO] Trade entered")
+                    # modify self.start to the datetime
+                    # that Trade has actually entered
+                    self.start = d
                     self.entry_time = entry_time.isoformat()
                     self.entered = True
             if self.entered is True:

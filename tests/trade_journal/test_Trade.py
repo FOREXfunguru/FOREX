@@ -77,7 +77,9 @@ def test_run_trade(pair, start, type, SL, TP, entry, outcome):
     td.run_trade()
     assert td.outcome == outcome
 
-@pytest.mark.parametrize("pair,start,type,SL,TP,entry,entered", [('EUR/GBP','2016-10-05 22:00:00', 'short',0.8848,
+@pytest.mark.parametrize("pair,start,type,SL,TP,entry,entered", [('EUR/GBP', '2017-03-14 22:00:00', 'short', 0.87885,
+                                                                  0.8487, 0.86677, True),
+                                                                 ('EUR/GBP', '2016-10-05 22:00:00', 'short', 0.8848,
                                                                   0.86483, 0.87691, False),
                                                                  ('EUR/AUD', '2018-12-03 22:00:00', 'long', 1.53398,
                                                                  1.55752, 1.54334, True)])
@@ -98,5 +100,5 @@ def test_run_trade_wexpire(pair, start, type, SL, TP, entry, entered):
             settingf="../../data/settings.ini"
     )
 
-    td.run_trade(expires=1)
+    td.run_trade(expires=2)
     assert td.entered == entered

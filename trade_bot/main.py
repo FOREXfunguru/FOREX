@@ -31,8 +31,6 @@ def main():
                       settingf=args.settingf)
 
     td.write_tradelist(tl)
-    pdb.set_trace()
-    print("h\n")
 
 
 if __name__ == '__main__':

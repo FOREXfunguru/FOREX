@@ -146,6 +146,26 @@ def test_get_lowest(clO):
 
     assert clO.get_lowest() == 0.67047
 
+
+@pytest.mark.parametrize("start,"
+                         "end",
+                         [(datetime.datetime(2019, 7, 12, 22, 0), datetime.datetime(2019, 8, 6, 22, 0))])
+def test_calc_itrend(start, end, clean_tmp):
+    oanda = OandaAPI(instrument='AUD_USD',
+                     granularity='D',
+                     settingf='../../data/settings.ini')
+
+    oanda.run(start=start.isoformat(),
+              end=end.isoformat())
+
+    candle_list = oanda.fetch_candleset()
+    cl = CandleList(candle_list,
+                    instrument='AUD_USD',
+                    id='test_AUD_USD_clist',
+                    granularity='D',
+                    settingf='../../data/settings.ini')
+    cl.calc_itrend()
+
 """
 def test_check_if_divergence():
 

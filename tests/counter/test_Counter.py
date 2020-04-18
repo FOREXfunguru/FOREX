@@ -46,6 +46,38 @@ def clean_tmp():
     for f in files:
         os.remove(f)
 
+@pytest.mark.parametrize("start,"
+                         "SR,"
+                         "SL,"
+                         "TP,"
+                         "entry",
+                         [('2018-12-03 22:00:00', 1.54123, 1.53398, 1.55752, 1.54334)])
+def test_ctobject_notype(start, SR, SL, TP, entry, clean_tmp):
+    """
+    Check that Counter object without
+    a type defined is correctly instantiated
+    """
+    t = Trade(
+        id='test',
+        start=start,
+        pair='EUR_AUD',
+        timeframe='D',
+        SR=SR,
+        SL=SL,
+        TP=TP,
+        entry=entry,
+        strat='counter_b1',
+        settingf="../../data/settings.ini"
+    )
+
+    c = Counter(
+        trade=t,
+        period=1000,
+        settingf='../../data/settings.ini'
+    )
+
+    assert 0
+
 def test_clist_period(ct_object, clean_tmp):
     """
     Check that self.clist_period is correctly
