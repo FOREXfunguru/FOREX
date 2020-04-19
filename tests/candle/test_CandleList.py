@@ -148,9 +148,23 @@ def test_get_lowest(clO):
 
 
 @pytest.mark.parametrize("start,"
-                         "end",
-                         [(datetime.datetime(2019, 7, 12, 22, 0), datetime.datetime(2019, 8, 6, 22, 0))])
-def test_calc_itrend(start, end, clean_tmp):
+                         "end,"
+                         "t_type,"
+                         'itrend',
+                         [(datetime.datetime(2019, 7, 12, 22, 0),
+                           datetime.datetime(2019, 8, 6, 22, 0), 'long', datetime.datetime(2019, 7, 17, 21, 0)),
+                          (datetime.datetime(2017, 5, 7, 22, 0),
+                           datetime.datetime(2017, 12, 14, 22, 0), 'long', datetime.datetime(2017, 9, 7, 21, 0)),
+                          (datetime.datetime(2014, 1, 2, 22, 0),
+                           datetime.datetime(2015, 10, 1, 22, 0), 'long', datetime.datetime(2015, 5, 12, 21, 0)),
+                          (datetime.datetime(2012, 2, 29, 22, 0),
+                           datetime.datetime(2013, 8, 12, 22, 0), 'long', datetime.datetime(2013, 4, 10, 21, 0)),
+                          (datetime.datetime(2012, 2, 27, 22, 0),
+                           datetime.datetime(2012, 8, 20, 22, 0), 'short', datetime.datetime(2012, 6, 2, 21, 0)),
+                          (datetime.datetime(2015, 9, 7, 22, 0),
+                           datetime.datetime(2016, 4, 25, 22, 0), 'short', datetime.datetime(2016, 1, 17, 22, 0)),
+                         ])
+def test_calc_itrend(start, end, t_type, itrend, clean_tmp):
     oanda = OandaAPI(instrument='AUD_USD',
                      granularity='D',
                      settingf='../../data/settings.ini')
@@ -164,7 +178,7 @@ def test_calc_itrend(start, end, clean_tmp):
                     id='test_AUD_USD_clist',
                     granularity='D',
                     settingf='../../data/settings.ini')
-    cl.calc_itrend()
+    assert itrend == cl.calc_itrend(t_type=t_type)
 
 """
 def test_check_if_divergence():

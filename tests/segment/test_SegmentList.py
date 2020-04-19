@@ -25,10 +25,10 @@ def pl_object():
                     type='long',
                     settingf='../../data/settings.ini')
 
-    pl = cl.get_pivotlist()
+    pl = cl.get_pivotlist(th_bounces=cl.settings.getfloat('pivots',
+                                                          'th_bounces'))
 
     return pl
-
 
 def test_calc_diff(pl_object):
     """Function to test the 'calc_diff' function"""

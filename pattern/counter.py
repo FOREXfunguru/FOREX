@@ -100,6 +100,7 @@ class Counter(object):
             self.set_score_lasttime()
             self.set_score_pivot()
             self.set_score_pivot_lasttime()
+            self.set_trend_i()
 
     def __initclist(self):
         '''
@@ -195,7 +196,7 @@ class Counter(object):
                 # get new CandleList with new adjusted time for the end
                 newclist = pivots.clist.slice(start=pivots.clist.clist[0].time,
                                               end=adj_t)
-                newp = newclist.get_pivotlist().plist[-1]
+                newp = newclist.get_pivotlist(self.settings.getfloat('pivots', 'th_bounces')).plist[-1]
                 if self.settings.getboolean('counter', 'runmerge_pre') is True and newp.pre is not None:
                     newp.merge_pre(slist=pivots.slist)
                 if self.settings.getboolean('counter', 'runmerge_aft') is True and newp.aft is not None:
@@ -253,7 +254,7 @@ class Counter(object):
         in the area
         '''
         # get PivotList using self.clist_period
-        pivotlist = self.clist_period.get_pivotlist()
+        pivotlist = self.clist_period.get_pivotlist(self.settings.getfloat('pivots', 'th_bounces'))
         # get PivotList in area
         in_area_list = self.__inarea_pivots(pivotlist, last_pivot = self.settings.getboolean('pivots', 'last_pivot'))
 
@@ -292,6 +293,17 @@ class Counter(object):
             tot_score += p.score
 
         self.total_score = tot_score
+
+    def set_trend_i(self):
+        '''
+        Function to set the trend_i attribute
+
+        returns
+        -------
+        Nothing
+        '''
+
+        self.trend_i = self.clist_period.calc_itrend(t_type=self.trade.type)
 
     def set_score_pivot(self):
         '''

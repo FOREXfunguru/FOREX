@@ -574,11 +574,17 @@ class CandleList(object):
 
         return model, regression_model_mse
 
-    def get_pivotlist(self):
+    def get_pivotlist(self, th_bounces):
         '''
         Function to obtain a pivotlist object containing pivots identified using the
         Zigzag indicator.
         It will also generate a .png image of the identified pivots
+
+        Parameter
+        ---------
+        th_bounces: float
+                    Value used by ZigZag to identify pivots. The lower the
+                    value the higher the sensitivity.
 
         Return
         ------
@@ -595,8 +601,8 @@ class CandleList(object):
         xarr = np.array(x)
         yarr = np.array(values)
 
-        pivots = peak_valley_pivots(yarr, self.settings.getfloat('pivots', 'th_bounces'),
-                                    self.settings.getfloat('pivots', 'th_bounces')*-1)
+        pivots = peak_valley_pivots(yarr, th_bounces,
+                                    th_bounces*-1)
 
         pl = PivotList(parray=pivots,
                        clist=self,
@@ -780,7 +786,7 @@ class CandleList(object):
 
         return list_c
 
-    def calc_itrend(self, th_up=0.5, th_down=-0.5):
+    def calc_itrend(self, t_type):
         '''
         Function to calculate the datetime for the start of this CandleList, assuming that this
         CandleList is trending. This function will calculate the start of the trend by using the self.get_pivots
@@ -788,62 +794,27 @@ class CandleList(object):
 
         Parameters
         ----------
-        th_up: float
-               Up threshold for detecting peaks. Default: 0.5
-        th_down: float
-                 Down threshold for detecting valleys. Default: -0.5
-
+        t_type : str
+                 Trade type that is using this CandleList
+                 Possible values: 'short', 'long'
         Returns
         -------
-        Will return a datetime object
+        datetime object
         '''
 
-        plist = self.get_pivotlist()
-
-        arr = np.array(self.clist)
-        slist = plist.slist
-        diff_th = config.TREND['diff_th']
-        return_seen = False
-        ix = 0
-        for s in reversed(slist):
-            diff = abs(s.clist[-1].openAsk-s.clist[0].openAsk)
-            diff_pips = float(calculate_pips(self.instrument, diff))
-            ix -= 1
-            if self.type == "long":
-                if s.type == 1:
-                    if diff_pips > diff_th:
-                        break
-                    else:
-                        return_seen = True
-                        continue
-            elif self.type == "short":
-                if s.type == -1:
-                    if diff_pips > diff_th:
-                        break
-                    else:
-                        return_seen = True
-                        continue
-            if return_seen is True:
-                if self.type == "long":
-                    if s.type == -1:
-                        if diff_pips < diff_th:
-                            ix += 1
-                            break
-                        else:
-                            return_seen = False
-                elif self.type == "short":
-                    if s.type == 1:
-                        if diff_pips < diff_th:
-                            ix += 1
-                            break
-                        else:
-                            return_seen = False
-
-        bounces = arr[np.logical_or(plist.plist == 1, plist.plist == -1)]
-
-        init_dtime = bounces[ix].time
-
-        return init_dtime
+        plist = self.get_pivotlist(th_bounces=self.settings.getfloat('it_trend', 'th_bounces'))
+        init = None
+        for p in reversed(plist.plist):
+            if init is None:
+                init = True
+                continue
+            else:
+                if t_type == 'long':
+                    if p.type == 1:
+                        return p.candle.time
+                elif t_type == 'short':
+                    if p.type == -1:
+                        return p.candle.time
 
     def get_lasttime(self, hrarea):
         '''

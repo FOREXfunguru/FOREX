@@ -39,7 +39,7 @@ def clean_tmp():
 def test_get_pivotlist(cl_object):
     """Obtain a pivotlist"""
 
-    pl = cl_object.get_pivotlist()
+    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
 
     assert len(pl.plist) == 24
     assert pl.plist[10].candle.openAsk == 0.76752
@@ -47,7 +47,7 @@ def test_get_pivotlist(cl_object):
     assert len(pl.plist[10].aft.clist) == 24
 
 def test_print_pivots_dates(cl_object):
-    pl = cl_object.get_pivotlist()
+    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
 
     dtl = pl.print_pivots_dates()
 
@@ -56,7 +56,7 @@ def test_print_pivots_dates(cl_object):
 def test_fetch_by_type(cl_object):
     """Obtain a pivotlist of a certain type"""
 
-    pl = cl_object.get_pivotlist()
+    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
 
     newpl = pl.fetch_by_type(type=-1)
 
@@ -65,7 +65,7 @@ def test_fetch_by_type(cl_object):
 def test_fetch_by_time(cl_object):
     """Obtain a Pivot object by datetime"""
 
-    pl = cl_object.get_pivotlist()
+    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
 
     adt = datetime.datetime(2016, 1, 17, 22, 0)
 

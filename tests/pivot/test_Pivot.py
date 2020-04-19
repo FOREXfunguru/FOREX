@@ -42,7 +42,7 @@ def test_pre_aft_lens(cl_object, clean_tmp):
     correct number of candles
     '''
 
-    pl = cl_object.get_pivotlist()
+    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
 
     pivot = pl.plist[3]
 
@@ -55,7 +55,7 @@ def test_pre_aft_start(cl_object, clean_tmp):
     correct start Datetimes
     '''
 
-    pl = cl_object.get_pivotlist()
+    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
 
     pivot = pl.plist[3]
 
@@ -97,7 +97,7 @@ def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post, cle
                     id=id,
                     settingf='../../data/settings.ini')
 
-    pl = cl.get_pivotlist()
+    pl = cl.get_pivotlist(th_bounces=cl.settings.getfloat('pivots', 'th_bounces'))
 
     pivot = pl.plist[ix]
     # Check pivot.pre.start() before running 'merge_pre'
@@ -113,7 +113,7 @@ def test_merge_aft(cl_object, clean_tmp):
     '''
     Test function to merge 'aft' Segment
     '''
-    pl = cl_object.get_pivotlist()
+    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
 
     pivot = pl.plist[3]
 
@@ -131,7 +131,7 @@ def test_calc_score(cl_object, clean_tmp):
     '''
     Test function named 'calc_score'
     '''
-    pl = cl_object.get_pivotlist()
+    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
 
     pivot = pl.plist[3]
     score = pivot.calc_score()
@@ -166,7 +166,7 @@ def test_adjust_pivottime(ix, pair, timeframe, id, start, end, new_b, clean_tmp)
                     id=id,
                     settingf='../../data/settings.ini')
 
-    pl = cl.get_pivotlist()
+    pl = cl.get_pivotlist(th_bounces=cl.settings.getfloat('pivots', 'th_bounces'))
 
     p = pl.plist[ix]
     newt = p.adjust_pivottime(clistO=cl)

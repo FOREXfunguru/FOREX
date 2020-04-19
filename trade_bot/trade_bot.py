@@ -218,10 +218,6 @@ class TradeBot(object):
             c_candle = candle_list[0] # this is the current candle that
                                       # is being checked
 
-            if c_candle.time == datetime.datetime(2017, 1, 9, 22, 0):
-                pdb.set_trace()
-                print("h\n")
-
             #check if there is any HArea overlapping with c_candle
             HAreaSel = SRlst.onArea(candle=candle_list[0])
 
@@ -248,10 +244,12 @@ class TradeBot(object):
                     diff = abs(t.entry-t.SL)
                     number_pips = float(calculate_pips(self.pair, diff))
                     if number_pips > self.settings.getint('trade_bot', 'SL_width'):
+                        loop += 1
+                        startO = startO + delta
                         continue
-                    pdb.set_trace()
                     t.run_trade(expires=2)
                     if t.entered is True:
+                        pdb.set_trace()
                         tlist.append(t)
                         tend = t.end
             startO = startO+delta
