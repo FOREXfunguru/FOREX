@@ -10,6 +10,7 @@ from harea.harealist import HAreaList
 from utils import *
 import pdb
 import pandas as pd
+import pickle
 import datetime
 import re
 
@@ -234,11 +235,13 @@ class TradeBot(object):
                     prepare_trade =True
 
                 if prepare_trade is True:
-                    t = self.prepare_trade(type=type,
-                                           SL=SL,
-                                           ic=c_candle,
-                                           harea_sel=HAreaSel,
-                                           delta=delta)
+                    t = self.prepare_trade(
+                        type=type,
+                        SL=SL,
+                        ic=c_candle,
+                        harea_sel=HAreaSel,
+                        delta=delta)
+                    t.strat = 'counter'
                     # calculate t.entry-t.SL in number of pips
                     # and discard if it is over threshold
                     diff = abs(t.entry-t.SL)
@@ -249,7 +252,6 @@ class TradeBot(object):
                         continue
                     t.run_trade(expires=2)
                     if t.entered is True:
-                        pdb.set_trace()
                         tlist.append(t)
                         tend = t.end
             startO = startO+delta
@@ -259,6 +261,8 @@ class TradeBot(object):
         else:
             tl = TradeList(tlist=tlist,
                            settingf=self.settingf)
+            tl.analyze()
+            # analyse trades
             return tl
 
     def __calc_diff(self, df_loc, increment_price):
@@ -379,7 +383,9 @@ class TradeBot(object):
         '''
 
         # calculate price range for calculating S/R
-        ul, ll = self.get_max_min(adateObj)
+       # ul, ll = self.get_max_min(adateObj)
+        ul = 0.9961
+        ll = 0.6353
 
         if self.settings.getboolean('general', 'debug') is True:
             print("[DEBUG] Running calc_SR for estimated range: {0}-{1}".format(ll, ul))
@@ -441,6 +447,7 @@ class TradeBot(object):
                 'tot_score': tot_score}
 
         df = pd.DataFrame(data=data)
+
         ### establishing bounces threshold as the args.th quantile
         # selecting only rows with at least one pivot and tot_score>0,
         # so threshold selection considers only these rows

@@ -1,6 +1,8 @@
 from configparser import ConfigParser
 from pattern.counter import Counter
 
+import pdb
+
 class TradeList(object):
     '''
     Class that represents a list of Trade objects
@@ -35,7 +37,8 @@ class TradeList(object):
         trade_list=[]
         for t in self.tlist:
             if t.strat in strats:
-                t.run_trade()
+                if t.entered is False:
+                    t.run_trade()
                 c = Counter(trade=t,
                             settingf=self.settingf,
                             init_feats=True)
