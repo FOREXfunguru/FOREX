@@ -104,7 +104,9 @@ def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post, cle
     assert date_post == pivot.pre.start()
 
     # run 'merge_pre' function
-    pivot.merge_pre(slist=pl.slist)
+    pivot.merge_pre(slist=pl.slist,
+                    n_candles=cl.settings.getint('pivots', 'n_candles'),
+                    diff_th=cl.settings.getint('pivots', 'diff_th'))
 
     # Check pivot.pre.start() after running 'merge_pre'
     assert date_pre == pivot.pre.start()
@@ -121,7 +123,9 @@ def test_merge_aft(cl_object, clean_tmp):
     assert datetime.datetime(2015, 12, 2, 22, 0) == pivot.aft.end()
 
     # run 'merge_aft' function
-    pivot.merge_aft(slist=pl.slist)
+    pivot.merge_aft(slist=pl.slist,
+                    n_candles=cl.settings.getint('pivots', 'n_candles'),
+                    diff_th=cl.settings.getint('pivots', 'diff_th'))
 
     # Check pivot.aft.end() after running 'merge_aft'
 

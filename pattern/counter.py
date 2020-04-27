@@ -162,7 +162,7 @@ class Counter(object):
 
         Parameters
         ----------
-        pivots: PivotList will pivots
+        pivots: PivotList with pivots
         last_pivot: Boolean
                     If True, then the last pivot will be considered as it is part
                     of the setup. Default: True
@@ -198,9 +198,13 @@ class Counter(object):
                                               end=adj_t)
                 newp = newclist.get_pivotlist(self.settings.getfloat('pivots', 'th_bounces')).plist[-1]
                 if self.settings.getboolean('counter', 'runmerge_pre') is True and newp.pre is not None:
-                    newp.merge_pre(slist=pivots.slist)
+                    newp.merge_pre(slist=pivots.slist,
+                                   n_candles=self.settings.getint('pivots', 'n_candles'),
+                                   diff_th=self.settings.getint('pivots', 'diff_th'))
                 if self.settings.getboolean('counter', 'runmerge_aft') is True and newp.aft is not None:
-                    newp.merge_aft(slist=pivots.slist)
+                    newp.merge_aft(slist=pivots.slist,
+                                   n_candles=self.settings.getint('pivots', 'n_candles'),
+                                   diff_th=self.settings.getint('pivots', 'diff_th'))
                 pl.append(newp)
             else:
                 part_list = ['close{0}'.format(self.settings.get('general', 'bit'))]
@@ -226,11 +230,14 @@ class Counter(object):
                             if self.settings.getboolean('general', 'debug') is True:
                                 print("[DEBUG] Pivot {0} identified in area".format(p.candle.time))
                             if self.settings.getboolean('counter', 'runmerge_pre') is True and p.pre is not None:
-                                p.merge_pre(slist=pivots.slist)
+                                p.merge_pre(slist=pivots.slist,
+                                            n_candles=self.settings.getint('pivots', 'n_candles'),
+                                            diff_th=self.settings.getint('pivots', 'diff_th'))
                             if self.settings.getboolean('counter', 'runmerge_aft') is True and p.aft is not None:
-                                p.merge_aft(slist=pivots.slist)
+                                p.merge_aft(slist=pivots.slist,
+                                            n_candles=self.settings.getint('pivots', 'n_candles'),
+                                            diff_th=self.settings.getint('pivots', 'diff_th'))
                             pl.append(p)
-
 
         if self.settings.getboolean('general', 'debug') is True:
             print("[DEBUG] Done __inarea_pivots")

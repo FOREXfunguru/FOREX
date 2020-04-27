@@ -46,7 +46,7 @@ class Pivot(object):
         else:
             self.settings = settings
 
-    def merge_pre(self, slist):
+    def merge_pre(self, slist, n_candles, diff_th):
         """
         Function to merge 'pre' Segment. It will merge self.pre with previous segment
         if self.pre and previous segment are of the same type (1 or -1) or count of
@@ -57,6 +57,10 @@ class Pivot(object):
         slist : SegmentList object
                 SegmentList for PivotList of this Pivot.
                 Required
+        n_candles : int
+                    Skip merge if Segment is greater than 'n_candles'
+        diff_th : int
+                  % of diff in pips threshold
 
         Returns
         -------
@@ -89,14 +93,14 @@ class Pivot(object):
                 if self.settings.getboolean('general', 'debug') is True:
                     print("[DEBUG] Merge because of same Segment type")
                 self.pre = self.pre.prepend(s)
-            elif self.pre.type != s.type and s.count < self.settings.getint('pivots', 'n_candles'):
+            elif self.pre.type != s.type and s.count < n_candles:
                 # merge if types of previous (s) and self.pre are different but
                 # s.count is less than self.settings.getint('pivots', 'n_candles')
                 # calculate the % that s.diff is with respect to self.pre.diff
                 perc_diff = s.diff*100/self.pre.diff
                 # do not merge if perc_diff that s represents with respect
                 # to s.pre is > than the defined threshold
-                if perc_diff < self.settings.getint('pivots', 'diff_th'):
+                if perc_diff < diff_th:
                     if self.settings.getboolean('general', 'debug') is True:
                         print("[DEBUG] Merge because of s.count < n_candles")
                     self.pre = self.pre.prepend(s)
@@ -113,7 +117,7 @@ class Pivot(object):
             print("[DEBUG] self.pre start after-merge: {0}".format(self.pre.start()))
             print("[DEBUG] Done merge_pre")
 
-    def merge_aft(self, slist):
+    def merge_aft(self, slist, n_candles, diff_th):
         """
         Function to merge 'aft' Segment. It will merge self.aft with next segment
         if self.aft and next segment are of the same type (1 or -1) or count of
@@ -124,6 +128,10 @@ class Pivot(object):
         slist : SegmentList object
                 SegmentList for PivotList of this Pivot.
                 Required
+        n_candles : int
+                    Skip merge if Segment is greater than 'n_candles'
+        diff_th : int
+                  % of diff in pips threshold
 
         Returns
         -------
@@ -154,12 +162,12 @@ class Pivot(object):
                     print("[DEBUG] Merge because of same Segment type")
                 # merge
                 self.aft = self.aft.append(s)
-            elif self.aft.type != s.type and s.count < self.settings.getint('pivots', 'n_candles'):
+            elif self.aft.type != s.type and s.count < n_candles:
                 # calculate the % that s.diff is with respect to self.pre.diff
                 perc_diff = s.diff * 100 / self.aft.diff
                 # do not merge if perc_diff that s represents with respect
                 # to s.aft is > than the defined threshold
-                if perc_diff < self.settings.getint('pivots', 'diff_th'):
+                if perc_diff < diff_th:
                     if self.settings.getboolean('general', 'debug') is True:
                         print("[DEBUG] Merge because of s.count < n_candles")
                     self.aft = self.aft.append(s)

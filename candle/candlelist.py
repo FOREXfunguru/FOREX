@@ -608,17 +608,18 @@ class CandleList(object):
                        clist=self,
                        settingf=self.settingf)
 
-        outfile = "{0}/pivots/{1}.allpivots.png".format(self.settings.get('images', 'outdir'),
-                                                        self.id.replace(' ', '_'))
+        if self.settings.getboolean('pivots', 'plot') is True:
+            outfile = "{0}/pivots/{1}.allpivots.png".format(self.settings.get('images', 'outdir'),
+                                                            self.id.replace(' ', '_'))
 
-        figsize = literal_eval(self.settings.get('images', 'size'))
-        fig = plt.figure(figsize=figsize)
-        plt.plot(xarr, yarr, 'k:', alpha=0.5)
-        plt.plot(xarr[pivots != 0], yarr[pivots != 0], 'k-')
-        plt.scatter(xarr[pivots == 1], yarr[pivots == 1], color='g')
-        plt.scatter(xarr[pivots == -1], yarr[pivots == -1], color='r')
+            figsize = literal_eval(self.settings.get('images', 'size'))
+            fig = plt.figure(figsize=figsize)
+            plt.plot(xarr, yarr, 'k:', alpha=0.5)
+            plt.plot(xarr[pivots != 0], yarr[pivots != 0], 'k-')
+            plt.scatter(xarr[pivots == 1], yarr[pivots == 1], color='g')
+            plt.scatter(xarr[pivots == -1], yarr[pivots == -1], color='r')
 
-        fig.savefig(outfile, format='png')
+            fig.savefig(outfile, format='png')
 
         return pl
 
@@ -802,20 +803,31 @@ class CandleList(object):
         datetime object
         '''
 
-        plist = self.get_pivotlist(th_bounces=self.settings.getfloat('it_trend', 'th_bounces'))
+        pivots = self.get_pivotlist(th_bounces=self.settings.getfloat('it_trend', 'th_bounces'))
         init = None
-        for p in reversed(plist.plist):
+        for p in reversed(pivots.plist):
             if init is None:
                 init = True
                 continue
+            elif t_type == 'long' and p.type == -1:
+                continue
+            elif t_type == 'short' and p.type == 1:
+                continue
             else:
-                if t_type == 'long':
-                    if p.type == 1:
-                        return p.candle.time
-                elif t_type == 'short':
-                    if p.type == -1:
-                        return p.candle.time
-
+                return p.candle.time
+            #    pre_start = p.pre.start()
+            #    p.merge_pre(slist=pivots.slist,
+            #                n_candles=self.settings.getint('it_trend', 'n_candles'),
+            #                diff_th=self.settings.getint('it_trend', 'diff_th'))
+            #    if pre_start != p.pre.start():
+            #        return p.pre.start()
+            #    else:
+            #        if t_type == 'long' and p.type == -1:
+            #            continue
+            #        elif t_type == 'short' and p.type == 1:
+            #            continue
+            #        else:
+            #            return p.pre.end()
     def get_lasttime(self, hrarea):
         '''
         Function to get the datetime for last time that price has been above/below a HArea

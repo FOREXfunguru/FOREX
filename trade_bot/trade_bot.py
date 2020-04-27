@@ -13,6 +13,9 @@ import pandas as pd
 import pickle
 import datetime
 import re
+import logging
+
+
 
 class TradeBot(object):
     '''
@@ -383,10 +386,7 @@ class TradeBot(object):
         '''
 
         # calculate price range for calculating S/R
-       # ul, ll = self.get_max_min(adateObj)
-        ul = 0.9961
-        ll = 0.6353
-
+        ul, ll = self.get_max_min(adateObj)
         if self.settings.getboolean('general', 'debug') is True:
             print("[DEBUG] Running calc_SR for estimated range: {0}-{1}".format(ll, ul))
 
@@ -409,7 +409,7 @@ class TradeBot(object):
                 id='{0}.{1}.detect_sr.{2}'.format(self.pair, adateObj.isoformat(), round(p, 5)),
                 start=adateObj.strftime('%Y-%m-%d %H:%M:%S'),
                 pair=self.pair,
-                timeframe='D',
+                timeframe=self.timeframe,
                 type='short',
                 entry=entry,
                 SR=p,

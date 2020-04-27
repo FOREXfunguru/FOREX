@@ -2,6 +2,8 @@ from datetime import timedelta
 from apis.oanda_api import OandaAPI
 from configparser import ConfigParser
 
+import pdb
+
 class HArea(object):
     '''
     Class to represent a horizontal area in the chart
@@ -111,6 +113,7 @@ class HArea(object):
                  when there is an artefactual jump in Oanda's data
         '''
         if candle.lowAsk <= self.price <= candle.highAsk:
+
             delta = None
             if self.granularity == "D":
                 delta = timedelta(hours=24)
@@ -141,9 +144,14 @@ class HArea(object):
                       end=cend.isoformat())
 
             candle_list = oanda.fetch_candleset()
+            seen = False
             for c in candle_list:
                 if c.lowAsk <= self.price <= c.highAsk:
+                    seen = True
                     return c.time
+
+            if seen is False:
+                return 'n.a.'
         else:
             return 'n.a.'
 
