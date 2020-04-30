@@ -63,17 +63,18 @@ class HAreaList(object):
 
         Returns
         -------
-        Nothing
+        String with stringified HArea objects
         '''
-        print("#pair timeframe upper-price-lower no_pivots tot_score")
+        res ="#pair timeframe upper-price-lower no_pivots tot_score\n"
         for harea in self.halist:
-            print("{0} {1} {2}-{3}-{4} {5} {6}".format(harea.instrument,
-                                                       harea.granularity,
-                                                       harea.upper,
-                                                       harea.price,
-                                                       harea.lower,
-                                                       harea.no_pivots,
-                                                       harea.tot_score))
+            res += "{0} {1} {2}-{3}-{4} {5} {6}\n".format(harea.instrument,
+                                                          harea.granularity,
+                                                          harea.upper,
+                                                          harea.price,
+                                                          harea.lower,
+                                                          harea.no_pivots,
+                                                          harea.tot_score)
+        return res.rstrip("\n")
 
     def __repr__(self):
         return "HAreaList"

@@ -1,5 +1,6 @@
 import matplotlib
 import pdb
+import logging
 
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
@@ -12,6 +13,10 @@ from pivot.pivotlist import *
 from configparser import ConfigParser
 from utils import periodToDelta, substract_pips2price, add_pips2price
 
+logging.basicConfig(level=logging.WARNING)
+
+# create logger
+c_logger = logging.getLogger(__name__)
 
 class Counter(object):
     '''
@@ -58,6 +63,8 @@ class Counter(object):
                      Sum of each pivot score for all pivots after lasttime (bounces_lasttime class attr)
     settingf : str, Optional
                Path to *.ini file with settings
+    settings : ConfigParser object generated using 'settingf'
+               Optional
     '''
 
     def __init__(self, trade, settingf=None, settings=None, init_feats=False, **kwargs):
@@ -109,7 +116,6 @@ class Counter(object):
 
         This will set the self.clist_period class attribute
         '''
-
         delta_period = periodToDelta(self.settings.getint('counter', 'period'),
                                      self.trade.timeframe)
         delta_1 = periodToDelta(1, self.trade.timeframe)
@@ -119,7 +125,8 @@ class Counter(object):
         oanda = OandaAPI(url=self.settings.get('oanda_api', 'url'),
                          instrument=self.trade.pair,
                          granularity=self.trade.timeframe,
-                         settingf=self.settingf)
+                         settingf=self.settingf,
+                         settings=self.settings)
 
         oanda.run(start=start.isoformat(),
                   end=end.isoformat())
@@ -128,6 +135,7 @@ class Counter(object):
 
         cl = CandleList(candle_list,
                         settingf=self.settingf,
+                        settings=self.settings,
                         instrument=self.trade.pair,
                         granularity=self.trade.timeframe,
                         id=self.trade.id,
@@ -172,8 +180,7 @@ class Counter(object):
         PivotList with pivots that are in the area
         '''
 
-        if self.settings.getboolean('general', 'debug') is True:
-            print("[DEBUG] Running __inarea_pivots")
+        c_logger.info("Running __inarea_pivots")
 
         # get bounces in the horizontal SR area
         lower = substract_pips2price(self.trade.pair,
@@ -185,8 +192,7 @@ class Counter(object):
                                self.settings.getint('pivots',
                                                     'hr_pips'))
 
-        if self.settings.getboolean('general', 'debug') is True:
-            print("[DEBUG] SR U-limit: {0}; L-limit: {1}".format(round(upper, 4), round(lower, 4)))
+        c_logger.info("SR U-limit: {0}; L-limit: {1}".format(round(upper, 4), round(lower, 4)))
 
         pl = []
         for p in pivots.plist:
@@ -227,8 +233,7 @@ class Counter(object):
                                 p_seen = True
 
                         if p_seen is False:
-                            if self.settings.getboolean('general', 'debug') is True:
-                                print("[DEBUG] Pivot {0} identified in area".format(p.candle.time))
+                            c_logger.info("Pivot {0} identified in area".format(p.candle.time))
                             if self.settings.getboolean('counter', 'runmerge_pre') is True and p.pre is not None:
                                 p.merge_pre(slist=pivots.slist,
                                             n_candles=self.settings.getint('pivots', 'n_candles'),
@@ -239,8 +244,7 @@ class Counter(object):
                                             diff_th=self.settings.getint('pivots', 'diff_th'))
                             pl.append(p)
 
-        if self.settings.getboolean('general', 'debug') is True:
-            print("[DEBUG] Done __inarea_pivots")
+        c_logger.info("Done __inarea_pivots")
 
         return PivotList(plist=pl,
                          clist=pivots.clist,

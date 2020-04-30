@@ -140,7 +140,7 @@ def test_calc_score(cl_object, clean_tmp):
     pivot = pl.plist[3]
     score = pivot.calc_score()
 
-    assert score == 39
+    assert score == 623.3
 
 @pytest.mark.parametrize("ix,"
                          "pair,"

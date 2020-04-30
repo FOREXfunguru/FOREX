@@ -3,11 +3,17 @@ from __future__ import division
 import math
 import warnings
 import pdb
+import logging
+
 from apis.oanda_api import OandaAPI
 from candle.candlelist import CandleList
 from harea.harea import HArea
 from utils import *
 from configparser import ConfigParser
+
+# create logger
+t_logger = logging.getLogger(__name__)
+t_logger.setLevel(logging.INFO)
 
 class Trade(object):
     '''
@@ -126,7 +132,8 @@ class Trade(object):
         Run the trade until conclusion from a start date
         '''
 
-        print("[INFO] Run run_trade with id: {0}".format(self.id))
+        t_logger.info("Run run_trade with id: {0}".format(self.id))
+
         entry = HArea(price=self.entry,
                       instrument=self.pair,
                       pips=self.settings.getint('trade', 'hr_pips'),
@@ -178,7 +185,7 @@ class Trade(object):
             if self.entered is False:
                 entry_time = entry.get_cross_time(candle=cl)
                 if entry_time != 'n.a.':
-                    print("\t[INFO] Trade entered")
+                    t_logger.info("Trade entered")
                     # modify self.start to the datetime
                     # that Trade has actually entered
                     self.start = d
@@ -190,12 +197,12 @@ class Trade(object):
                     self.outcome = 'failure'
                     self.end = failure_time
                     self.pips = float(calculate_pips(self.pair,abs(self.SL-self.entry)))*-1
-                    print("\t[INFO] S/L was hit")
+                    t_logger.info("S/L was hit")
                     break
                 success_time = TP.get_cross_time(candle=cl)
                 if success_time is not None and success_time !='n.a.':
                     self.outcome = 'success'
-                    print("\t[INFO] T/P was hit")
+                    t_logger.info("T/P was hit")
                     self.end = success_time
                     self.pips = float(calculate_pips(self.pair,
                                                      abs(self.TP - self.entry)))
@@ -203,11 +210,11 @@ class Trade(object):
         try:
             assert getattr(self, 'outcome')
         except:
-            warnings.warn("\tNo outcome could be calculated")
+            t_logger.warnings("No outcome could be calculated")
             self.outcome = "n.a."
             self.pips = 0
 
-        print("\t[INFO] Done run_trade")
+        t_logger.info("Done run_trade")
 
     def __str__(self):
         sb = []

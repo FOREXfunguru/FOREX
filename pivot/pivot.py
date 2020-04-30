@@ -1,7 +1,12 @@
 import warnings
+import logging
 from utils import *
 from segment.segment import Segment
 from configparser import ConfigParser
+
+# create logger
+p_logger = logging.getLogger(__name__)
+p_logger.setLevel(logging.INFO)
 
 
 class Pivot(object):
@@ -66,10 +71,10 @@ class Pivot(object):
         -------
         Nothing
         """
-        if self.settings.getboolean('general', 'debug') is True:
-            print("[DEBUG] Running merge_pre")
-            print("[DEBUG] Analysis of pivot {0}\n"
-                  "[DEBUG] self.pre start pre-merge: {1}".format(self.candle.time, self.pre.start()))
+
+        p_logger.debug("Running merge_pre")
+        p_logger.debug("Analysis of pivot {0}".format(self.candle.time))
+        p_logger.debug("self.pre start pre-merge: {0}".format(self.pre.start()))
 
         extension_needed = True # if extension_needed is False then no further attempts of extending this self.pre
                                 # will be tried
@@ -90,8 +95,7 @@ class Pivot(object):
                 continue
             if self.pre.type == s.type:
                 # merge if type of previous (s) is equal to self.pre
-                if self.settings.getboolean('general', 'debug') is True:
-                    print("[DEBUG] Merge because of same Segment type")
+                p_logger.debug("Merge because of same Segment type")
                 self.pre = self.pre.prepend(s)
             elif self.pre.type != s.type and s.count < n_candles:
                 # merge if types of previous (s) and self.pre are different but
@@ -101,21 +105,18 @@ class Pivot(object):
                 # do not merge if perc_diff that s represents with respect
                 # to s.pre is > than the defined threshold
                 if perc_diff < diff_th:
-                    if self.settings.getboolean('general', 'debug') is True:
-                        print("[DEBUG] Merge because of s.count < n_candles")
+                    p_logger.debug("Merge because of s.count < n_candles")
                     self.pre = self.pre.prepend(s)
                 else:
-                    if self.settings.getboolean('general', 'debug') is True:
-                        print("[DEBUG] Skipping merge because of %_diff")
+                    p_logger.debug("Skipping merge because of %_diff")
                     extension_needed = False
             else:
                 # exit the while loop, as type of previous (s) and self.pre are different
                 # and s.count is greater than self.settings.getint('pivots', 'n_candles')
                 extension_needed = False
 
-        if self.settings.getboolean('general', 'debug') is True:
-            print("[DEBUG] self.pre start after-merge: {0}".format(self.pre.start()))
-            print("[DEBUG] Done merge_pre")
+        p_logger.debug("self.pre start after-merge: {0}".format(self.pre.start()))
+        p_logger.debug("Done merge_pre")
 
     def merge_aft(self, slist, n_candles, diff_th):
         """
@@ -137,10 +138,10 @@ class Pivot(object):
         -------
         Nothing
         """
-        if self.settings.getboolean('general', 'debug') is True:
-            print("[DEBUG] Running merge_aft")
-            print("[DEBUG] Analysis of pivot {0}".format(self.candle.time))
-            print("[DEBUG] self.aft end before the merge: {0}".format(self.aft.end()))
+
+        p_logger.debug("Running merge_aft")
+        p_logger.debug("Analysis of pivot {0}".format(self.candle.time))
+        p_logger.debug("self.aft end before the merge: {0}".format(self.aft.end()))
 
         extension_needed = True
         while extension_needed is True:
@@ -158,8 +159,7 @@ class Pivot(object):
                 continue
 
             if self.aft.type == s.type:
-                if self.settings.getboolean('general', 'debug') is True:
-                    print("[DEBUG] Merge because of same Segment type")
+                p_logger.debug("Merge because of same Segment type")
                 # merge
                 self.aft = self.aft.append(s)
             elif self.aft.type != s.type and s.count < n_candles:
@@ -168,37 +168,50 @@ class Pivot(object):
                 # do not merge if perc_diff that s represents with respect
                 # to s.aft is > than the defined threshold
                 if perc_diff < diff_th:
-                    if self.settings.getboolean('general', 'debug') is True:
-                        print("[DEBUG] Merge because of s.count < n_candles")
+                    p_logger.debug("Merge because of s.count < n_candles")
                     self.aft = self.aft.append(s)
                 else:
-                    if self.settings.getboolean('general', 'debug') is True:
-                        print("[DEBUG] Skipping merge because of %_diff")
+                    p_logger.debug("Skipping merge because of %_diff")
                     extension_needed = False
             else:
                 extension_needed = False
 
-        if self.settings.getboolean('general', 'debug') is True:
-            print("[DEBUG] self.aft end after-merge: {0}".format(self.aft.end()))
-            print("[DEBUG] Done merge_aft")
+        p_logger.debug("self.aft end after-merge: {0}".format(self.aft.end()))
+        p_logger.debug("Done merge_aft")
 
-    def calc_score(self):
+    def calc_score(self, type='diff'):
         """
         Function to calculate the score for this Pivot
         The score will be the result of adding the number
         of candles of the 'pre' and 'aft' segments (if defined)
+
+        Parameters
+        ----------
+        type : Type of score that will be
+               calculated. Possible values: 'diff' , 'candles'
+               Default: 'diff'
 
         Returns
         -------
         int  with the score of this pivot.
              It will also set the score class attribute
         """
-        if self.pre :
-            score_pre = len(self.pre.clist)
+
+        if self.pre:
+            score_pre = 0
+            if type == 'diff':
+                score_pre = self.pre.diff
+            elif type == 'candles':
+                score_pre = len(self.pre.clist)
         else:
             score_pre = 0
+
         if self.aft:
-            score_aft = len(self.aft.clist)
+            score_aft = 0
+            if type == 'diff':
+                score_aft = self.aft.diff
+            elif type == 'candles':
+                score_aft = len(self.aft.clist)
         else:
             score_aft = 0
 

@@ -12,9 +12,14 @@ import pandas as pd
 import datetime
 import time
 import utils
+import logging
+
 from configparser import ConfigParser
 from candle.candle import BidAskCandle
 
+# create logger
+o_logger = logging.getLogger(__name__)
+o_logger.setLevel(logging.INFO)
 
 class OandaAPI(object):
     """
@@ -225,8 +230,8 @@ class OandaAPI(object):
         start_hist_dtObj = utils.try_parsing_date(self.settings.get('pairs_start', self.instrument))
         if dateObj < start_hist_dtObj:
             rolledateObj = start_hist_dtObj
-            print("Date precedes the start of the historical record.\n"
-                  "Time was rolled from {0} to {1}".format(dateObj, rolledateObj))
+            o_logger.debug("Date precedes the start of the historical record.\n"
+                           "Time was rolled from {0} to {1}".format(dateObj, rolledateObj))
             return rolledateObj
 
         delta = None
@@ -263,7 +268,7 @@ class OandaAPI(object):
                                 params=params)
             resp_code = resp.status_code
 
-        print("Time was rolled from {0} to {1}".format(dateObj, startObj))
+        o_logger.debug("Time was rolled from {0} to {1}".format(dateObj, startObj))
         return startObj
 
     def __validate_end(self, endObj):

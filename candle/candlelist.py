@@ -25,8 +25,10 @@ class CandleList(object):
     ---------------
     clist : list, Required
             List of Candle objects
-    settingf : str, Required
+    settingf : str, Optional
                Path to *.ini file with settings
+    settings : ConfigParser object generated using 'settingf'
+               Optional
     instrument : str, Optional
                  Instrument for this CandleList (i.e. AUD_USD or EUR_USD etc...)
     granularity : str, Optional
@@ -51,17 +53,21 @@ class CandleList(object):
          Identifier for this CandleList (i.e. EUR_GBP 15MAY2007D)
     '''
 
-    def __init__(self, clist, settingf, instrument=None, granularity=None,
+    def __init__(self, clist, settingf=None, settings=None,
+                 instrument=None, granularity=None,
                  type=None, seq=None, number_of_0s=None,
                  longest_stretch=None, highlow_double0s=None,
                  openclose_double0s=None, entropy=None, id=None):
         self.clist = clist
         self.settingf = settingf
+        if self.settingf is not None:
+            # parse settings file (in .ini file)
+            parser = ConfigParser()
+            parser.read(settingf)
+            self.settings = parser
+        else:
+            self.settings = settings
 
-        # parse settings file (in .ini file)
-        parser = ConfigParser()
-        parser.read(settingf)
-        self.settings = parser
         # set type if not defined depending on
         # the price diff betweeen clist[0] and clist[-1]
         if type is None:
@@ -374,7 +380,8 @@ class CandleList(object):
         #fetch candle set from start_calc_time
         oanda = OandaAPI(instrument=self.instrument,
                          granularity=self.granularity,
-                         settingf=self.settingf)
+                         settingf=self.settingf,
+                         settings=self.settings)
         '''
         Get candlelist from start_calc_time to (start_time-1)
         This 2-step API call is necessary in order to avoid
@@ -606,7 +613,8 @@ class CandleList(object):
 
         pl = PivotList(parray=pivots,
                        clist=self,
-                       settingf=self.settingf)
+                       settingf=self.settingf,
+                       settings=self.settings)
 
         if self.settings.getboolean('pivots', 'plot') is True:
             outfile = "{0}/pivots/{1}.allpivots.png".format(self.settings.get('images', 'outdir'),

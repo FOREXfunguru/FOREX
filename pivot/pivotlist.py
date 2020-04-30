@@ -20,7 +20,7 @@ class PivotList(object):
     slist : SegmentList object, Optional
     settingf : str, Optional
                Path to *.ini file with settings
-    settings : ConfigParser object generated using 'settingf'
+    settings : ConfigParser object generated using 'settingf', Optional
     '''
 
     def __init__(self, clist, parray=None, plist=None,
@@ -66,13 +66,15 @@ class PivotList(object):
                                 count=end_ix-start_ix,
                                 clist=clist.clist[start_ix:end_ix],
                                 instrument=clist.instrument,
-                                settingf=self.settingf)
+                                settingf=self.settingf,
+                                settings=self.settings)
                     # create Pivot object
                     pobj = Pivot(type=pre_i,
                                  candle=clist.clist[start_ix],
                                  pre=pre_s,
                                  aft=s,
-                                 settingf=self.settingf)
+                                 settingf=self.settingf,
+                                 settings=self.settings)
                     # Append it to list
                     plist_o.append(pobj)
                     # Append it to segs
@@ -86,12 +88,14 @@ class PivotList(object):
                                  candle=clist.clist[start_ix],
                                  pre=pre_s,
                                  aft=None,
-                                 settingf=self.settingf))
+                                 settingf=self.settingf,
+                                 settings=self.settings))
             self.plist = plist_o
 
             self.slist = SegmentList(slist=segs,
                                      instrument=plist_o[0].candle.instrument,
-                                     settingf=self.settingf)
+                                     settingf=self.settingf,
+                                     settings=self.settings)
         else:
             self.plist = plist
             self.slist = slist
@@ -139,7 +143,8 @@ class PivotList(object):
         return PivotList(plist=pl,
                          clist=self.clist,
                          slist=self.slist,
-                         settingf=self.settingf)
+                         settingf=self.settingf,
+                         settings=self.settings)
 
     def print_pivots_dates(self):
         '''

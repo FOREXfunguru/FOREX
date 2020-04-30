@@ -15,7 +15,9 @@ import datetime
 import re
 import logging
 
-
+# create logger
+tb_logger = logging.getLogger(__name__)
+tb_logger.setLevel(logging.INFO)
 
 class TradeBot(object):
     '''
@@ -171,6 +173,9 @@ class TradeBot(object):
         TradeList object with Trades taken. None if no trades
         were taken
         '''
+
+        tb_logger.info("Runnning...")
+
         oanda = OandaAPI(instrument=self.pair,
                          granularity=self.timeframe,
                          settingf=self.settingf)
@@ -201,19 +206,19 @@ class TradeBot(object):
                     continue
                 else:
                     tend = None
-            if self.settings.getboolean('general', 'debug') is True:
-                print("[DEBUG] Trade bot - analyzing candle:{0}".format(startO.isoformat()))
+            tb_logger.info("Trade bot - analyzing candle: {0}".format(startO.isoformat()))
+
             if loop == 0:
                 SRlst = self.calc_SR(adateObj=startO)
-                if self.settings.getboolean('general', 'debug') is True:
-                    print("[DEBUG] Identified HAreaList for time {0}:".format(startO.isoformat()))
-                    SRlst.print()
+                res = SRlst.print()
+                tb_logger.info("Identified HAreaList for time {0}:".format(startO.isoformat()))
+                tb_logger.info("{0}".format(res))
             elif loop == self.settings.getint('trade_bot',
                                               'period'):
                 SRlst = self.calc_SR(adateObj=startO)
-                if self.settings.getboolean('general', 'debug') is True:
-                    print("[DEBUG] Identified HAreaList for time {0}:".format(startO.isoformat()))
-                    SRlst.print()
+                res = SRlst.print()
+                tb_logger.info("Identified HAreaList for time {0}:".format(startO.isoformat()))
+                tb_logger.info("{0}".format(res))
                 loop = 0
             oanda.run(start=startO.isoformat(),
                       count=1)
@@ -259,6 +264,9 @@ class TradeBot(object):
                         tend = t.end
             startO = startO+delta
             loop += 1
+
+        tb_logger.info("Run done")
+
         if len(tlist) == 0:
             return None
         else:
@@ -277,12 +285,14 @@ class TradeBot(object):
         ----------
         df_loc : Pandas dataframe with S/R areas
         increment_price : float
+                          This is the increment_price
+                          between different price levels
+                          in order to identify S/Rs
 
         Returns
         -------
         Pandas dataframe with selected S/R
         '''
-
         prev_price = None
         prev_row = None
         prev_ix = None
@@ -387,8 +397,7 @@ class TradeBot(object):
 
         # calculate price range for calculating S/R
         ul, ll = self.get_max_min(adateObj)
-        if self.settings.getboolean('general', 'debug') is True:
-            print("[DEBUG] Running calc_SR for estimated range: {0}-{1}".format(ll, ul))
+        tb_logger.info("Running calc_SR for estimated range: {0}-{1}".format(ll, ul))
 
         prices = []
         bounces = []  # contains the number of pivots per price level
@@ -398,8 +407,7 @@ class TradeBot(object):
         prev_p = None
         p = float(ll)
         while p <= float(ul):
-            if self.settings.getboolean('general', 'debug') is True:
-                print("Processing S/R at {0}".format(round(p, 4)))
+            tb_logger.debug("Processing S/R at {0}".format(round(p, 4)))
             # each of 'p' will become a S/R that will be tested for bounces
             # set entry to price+30pips
             entry = add_pips2price(self.pair, p, 30)
@@ -418,10 +426,14 @@ class TradeBot(object):
                 strat='counter_b1',
                 settingf=self.settingf)
 
+            # reduce period that Counter uses so the S/R
+            # are calculated with the most recent pivots
+            self.settings.set('counter', 'period', '1000')
+
             c = Counter(
                 trade=t,
                 init_feats=True,
-                settingf=self.settingf
+                settings=self.settings
             )
 
             if len(c.pivots.plist) == 0:
@@ -433,7 +445,10 @@ class TradeBot(object):
             bounces.append(len(c.pivots.plist))
             tot_score.append(c.total_score)
             score_per_bounce.append(mean_pivot)
-            # increment price to following price
+            # increment price to following price.
+            # Because the increment is made in pips
+            # it does not suffer of the JPY pairs
+            # issue
             p = add_pips2price(self.pair, p, 60)
             if prev_p is None:
                 prev_p = p
@@ -456,9 +471,9 @@ class TradeBot(object):
         dfgt2 = df.loc[(df['tot_score'] > 0)]
         bounce_th = dfgt1.bounces.quantile(self.settings.getfloat('trade_bot', 'th'))
         score_th = dfgt2.tot_score.quantile(self.settings.getfloat('trade_bot', 'th'))
-        if self.settings.getboolean('general', 'debug') is True:
-            print("[DEBUG] Selected number of pivot threshold: {0}".format(bounce_th))
-            print("[DEBUG] Selected tot score threshold: {0}".format(score_th))
+
+        print("Selected number of pivot threshold: {0}".format(bounce_th))
+        print("Selected tot score threshold: {0}".format(score_th))
 
         # selecting records over threshold
         dfsel = df.loc[(df['bounces'] > bounce_th) | (df['tot_score'] > score_th)]
@@ -476,7 +491,7 @@ class TradeBot(object):
         halist = []
         for index, row in dfsel.iterrows():
             resist = HArea(price=row['price'],
-                           pips=30,
+                           pips=self.settings.getint('pivots', 'hr_pips'),
                            instrument=self.pair,
                            granularity=self.timeframe,
                            no_pivots=row['bounces'],
@@ -488,6 +503,8 @@ class TradeBot(object):
             halist=halist,
             settingf="data/settings.ini"
         )
+
+        tb_logger.info("Run done")
 
         return halist
 
