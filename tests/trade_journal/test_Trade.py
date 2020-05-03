@@ -103,3 +103,49 @@ def test_run_trade_wexpire(pair, start, type, SL, TP, entry, entered):
 
     td.run_trade(expires=2)
     assert td.entered == entered
+
+@pytest.mark.parametrize("pair,start,type,SL,TP,entry,entered", [('EUR/GBP', '2020-04-21 17:00:00', 'long', 0.88209,
+                                                                  0.89279, 0.88636, False)])
+def test_run_trade_wexpire_4hrs(pair, start, type, SL, TP, entry, entered):
+    '''
+    This test checks the run_trade method with the 'expires' parameter
+    '''
+    td = Trade(
+            start=start,
+            entry=entry,
+            SL=SL,
+            TP=TP,
+            pair=pair,
+            type=type,
+            timeframe="H4",
+            strat="counter_b2",
+            id="test",
+            settingf="../../data/settings.ini"
+    )
+
+    td.run_trade(expires=2)
+    assert td.entered == entered
+
+@pytest.mark.parametrize("pair,start,type,SL,TP,entry,outcome", [('EUR/GBP', '2019-05-06 01:00:00', 'long', 0.84881,
+                                                                  0.85682, 0.85121, 'success'),
+                                                                 ('EUR/GBP', '2020-03-25 13:00:00', 'long', 0.90494,
+                                                                  0.93197, 0.91553, 'failure')])
+def test_run_trade_4hrs(pair, start, type, SL, TP, entry, outcome):
+    '''
+    This test checks the run_trade method with the 'expires' parameter
+    '''
+    td = Trade(
+            start=start,
+            entry=entry,
+            SL=SL,
+            TP=TP,
+            pair=pair,
+            type=type,
+            timeframe="H4",
+            strat="counter_b2",
+            id="test",
+            settingf="../../data/settings.ini"
+    )
+
+    td.run_trade()
+    assert td.outcome == outcome

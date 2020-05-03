@@ -89,9 +89,13 @@ class Trade(object):
         self.type = type
 
         # parse settings file (in .ini file)
-        parser = ConfigParser()
-        parser.read(settingf)
-        self.settings = parser
+        if self.settingf is not None:
+            # parse settings file (in .ini file)
+            parser = ConfigParser()
+            parser.read(settingf)
+            self.settings = parser
+        else:
+            self.settings = settings
 
     def fetch_candlelist(self):
         '''

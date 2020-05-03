@@ -176,3 +176,32 @@ def pairwise(iterable):
     a = iter(iterable)
     return zip(a, a)
 
+def correct_timeframe(settings, timeframe):
+    """
+    This utility function is used for correcting
+    all the pips-related settings depending
+    on the selected timeframe
+
+    Parameters
+    ----------
+    settings: ConfigParser object
+    timeframe : D,H12,H8,4
+
+    Returns
+    -------
+    settings : ConfigParser object timeframe corrected
+    """
+    timeframe = int(timeframe.replace('H', ''))
+    ratio = round(timeframe/24, 2)
+
+    p = re.compile('.*pips')
+
+    for section_name in settings.sections():
+        for key, value in settings.items(section_name):
+            if section_name == 'trade' and key == 'hr_pips':
+                continue
+            if p.match(key):
+                new_pips = int(round(ratio*int(value), 0))
+                settings.set(section_name, key, str(new_pips))
+
+    return settings

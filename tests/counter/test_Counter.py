@@ -4,7 +4,10 @@ import pytest
 import datetime
 import glob
 import os
+import pdb
+
 from trade_journal.trade import Trade
+from configparser import ConfigParser
 
 
 @pytest.fixture
@@ -37,6 +40,17 @@ def ct_object():
         settingf='../../data/settings.ini'
     )
     return c
+
+@pytest.fixture
+def settings_obj():
+    """
+    This fixture returns a ConfigParser
+    object with settings
+    """
+    parser = ConfigParser()
+    parser.read("../../data/settings.ini")
+
+    return parser
 
 @pytest.fixture
 def clean_tmp():
@@ -130,7 +144,6 @@ def test_set_lasttime(start, type, SR, SL, TP, entry, lasttime, clean_tmp):
     c.set_lasttime()
     assert c.lasttime == lasttime
 
-
 @pytest.mark.parametrize("pair,"
                          "timeframe,"
                          "id,"
@@ -209,6 +222,52 @@ def test_set_pivots(pair, id, timeframe, start, type, SR, SL, TP, entry, dates, 
                          "SL,"
                          "TP,"
                          "entry,"
+                         "len",
+                         [('EUR_GBP', 'H4', 'EUR_GBP 19FEB2020H4', '2020-02-19 06:00:00', 'long', 0.82920, 0.82793, 0.83801,
+                             0.83196, 2),
+                          ('EUR_GBP', 'H4', 'EUR_GBP 06MAY2019H4', '2019-05-06 01:00:00', 'long', 0.85036, 0.84874, 0.85763,
+                             0.85109, 2),
+                          ('EUR_GBP', 'H4', 'EUR_GBP 07FEB2018H4', '2018-02-07 14:00:00', 'short', 0.89099, 0.89115, 0.87867,
+                             0.88621, 8)])
+def test_set_pivots_4h(pair, timeframe, id, start, type, SR, SL, TP, entry, len, settings_obj, clean_tmp):
+    """
+    Check that self.pivots class attribute is correctly set using a H4 timeframe
+    """
+
+    settings_obj.set('pivots', 'th_bounces', '0.01')
+
+    t = Trade(
+        id=id,
+        start=start,
+        pair=pair,
+        timeframe=timeframe,
+        type=type,
+        SR=SR,
+        SL=SL,
+        TP=TP,
+        entry=entry,
+        strat='counter_b1',
+        settings=settings_obj
+    )
+
+    c = Counter(
+        trade=t,
+        settings=settings_obj
+    )
+    pdb.set_trace()
+    c.set_pivots()
+
+    assert 0
+
+@pytest.mark.parametrize("pair,"
+                         "timeframe,"
+                         "id,"
+                         "start,"
+                         "type,"
+                         "SR,"
+                         "SL,"
+                         "TP,"
+                         "entry,"
                          "trend_i",
                          [('EUR_GBP', 'D', 'EUR_GBP 23FEB2007D', '2007-02-22 22:00:00', 'short', 0.6713, 0.6758, 0.6615,
                            0.67009, datetime.datetime(2007, 1, 21, 22, 0)),
@@ -254,6 +313,61 @@ def test_set_trend_i(pair, id, timeframe, start, type, SR, SL, TP, entry, trend_
 
     c.set_trend_i()
     assert trend_i == c.trend_i
+
+@pytest.mark.parametrize("pair,"
+                         "timeframe,"
+                         "id,"
+                         "start,"
+                         "type,"
+                         "SR,"
+                         "SL,"
+                         "TP,"
+                         "entry,"
+                         "avalue",
+                         [('EUR_GBP', 'D', 'EUR_GBP 23FEB2007D', '2007-02-22 22:00:00', 'short', 0.6713, 0.6758, 0.6615,
+                           0.67009, 66.0),
+                          ('EUR_GBP', 'D', 'EUR_GBP 04JUN2004D', '2004-06-03 22:00:00', 'long', 0.66379, 0.66229, 0.67418,
+                           0.66704, 39.31),
+                          ('EUR_JPY', 'D', 'EUR_JPY 04MAY2016D', '2016-05-03 22:00:00', 'long', 122.173, 121.57,
+                           125.138, 123.021, 33.09),
+                          ('EUR_JPY', 'D', 'EUR_JPY 03MAR2016D', '2016-03-02 22:00:00', 'long', 122.173, 121.901,
+                           127.667, 121.901, 22.86),
+                          ('EUR_JPY', 'D', 'EUR_JPY 27OCT2009D', '2009-10-26 22:00:00', 'short', 138.518, 138.66, 134.1,
+                           136.852, 78.92),
+                          ('EUR_JPY', 'D', 'EUR_JPY 15JUL2009D', '2009-07-14 22:00:00', 'long', 127.766, 126.421,
+                           137.232, 130.865, 29.5),
+                          ('NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-07-01 09:00:00', 'short', 0.67095, 0.67258,
+                           0.66328, 0.66887, 74.14),
+                          ('EUR_AUD', 'D', 'EUR_AUD 04DEC2018D', '2018-12-03 22:00:00', 'long', 1.54123, 1.53398,
+                           1.55752, 1.54334, 24.9),
+                          ('EUR_AUD', 'D', 'EUR_AUD 08MAY2017D', '2017-05-08 22:00:00', 'short', 1.48820, 1.49191,
+                           1.46223, 1.48004, 75.68),
+                          ('EUR_AUD', 'D', 'EUR_AUD 24MAY2019D', '2019-05-23 22:00:00', 'short', 1.62344, 1.62682,
+                           1.60294, 1.61739, 73.48),
+                          ('GBP_USD', 'D', 'GBP_USD 18APR2018D', '2018-04-17 22:00:00', 'short', 1.43690, 1.43778,
+                           1.41005, 1.42681, 69.42)
+                          ])
+def test_max_min_rsi(pair, timeframe, id, start, type, SR, SL, TP, entry, avalue):
+    t = Trade(
+        id=id,
+        start=start,
+        pair=pair,
+        timeframe=timeframe,
+        type=type,
+        SR=SR,
+        SL=SL,
+        TP=TP,
+        entry=entry,
+        strat='counter_b1',
+        settingf="../../data/settings.ini"
+    )
+
+    c = Counter(
+        trade=t,
+        settingf='../../data/settings.ini'
+    )
+
+    assert avalue == c.max_min_rsi()
 
 def test_set_total_score(ct_object, clean_tmp):
     """

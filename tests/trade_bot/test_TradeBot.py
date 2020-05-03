@@ -81,6 +81,22 @@ def test_run3():
 
     assert len(tl.tlist) == 1
 
+def test_run4():
+    """
+    Test tradebot using a non-daily timeframe
+    """
+    tb = TradeBot(
+        pair='GBP_USD',
+        timeframe='H4',
+        start='2020-02-06 22:00:00',
+        end='2020-02-11 14:00:00',
+        settingf="../../data/settings.ini")
+
+    tl = tb.run()
+
+    assert len(tl.tlist) == 1
+    assert 0
+
 def test_calc_SR(tb_object, clean_tmp):
     """
     Check 'calc_SR' function

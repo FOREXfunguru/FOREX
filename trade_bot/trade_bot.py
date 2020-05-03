@@ -17,7 +17,7 @@ import logging
 
 # create logger
 tb_logger = logging.getLogger(__name__)
-tb_logger.setLevel(logging.INFO)
+tb_logger.setLevel(logging.DEBUG)
 
 class TradeBot(object):
     '''
@@ -49,6 +49,10 @@ class TradeBot(object):
             self.settings = parser
         else:
             self.settings = settings
+
+        # correct pips-related in self.settings on the timeframe
+      #  if self.timeframe != "D":
+      #      self.settings = correct_timeframe(self.settings, timeframe)
 
     def __get_trade_type(self, ic, delta):
         '''
@@ -254,7 +258,7 @@ class TradeBot(object):
                     # and discard if it is over threshold
                     diff = abs(t.entry-t.SL)
                     number_pips = float(calculate_pips(self.pair, diff))
-                    if number_pips > self.settings.getint('trade_bot', 'SL_width'):
+                    if number_pips > self.settings.getint('trade_bot', 'SL_width_pips'):
                         loop += 1
                         startO = startO + delta
                         continue
@@ -376,8 +380,8 @@ class TradeBot(object):
 
         # add a number of pips to max,min to be sure that we
         # also detect the extreme pivots
-        max = add_pips2price(self.pair, max, self.settings.getint('trade_bot', 'add'))
-        min = substract_pips2price(self.pair, min, self.settings.getint('trade_bot', 'add'))
+        max = add_pips2price(self.pair, max, self.settings.getint('trade_bot', 'add_pips'))
+        min = substract_pips2price(self.pair, min, self.settings.getint('trade_bot', 'add_pips'))
 
         return max, min
 
@@ -409,10 +413,10 @@ class TradeBot(object):
         while p <= float(ul):
             tb_logger.debug("Processing S/R at {0}".format(round(p, 4)))
             # each of 'p' will become a S/R that will be tested for bounces
-            # set entry to price+30pips
-            entry = add_pips2price(self.pair, p, 30)
-            # set S/L to price-30pips
-            SL = substract_pips2price(self.pair, p, 30)
+            # set entry to price+self.settings.getint('trade_bot','i_pips')
+            entry = add_pips2price(self.pair, p, self.settings.getint('trade_bot', 'i_pips'))
+            # set S/L to price-self.settings.getint('trade_bot','i_pips')
+            SL = substract_pips2price(self.pair, p, self.settings.getint('trade_bot', 'i_pips'))
             t = Trade(
                 id='{0}.{1}.detect_sr.{2}'.format(self.pair, adateObj.isoformat(), round(p, 5)),
                 start=adateObj.strftime('%Y-%m-%d %H:%M:%S'),
@@ -449,7 +453,7 @@ class TradeBot(object):
             # Because the increment is made in pips
             # it does not suffer of the JPY pairs
             # issue
-            p = add_pips2price(self.pair, p, 60)
+            p = add_pips2price(self.pair, p, 2*self.settings.getint('trade_bot', 'i_pips'))
             if prev_p is None:
                 prev_p = p
             else:
@@ -462,6 +466,7 @@ class TradeBot(object):
                 'tot_score': tot_score}
 
         df = pd.DataFrame(data=data)
+        pdb.set_trace()
 
         ### establishing bounces threshold as the args.th quantile
         # selecting only rows with at least one pivot and tot_score>0,

@@ -61,6 +61,9 @@ class Counter(object):
                   Total (sum of each pivot score) pivot score for all bounces (bounces class attr)
     score_lasttime : int, Optional
                      Sum of each pivot score for all pivots after lasttime (bounces_lasttime class attr)
+    max_min_rsi : float, Optional
+                  max or min RSI for CandleList slice
+                  going from self.start-settings.getint('counter', rsi_period') to self.start.
     settingf : str, Optional
                Path to *.ini file with settings
     settings : ConfigParser object generated using 'settingf'
@@ -108,6 +111,7 @@ class Counter(object):
             self.set_score_pivot()
             self.set_score_pivot_lasttime()
             self.set_trend_i()
+            self.set_max_min_rsi()
 
     def __initclist(self):
         '''
@@ -142,6 +146,35 @@ class Counter(object):
                         type=self.trade.type)
 
         self.clist_period = cl
+
+    def set_max_min_rsi(self):
+        """
+        Function to calculate the max or min RSI for CandleList slice
+        going from self.start-settings.getint('counter', rsi_period') to self.start.
+        It will also set the max_min_rsi self attribute
+
+        Returns
+        -------
+        float : The max (if short trade) or min (long trade) rsi value
+                in the candlelist
+        """
+        ix = self.settings.getint('counter', 'rsi_period')
+        sub_clist = self.clist_period.clist[-ix:]
+        rsi_list = [x.rsi for x in sub_clist]
+        first = None
+        for x in reversed(rsi_list):
+            if first is None:
+                first = x
+            elif self.trade.type == 'short':
+                if x > first:
+                    first = x
+            elif self.trade.type == 'long':
+                if x < first:
+                    first = x
+
+        self.max_min_rsi = round(first, 2)
+
+        return round(first, 2)
 
     def set_lasttime(self):
         '''
