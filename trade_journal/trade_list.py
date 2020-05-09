@@ -11,15 +11,23 @@ class TradeList(object):
     ---------------
     tlist : list, Required
             List of Trade objects
+    settingf : str, Optional
+               Path to *.ini file with settings
+    settings : ConfigParser object generated using 'settingf'
+               Optional
     '''
 
-    def __init__(self, tlist, settingf):
+    def __init__(self, tlist, settingf=None, settings=None):
         self.settingf = settingf
         self.tlist = tlist
-        # parse settings file (in .ini file)
-        parser = ConfigParser()
-        parser.read(settingf)
-        self.settings = parser
+
+        if self.settingf is not None:
+            # parse settings file (in .ini file)
+            parser = ConfigParser()
+            parser.read(settingf)
+            self.settings = parser
+        else:
+            self.settings = settings
 
     def analyze(self):
         '''
@@ -41,6 +49,7 @@ class TradeList(object):
                     t.run_trade()
                 c = Counter(trade=t,
                             settingf=self.settingf,
+                            settings=self.settings,
                             init_feats=True)
                 attrb_ls = self.settings.get('counter', 'attrbs').split(",")
                 for a in attrb_ls:
@@ -48,6 +57,7 @@ class TradeList(object):
                     setattr(t, a, getattr(c, a))
             trade_list.append(t)
         tl = TradeList(settingf=self.settingf,
+                       settings=self.settings,
                        tlist=trade_list)
 
         return tl

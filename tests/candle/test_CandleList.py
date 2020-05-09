@@ -17,7 +17,7 @@ def clO():
                      settingf='../../data/settings.ini')
 
     oanda.run(start='2019-03-06T23:00:00',
-              end='2020-01-03T23:00:00')
+              end='2020-01-24T23:00:00')
 
     candle_list = oanda.fetch_candleset()
     cl = CandleList(candle_list,
@@ -53,11 +53,18 @@ def test_CandleList(clO):
     assert one_c.volume == 5937
     assert one_c.closeBid == 0.70149
 
-def test_calc_rsi(clO):
+@pytest.mark.parametrize("ix,"
+                        "rsi",
+                        [(4, 48.2),
+                         (51, 25.94),
+                         (130, 53.37),
+                         (136, 63.26),
+                         (212, 73.1)])
+def test_calc_rsi(ix, rsi, clO):
 
     clO.calc_rsi()
 
-    assert clO.clist[4].rsi == 48.197810051105556
+    assert clO.clist[ix].rsi == rsi
 
 def test_rsibounces(clO):
 

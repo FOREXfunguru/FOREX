@@ -11,10 +11,16 @@ register_matplotlib_converters()
 import pandas as pd
 import numpy as np
 import matplotlib
+import logging
 from utils import *
 
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
+
+logging.basicConfig(level=logging.INFO)
+
+# create logger
+cl_logger = logging.getLogger(__name__)
 
 
 class CandleList(object):
@@ -364,6 +370,7 @@ class CandleList(object):
         '''
         Calculate the RSI for a certain candle list
         '''
+        cl_logger.debug("Running calc_rsi")
 
         start_time = self.clist[0].time
         end_time = self.clist[-1].time
@@ -423,8 +430,10 @@ class CandleList(object):
         # set rsi attribute in each candle of the CandleList
         ix = 0
         for c, v in zip(self.clist, rsi4cl):
-            self.clist[ix].rsi = v
+            self.clist[ix].rsi = round(v, 2)
             ix += 1
+
+        cl_logger.debug("Done calc_rsi")
 
     def calc_rsi_bounces(self):
         '''
@@ -581,7 +590,7 @@ class CandleList(object):
 
         return model, regression_model_mse
 
-    def get_pivotlist(self, th_bounces):
+    def get_pivotlist(self, th_bounces, outfile=None):
         '''
         Function to obtain a pivotlist object containing pivots identified using the
         Zigzag indicator.
@@ -591,12 +600,17 @@ class CandleList(object):
         ---------
         th_bounces: float
                     Value used by ZigZag to identify pivots. The lower the
-                    value the higher the sensitivity.
+                    value the higher the sensitivity
+        outfile: str
+                 .png file for saving the plot with pivots.
+                 Optional
 
         Return
         ------
         PivotList object
         '''
+
+        cl_logger.debug("Running get_pivotlist")
 
         x = []
         values = []
@@ -617,9 +631,9 @@ class CandleList(object):
                        settings=self.settings)
 
         if self.settings.getboolean('pivots', 'plot') is True:
-            outfile = "{0}/pivots/{1}.allpivots.png".format(self.settings.get('images', 'outdir'),
-                                                            self.id.replace(' ', '_'))
-
+            if outfile is None:
+                outfile = "{0}/pivots/{1}.allpivots.png".format(self.settings.get('images', 'outdir'),
+                                                                self.id.replace(' ', '_'))
             figsize = literal_eval(self.settings.get('images', 'size'))
             fig = plt.figure(figsize=figsize)
             plt.plot(xarr, yarr, 'k:', alpha=0.5)
@@ -628,6 +642,8 @@ class CandleList(object):
             plt.scatter(xarr[pivots == -1], yarr[pivots == -1], color='r')
 
             fig.savefig(outfile, format='png')
+
+        cl_logger.debug("Done get_pivotlist")
 
         return pl
 
@@ -811,7 +827,13 @@ class CandleList(object):
         datetime object
         '''
 
-        pivots = self.get_pivotlist(th_bounces=self.settings.getfloat('it_trend', 'th_bounces'))
+        cl_logger.debug("Running clac_itrend")
+
+        outfile = "{0}/pivots/{1}.calc_it.allpivots.png".format(self.settings.get('images', 'outdir'),
+                                                                self.id.replace(' ', '_'))
+
+        pivots = self.get_pivotlist(th_bounces=self.settings.getfloat('it_trend', 'th_bounces'),
+                                    outfile=outfile)
         init = None
         for p in reversed(pivots.plist):
             if init is None:
@@ -823,19 +845,9 @@ class CandleList(object):
                 continue
             else:
                 return p.candle.time
-            #    pre_start = p.pre.start()
-            #    p.merge_pre(slist=pivots.slist,
-            #                n_candles=self.settings.getint('it_trend', 'n_candles'),
-            #                diff_th=self.settings.getint('it_trend', 'diff_th'))
-            #    if pre_start != p.pre.start():
-            #        return p.pre.start()
-            #    else:
-            #        if t_type == 'long' and p.type == -1:
-            #            continue
-            #        elif t_type == 'short' and p.type == 1:
-            #            continue
-            #        else:
-            #            return p.pre.end()
+
+        cl_logger.debug("Done clac_itrend")
+
     def get_lasttime(self, hrarea):
         '''
         Function to get the datetime for last time that price has been above/below a HArea

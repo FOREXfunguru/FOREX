@@ -154,7 +154,13 @@ def test_set_lasttime(start, type, SR, SL, TP, entry, lasttime, clean_tmp):
                          "TP,"
                          "entry,"
                          "dates",
-                         [  ('EUR_GBP', 'D', 'EUR_GBP 04JUN2004D', '2004-06-03 22:00:00', 'long', 0.66379, 0.66229, 0.67418,
+                         [  ('EUR_GBP', 'D', 'EUR_GBP 28JAN2007D', '2007-01-27 22:00:00', 'long', 0.6595, 0.65376, 0.6691,
+                              0.65989, [datetime.datetime(2004, 6, 9, 21, 0), datetime.datetime(2004, 8, 1, 21, 0),
+                                        datetime.datetime(2005, 6, 23, 21, 0), datetime.datetime(2007, 1, 28, 22, 0)]),
+                             ('EUR_GBP', 'D', 'EUR_GBP 22MAY2007D', '2007-05-21 21:00:00', 'short', 0.6833, 0.68584, 0.6771,
+                              0.68235, [datetime.datetime(2003, 11, 2, 22, 0), datetime.datetime(2004, 3, 10, 22, 0),
+                                        datetime.datetime(2004, 12, 16, 22, 0)]),
+                             ('EUR_GBP', 'D', 'EUR_GBP 04JUN2004D', '2004-06-03 22:00:00', 'long', 0.66379, 0.66229, 0.67418,
                              0.66704, [datetime.datetime(2004, 6, 2, 21, 0)]),
                             ('EUR_JPY', 'D', 'EUR_JPY 04MAY2016D', '2016-05-03 22:00:00', 'long', 122.173, 121.57,
                              125.138, 123.021, [datetime.datetime(2009, 1, 17, 22, 0), datetime.datetime(2016, 2, 28, 22, 0), datetime.datetime(2016, 5, 2, 21, 0)]),
@@ -222,14 +228,15 @@ def test_set_pivots(pair, id, timeframe, start, type, SR, SL, TP, entry, dates, 
                          "SL,"
                          "TP,"
                          "entry,"
-                         "len",
-                         [('EUR_GBP', 'H4', 'EUR_GBP 19FEB2020H4', '2020-02-19 06:00:00', 'long', 0.82920, 0.82793, 0.83801,
+                         "pllen",
+                         [
+                          ('EUR_GBP', 'H4', 'EUR_GBP 19FEB2020H4', '2020-02-19 06:00:00', 'long', 0.82920, 0.82793, 0.83801,
                              0.83196, 2),
                           ('EUR_GBP', 'H4', 'EUR_GBP 06MAY2019H4', '2019-05-06 01:00:00', 'long', 0.85036, 0.84874, 0.85763,
                              0.85109, 2),
                           ('EUR_GBP', 'H4', 'EUR_GBP 07FEB2018H4', '2018-02-07 14:00:00', 'short', 0.89099, 0.89115, 0.87867,
                              0.88621, 8)])
-def test_set_pivots_4h(pair, timeframe, id, start, type, SR, SL, TP, entry, len, settings_obj, clean_tmp):
+def test_set_pivots_4h(pair, timeframe, id, start, type, SR, SL, TP, entry, pllen, settings_obj, clean_tmp):
     """
     Check that self.pivots class attribute is correctly set using a H4 timeframe
     """
@@ -254,10 +261,10 @@ def test_set_pivots_4h(pair, timeframe, id, start, type, SR, SL, TP, entry, len,
         trade=t,
         settings=settings_obj
     )
-    pdb.set_trace()
+
     c.set_pivots()
 
-    assert 0
+    assert len(c.pivots.plist) == pllen
 
 @pytest.mark.parametrize("pair,"
                          "timeframe,"

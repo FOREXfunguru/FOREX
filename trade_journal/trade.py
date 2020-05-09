@@ -84,7 +84,6 @@ class Trade(object):
         #remove potential whitespaces in timeframe
         self.timeframe = re.sub(' ', '', self.timeframe)
         self.settingf = settingf
-        self.settings = settings
         self.entered = entered
         self.type = type
 
@@ -109,7 +108,8 @@ class Trade(object):
         '''
         oanda = OandaAPI(instrument=self.pair,
                          granularity=self.timeframe,
-                         settingf=self.settingf)
+                         settingf=self.settingf,
+                         settings=self.settings)
 
         if isinstance(self.start, datetime) is True:
             astart = self.start
@@ -127,7 +127,8 @@ class Trade(object):
         candle_list = oanda.fetch_candleset()
         cl = CandleList(candle_list,
                         type=self.type,
-                        settingf=self.settingf)
+                        settingf=self.settingf,
+                        settings=self.settings)
 
         return cl
 
@@ -180,7 +181,8 @@ class Trade(object):
                     break
             oanda = OandaAPI(instrument=self.pair,
                              granularity=self.timeframe,
-                             settingf=self.settingf)
+                             settingf=self.settingf,
+                             settings=self.settings)
 
             oanda.run(start=d.isoformat(),
                       count=1)

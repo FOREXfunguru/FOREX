@@ -18,13 +18,16 @@ class TradeJournal(object):
     worksheet: str, Required
                Name of the worksheet that will be used to create the object.
                i.e. trading_journal
-    settingf : str, Required
+    settingf : str, Optional
                Path to *.ini file with settings
+    settings : ConfigParser object generated using 'settingf'
+               Optional
     '''
 
-    def __init__(self, url, worksheet, settingf):
+    def __init__(self, url, worksheet, settingf=None, settings=None):
         self.url = url
         self.worksheet = worksheet
+        self.settingf=settingf
         #read-in the 'trading_journal' worksheet from a .xlsx file into a pandas dataframe
         try:
             xls_file = pd.ExcelFile(url)
@@ -37,11 +40,13 @@ class TradeJournal(object):
             wb.create_sheet(worksheet)
             wb.save(str(self.url))
 
-        # parse settings file (in .ini file)
-        parser = ConfigParser()
-        parser.read(settingf)
-        self.settingf = settingf
-        self.settings = parser
+        if self.settingf is not None:
+            # parse settings file (in .ini file)
+            parser = ConfigParser()
+            parser.read(settingf)
+            self.settings = parser
+        else:
+            self.settings = settings
 
     def fetch_tradelist(self):
         '''

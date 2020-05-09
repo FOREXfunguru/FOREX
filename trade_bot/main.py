@@ -3,7 +3,11 @@ from trade_journal.trade_journal import TradeJournal
 import pdb
 import os
 import argparse
+import logging
 
+# create logger
+main_logger = logging.getLogger(__name__)
+main_logger.setLevel(logging.INFO)
 
 # The notifier function
 def notify(title, subtitle, message):
@@ -29,15 +33,22 @@ def main():
         timeframe=args.timeframe,
         start=args.start,
         end=args.end,
-        settingf=args.settingf
-    )
+        settingf=args.settingf)
+
+    main_logger.info("Running TradeBot")
 
     tl = tb.run()
+
+    main_logger.info("Done TradeBot")
+
     if tl is not None:
         td = TradeJournal(url=args.url,
                           worksheet="trading_journal",
                           settingf=args.settingf)
         td.write_tradelist(tl)
+    else:
+        main_logger.info("No trades found. No worksheet will be created in tradejournal")
+
 
 
 if __name__ == '__main__':

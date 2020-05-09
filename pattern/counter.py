@@ -13,7 +13,7 @@ from pivot.pivotlist import *
 from configparser import ConfigParser
 from utils import periodToDelta, substract_pips2price, add_pips2price
 
-logging.basicConfig(level=logging.WARNING)
+logging.basicConfig(level=logging.INFO)
 
 # create logger
 c_logger = logging.getLogger(__name__)
@@ -72,6 +72,8 @@ class Counter(object):
 
     def __init__(self, trade, settingf=None, settings=None, init_feats=False, **kwargs):
 
+        c_logger.debug("Initializing counter object")
+
         self.settingf = settingf
         if self.settingf is not None:
             # parse settings file (in .ini file)
@@ -112,6 +114,8 @@ class Counter(object):
             self.set_score_pivot_lasttime()
             self.set_trend_i()
             self.set_max_min_rsi()
+
+        c_logger.debug("Done initializing counter object")
 
     def __initclist(self):
         '''
@@ -158,6 +162,8 @@ class Counter(object):
         float : The max (if short trade) or min (long trade) rsi value
                 in the candlelist
         """
+        c_logger.debug("Running set_max_min_rsi")
+
         ix = self.settings.getint('counter', 'rsi_period')
         sub_clist = self.clist_period.clist[-ix:]
         rsi_list = [x.rsi for x in sub_clist]
@@ -174,6 +180,8 @@ class Counter(object):
 
         self.max_min_rsi = round(first, 2)
 
+        c_logger.debug("Done set_max_min_rsi")
+
         return round(first, 2)
 
     def set_lasttime(self):
@@ -184,6 +192,8 @@ class Counter(object):
         -------
         Nothing
         '''
+        c_logger.debug("Running set_lasttime")
+
         # instantiate an HArea object representing the self.SR in order to calculate the lasttime
         # price has been above/below SR
         resist = HArea(price=self.trade.SR,
@@ -193,6 +203,9 @@ class Counter(object):
                        settings=self.settings)
 
         self.lasttime = self.clist_period.get_lasttime(resist)
+
+        c_logger.debug("Done set_lasttime")
+
 
     def __inarea_pivots(self,
                         pivots,
@@ -213,7 +226,7 @@ class Counter(object):
         PivotList with pivots that are in the area
         '''
 
-        c_logger.info("Running __inarea_pivots")
+        c_logger.debug("Running __inarea_pivots")
 
         # get bounces in the horizontal SR area
         lower = substract_pips2price(self.trade.pair,
@@ -225,7 +238,7 @@ class Counter(object):
                                self.settings.getint('pivots',
                                                     'hr_pips'))
 
-        c_logger.info("SR U-limit: {0}; L-limit: {1}".format(round(upper, 4), round(lower, 4)))
+        c_logger.debug("SR U-limit: {0}; L-limit: {1}".format(round(upper, 4), round(lower, 4)))
 
         pl = []
         for p in pivots.plist:
@@ -266,7 +279,7 @@ class Counter(object):
                                 p_seen = True
 
                         if p_seen is False:
-                            c_logger.info("Pivot {0} identified in area".format(p.candle.time))
+                            c_logger.debug("Pivot {0} identified in area".format(p.candle.time))
                             if self.settings.getboolean('counter', 'runmerge_pre') is True and p.pre is not None:
                                 p.merge_pre(slist=pivots.slist,
                                             n_candles=self.settings.getint('pivots', 'n_candles'),
@@ -277,7 +290,7 @@ class Counter(object):
                                             diff_th=self.settings.getint('pivots', 'diff_th'))
                             pl.append(p)
 
-        c_logger.info("Done __inarea_pivots")
+        c_logger.debug("Done __inarea_pivots")
 
         return PivotList(plist=pl,
                          clist=pivots.clist,
@@ -297,6 +310,8 @@ class Counter(object):
         It will set the pivots attribute, which is a PivotList object with Pivots
         in the area
         '''
+        c_logger.debug("Running set_pivots")
+
         # get PivotList using self.clist_period
         pivotlist = self.clist_period.get_pivotlist(self.settings.getfloat('pivots', 'th_bounces'))
         # get PivotList in area
@@ -320,6 +335,8 @@ class Counter(object):
 
             self.plot_pivots(outfile_prices=outfile,
                              outfile_rsi=outfile_rsi)
+
+        c_logger.debug("Done set_pivots")
 
     def set_total_score(self):
         '''
@@ -403,6 +420,7 @@ class Counter(object):
         outfile_rsi : filename
                       for output file for rsi plot
         '''
+        c_logger.debug("Running plot_pivots")
 
         prices = []
         rsi = []
@@ -443,6 +461,9 @@ class Counter(object):
 
         fig.savefig(outfile_prices, format='png')
 
+        c_logger.debug("plot_pivots Done")
+
+
     def set_pivots_lasttime(self):
         '''
         Function to get the pivots occurring after last_time and setting
@@ -453,6 +474,8 @@ class Counter(object):
         Nothing
         '''
 
+        c_logger.debug("Running set_pivots_lasttime")
+
         pl = []
         for p in self.pivots.plist:
             if p.candle.time >= self.lasttime:
@@ -461,6 +484,7 @@ class Counter(object):
         self.pivots_lasttime = PivotList(plist=pl,
                                          clist=self.pivots.clist,
                                          slist=self.pivots.slist)
+        c_logger.debug("Done set_pivots_lasttime")
 
     def set_score_lasttime(self):
         '''

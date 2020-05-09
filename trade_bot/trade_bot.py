@@ -17,7 +17,7 @@ import logging
 
 # create logger
 tb_logger = logging.getLogger(__name__)
-tb_logger.setLevel(logging.DEBUG)
+tb_logger.setLevel(logging.INFO)
 
 class TradeBot(object):
     '''
@@ -36,7 +36,7 @@ class TradeBot(object):
     settingf : str, Optional
                Path to *.ini file with settings
     '''
-    def __init__(self, start, end, pair, timeframe, settingf, settings=None):
+    def __init__(self, start, end, pair, timeframe, settingf=None, settings=None):
         self.start = start
         self.end = end
         self.pair = pair
@@ -75,7 +75,8 @@ class TradeBot(object):
 
         oanda = OandaAPI(instrument=self.pair,
                          granularity=self.timeframe,
-                         settingf=self.settingf)
+                         settingf=self.settingf,
+                         settings=self.settings)
 
         # n x delta controls how many candles to go back in time
         # to check
@@ -90,7 +91,8 @@ class TradeBot(object):
                            instrument=self.pair,
                            id='fit_reg',
                            granularity=self.timeframe,
-                           settingf=self.settingf)
+                           settingf=self.settingf,
+                           settings=self.settings)
         # fit a regression line in order to check its slope
         # and guess the trade type
         (fitted_model, regression_model_mse) = clObj.fit_reg_line()
@@ -163,7 +165,8 @@ class TradeBot(object):
             SL=SL,
             RR=self.settings.getfloat('trade_bot', 'RR'),
             strat='counter',
-            settingf=self.settingf)
+            settingf=self.settingf,
+            settings=self.settings)
 
         return t
 
@@ -182,7 +185,8 @@ class TradeBot(object):
 
         oanda = OandaAPI(instrument=self.pair,
                          granularity=self.timeframe,
-                         settingf=self.settingf)
+                         settingf=self.settingf,
+                         settings=self.settings)
         delta = None
         nhours = None
         if self.timeframe == "D":
@@ -213,17 +217,20 @@ class TradeBot(object):
             tb_logger.info("Trade bot - analyzing candle: {0}".format(startO.isoformat()))
 
             if loop == 0:
+                # no iteration has occurred yet, so invoke .calc_SR for the first time
                 SRlst = self.calc_SR(adateObj=startO)
                 res = SRlst.print()
                 tb_logger.info("Identified HAreaList for time {0}:".format(startO.isoformat()))
                 tb_logger.info("{0}".format(res))
             elif loop == self.settings.getint('trade_bot',
                                               'period'):
+                # An entire cycle has occurred. Invoke .calc_SR
                 SRlst = self.calc_SR(adateObj=startO)
                 res = SRlst.print()
                 tb_logger.info("Identified HAreaList for time {0}:".format(startO.isoformat()))
                 tb_logger.info("{0}".format(res))
                 loop = 0
+            # fetch candle for current datetime
             oanda.run(start=startO.isoformat(),
                       count=1)
 
@@ -275,7 +282,8 @@ class TradeBot(object):
             return None
         else:
             tl = TradeList(tlist=tlist,
-                           settingf=self.settingf)
+                           settingf=self.settingf,
+                           settings=self.settings)
             tl.analyze()
             # analyse trades
             return tl
@@ -356,7 +364,8 @@ class TradeBot(object):
 
         oanda = OandaAPI(instrument=self.pair,
                          granularity=self.timeframe,
-                         settingf=self.settingf)
+                         settingf=self.settingf,
+                         settings=self.settings)
 
         delta_period = periodToDelta(self.settings.getint('trade_bot', 'period_range'),
                                      self.timeframe)
@@ -373,7 +382,8 @@ class TradeBot(object):
                         instrument=self.pair,
                         id='test',
                         granularity=self.timeframe,
-                        settingf=self.settingf)
+                        settingf=self.settingf,
+                        settings=self.settings)
 
         max = cl.get_highest()
         min = cl.get_lowest()
@@ -428,12 +438,13 @@ class TradeBot(object):
                 SL=SL,
                 RR=1.5,
                 strat='counter_b1',
-                settingf=self.settingf)
+                settingf=self.settingf,
+                settings=self.settings)
 
             # reduce period that Counter uses so the S/R
             # are calculated with the most recent pivots
-            self.settings.set('counter', 'period', '1000')
-
+            newperiod = self.settings.get('trade_bot', 'period_range')
+            self.settings.set('counter', 'period', newperiod)
             c = Counter(
                 trade=t,
                 init_feats=True,
@@ -466,7 +477,6 @@ class TradeBot(object):
                 'tot_score': tot_score}
 
         df = pd.DataFrame(data=data)
-        pdb.set_trace()
 
         ### establishing bounces threshold as the args.th quantile
         # selecting only rows with at least one pivot and tot_score>0,
@@ -501,13 +511,13 @@ class TradeBot(object):
                            granularity=self.timeframe,
                            no_pivots=row['bounces'],
                            tot_score=row['tot_score'],
-                           settingf=self.settingf)
+                           settingf=self.settingf,
+                           settings=self.settings)
             halist.append(resist)
 
-        halist = HAreaList(
-            halist=halist,
-            settingf="data/settings.ini"
-        )
+        halist = HAreaList(halist=halist,
+                           settingf="data/settings.ini",
+                           settings=self.settings)
 
         tb_logger.info("Run done")
 
