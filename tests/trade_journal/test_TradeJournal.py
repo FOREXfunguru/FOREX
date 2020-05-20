@@ -42,8 +42,3 @@ def test_write_tradelist(tjO):
     trade_list.analyze()
 
     tjO.write_tradelist(trade_list)
-"""
-    
-def test_print_winrate(tj_counter_doubletop_object):
-    trade_list = tj_counter_doubletop_object.print_winrate(strat='counter_doubletop')
-"""

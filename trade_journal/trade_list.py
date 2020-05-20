@@ -65,7 +65,9 @@ class TradeList(object):
     def win_rate(self, strats):
         '''
         Calculate win rate and pips balance
-        for this TradeList
+        for this TradeList. If outcome attrb is not
+        defined then it will invoke the run_trade method
+        on each particular trade
 
         Parameters
         ----------

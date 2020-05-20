@@ -34,6 +34,8 @@ class TradeJournal(object):
             df = xls_file.parse(worksheet, converters={'start': str, 'end': str, 'trend_i': str})
             # replace n.a. string by NaN
             df = df.replace('n.a.', np.NaN)
+            # remove trailing whitespaces from col names
+            df.columns = df.columns.str.rstrip()
             self.df = df
         except FileNotFoundError:
             wb = Workbook()

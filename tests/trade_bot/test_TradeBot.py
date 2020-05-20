@@ -122,7 +122,57 @@ def test_run_H4(pair, start, end, len_tl, settings_obj, clean_tmp):
     tl = tb.run()
 
     assert len(tl.tlist) == len_tl
-    assert 0
+
+@pytest.mark.parametrize("pair,"
+                         "start,"
+                         "end,"
+                         "len_tl",
+                         [('GBP_USD', '2018-08-27 13:00:00', '2018-09-03 21:00:00', 1)])
+def test_run_H8(pair, start, end, len_tl, settings_obj, clean_tmp):
+    """
+    Test tradebot using an H4 timeframe
+    """
+
+    settings_obj.set('pivots', 'th_bounces', '0.02')
+    settings_obj.set('trade_bot', 'th', '0.2')
+    settings_obj.set('trade_bot', 'period_range', '4500')
+
+
+    tb = TradeBot(
+        pair=pair,
+        timeframe='H8',
+        start=start,
+        end=end,
+        settings=settings_obj)
+
+    tl = tb.run()
+
+    assert len(tl.tlist) == len_tl
+
+@pytest.mark.parametrize("pair,"
+                         "start,"
+                         "end,"
+                         "len_tl",
+                         [('USD_JPY', '2018-09-27 09:00:00', '2018-10-09 21:00:00', 1)])
+def test_run_H12(pair, start, end, len_tl, settings_obj, clean_tmp):
+    """
+    Test tradebot using an H4 timeframe
+    """
+
+    settings_obj.set('pivots', 'th_bounces', '0.02')
+    settings_obj.set('trade_bot', 'th', '0.6')
+    settings_obj.set('trade_bot', 'period_range', '3500')
+
+    tb = TradeBot(
+        pair=pair,
+        timeframe='H12',
+        start=start,
+        end=end,
+        settings=settings_obj)
+
+    tl = tb.run()
+
+    assert len(tl.tlist) == len_tl
 
 def test_calc_SR(tb_object, clean_tmp):
     """
@@ -247,14 +297,14 @@ def test_calc_SR_4hrs(pair, start, end, adatetime, halen, settings_obj, clean_tm
                          "adatetime,"
                          "halen",
                          [('AUD_USD', '2017-02-28 22:00:00', '2017-03-23 13:00:00', '2017-03-14 13:00:00', 8),
-                          ('AUD_USD', '2019-07-17 13:00:00', '2019-07-23 13:00:00', '2019-07-19 05:00:00', 8)])
+                          ('AUD_USD', '2019-07-17 13:00:00', '2019-07-23 13:00:00', '2019-07-19 05:00:00', 3)])
 def test_calc_SR_8hrs(pair, start, end, adatetime, halen, settings_obj, clean_tmp):
     """
-    Check 'calc_SR' function for a H4 timeframe
+    Check 'calc_SR' function for a H8 timeframe
     """
     settings_obj.set('pivots', 'th_bounces', '0.02')
-    settings_obj.set('trade_bot', 'th', '0.3')
-    settings_obj.set('trade_bot', 'period_range', '5000')
+    settings_obj.set('trade_bot', 'th', '0.2')
+    settings_obj.set('trade_bot', 'period_range', '4500')
 
     adatetimeObj = datetime.datetime.strptime(adatetime, "%Y-%m-%d %H:%M:%S")
 
@@ -268,4 +318,30 @@ def test_calc_SR_8hrs(pair, start, end, adatetime, halen, settings_obj, clean_tm
     harealst = tb.calc_SR(adatetimeObj)
 
     assert len(harealst.halist) == halen
-    assert 0
+
+@pytest.mark.parametrize("pair,"
+                         "start,"
+                         "end,"
+                         "adatetime,"
+                         "halen",
+                         [('USD_JPY', '2018-05-25 09:00:00', '2018-06-04 21:00:00', '2018-05-30 21:00:00', 8)])
+def test_calc_SR_H12hrs(pair, start, end, adatetime, halen, settings_obj, clean_tmp):
+    """
+    Check 'calc_SR' function for a H12 timeframe
+    """
+    settings_obj.set('pivots', 'th_bounces', '0.02')
+    settings_obj.set('trade_bot', 'th', '0.6')
+    settings_obj.set('trade_bot', 'period_range', '3500')
+
+    adatetimeObj = datetime.datetime.strptime(adatetime, "%Y-%m-%d %H:%M:%S")
+
+    tb = TradeBot(
+        pair=pair,
+        timeframe='H12',
+        start=start,
+        end=end,
+        settings=settings_obj)
+
+    harealst = tb.calc_SR(adatetimeObj)
+
+    assert len(harealst.halist) == halen

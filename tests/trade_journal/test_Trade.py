@@ -50,7 +50,8 @@ def test_fetch_candlelist(t_object):
     assert cl.clist[0].openBid == 0.7521
     assert cl.clist[0].highBid == 0.75464
 
-@pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome", [('EUR/GBP', '2009-09-21 21:00:00', 'short', 0.90785, 0.8987, 0.90421, 'failure'),
+@pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome", [('AUD/CAD', '2009-10-27 21:00:00', 'short', 0.98435, 0.9564, 0.97316, 'failure'),
+                                                                  ('EUR/GBP', '2009-09-21 21:00:00', 'short', 0.90785, 0.8987, 0.90421, 'failure'),
                                                                   ('EUR/GBP', '2010-02-06 22:00:00', 'long', 0.86036, 0.8977, 0.87528, 'success'),
                                                                   ('EUR/GBP', '2004-06-01 22:00:00', 'long', 0.6623, 0.67418, 0.66704, 'n.a.'),
                                                                   ('EUR/AUD', '2018-12-03 22:00:00', 'long', 1.53398, 1.55752, 1.54334, 'success'),
