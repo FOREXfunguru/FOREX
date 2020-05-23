@@ -146,7 +146,6 @@ class OandaAPI(object):
         granularity : string
                       Timeframe
         '''
-
         # Generate a datetime object from string
         dateObj = None
         try:
@@ -222,7 +221,6 @@ class OandaAPI(object):
         datetime object
                  Returns the rolled datetime object
         '''
-
         # check if dateObj is previous to the start of historical data for self.instrument
         if not self.settings.has_option('pairs_start', self.instrument):
             raise Exception("Inexistent start of historical record info for {0}".format(self.instrument))
@@ -267,7 +265,6 @@ class OandaAPI(object):
             resp = requests.get(url=self.settings.get('oanda_api', 'url'),
                                 params=params)
             resp_code = resp.status_code
-
         o_logger.debug("Time was rolled from {0} to {1}".format(dateObj, startObj))
         return startObj
 

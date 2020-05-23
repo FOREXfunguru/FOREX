@@ -1,8 +1,11 @@
 import pytest
+import pdb
 
 from apis.oanda_api import OandaAPI
 
-@pytest.mark.parametrize("i,g,s,e,resp", [('AUD_USD', 'D', '2015-01-25T22:00:00', '2015-01-26T22:00:00', 200),
+@pytest.mark.parametrize("i,g,s,e,resp", [('GBP_AUD', 'D', '2002-11-23T22:00:00', '2007-01-02T22:00:00', 200),
+                                          ('EUR_NZD', 'D', '2002-11-23T22:00:00', '2007-01-02T22:00:00', 200),
+                                          ('AUD_USD', 'D', '2015-01-25T22:00:00', '2015-01-26T22:00:00', 200),
                                           ('AUD_USD', 'D', '2018-11-16T22:00:00', '2018-11-20T22:00:00', 200),
                                           ('AUD_USD', 'H12', '2018-11-12T10:00:00', '2018-11-14T10:00:00', 200),
                                           # End date falling in the daylight savings discrepancy(US/EU) period

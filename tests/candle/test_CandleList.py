@@ -3,6 +3,7 @@ import pytest
 from apis.oanda_api import OandaAPI
 from candle.candlelist import CandleList
 from harea.harea import HArea
+from configparser import ConfigParser
 
 import datetime
 import glob
@@ -34,6 +35,17 @@ def clean_tmp():
     files = glob.glob('../../data/IMGS/pivots/*.png')
     for f in files:
         os.remove(f)
+
+@pytest.fixture
+def settings_obj():
+    """
+    This fixture returns a ConfigParser
+    object with settings
+    """
+    parser = ConfigParser()
+    parser.read("../../data/settings.ini")
+
+    return parser
 
 def test_CandleList(clO):
     """
@@ -154,40 +166,53 @@ def test_get_lowest(clO):
     assert clO.get_lowest() == 0.67047
 
 
-@pytest.mark.parametrize("start,"
+@pytest.mark.parametrize("pair,"
+                         "start,"
                          "end,"
                          "t_type,"
                          'itrend',
-                         [(datetime.datetime(2014, 1, 1, 22, 0),
+                         [('AUD_CAD', datetime.datetime(2009, 7, 8, 22, 0),
+                           datetime.datetime(2012, 5, 28, 22, 0), 'long', datetime.datetime(2012, 8, 4, 21, 0)),
+                          ('AUD_CAD', datetime.datetime(2009, 7, 8, 22, 0),
+                           datetime.datetime(2012, 9, 6, 22, 0), 'long', datetime.datetime(2012, 8, 4, 21, 0)),
+                          ('AUD_CAD', datetime.datetime(2009, 7, 8, 22, 0),
+                           datetime.datetime(2012, 10, 8, 22, 0), 'long', datetime.datetime(2012, 9, 13, 21, 0)),
+                          ('AUD_CAD', datetime.datetime(2012, 6, 5, 22, 0),
+                           datetime.datetime(2012, 9, 5, 22, 0), 'long', datetime.datetime(2012, 8, 4, 21, 0)),
+                          ('AUD_USD', datetime.datetime(2014, 1, 1, 22, 0),
                            datetime.datetime(2015, 9, 10, 22, 0), 'long', datetime.datetime(2015, 5, 12, 21, 0)),
-                          (datetime.datetime(2019, 7, 12, 22, 0),
+                          ('AUD_USD', datetime.datetime(2019, 7, 12, 22, 0),
                            datetime.datetime(2019, 8, 6, 22, 0), 'long', datetime.datetime(2019, 7, 17, 21, 0)),
-                          (datetime.datetime(2017, 5, 7, 22, 0),
+                          ('AUD_USD', datetime.datetime(2017, 5, 7, 22, 0),
                            datetime.datetime(2017, 12, 14, 22, 0), 'long', datetime.datetime(2017, 9, 7, 21, 0)),
-                          (datetime.datetime(2014, 1, 2, 22, 0),
+                          ('AUD_USD', datetime.datetime(2014, 1, 2, 22, 0),
                            datetime.datetime(2015, 10, 1, 22, 0), 'long', datetime.datetime(2015, 5, 12, 21, 0)),
-                          (datetime.datetime(2012, 2, 29, 22, 0),
+                          ('AUD_USD', datetime.datetime(2012, 2, 29, 22, 0),
                            datetime.datetime(2013, 8, 12, 22, 0), 'long', datetime.datetime(2013, 1, 9, 22, 0)),
-                          (datetime.datetime(2012, 2, 27, 22, 0),
+                          ('AUD_USD', datetime.datetime(2012, 2, 27, 22, 0),
                            datetime.datetime(2012, 8, 20, 22, 0), 'short', datetime.datetime(2012, 6, 2, 21, 0)),
-                          (datetime.datetime(2015, 9, 7, 22, 0),
-                           datetime.datetime(2016, 4, 25, 22, 0), 'short', datetime.datetime(2016, 1, 17, 22, 0)),
-                         ])
-def test_calc_itrend(start, end, t_type, itrend, clean_tmp):
-    oanda = OandaAPI(instrument='AUD_USD',
+                          ('AUD_USD', datetime.datetime(2015, 9, 7, 22, 0),
+                           datetime.datetime(2016, 4, 25, 22, 0), 'short', datetime.datetime(2016, 1, 17, 22, 0))])
+def test_calc_itrend(pair, start, end, t_type, itrend, settings_obj, clean_tmp):
+
+    settings_obj.set('it_trend', 'th_bounces', '0.01')
+
+    oanda = OandaAPI(instrument=pair,
                      granularity='D',
-                     settingf='../../data/settings.ini')
+                     settings=settings_obj)
 
     oanda.run(start=start.isoformat(),
               end=end.isoformat())
 
     candle_list = oanda.fetch_candleset()
     cl = CandleList(candle_list,
-                    instrument='AUD_USD',
-                    id='test_AUD_USD_clist',
+                    instrument=pair,
+                    id='test_clist',
                     granularity='D',
-                    settingf='../../data/settings.ini')
+                    settings=settings_obj)
+
     assert itrend == cl.calc_itrend(t_type=t_type)
+    assert 0
 
 """
 def test_check_if_divergence():

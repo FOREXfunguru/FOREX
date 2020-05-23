@@ -827,7 +827,7 @@ class CandleList(object):
         datetime object
         '''
 
-        cl_logger.debug("Running clac_itrend")
+        cl_logger.debug("Running calc_itrend")
 
         outfile = "{0}/pivots/{1}.calc_it.allpivots.png".format(self.settings.get('images', 'outdir'),
                                                                 self.id.replace(' ', '_'))
