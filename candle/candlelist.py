@@ -747,7 +747,8 @@ class CandleList(object):
                         granularity=self.granularity,
                         id=self.id,
                         type=self.type,
-                        settingf=self.settingf)
+                        settingf=self.settingf,
+                        settings=self.settings)
 
         return cl
 
@@ -811,7 +812,7 @@ class CandleList(object):
 
         return list_c
 
-    def calc_itrend(self, t_type):
+    def calc_itrend(self, t_type, merge=True):
         '''
         Function to calculate the datetime for the start of this CandleList, assuming that this
         CandleList is trending. This function will calculate the start of the trend by using the self.get_pivots
@@ -834,17 +835,30 @@ class CandleList(object):
 
         pivots = self.get_pivotlist(th_bounces=self.settings.getfloat('it_trend', 'th_bounces'),
                                     outfile=outfile)
+
+        # merge segments is merge is True
         init = None
         for p in reversed(pivots.plist):
-            if init is None:
-                init = True
-                continue
-            elif t_type == 'long' and p.type == -1:
-                continue
-            elif t_type == 'short' and p.type == 1:
-                continue
+            if merge is True:
+                adj_t = p.adjust_pivottime(clistO=pivots.clist)
+                # get new CandleList with new adjusted time for the end
+                newclist = pivots.clist.slice(start=pivots.clist.clist[0].time,
+                                              end=adj_t)
+                newp = newclist.get_pivotlist(self.settings.getfloat('it_trend', 'th_bounces')).plist[-1]
+                newp.merge_pre(slist=pivots.slist,
+                               n_candles=self.settings.getint('it_trend', 'n_candles'),
+                               diff_th=self.settings.getint('it_trend', 'diff_th'))
+                return newp.pre.start()
             else:
-                return p.candle.time
+                if init is None:
+                    init = True
+                    continue
+                elif t_type == 'long' and p.type == -1:
+                    continue
+                elif t_type == 'short' and p.type == 1:
+                    continue
+                else:
+                    return p.candle.time
 
         cl_logger.debug("Done clac_itrend")
 

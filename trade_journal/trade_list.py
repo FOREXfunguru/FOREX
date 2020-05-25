@@ -2,6 +2,11 @@ from configparser import ConfigParser
 from pattern.counter import Counter
 
 import pdb
+import logging
+
+# create logger
+tl_logger = logging.getLogger(__name__)
+tl_logger.setLevel(logging.INFO)
 
 class TradeList(object):
     '''
@@ -42,10 +47,11 @@ class TradeList(object):
         #these are the strategies that will be analysed using the Counter pattern
         strats = self.settings.get('counter', 'strats').split(",")
 
-        trade_list=[]
+        trade_list = []
         for t in self.tlist:
+            tl_logger.info("Processing trade: {0}-{1}".format(t.pair, t.start))
             if t.strat in strats:
-                if t.entered is False:
+                if t.entered is False and not getattr(t, 'outcome'):
                     t.run_trade()
                 c = Counter(trade=t,
                             settingf=self.settingf,
@@ -56,6 +62,7 @@ class TradeList(object):
                     # add 'a' attribute to Trade object
                     setattr(t, a, getattr(c, a))
             trade_list.append(t)
+            tl_logger.info("Done")
         tl = TradeList(settingf=self.settingf,
                        settings=self.settings,
                        tlist=trade_list)

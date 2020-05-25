@@ -57,6 +57,8 @@ class Trade(object):
            What strategy was used for this trade.
     id : str, Required
          Id used for this object
+    SLdiff : float, Optional
+             Diff in pips between entry and SL
     settingf : str, Optional
                Path to *.ini file with settings
     settings : ConfigParser object generated using 'settingf'
@@ -80,12 +82,16 @@ class Trade(object):
         self.start = datetime.strptime(start,
                                       '%Y-%m-%d %H:%M:%S')
         self.pair = re.sub('/', '_', self.pair)
+        self.pair = re.sub('.bot', '', self.pair)
         self.strat = strat
         #remove potential whitespaces in timeframe
         self.timeframe = re.sub(' ', '', self.timeframe)
         self.settingf = settingf
         self.entered = entered
         self.type = type
+
+        # calculate SLdiff
+        self.SLdiff = self.get_SLdiff()
 
         # parse settings file (in .ini file)
         if self.settingf is not None:
@@ -221,6 +227,23 @@ class Trade(object):
             self.pips = 0
 
         t_logger.info("Done run_trade")
+
+    def get_SLdiff(self):
+        """
+        Function to calculate the difference in number of pips between the entry and
+        the SL prices
+
+        Returns
+        -------
+        float with pips
+        """
+
+        diff = abs(self.entry - self.SL)
+        number_pips = float(calculate_pips(self.pair, diff))
+
+        self.SLdiff = number_pips
+
+        return number_pips
 
     def __str__(self):
         sb = []

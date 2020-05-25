@@ -151,3 +151,7 @@ def test_run_trade_4hrs(pair, start, type, SL, TP, entry, outcome):
 
     td.run_trade()
     assert td.outcome == outcome
+
+def test_get_SLdiff(t_object):
+
+    assert 41.9 == t_object.get_SLdiff()
