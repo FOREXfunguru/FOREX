@@ -272,6 +272,9 @@ class TradeBot(object):
                     t.run_trade(expires=2)
                     if t.entered is True:
                         tlist.append(t)
+                        if not hasattr(t, 'end'):
+                            pdb.set_trace()
+                            print("h\n")
                         tend = t.end
             startO = startO+delta
             loop += 1

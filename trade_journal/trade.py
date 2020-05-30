@@ -204,15 +204,28 @@ class Trade(object):
                     self.entry_time = entry_time.isoformat()
                     self.entered = True
             if self.entered is True:
+                # will be n.a. is cl does not cross SL
                 failure_time = SL.get_cross_time(candle=cl)
-                if failure_time is not None and failure_time != 'n.a.':
+                # sometimes there is a jump in the price and SL is not crossed
+                is_gap = False
+                if (self.type == "short" and cl.lowAsk > SL.price) or (self.type == "long" and cl.highAsk < SL.price):
+                    is_gap = True
+                    failure_time = d
+                if (failure_time is not None and failure_time != 'n.a.') or is_gap is True:
                     self.outcome = 'failure'
                     self.end = failure_time
                     self.pips = float(calculate_pips(self.pair,abs(self.SL-self.entry)))*-1
                     t_logger.info("S/L was hit")
                     break
+                # will be n.a. if cl does not cross TP
                 success_time = TP.get_cross_time(candle=cl)
-                if success_time is not None and success_time !='n.a.':
+                # sometimes there is a jump in the price and TP is not crossed
+                is_gap = False
+                if (self.type == "short" and cl.highAsk < TP.price) or (self.type == "long" and cl.lowAsk > TP.price):
+                    is_gap = True
+                    success_time = d
+
+                if (success_time is not None and success_time !='n.a.') or is_gap is True:
                     self.outcome = 'success'
                     t_logger.info("T/P was hit")
                     self.end = success_time
@@ -222,7 +235,7 @@ class Trade(object):
         try:
             assert getattr(self, 'outcome')
         except:
-            t_logger.warnings("No outcome could be calculated")
+            t_logger.warning("No outcome could be calculated")
             self.outcome = "n.a."
             self.pips = 0
 

@@ -50,14 +50,16 @@ def test_fetch_candlelist(t_object):
     assert cl.clist[0].openBid == 0.7521
     assert cl.clist[0].highBid == 0.75464
 
-@pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome", [('AUD/CAD', '2009-10-27 21:00:00', 'short', 0.98435, 0.9564, 0.97316, 'failure'),
-                                                                  ('EUR/GBP', '2009-09-21 21:00:00', 'short', 0.90785, 0.8987, 0.90421, 'failure'),
-                                                                  ('EUR/GBP', '2010-02-06 22:00:00', 'long', 0.86036, 0.8977, 0.87528, 'success'),
-                                                                  ('EUR/GBP', '2004-06-01 22:00:00', 'long', 0.6623, 0.67418, 0.66704, 'n.a.'),
-                                                                  ('EUR/AUD', '2018-12-03 22:00:00', 'long', 1.53398, 1.55752, 1.54334, 'success'),
-                                                                  ('EUR/AUD', '2018-09-11 22:00:00', 'short', 1.63633, 1.60202, 1.62763, 'success'),
-                                                                  ('EUR/AUD', '2017-05-05 22:00:00', 'short', 1.49191, 1.46223, 1.48004, 'failure'),
-                                                                  ('EUR/AUD', '2019-05-23 22:00:00', 'short', 1.62682, 1.60294, 1.61739, 'failure')])
+@pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome", [
+        ('NZD/JPY', '2019-03-22 21:00:00', 'short', 76.797, 73.577, 75.509, 'success'),
+        ('AUD/CAD', '2009-10-27 21:00:00', 'short', 0.98435, 0.9564, 0.97316, 'failure'),
+        ('EUR/GBP', '2009-09-21 21:00:00', 'short', 0.90785, 0.8987, 0.90421, 'failure'),
+        ('EUR/GBP', '2010-02-06 22:00:00', 'long', 0.86036, 0.8977, 0.87528, 'success'),
+        ('EUR/AUD', '2018-12-03 22:00:00', 'long', 1.53398, 1.55752, 1.54334, 'success'),
+        ('EUR/AUD', '2018-09-11 22:00:00', 'short', 1.63633, 1.60202, 1.62763, 'success'),
+        ('EUR/AUD', '2017-05-05 22:00:00', 'short', 1.49191, 1.46223, 1.48004, 'failure'),
+        ('EUR/AUD', '2019-05-23 22:00:00', 'short', 1.62682, 1.60294, 1.61739, 'failure')
+])
 def test_run_trade(pair, start, type, SL, TP, entry, outcome):
     '''
     This test checks the progression of the Trade

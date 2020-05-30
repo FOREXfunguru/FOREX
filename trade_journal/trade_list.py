@@ -51,7 +51,7 @@ class TradeList(object):
         for t in self.tlist:
             tl_logger.info("Processing trade: {0}-{1}".format(t.pair, t.start))
             if t.strat in strats:
-                if t.entered is False and not getattr(t, 'outcome'):
+                if t.entered is False and not hasattr(t, 'outcome'):
                     t.run_trade()
                 c = Counter(trade=t,
                             settingf=self.settingf,
