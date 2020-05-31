@@ -6,7 +6,7 @@ import logging
 
 # create logger
 tl_logger = logging.getLogger(__name__)
-tl_logger.setLevel(logging.INFO)
+tl_logger.setLevel(logging.DEBUG)
 
 class TradeList(object):
     '''
@@ -45,6 +45,7 @@ class TradeList(object):
         '''
 
         #these are the strategies that will be analysed using the Counter pattern
+        tl_logger.info("Strategies that will be analysed: {0}".format(self.settings.get('counter', 'strats')))
         strats = self.settings.get('counter', 'strats').split(",")
 
         trade_list = []
@@ -57,10 +58,13 @@ class TradeList(object):
                             settingf=self.settingf,
                             settings=self.settings,
                             init_feats=True)
+                tl_logger.debug("Attributes analysed:{0}".format(self.settings.get('counter', 'attrbs').split(",")))
                 attrb_ls = self.settings.get('counter', 'attrbs').split(",")
                 for a in attrb_ls:
                     # add 'a' attribute to Trade object
                     setattr(t, a, getattr(c, a))
+            else:
+                tl_logger.debug("Trade.strat ({0}) is not within list of trades to analyse. Skipping...".format(t.strat))
             trade_list.append(t)
             tl_logger.info("Done")
         tl = TradeList(settingf=self.settingf,

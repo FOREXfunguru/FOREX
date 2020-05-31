@@ -2,11 +2,16 @@ import pandas as pd
 import warnings
 import numpy as np
 import pdb
+import logging
 from trade_journal.trade import Trade
 from trade_journal.trade_list import TradeList
 from openpyxl import load_workbook, Workbook
 from configparser import ConfigParser
 from pivot.pivotlist import PivotList
+
+# create logger
+tj_logger = logging.getLogger(__name__)
+tj_logger.setLevel(logging.INFO)
 
 class TradeJournal(object):
     '''
@@ -108,7 +113,7 @@ class TradeJournal(object):
                         dt_l = value.print_pivots_dates()
                         value = [d.strftime('%d/%m/%Y:%H:%M') for d in dt_l]
                 except:
-                    warnings.warn("No value for attribute: {0}".format(a))
+                    tj_logger.warn("No value for attribute: {0}".format(a))
                     value = "n.a."
                 row.append(value)
             data.append(row)
@@ -118,6 +123,8 @@ class TradeJournal(object):
         writer = pd.ExcelWriter(self.url, engine='openpyxl')
         writer.book = book
         writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
+        tj_logger.info("Creating new worksheet with trades with name: {0}".
+                       format(self.settings.get('trade_journal', 'worksheet_name')))
         df.to_excel(writer, self.settings.get('trade_journal', 'worksheet_name'))
         writer.save()
 
