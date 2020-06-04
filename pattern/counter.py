@@ -95,7 +95,11 @@ class Counter(object):
         # to self.trade.start this will set the self.clist_period class attribute
         self.__initclist()
         # calc_rsi
-        self.clist_period.calc_rsi()
+        if self.clist_period is None:
+            c_logger.warn("No 'self.clist_period' defined. Skipping 'calc_rsi' and 'init_feats' methods")
+            init_feats = False
+        else:
+            self.clist_period.calc_rsi()
         if not hasattr(self.trade, 'TP'):
             if not hasattr(self, 'RR'):
                 raise Exception("Neither the RR not the TP "
@@ -123,7 +127,12 @@ class Counter(object):
         to self.period
 
         This will set the self.clist_period class attribute
+
+        Returns
+        -------
+        None if Oanda API query was not successful
         '''
+
         delta_period = periodToDelta(self.settings.getint('counter', 'period'),
                                      self.trade.timeframe)
         delta_1 = periodToDelta(1, self.trade.timeframe)
@@ -136,20 +145,25 @@ class Counter(object):
                          settingf=self.settingf,
                          settings=self.settings)
 
-        oanda.run(start=start.isoformat(),
-                  end=end.isoformat())
+        resp = oanda.run(start=start.isoformat(),
+                         end=end.isoformat())
 
-        candle_list = oanda.fetch_candleset()
+        if resp == 200:
 
-        cl = CandleList(candle_list,
-                        settingf=self.settingf,
-                        settings=self.settings,
-                        instrument=self.trade.pair,
-                        granularity=self.trade.timeframe,
-                        id=self.trade.id,
-                        type=self.trade.type)
+            candle_list = oanda.fetch_candleset()
 
-        self.clist_period = cl
+            cl = CandleList(candle_list,
+                            settingf=self.settingf,
+                            settings=self.settings,
+                            instrument=self.trade.pair,
+                            granularity=self.trade.timeframe,
+                            id=self.trade.id,
+                            type=self.trade.type)
+
+            self.clist_period = cl
+        else:
+            c_logger.warn("API query was not OK. 'self.clist_period' will be None ")
+            self.clist_period = None
 
     def set_max_min_rsi(self):
         """

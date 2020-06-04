@@ -97,6 +97,24 @@ def test_run3():
 
     assert len(tl.tlist) == 1
 
+def test_run4():
+    """
+    Test tradebot on a really easy to identify
+    short trade on a tight time interval using
+    USD_JPY
+    """
+    tb = TradeBot(
+        pair='AUD_JPY',
+        timeframe='D',
+        start='2008-12-30 22:00:00',
+        end='2009-01-06 22:00:00',
+        settingf="../../data/settings.ini")
+
+    tl = tb.run()
+
+    assert len(tl.tlist) == 1
+    assert 0
+
 
 @pytest.mark.parametrize("pair,"
                          "start,"

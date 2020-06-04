@@ -181,7 +181,7 @@ class TradeBot(object):
         were taken
         '''
 
-        tb_logger.info("Runnning...")
+        tb_logger.info("Running...")
 
         oanda = OandaAPI(instrument=self.pair,
                          granularity=self.timeframe,
@@ -240,6 +240,7 @@ class TradeBot(object):
 
             #check if there is any HArea overlapping with c_candle
             HAreaSel = SRlst.onArea(candle=candle_list[0])
+            pdb.set_trace()
 
             if HAreaSel is not None:
                 c_candle.set_candle_features()
@@ -251,7 +252,7 @@ class TradeBot(object):
                 elif type == 'short' and c_candle.colour == 'red':
                     prepare_trade = True
                 elif type == 'long' and c_candle.colour == 'green':
-                    prepare_trade =True
+                    prepare_trade = True
 
                 if prepare_trade is True:
                     t = self.prepare_trade(

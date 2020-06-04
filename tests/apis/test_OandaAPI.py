@@ -32,30 +32,17 @@ def test_OandaAPI(i, g, s, e, resp):
 
 def test_OandaAPI_e():
     '''
-    Test a simple query to Oanda's REST API using a H12 timeframe and a
-    non conventional time that will raise an Exception
+    Test a simple query to Oanda's REST API using a non-valid pair
     '''
-    with pytest.raises(Exception):
-        oanda = OandaAPI(instrument='AUD_USD',
-                       granularity='H12')
 
-        oanda.run(start='2018-11-12T10:00:00',
-                  end='2018-11-14T11:00:00')
+    oanda = OandaAPI(instrument='AUD_MOCK',
+                     granularity='H12',
+                     settingf='../../data/settings.ini')
 
-def test_OandaAPI2_e():
-    '''
-    Test a simple query to Oanda's REST API using a H8 timeframe and a
-    non conventional time that will raise an Exception
-    '''
-    with pytest.raises(Exception):
-        oanda=OandaAPI(url='https://api-fxtrade.oanda.com/v1/candles?',
-                       instrument='AUD_USD',
-                       granularity='H8',
-                       alignmentTimezone='Europe/London',
-                       dailyAlignment=22)
+    respl = oanda.run(start='2018-11-12T10:00:00',
+                      end='2018-11-14T11:00:00')
 
-        oanda.run(start='2018-11-12T10:00:00',
-                  end='2018-11-14T11:00:00')
+    assert respl == 400
 
 def test_OandaAPI_count():
     '''

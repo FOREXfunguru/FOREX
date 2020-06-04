@@ -58,11 +58,15 @@ class TradeList(object):
                             settingf=self.settingf,
                             settings=self.settings,
                             init_feats=True)
-                tl_logger.debug("Attributes analysed:{0}".format(self.settings.get('counter', 'attrbs').split(",")))
+                tl_logger.debug("Counter attributes analysed:{0}".format(self.settings.get('counter', 'attrbs').split(",")))
                 attrb_ls = self.settings.get('counter', 'attrbs').split(",")
                 for a in attrb_ls:
-                    # add 'a' attribute to Trade object
-                    setattr(t, a, getattr(c, a))
+                    if hasattr(c, a) is True:
+                        # add 'a' attribute to Trade object
+                        setattr(t, a, getattr(c, a))
+                    else:
+                        tl_logger.warn("Attribute {0} is not defined in Counter object. Skipping...".format(a))
+                        setattr(t, a, "n.a.")
             else:
                 tl_logger.debug("Trade.strat ({0}) is not within list of trades to analyse. Skipping...".format(t.strat))
             trade_list.append(t)

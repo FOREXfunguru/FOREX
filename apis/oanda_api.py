@@ -123,17 +123,20 @@ class OandaAPI(object):
             raise Exception("You need to set at least the 'end' or the 'count' attribute")
 
         if self.settings.has_option('oanda_api', 'url'):
-            resp = requests.get(url=self.settings.get('oanda_api', 'url'),
-                                params=params)
-
-            if resp.status_code != 200:
+            try:
+                resp = requests.get(url=self.settings.get('oanda_api', 'url'),
+                                    params=params)
+                if resp.status_code != 200:
+                    raise Exception(resp.status_code)
+            except Exception as err:
                 # This means something went wrong.
                 print("Something went wrong. url used was:\n{0}".format(resp.url))
-                raise Exception('GET /candles {}'.format(resp.status_code))
+                print("Error message was: {0}".format(err))
+                return resp.status_code
+            else:
+                self.data = json.loads(resp.content.decode("utf-8"))
 
-            self.data = json.loads(resp.content.decode("utf-8"))
-
-            return resp.status_code
+                return resp.status_code
 
     def validate_datetime(self, datestr, granularity):
         '''
@@ -318,26 +321,29 @@ class OandaAPI(object):
         
         Returns
         ------
-        A list of Candle objects
+        A list of Candle objects. Empty if non candles were retrieved
         
         '''
         candlelist = []
 
-        for c in self.data['candles']:
-            if "openBid" in c:
+        if self.data is None:
+            return candlelist
+        else:
+            for c in self.data['candles']:
+                if "openBid" in c:
                 
-                cd=BidAskCandle(representation="bidask")
-                cd.instrument = self.instrument
-                cd.granularity = self.granularity
-                for k,v in c.items():
-                    if k == "time":
-                        pd.datetime.strptime(v, '%Y-%m-%dT%H:%M:%S.%fZ')
-                        setattr(cd, k, pd.datetime.strptime(v, '%Y-%m-%dT%H:%M:%S.%fZ'))
-                    else:
-                        setattr(cd, k, v)
-                if cd.volume > vol_cutoff:
-                    candlelist.append(cd)
-        return candlelist
+                    cd=BidAskCandle(representation="bidask")
+                    cd.instrument = self.instrument
+                    cd.granularity = self.granularity
+                    for k,v in c.items():
+                        if k == "time":
+                            pd.datetime.strptime(v, '%Y-%m-%dT%H:%M:%S.%fZ')
+                            setattr(cd, k, pd.datetime.strptime(v, '%Y-%m-%dT%H:%M:%S.%fZ'))
+                        else:
+                            setattr(cd, k, v)
+                    if cd.volume > vol_cutoff:
+                        candlelist.append(cd)
+            return candlelist
     
     def fetch_candles_from_file(self, file):
         '''
