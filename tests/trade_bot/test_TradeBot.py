@@ -44,7 +44,7 @@ def test_run(tb_object):
     """
     tb_object.run()
 
-def test_run1(settings_obj):
+def test_run1(settings_obj, clean_tmp):
     """
     Test tradebot on a really easy to identify
     short trade on a tight time interval
@@ -64,7 +64,7 @@ def test_run1(settings_obj):
 
     assert len(tl.tlist) == 2
 
-def test_run2():
+def test_run2(clean_tmp):
     """
     Test tradebot on a really easy to identify
     long trade on a tight time interval
@@ -80,7 +80,7 @@ def test_run2():
 
     assert len(tl.tlist) == 1
 
-def test_run3():
+def test_run3(clean_tmp):
     """
     Test tradebot on a really easy to identify
     short trade on a tight time interval using
@@ -97,7 +97,7 @@ def test_run3():
 
     assert len(tl.tlist) == 1
 
-def test_run4():
+def test_run4(clean_tmp):
     """
     Test tradebot on a really easy to identify
     short trade on a tight time interval using
