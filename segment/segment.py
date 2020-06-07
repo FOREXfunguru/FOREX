@@ -153,6 +153,49 @@ class Segment(object):
         '''
         return self.clist[-1].time
 
+    def get_lowest(self):
+        '''
+        Function to get the lowest candle (i.e., the candle with the lowest lo
+        candle.lowAsk) price in self.clist
+
+        Returns
+        -------
+        Candle object
+        '''
+
+        sel_c = None
+        price = None
+        for c in self.clist:
+            if price is None:
+                price = c.lowAsk
+                sel_c = c
+            elif c.lowAsk < price:
+                price = c.lowAsk
+                sel_c = c
+
+        return sel_c
+
+    def get_highest(self):
+        '''
+        Function to get the highest candle (i.e., the candle with the highest lo
+        candle.highAsk) price in self.clist
+
+        Returns
+        -------
+        Candle object
+        '''
+
+        sel_c = None
+        price = None
+        for c in self.clist:
+            if price is None:
+                price = c.highAsk
+                sel_c = c
+            elif c.lowAsk > price:
+                price = c.highAsk
+                sel_c = c
+
+        return sel_c
 
     def __repr__(self):
         return "Segment"

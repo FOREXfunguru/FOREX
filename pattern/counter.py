@@ -109,6 +109,7 @@ class Counter(object):
             self.trade.TP = round(self.trade.entry+diff, 4)
 
         if init_feats is True:
+            self.entry_onrsi = self.is_entry_onrsi()
             self.set_lasttime()
             self.set_pivots()
             self.set_total_score()
@@ -197,6 +198,20 @@ class Counter(object):
         c_logger.debug("Done set_max_min_rsi")
 
         return round(first, 2)
+
+    def is_entry_onrsi(self):
+        '''
+        Function to check if self.trade.start is on RSI
+
+        Returns
+        -------
+        True if self.trade.start is on RSI (i.e. RSI>=70 or RSI<=30)
+        False otherwise
+        '''
+        if self.clist_period.clist[-1].rsi >= 70 or self.clist_period.clist[-1].rsi <= 30:
+            return True
+        else:
+            return False
 
     def set_lasttime(self):
         '''
@@ -378,7 +393,14 @@ class Counter(object):
         Nothing
         '''
 
-        self.trend_i = self.clist_period.calc_itrend(t_type=self.trade.type)
+        merged_s = self.clist_period.calc_itrend()
+
+        if self.trade.type == "long":
+            candle = merged_s.get_highest()
+        elif self.trade.type == "short":
+            candle = merged_s.get_lowest()
+
+        self.trend_i = candle.time
 
     def set_score_pivot(self):
         '''
@@ -476,7 +498,6 @@ class Counter(object):
         fig.savefig(outfile_prices, format='png')
 
         c_logger.debug("plot_pivots Done")
-
 
     def set_pivots_lasttime(self):
         '''

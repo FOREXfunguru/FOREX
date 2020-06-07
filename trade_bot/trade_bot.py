@@ -170,10 +170,16 @@ class TradeBot(object):
 
         return t
 
-    def run(self):
+    def run(self, discard_sat=True):
         '''
         This function will run the Bot from start to end
         one candle at a time
+
+        Parameter
+        ---------
+        discard_sat : Bool
+                      If this is set to True, then the Trade wil not
+                      be taken if IC falls on a Saturday. Default: True
 
         Returns
         -------
@@ -215,7 +221,6 @@ class TradeBot(object):
                 else:
                     tend = None
             tb_logger.info("Trade bot - analyzing candle: {0}".format(startO.isoformat()))
-
             if loop == 0:
                 # no iteration has occurred yet, so invoke .calc_SR for the first time
                 SRlst = self.calc_SR(adateObj=startO)
@@ -230,6 +235,7 @@ class TradeBot(object):
                 tb_logger.info("Identified HAreaList for time {0}:".format(startO.isoformat()))
                 tb_logger.info("{0}".format(res))
                 loop = 0
+
             # fetch candle for current datetime
             oanda.run(start=startO.isoformat(),
                       count=1)
@@ -238,9 +244,18 @@ class TradeBot(object):
             c_candle = candle_list[0] # this is the current candle that
                                       # is being checked
 
+            # c_candle.time is not equal to startO
+            # when startO is non-working day, for example
+            delta1hr = datetime.timedelta(hours=1)
+            if (c_candle.time != startO) and (abs(c_candle.time-startO) > delta1hr):
+                loop += 1
+                tb_logger.info("Analysed dt {0} is not the same than APIs returned dt {1}."
+                               " Skipping...".format(startO, c_candle.time))
+                startO = startO + delta
+                continue
+
             #check if there is any HArea overlapping with c_candle
             HAreaSel = SRlst.onArea(candle=candle_list[0])
-            pdb.set_trace()
 
             if HAreaSel is not None:
                 c_candle.set_candle_features()
@@ -253,6 +268,11 @@ class TradeBot(object):
                     prepare_trade = True
                 elif type == 'long' and c_candle.colour == 'green':
                     prepare_trade = True
+
+                # discard if IC falls on a Saturday
+                if c_candle.time.weekday() == 5 and discard_sat is True:
+                    tb_logger.info("Possible trade at {0} falls on Sat. Skipping...".format(c_candle.time))
+                    prepare_trade = False
 
                 if prepare_trade is True:
                     t = self.prepare_trade(
@@ -273,9 +293,6 @@ class TradeBot(object):
                     t.run_trade(expires=2)
                     if t.entered is True:
                         tlist.append(t)
-                        if not hasattr(t, 'end'):
-                            pdb.set_trace()
-                            print("h\n")
                         tend = t.end
             startO = startO+delta
             loop += 1

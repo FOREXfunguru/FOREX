@@ -99,9 +99,8 @@ def test_run3(clean_tmp):
 
 def test_run4(clean_tmp):
     """
-    Test tradebot on a really easy to identify
-    short trade on a tight time interval using
-    USD_JPY
+    Test tradebot on a possible trade that falls on a
+    Saturday and will not be taken
     """
     tb = TradeBot(
         pair='AUD_JPY',
@@ -112,9 +111,7 @@ def test_run4(clean_tmp):
 
     tl = tb.run()
 
-    assert len(tl.tlist) == 1
-    assert 0
-
+    assert tl is None
 
 @pytest.mark.parametrize("pair,"
                          "start,"
