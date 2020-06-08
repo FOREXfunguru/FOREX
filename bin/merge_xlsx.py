@@ -17,9 +17,10 @@ cols = None
 all_df_lst = []
 for wb in to_merge:
     df = pd.read_excel(wb, int(args.ix))
-    cols = df.columns
-    all_df_lst.append(df)
-  #  all_df_lst.append(df.iloc[:, 1:])
+    newDF=df.iloc[:, 1:]
+    cols = newDF.columns
+#    all_df_lst.append(df)
+    all_df_lst.append(newDF)
 
 # Merge all the dataframes in all_df_list
 # Pandas will automatically append based on similar column names

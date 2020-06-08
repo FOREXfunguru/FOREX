@@ -87,8 +87,7 @@ def test_ctobject_notype(start, SR, SL, TP, entry, clean_tmp):
     c = Counter(
         trade=t,
         period=1000,
-        settingf='../../data/settings.ini'
-    )
+        settingf='../../data/settings.ini')
 
     assert 0
 
@@ -139,8 +138,8 @@ def test_set_lasttime(start, type, SR, SL, TP, entry, lasttime, clean_tmp):
     c = Counter(
         trade=t,
         period=1000,
-        settingf='../../data/settings.ini'
-    )
+        settingf='../../data/settings.ini')
+
     c.set_lasttime()
     assert c.lasttime == lasttime
 
@@ -206,10 +205,8 @@ def test_set_pivots(pair, id, timeframe, start, type, SR, SL, TP, entry, dates, 
         settingf="../../data/settings.ini"
     )
 
-    c = Counter(
-        trade=t,
-        settingf='../../data/settings.ini'
-    )
+    c = Counter(trade=t,
+                settingf='../../data/settings.ini')
 
     c.set_pivots()
 
@@ -229,8 +226,7 @@ def test_set_pivots(pair, id, timeframe, start, type, SR, SL, TP, entry, dates, 
                          "TP,"
                          "entry,"
                          "pllen",
-                         [
-                          ('EUR_GBP', 'H4', 'EUR_GBP 19FEB2020H4', '2020-02-19 06:00:00', 'long', 0.82920, 0.82793, 0.83801,
+                         [('EUR_GBP', 'H4', 'EUR_GBP 19FEB2020H4', '2020-02-19 06:00:00', 'long', 0.82920, 0.82793, 0.83801,
                              0.83196, 2),
                           ('EUR_GBP', 'H4', 'EUR_GBP 06MAY2019H4', '2019-05-06 01:00:00', 'long', 0.85036, 0.84874, 0.85763,
                              0.85109, 2),
@@ -259,14 +255,11 @@ def test_set_pivots_4h(pair, timeframe, id, start, type, SR, SL, TP, entry, plle
 
     c = Counter(
         trade=t,
-        settings=settings_obj
-    )
+        settings=settings_obj)
 
     c.set_pivots()
 
     assert len(c.pivots.plist) == pllen
-
-
 
 @pytest.mark.parametrize("pair,"
                          "timeframe,"
@@ -278,7 +271,8 @@ def test_set_pivots_4h(pair, timeframe, id, start, type, SR, SL, TP, entry, plle
                          "TP,"
                          "entry,"
                          "trend_i",
-                         [('AUD_JPY', 'D', 'AUD_JPY 16MAR2010D', '2010-03-15 21:00:00', 'short', 82.63, 83.645, 80.32, 82.315,
+                         [
+                          ('AUD_JPY', 'D', 'AUD_JPY 16MAR2010D', '2010-03-15 21:00:00', 'short', 82.63, 83.645, 80.32, 82.315,
                            datetime.datetime(2010, 2, 4, 22, 0)),
                           ('AUD_CAD', 'D', 'AUD_CAD 01JAN2020D', '2019-12-31 22:00:00', 'short', 0.9149, 0.91574, 0.9019,
                            0.91574, datetime.datetime(2019, 10, 1, 21, 0)),
@@ -316,16 +310,49 @@ def test_set_trend_i(pair, id, timeframe, start, type, SR, SL, TP, entry, trend_
         TP=TP,
         entry=entry,
         strat='counter_b1',
-        settingf="../../data/settings.ini"
-    )
+        settingf="../../data/settings.ini")
 
     c = Counter(
         trade=t,
-        settingf='../../data/settings.ini'
-    )
+        settingf='../../data/settings.ini')
 
     c.set_trend_i()
     assert trend_i == c.trend_i
+
+@pytest.mark.parametrize("pair,"
+                         "timeframe,"
+                         "id,"
+                         "start,"
+                         "type,"
+                         "SR,"
+                         "SL,"
+                         "TP,"
+                         "entry,"
+                         "pips_c_trend",
+                         [('AUD_JPY', 'D', 'AUD_JPY 09FEB2010D', '2010-02-08 22:00:00', 'long', 76.820, 76.094, 80.289, 77.764,
+                           24.1),
+                          ('AUD_JPY', 'D', 'AUD_JPY 16MAR2010D', '2010-03-15 21:00:00', 'short', 82.63, 83.645, 80.32, 82.315,
+                           13.4)])
+def test_set_pips_c_trend(pair, id, timeframe, start, type, SR, SL, TP, entry, pips_c_trend, clean_tmp):
+    t = Trade(
+        id=id,
+        start=start,
+        pair=pair,
+        timeframe=timeframe,
+        type=type,
+        SR=SR,
+        SL=SL,
+        TP=TP,
+        entry=entry,
+        strat='counter_b1',
+        settingf="../../data/settings.ini"
+    )
+
+    c = Counter(trade=t,
+                settingf='../../data/settings.ini',
+                init_feats=True)
+
+    assert pips_c_trend == c.pips_c_trend
 
 @pytest.mark.parametrize("pair,"
                          "timeframe,"
@@ -516,49 +543,3 @@ def test_set_score_pivot_lasttime(ct_object, clean_tmp):
 
     assert ct_object.score_pivot_lasttime == 182.5
 
-"""
-def test_calc_itrend(counter_object_notrendi):
-
-    counter_object_notrendi.calc_itrend()
-
-
-def test_set_slope(counter_object):
-
-    counter_object.set_slope()
-
-    assert counter_object.slope==0.0011973711767399185
-
-def test_set_n_rsibounces(counter_object):
-
-    counter_object.set_slope()
-    counter_object.set_rsibounces_feats()
-
-    assert counter_object.n_rsibounces==4
-    assert counter_object.rsibounces_lengths[0]== 3
-    assert counter_object.rsibounces_lengths[1]== 6
-
-def test_set_divergence(counter_object):
-
-    counter_object.set_slope()
-    counter_object.set_divergence()
-
-    assert counter_object.divergence==True
-
-def test_set_entry_onrsi(counter_object):
-
-    counter_object.set_entry_onrsi()
-
-    assert counter_object.entry_onrsi==False
-
-def test_set_length_candles(counter_object):
-
-    counter_object.set_length_candles()
-
-    assert counter_object.length_candles == 92
-
-def test_set_length_pips(counter_object):
-
-    counter_object.set_length_pips()
-
-    assert counter_object.length_pips == 1259
-"""

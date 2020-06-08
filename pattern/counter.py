@@ -27,6 +27,9 @@ class Counter(object):
 
     trend_i : datetime, Required
               start of the trend
+    pips_c_trend : float, Optional
+                   This value represents the average number of pips for each candle from
+                   self.trend_i up to self.start
     pivots : PivotList, Optional
               PivotList object with Pivots in the self.trade.SR
     clist_period : CandleList, Optional
@@ -118,6 +121,7 @@ class Counter(object):
             self.set_score_pivot()
             self.set_score_pivot_lasttime()
             self.set_trend_i()
+            self.pips_c_trend = self.calc_pips_c_trend()
             self.set_max_min_rsi()
 
         c_logger.debug("Done initializing counter object")
@@ -401,6 +405,44 @@ class Counter(object):
             candle = merged_s.get_lowest()
 
         self.trend_i = candle.time
+
+    def calc_pips_c_trend(self):
+        '''
+        Function to calculate the pips_c_trend
+
+        Returns
+        -------
+        Float with number of pips for the trend_i
+        '''
+
+        oanda = OandaAPI(url=self.settings.get('oanda_api', 'url'),
+                         instrument=self.trade.pair,
+                         granularity=self.trade.timeframe,
+                         settingf=self.settingf,
+                         settings=self.settings)
+
+        resp = oanda.run(start=self.trend_i.isoformat(),
+                         end=self.trade.start.isoformat())
+
+        if resp == 200:
+
+            candle_list = oanda.fetch_candleset()
+
+            cl = CandleList(candle_list,
+                            settingf=self.settingf,
+                            settings=self.settings,
+                            instrument=self.trade.pair,
+                            granularity=self.trade.timeframe,
+                            id=self.trade.id,
+                            type=self.trade.type)
+
+            pips_c_trend = cl.get_length_pips()/cl.get_length_candles()
+
+            return round(pips_c_trend, 1)
+        else:
+            c_logger.warn("API query was not OK. 'pips_c_trend' could not be calculated")
+
+
 
     def set_score_pivot(self):
         '''
