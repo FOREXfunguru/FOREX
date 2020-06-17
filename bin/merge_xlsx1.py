@@ -17,9 +17,11 @@ cols = None
 all_df_lst = []
 for wb in to_merge:
     df = pd.read_excel(wb, int(args.ix))
-    newDF=df.iloc[:, 1:]
-    cols = newDF.columns
-    all_df_lst.append(newDF)
+    #this if the currency merge    newDF=df.iloc[:, 1:]
+    #this if the currency merge cols = newDF.columns
+    cols=df.columns
+    all_df_lst.append(df)
+  #this if the currency merge  all_df_lst.append(newDF)
 
 # Merge all the dataframes in all_df_list
 # Pandas will automatically append based on similar column names

@@ -398,7 +398,6 @@ def test_is_entry_onrsi(pair, id, timeframe, start, type, SR, SL, TP, entry, ent
     )
 
     assert entry_onrsi == c.is_entry_onrsi()
-    assert 0
 
 @pytest.mark.parametrize("pair,"
                          "timeframe,"
