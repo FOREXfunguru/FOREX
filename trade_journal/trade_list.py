@@ -50,7 +50,6 @@ class TradeList(object):
 
         trade_list = []
         for t in self.tlist:
-            pdb.set_trace()
             tl_logger.info("Processing trade: {0}-{1}".format(t.pair, t.start))
             if t.strat in strats:
                 if t.entered is False and not hasattr(t, 'outcome'):

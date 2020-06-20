@@ -17,7 +17,7 @@ import logging
 
 # create logger
 tb_logger = logging.getLogger(__name__)
-tb_logger.setLevel(logging.INFO)
+tb_logger.setLevel(logging.DEBUG)
 
 class TradeBot(object):
     '''
@@ -416,6 +416,57 @@ class TradeBot(object):
 
         return max, min
 
+    def __initclist(self, timeframe, end, pair):
+        '''
+        Private function to initialize the CandleList object that goes from trade.start
+        to self.settings.getint('counter', 'period')
+
+        Parameters
+        ----------
+        timeframe : Timeframe
+        end : Datetime object that will be the end of this CandleList
+        pair : pair
+
+        Returns
+        -------
+        Candlelist or
+        None if Oanda API query was not successful
+        '''
+
+        delta_period = periodToDelta(self.settings.getint('trade_bot', 'period_range'),
+                                     timeframe)
+        delta_1 = periodToDelta(1, timeframe)
+        start = end - delta_period  # get the start datetime for this CandleList period
+        end = end + delta_1  # increase end by one candle to include end
+
+        tb_logger.debug("Fetching candlelist for period: {0}-{1}".format(start, end))
+
+        oanda = OandaAPI(url=self.settings.get('oanda_api', 'url'),
+                         instrument=pair,
+                         granularity=timeframe,
+                         settingf=self.settingf,
+                         settings=self.settings)
+
+        resp = oanda.run(start=start.isoformat(),
+                         end=end.isoformat())
+
+        if resp == 200:
+
+            candle_list = oanda.fetch_candleset()
+
+            cl = CandleList(candle_list,
+                            settingf=self.settingf,
+                            settings=self.settings,
+                            instrument=pair,
+                            granularity=timeframe,
+                            id="test",
+                            type="short")
+            cl.calc_rsi()
+            return cl
+        else:
+            t_logger.warn("API query was not OK. No CandleList created ")
+            return None
+
     def calc_SR(self, adateObj):
         '''
         Function to calculate S/R lines
@@ -441,6 +492,10 @@ class TradeBot(object):
         # the increment of price in number of pips is double the hr_extension
         prev_p = None
         p = float(ll)
+
+        cl = self.__initclist(timeframe=self.timeframe,
+                              end=adateObj,
+                              pair=self.pair)
         while p <= float(ul):
             tb_logger.debug("Processing S/R at {0}".format(round(p, 4)))
             # each of 'p' will become a S/R that will be tested for bounces
@@ -462,15 +517,11 @@ class TradeBot(object):
                 settingf=self.settingf,
                 settings=self.settings)
 
-            # reduce period that Counter uses so the S/R
-            # are calculated with the most recent pivots
-            newperiod = self.settings.get('trade_bot', 'period_range')
-            self.settings.set('counter', 'period', newperiod)
             c = Counter(
                 trade=t,
+                clist_period=cl,
                 init_feats=True,
-                settings=self.settings
-            )
+                settings=self.settings)
 
             if len(c.pivots.plist) == 0:
                 mean_pivot = 0

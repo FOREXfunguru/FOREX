@@ -13,10 +13,9 @@ from pivot.pivotlist import *
 from configparser import ConfigParser
 from utils import periodToDelta, substract_pips2price, add_pips2price
 
-logging.basicConfig(level=logging.INFO)
-
 # create logger
 c_logger = logging.getLogger(__name__)
+c_logger.setLevel(logging.INFO)
 
 class Counter(object):
     '''
@@ -96,13 +95,15 @@ class Counter(object):
 
         # init the CandleList from self.trade.start-self.settings.getint('counter', 'period')
         # to self.trade.start this will set the self.clist_period class attribute
-        self.__initclist()
+        if not hasattr(self, 'clist_period'):
+            self.__initclist()
         # calc_rsi
         if self.clist_period is None:
             c_logger.warn("No 'self.clist_period' defined. Skipping 'calc_rsi' and 'init_feats' methods")
             init_feats = False
         else:
-            self.clist_period.calc_rsi()
+            if not hasattr(self.clist_period.clist[0], 'rsi'):
+                self.clist_period.calc_rsi()
         if not hasattr(self.trade, 'TP'):
             if not hasattr(self, 'RR'):
                 raise Exception("Neither the RR not the TP "
@@ -129,7 +130,7 @@ class Counter(object):
     def __initclist(self):
         '''
         Private function to initialize the CandleList object that goes from self.trade.start
-        to self.period
+        to self.settings.getint('counter', 'period')
 
         This will set the self.clist_period class attribute
 
@@ -143,6 +144,8 @@ class Counter(object):
         delta_1 = periodToDelta(1, self.trade.timeframe)
         start = self.trade.start - delta_period  # get the start datetime for this CandleList period
         end = self.trade.start + delta_1  # increase self.start by one candle to include self.start
+
+        c_logger.debug("Fetching candlelist for period: {0}-{1}".format(start, end))
 
         oanda = OandaAPI(url=self.settings.get('oanda_api', 'url'),
                          instrument=self.trade.pair,
