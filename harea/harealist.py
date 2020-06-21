@@ -42,7 +42,7 @@ class HAreaList(object):
         Returns
         -------
         An HArea object overlapping with 'candle' and the ix
-        in self.halist for this HArea
+        in self.halist for this HArea.
         None if there are no HArea objects overlapping
         '''
         if not hasattr(candle, 'colour'):

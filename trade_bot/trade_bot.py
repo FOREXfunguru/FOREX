@@ -18,7 +18,7 @@ import pickle
 
 # create logger
 tb_logger = logging.getLogger(__name__)
-tb_logger.setLevel(logging.DEBUG)
+tb_logger.setLevel(logging.INFO)
 
 class TradeBot(object):
     '''

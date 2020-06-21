@@ -62,7 +62,8 @@ class Trade(object):
     tot_SR : int, Optional
              Number of SR areas identified for this Trade
     rank_selSR : int, Optional
-                 Position in the HArea list for selected SR
+                 Position in the HArea list for selected SR. Where 0 is the rank for the
+                 lowest HArea.price
     settingf : str, Optional
                Path to *.ini file with settings
     settings : ConfigParser object generated using 'settingf'
