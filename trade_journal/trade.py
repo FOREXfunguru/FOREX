@@ -59,14 +59,18 @@ class Trade(object):
          Id used for this object
     SLdiff : float, Optional
              Diff in pips between entry and SL
+    tot_SR : int, Optional
+             Number of SR areas identified for this Trade
+    rank_selSR : int, Optional
+                 Position in the HArea list for selected SR
     settingf : str, Optional
                Path to *.ini file with settings
     settings : ConfigParser object generated using 'settingf'
                Optional
     '''
 
-    def __init__(self, strat, start, type=None, settingf=None,
-                 settings=None, entered=False, **kwargs):
+    def __init__(self, strat, start, type=None, tot_SR=None, rank_selSR=None,
+                 settingf=None, settings=None, entered=False, **kwargs):
         self.__dict__.update(kwargs)
         if not hasattr(self, 'TP') and not hasattr(self, 'RR'):
             raise Exception("Neither the RR not "
@@ -84,6 +88,8 @@ class Trade(object):
         self.pair = re.sub('/', '_', self.pair)
         self.pair = re.sub('.bot', '', self.pair)
         self.strat = strat
+        self.tot_SR = tot_SR
+        self.rank_selSR = rank_selSR
         #remove potential whitespaces in timeframe
         self.timeframe = re.sub(' ', '', self.timeframe)
         self.settingf = settingf

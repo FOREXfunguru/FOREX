@@ -36,8 +36,8 @@ def main():
         settingf=args.settingf)
 
     main_logger.info("Running TradeBot")
-
-    tl = tb.run()
+    pickled_file = "{0}.pckl".format(os.path.basename(args.url).split('.')[0])
+    tl = tb.run(pickled_file=pickled_file)
 
     main_logger.info("Done TradeBot")
 

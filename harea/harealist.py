@@ -41,20 +41,25 @@ class HAreaList(object):
 
         Returns
         -------
-        An HArea object overlapping with 'candle'.
+        An HArea object overlapping with 'candle' and the ix
+        in self.halist for this HArea
         None if there are no HArea objects overlapping
         '''
         if not hasattr(candle, 'colour'):
             candle.set_candle_features()
 
         onArea_hr = None
+        sel_ix = None
+        ix = 0
         for harea in self.halist:
             highAttr = "high{0}".format(harea.settings.get('general', 'bit'))
             lowAttr = "low{0}".format(harea.settings.get('general', 'bit'))
             if harea.price <= getattr(candle, highAttr) and harea.price >= getattr(candle, lowAttr):
-                    onArea_hr = harea
+                onArea_hr = harea
+                sel_ix = ix
+            ix += 1
 
-        return onArea_hr
+        return onArea_hr, sel_ix
 
     def print(self):
         '''

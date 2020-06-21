@@ -52,7 +52,6 @@ def test_run1(settings_obj, clean_tmp):
 
     settings_obj.set('trade_bot', 'period_range', '1500')
 
-
     tb = TradeBot(
         pair='AUD_USD',
         timeframe='D',
@@ -60,7 +59,7 @@ def test_run1(settings_obj, clean_tmp):
         end='2018-02-06 22:00:00',
         settings=settings_obj)
 
-    tl = tb.run()
+    tl = tb.run(pickled_file="AUD_USD.test.pckl")
 
     assert len(tl.tlist) == 2
 
