@@ -317,8 +317,13 @@ class TradeBot(object):
                         continue
                     t.run_trade(expires=2)
                     if t.entered is True:
-                        tlist.append(t)
-                        tend = t.end
+                        if not hasattr(t, 'end'):
+                            tb_logger.info("Trade.end will be n.a. Check if this trade hit the SL/TP in"
+                                           "the analysed timeframe. Skipping...")
+                            tend = None
+                        else:
+                            tlist.append(t)
+                            tend = t.end
             startO = startO+delta
             loop += 1
 
