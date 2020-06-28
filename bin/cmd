@@ -1,0 +1,1 @@
+nextflow run  run_trade_bot.nf -c run_trade_bot.config --config '/Users/ernesto/Google Drive/WORKING_FX/TRADE_BOT/06_06_2020/H12TF/CONFIG/settings.30periodH12TF.ini' --pairs EUR_GBP,EUR_USD --timeframe H12

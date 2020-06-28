@@ -3,6 +3,7 @@ from pattern.counter import Counter
 
 import pdb
 import logging
+import datetime
 
 # create logger
 tl_logger = logging.getLogger(__name__)
