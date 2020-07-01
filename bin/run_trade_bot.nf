@@ -33,7 +33,8 @@ pairs_list = Channel.from( params.pairs.split(',') )
 
 process run_trade_bot {
     executor 'local'
-    cpus 2
+    maxForks 3
+    cpus 1
 
     publishDir "results/", mode: 'copy', overwrite: true
 
