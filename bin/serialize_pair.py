@@ -34,7 +34,7 @@ while startO < endO:
     startO = startO+datetime.timedelta(hours=int(args.no_candles)*period)
     if startO >= endO:
         if startO > datetime.datetime.now():
-            end = datetime.datetime.now().strftime('%Y-%m-%dT%H:%M:%S')
+            end = (datetime.datetime.now() - datetime.timedelta(days=2)).strftime('%Y-%m-%dT%H:%M:%S')
         else:
             end = endO.isoformat()
     else:
