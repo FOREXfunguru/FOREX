@@ -21,7 +21,7 @@ logging.basicConfig(level=logging.INFO)
 
 # create logger
 cl_logger = logging.getLogger(__name__)
-
+cl_logger.setLevel(logging.INFO)
 
 class CandleList(object):
     '''
@@ -35,37 +35,24 @@ class CandleList(object):
                Path to *.ini file with settings
     settings : ConfigParser object generated using 'settingf'
                Optional
+    ser_data_obj : ser_data_obj, Optional
+                   ser_data_obj with serialized data
     instrument : str, Optional
                  Instrument for this CandleList (i.e. AUD_USD or EUR_USD etc...)
     granularity : str, Optional
                 Granularity for this CandleList (i.e. D, H12, H8 etc...)
     type : str, Optional
            Type of this CandleList. Possible values are 'long'/'short'
-    seq : dict, Optional
-          Dictionary containing the binary seq for the different candle portions
-    number_of_0s : dict, Optional
-          Dictionary containing the number of 0s (possibly normalized) in the different
-          binary seqs in self.seq
-    longest_stretch : dict, Optional
-           Dictionary containing the longest stretch of 0s in the different binary seqs
-           in self.seq
-    highlow_double0s : number, Optional
-          Number of double 0s in the high/low of the candles in CandleList
-    openclose_double0s : number, Optional
-          Number of double 0s in the open/close of the candles in CandleList
-    entropy : Dict of Floats, Optional
-          Entropy for each of the sequences in self.seq
     id : str, Optional
          Identifier for this CandleList (i.e. EUR_GBP 15MAY2007D)
     '''
 
     def __init__(self, clist, settingf=None, settings=None,
-                 instrument=None, granularity=None,
-                 type=None, seq=None, number_of_0s=None,
-                 longest_stretch=None, highlow_double0s=None,
-                 openclose_double0s=None, entropy=None, id=None):
+                 ser_data_obj=None, instrument=None, granularity=None,
+                 type=None, id=None):
         self.clist = clist
         self.settingf = settingf
+        self.ser_data_obj = ser_data_obj
         if self.settingf is not None:
             # parse settings file (in .ini file)
             parser = ConfigParser()
@@ -89,12 +76,6 @@ class CandleList(object):
         self.instrument = instrument
         self.granularity = granularity
         self.len = len(clist)
-        self.seq = seq
-        self.number_of_0s = number_of_0s
-        self.longest_stretch = longest_stretch
-        self.highlow_double0s = highlow_double0s
-        self.openclose_double0s = openclose_double0s
-        self.entropy = entropy
         self.id = id
         self.ix = 0
 
@@ -189,14 +170,26 @@ class CandleList(object):
         This 2-step API call is necessary in order to avoid
         maximum number of candles errors
         '''
-        oanda.run(start=start_calc_time.isoformat(),
-                  end=start_time.isoformat())
+        if self.ser_data_obj is None:
+            cl_logger.debug("Fetching data from API")
+            oanda.run(start=start_calc_time.isoformat(),
+                      end=start_time.isoformat())
+        else:
+            cl_logger.debug("Fetching data from File")
+            oanda.data = self.ser_data_obj.slice(start=start_calc_time,
+                                                 end=start_time)
 
         cl1 = oanda.fetch_candleset()
 
         '''Get candlelist from start_time to end_time'''
-        oanda.run(start=start_time.isoformat(),
-                  end=end_time.isoformat())
+        if self.ser_data_obj is None:
+            cl_logger.debug("Fetching data from API")
+            oanda.run(start=start_time.isoformat(),
+                      end=end_time.isoformat())
+        else:
+            cl_logger.debug("Fetching data from File")
+            oanda.data = self.ser_data_obj.slice(start=start_time,
+                                                 end=end_time)
 
         cl2 = oanda.fetch_candleset()
 
@@ -248,10 +241,10 @@ class CandleList(object):
         sorted from older to newer
         '''
 
-        adj=False
-        num_times=0
-        length=0
-        lengths=[]
+        adj = False
+        num_times = 0
+        length = 0
+        lengths = []
 
         for c in self.clist:
             if c.rsi is None:
@@ -270,16 +263,16 @@ class CandleList(object):
                 elif c.rsi < 70:
                     if adj is True: lengths.append(length)
                     adj = False
-            elif self.type=='long':
+            elif self.type == 'long':
                 if c.rsi<30 and adj is False:
-                    num_times+=1
-                    length=1
+                    num_times += 1
+                    length = 1
                     adj=True
-                elif c.rsi<30 and adj is True:
-                    length+=1
-                elif c.rsi>30:
+                elif c.rsi < 30 and adj is True:
+                    length += 1
+                elif c.rsi > 30:
                     if adj is True: lengths.append(length)
-                    adj=False
+                    adj = False
 
         if adj is True and length>0: lengths.append(length)
 
@@ -309,7 +302,6 @@ class CandleList(object):
         -------
         int Length in number of pips
         '''
-
 
         start_cl = self.clist[0]
         end_cl = self.clist[-1]

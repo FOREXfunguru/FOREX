@@ -63,6 +63,23 @@ def test_run1(settings_obj, clean_tmp):
 
     assert len(tl.tlist) == 2
 
+def test_run_D_wserialized(clean_tmp):
+    """
+    Run the trade_bot with serialized data
+    """
+
+    tb = TradeBot(
+        pair='AUD_USD',
+        timeframe='D',
+        start='2018-01-22 22:00:00',
+        end='2018-02-06 22:00:00',
+        ser_data_f="/Users/ernesto/SCRATCH/FOREX/05_07_2020/AUD_USD.daily.ser.data",
+        settingf="../../data/settings.ini")
+
+    tl = tb.run(pickled_file="../../data/test.pickled")
+
+    assert len(tl.tlist) == 2
+
 def test_run2(clean_tmp):
     """
     Test tradebot on a really easy to identify
@@ -150,7 +167,6 @@ def test_run_H8(pair, start, end, len_tl, settings_obj, clean_tmp):
     settings_obj.set('pivots', 'th_bounces', '0.02')
     settings_obj.set('trade_bot', 'th', '0.2')
     settings_obj.set('trade_bot', 'period_range', '4500')
-
 
     tb = TradeBot(
         pair=pair,

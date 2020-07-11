@@ -1,6 +1,8 @@
 import pytest
 
 from trade_journal.trade import Trade
+from apis.ser_data_obj import ser_data_obj
+
 
 @pytest.fixture
 def t_object():

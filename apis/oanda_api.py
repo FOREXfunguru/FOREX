@@ -13,6 +13,7 @@ import datetime
 import time
 import utils
 import logging
+import json
 
 from configparser import ConfigParser
 from candle.candle import BidAskCandle
@@ -122,7 +123,7 @@ class OandaAPI(object):
         elif end is None and count is None:
             raise Exception("You need to set at least the 'end' or the 'count' attribute")
 
-        if self.settings.has_option('oanda_api', 'url'):
+        if self.settings.has_option('oanda_api', 'url') is True:
             try:
                 resp = requests.get(url=self.settings.get('oanda_api', 'url'),
                                     params=params)
@@ -135,8 +136,25 @@ class OandaAPI(object):
                 return resp.status_code
             else:
                 self.data = json.loads(resp.content.decode("utf-8"))
+            return resp.status_code
 
-                return resp.status_code
+    def serialize_data(self, outfile):
+        """
+        Function that will dump self.data to a file
+
+        Parameters
+        ----------
+        outfile : str
+                  File to store the file. Required
+        """
+
+        o_logger.info("Dump data to {0}".format(outfile))
+
+        serializeddata = json.dumps(self.data)
+        ## write to outfile
+        f = open(outfile, "w")
+        f.write(serializeddata)
+        f.close()
 
     def validate_datetime(self, datestr, granularity):
         '''

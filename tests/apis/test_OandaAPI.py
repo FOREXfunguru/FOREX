@@ -1,7 +1,17 @@
 import pytest
 import pdb
+import glob
+import os
 
 from apis.oanda_api import OandaAPI
+
+@pytest.fixture
+def clean_tmp():
+    yield
+    print("Cleanup files")
+    files = glob.glob('../../data/*.data')
+    for f in files:
+        os.remove(f)
 
 @pytest.mark.parametrize("i,g,s,e,resp", [('GBP_NZD', 'D', '2018-11-23T22:00:00', '2019-01-02T22:00:00', 200),
                                           ('GBP_AUD', 'D', '2002-11-23T22:00:00', '2007-01-02T22:00:00', 200),
@@ -73,7 +83,7 @@ def test_OandaAPI_vol():
 
     candle_list = oanda.fetch_candleset(vol_cutoff=20)
 
-    assert len(candle_list)==6
+    assert len(candle_list) == 6
 
 def test_fetch_one_candle():
     oanda = OandaAPI(instrument='AUD_USD',
@@ -83,7 +93,7 @@ def test_fetch_one_candle():
     oanda.run(start='2015-01-25T22:00:00',
               count=1)
 
-    candle_list=oanda.fetch_candleset()
+    candle_list = oanda.fetch_candleset()
     assert candle_list[0].highBid == 0.79329
     assert candle_list[0].openBid == 0.7873
     assert candle_list[0].lowBid == 0.7857
@@ -91,3 +101,27 @@ def test_fetch_one_candle():
     assert candle_list[0].lowAsk == 0.786
     assert candle_list[0].complete == True
     assert candle_list[0].openAsk == 0.7889
+
+def test_serialize_data():
+    '''
+    test of function 'serialize_data'
+    '''
+    oanda = OandaAPI(instrument='AUD_USD',
+                     granularity='D',
+                     settingf='../../data/settings.ini')
+
+    oanda.run(start='2015-01-25T22:00:00',
+              count=10)
+
+    oanda.serialize_data(outfile="../../data/out.data")
+
+def test_run_with_seralized_data(clean_tmp):
+    '''
+    test oanda.run with serialized data
+    '''
+    oanda = OandaAPI(instrument='AUD_USD',
+                     granularity='D',
+                     settingf='../../data/settings_serialised.ini')
+
+    oanda.run(start='2015-01-25T22:00:00',
+              count=10)

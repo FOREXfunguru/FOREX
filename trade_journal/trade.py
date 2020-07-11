@@ -68,10 +68,12 @@ class Trade(object):
                Path to *.ini file with settings
     settings : ConfigParser object generated using 'settingf'
                Optional
+    ser_data_obj : ser_data_obj, Optional
+                   ser_data_obj with serialized data
     '''
 
     def __init__(self, strat, start, type=None, tot_SR=None, rank_selSR=None,
-                 settingf=None, settings=None, entered=False, **kwargs):
+                 settingf=None, settings=None, ser_data_obj=None, entered=False, **kwargs):
         self.__dict__.update(kwargs)
         if not hasattr(self, 'TP') and not hasattr(self, 'RR'):
             raise Exception("Neither the RR not "
@@ -90,6 +92,7 @@ class Trade(object):
         self.pair = re.sub('.bot', '', self.pair)
         self.strat = strat
         self.tot_SR = tot_SR
+        self.ser_data_obj = ser_data_obj
         self.rank_selSR = rank_selSR
         #remove potential whitespaces in timeframe
         self.timeframe = re.sub(' ', '', self.timeframe)
@@ -134,8 +137,14 @@ class Trade(object):
         else:
             anend = try_parsing_date(self.end)
 
-        oanda.run(start=astart.isoformat(),
-                  end=anend.isoformat())
+        if self.ser_data_obj is None:
+            t_logger.debug("Fetching data from API")
+            oanda.run(start=astart.isoformat(),
+                      end=anend.isoformat())
+        else:
+            t_logger.debug("Fetching data from File")
+            oanda.data = self.ser_data_obj.slice(start=astart,
+                                                 end=anend)
 
         candle_list = oanda.fetch_candleset()
         cl = CandleList(candle_list,
@@ -156,16 +165,19 @@ class Trade(object):
                       instrument=self.pair,
                       pips=self.settings.getint('trade', 'hr_pips'),
                       granularity=self.timeframe,
+                      ser_data_obj=None,
                       settings=self.settings)
         SL = HArea(price=self.SL,
                    instrument=self.pair,
                    pips=self.settings.getint('trade', 'hr_pips'),
                    granularity=self.timeframe,
+                   ser_data_obj=None,
                    settings=self.settings)
         TP = HArea(price=self.TP,
                    instrument=self.pair,
                    pips=self.settings.getint('trade', 'hr_pips'),
                    granularity=self.timeframe,
+                   ser_data_obj=None,
                    settings=self.settings)
 
         period = None
@@ -197,8 +209,14 @@ class Trade(object):
                              settingf=self.settingf,
                              settings=self.settings)
 
-            oanda.run(start=d.isoformat(),
-                      count=1)
+            if self.ser_data_obj is None:
+                t_logger.debug("Fetching data from API")
+                oanda.run(start=d.isoformat(),
+                          count=1)
+            else:
+                t_logger.debug("Fetching data from File")
+                oanda.data = self.ser_data_obj.slice(start=d,
+                                                     count=1)
 
             cl = oanda.fetch_candleset()[0]
             if self.entered is False:

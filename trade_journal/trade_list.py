@@ -21,11 +21,14 @@ class TradeList(object):
                Path to *.ini file with settings
     settings : ConfigParser object generated using 'settingf'
                Optional
+    ser_data_obj : ser_data_obj, Optional
+                   ser_data_obj with serialized data
     '''
 
-    def __init__(self, tlist, settingf=None, settings=None):
+    def __init__(self, tlist, settingf=None, settings=None, ser_data_obj=None):
         self.settingf = settingf
         self.tlist = tlist
+        self.ser_data_obj = ser_data_obj
 
         if self.settingf is not None:
             # parse settings file (in .ini file)
@@ -58,6 +61,7 @@ class TradeList(object):
                 c = Counter(trade=t,
                             settingf=self.settingf,
                             settings=self.settings,
+                            ser_data_obj=self.ser_data_obj,
                             init_feats=True)
                 tl_logger.debug("Counter attributes analysed:{0}".format(self.settings.get('counter', 'attrbs').split(",")))
                 attrb_ls = self.settings.get('counter', 'attrbs').split(",")

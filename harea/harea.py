@@ -2,7 +2,12 @@ from datetime import timedelta
 from apis.oanda_api import OandaAPI
 from configparser import ConfigParser
 
+import logging
 import pdb
+
+# create logger
+h_logger = logging.getLogger(__name__)
+h_logger.setLevel(logging.INFO)
 
 class HArea(object):
     '''
@@ -32,10 +37,12 @@ class HArea(object):
                Path to *.ini file with settings
     settings : ConfigParser, Optional
                ConfigParser object with settings
+    ser_data_obj : ser_data_obj, Optional
+                   ser_data_obj with serialized data
     '''
 
     def __init__(self, price, instrument, granularity, pips, no_pivots=None,
-                 tot_score=None, settingf=None, settings=None):
+                 tot_score=None, settingf=None, settings=None, ser_data_obj=None):
 
         (first, second) = instrument.split("_")
         self.instrument = instrument
@@ -61,6 +68,7 @@ class HArea(object):
         else:
             self.settings = settings
 
+        self.ser_data_obj = ser_data_obj
         self.upper = round(price+(pips/divisor), 4)
         self.lower = round(price-(pips/divisor), 4)
 
@@ -140,8 +148,14 @@ class HArea(object):
                                  granularity=granularity,  # 'M30' in this case
                                  settingf=self.settingf)
 
-            oanda.run(start=cstart.isoformat(),
-                      end=cend.isoformat())
+            if self.ser_data_obj is None:
+                h_logger.debug("Fetching data from API")
+                oanda.run(start=cstart.isoformat(),
+                          end=cend.isoformat())
+            else:
+                h_logger.debug("Fetching data from File")
+                oanda.data = self.ser_data_obj.slice(start=cstart,
+                                                     end=cend)
 
             candle_list = oanda.fetch_candleset()
             seen = False

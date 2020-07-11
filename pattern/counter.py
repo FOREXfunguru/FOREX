@@ -70,12 +70,14 @@ class Counter(object):
                Path to *.ini file with settings
     settings : ConfigParser object generated using 'settingf'
                Optional
+    ser_data_obj : ser_data_obj, Optional
+                   ser_data_obj with serialized data
     '''
 
-    def __init__(self, trade, settingf=None, settings=None, init_feats=False, **kwargs):
+    def __init__(self, trade, settingf=None, settings=None, init_feats=False,
+                 ser_data_obj=None, **kwargs):
 
         c_logger.debug("Initializing counter object")
-
         self.settingf = settingf
         if self.settingf is not None:
             # parse settings file (in .ini file)
@@ -92,6 +94,7 @@ class Counter(object):
 
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         self.trade = trade
+        self.ser_data_obj = ser_data_obj
 
         # init the CandleList from self.trade.start-self.settings.getint('counter', 'period')
         # to self.trade.start this will set the self.clist_period class attribute
@@ -153,11 +156,18 @@ class Counter(object):
                          settingf=self.settingf,
                          settings=self.settings)
 
-        resp = oanda.run(start=start.isoformat(),
-                         end=end.isoformat())
+        resp = None
+        if self.ser_data_obj is None:
+            c_logger.debug("Fetching data from API")
+            resp = oanda.run(start=start.isoformat(),
+                             end=end.isoformat())
+        else:
+            c_logger.debug("Fetching data from File")
+            oanda.data = self.ser_data_obj.slice(start=start,
+                                                 end=end)
+            resp = 200
 
         if resp == 200:
-
             candle_list = oanda.fetch_candleset()
 
             cl = CandleList(candle_list,
@@ -166,6 +176,7 @@ class Counter(object):
                             instrument=self.trade.pair,
                             granularity=self.trade.timeframe,
                             id=self.trade.id,
+                            ser_data_obj=self.ser_data_obj,
                             type=self.trade.type)
 
             self.clist_period = cl
@@ -424,8 +435,16 @@ class Counter(object):
                          settingf=self.settingf,
                          settings=self.settings)
 
-        resp = oanda.run(start=self.trend_i.isoformat(),
-                         end=self.trade.start.isoformat())
+        resp = None
+        if self.ser_data_obj is None:
+            c_logger.debug("Fetching data from API")
+            resp = oanda.run(start=self.trend_i.isoformat(),
+                             end=self.trade.start.isoformat())
+        else:
+            c_logger.debug("Fetching data from File")
+            oanda.data = self.ser_data_obj.slice(start=self.trend_i,
+                                                 end=self.trade.start)
+            resp = 200
 
         if resp == 200:
 

@@ -6,6 +6,8 @@ from pattern.counter import Counter
 from candle.candlelist import CandleList
 from harea.harea import HArea
 from harea.harealist import HAreaList
+from apis.ser_data_obj import ser_data_obj
+
 
 from utils import *
 import pdb
@@ -18,7 +20,7 @@ import pickle
 
 # create logger
 tb_logger = logging.getLogger(__name__)
-tb_logger.setLevel(logging.INFO)
+tb_logger.setLevel(logging.DEBUG)
 
 class TradeBot(object):
     '''
@@ -32,16 +34,25 @@ class TradeBot(object):
          Datetime that this Bot will end operating. i.e. 20-03-2020 08:20:00s
     pair: str, Required
           Currency pair used in the trade. i.e. AUD_USD
+    ser_data_f : str, Optional
+                 ser_data file
     timeframe: str, Required
                Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
     settingf : str, Optional
                Path to *.ini file with settings
     '''
-    def __init__(self, start, end, pair, timeframe, settingf=None, settings=None):
+    def __init__(self, start, end, pair, timeframe, ser_data_f=None,
+                 settingf=None, settings=None):
         self.start = start
         self.end = end
         self.pair = pair
         self.timeframe = timeframe
+        self.ser_data_f = ser_data_f
+        if ser_data_f is not None:
+            self.ser_data_obj = ser_data_obj(ifile=ser_data_f)
+        else:
+            self.ser_data_obj = None
+
         self.settingf = settingf
         if self.settingf is not None:
             # parse settings file (in .ini file)
@@ -50,10 +61,6 @@ class TradeBot(object):
             self.settings = parser
         else:
             self.settings = settings
-
-        # correct pips-related in self.settings on the timeframe
-      #  if self.timeframe != "D":
-      #      self.settings = correct_timeframe(self.settings, timeframe)
 
     def __get_trade_type(self, ic, delta):
         '''
@@ -84,8 +91,14 @@ class TradeBot(object):
         start = ic.time - 20*delta
         end = ic.time
 
-        oanda.run(start=start.isoformat(),
-                  end=end.isoformat())
+        if self.ser_data_obj is None:
+            tb_logger.info("Fetching data from API")
+            oanda.run(start=start.isoformat(),
+                      end=end.isoformat())
+        else:
+            tb_logger.info("Fetching data from File")
+            oanda.data = self.ser_data_obj.slice(start=start,
+                                                 end=end)
 
         candle_list = oanda.fetch_candleset()
         clObj = CandleList(candle_list,
@@ -166,6 +179,7 @@ class TradeBot(object):
             SL=SL,
             RR=self.settings.getfloat('trade_bot', 'RR'),
             strat='counter',
+            ser_data_obj=self.ser_data_obj,
             settingf=self.settingf,
             settings=self.settings)
 
@@ -194,7 +208,6 @@ class TradeBot(object):
         TradeList object with Trades taken. None if no trades
         were taken
         '''
-
         tb_logger.info("Running...")
 
         oanda = OandaAPI(instrument=self.pair,
@@ -232,6 +245,7 @@ class TradeBot(object):
                 # this means that there is currently an active trade
                 if startO <= tend:
                     startO = startO + delta
+                    loop += 1
                     continue
                 else:
                     tend = None
@@ -246,7 +260,7 @@ class TradeBot(object):
                 dict_SRlist[startO] = SRlst
                 tb_logger.info("Identified HAreaList for time {0}:".format(startO.isoformat()))
                 tb_logger.info("{0}".format(res))
-            elif loop == self.settings.getint('trade_bot',
+            elif loop >= self.settings.getint('trade_bot',
                                               'period'):
                 # An entire cycle has occurred. Invoke .calc_SR
                 if self.settings.getboolean('trade_bot', 'load_SRlist') is True:
@@ -260,8 +274,14 @@ class TradeBot(object):
                 loop = 0
 
             # fetch candle for current datetime
-            oanda.run(start=startO.isoformat(),
-                      count=1)
+            if self.ser_data_obj is None:
+                tb_logger.info("Fetching data from API")
+                oanda.run(start=startO.isoformat(),
+                          count=1)
+            else:
+                tb_logger.info("Fetching data from File")
+                oanda.data = self.ser_data_obj.slice(start=startO,
+                                                     count=1)
 
             candle_list = oanda.fetch_candleset()
             c_candle = candle_list[0] # this is the current candle that
@@ -341,7 +361,9 @@ class TradeBot(object):
         else:
             tl = TradeList(tlist=tlist,
                            settingf=self.settingf,
-                           settings=self.settings)
+                           settings=self.settings,
+                           ser_data_obj=self.ser_data_obj
+                           )
             tl.analyze()
             # analyse trades
             return tl
@@ -432,9 +454,14 @@ class TradeBot(object):
         start = adateObj - delta_period  # get the start datetime for this CandleList period
         end = adateObj + delta_1  # increase self.start by one candle to include self.start
 
-        oanda.run(start=start.isoformat(),
-                  end=end.isoformat())
-
+        if self.ser_data_obj is None:
+            tb_logger.info("Fetching data from API")
+            oanda.run(start=start.isoformat(),
+                      end=end.isoformat())
+        else:
+            tb_logger.info("Fetching data from File")
+            oanda.data = self.ser_data_obj.slice(start=start,
+                                                 end=end)
         candle_list = oanda.fetch_candleset()
         cl = CandleList(candle_list,
                         instrument=self.pair,
@@ -484,11 +511,17 @@ class TradeBot(object):
                          settingf=self.settingf,
                          settings=self.settings)
 
-        resp = oanda.run(start=start.isoformat(),
-                         end=end.isoformat())
+        if self.ser_data_obj is None:
+            tb_logger.info("Fetching data from API")
+            resp = oanda.run(start=start.isoformat(),
+                             end=end.isoformat())
+        else:
+            tb_logger.info("Fetching data from File")
+            oanda.data = self.ser_data_obj.slice(start=start,
+                                                 end=end)
+            resp = 200
 
         if resp == 200:
-
             candle_list = oanda.fetch_candleset()
 
             cl = CandleList(candle_list,
@@ -496,6 +529,7 @@ class TradeBot(object):
                             settings=self.settings,
                             instrument=pair,
                             granularity=timeframe,
+                            ser_data_obj=self.ser_data_obj,
                             id="test",
                             type="short")
             cl.calc_rsi()
@@ -521,7 +555,6 @@ class TradeBot(object):
         # calculate price range for calculating S/R
         ul, ll = self.get_max_min(adateObj)
         tb_logger.info("Running calc_SR for estimated range: {0}-{1}".format(ll, ul))
-
         prices = []
         bounces = []  # contains the number of pivots per price level
         score_per_bounce = []
@@ -557,6 +590,7 @@ class TradeBot(object):
             c = Counter(
                 trade=t,
                 clist_period=cl,
+                ser_data_obj=self.ser_data_obj,
                 init_feats=True,
                 settings=self.settings)
 

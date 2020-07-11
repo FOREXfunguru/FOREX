@@ -42,27 +42,23 @@ class ser_data_obj(object):
         """
         new_candles = []
         ct = 0
-        init = False
+        delta1hr = datetime.timedelta(hours=1)
+
         for c in self.data['candles']:
             c_time = datetime.datetime.strptime(c['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
-            if init is False and c_time > start:
-                raise Exception("First fetched candle is after: {0}".format(start))
-            else:
-                init = True
-
             if end is not None:
-                if c_time >= start and c_time <= end:
+                if ((c_time >= start) or (abs(c_time-start) <= delta1hr)) and ((c_time <= end) or (abs(c_time-end) <= delta1hr)):
                     new_candles.append(c)
-                elif c_time >= end:
+                elif (c_time >= end) and (abs(c_time-end) > delta1hr):
                     break
             elif count is not None:
-                if c_time >= start and ct < count:
+                if ((c_time >= start) or (abs(c_time-start) <= delta1hr)) and ct < count:
                     ct += 1
                     new_candles.append(c)
                 elif ct > count:
                     break
 
-        new_dict = self.data
+        new_dict = self.data.copy()
         del new_dict['candles']
         new_dict['candles'] = new_candles
 

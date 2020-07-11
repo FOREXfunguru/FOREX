@@ -24,6 +24,7 @@ def main():
     parser.add_argument('--start', required=True, help="Start time for this bot: i.e. 2019-08-12 22:00:00")
     parser.add_argument('--end', required=True, help="End time for this bot: i.e. 2019-08-19 22:00:00")
     parser.add_argument('--url', required=True, help=".xlsx file used to write the Trades taken")
+    parser.add_argument('--ser_data_f', help="Serialized file with candle data")
     parser.add_argument('--settingf', required=True, help='Path to .ini file with settings')
 
     args = parser.parse_args()
@@ -33,6 +34,7 @@ def main():
         timeframe=args.timeframe,
         start=args.start,
         end=args.end,
+        ser_data_f=args.ser_data_f,
         settingf=args.settingf)
 
     main_logger.info("Running TradeBot")
