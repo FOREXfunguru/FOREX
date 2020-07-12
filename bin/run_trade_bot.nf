@@ -32,7 +32,7 @@ log.info 'Starting the analysis.....'
 pairs_list = Channel.from( params.pairs.split(',') )
 
 process run_trade_bot {
-    executor 'local'
+    executor 'lsf   '
     maxForks 3
     cpus 1
 
