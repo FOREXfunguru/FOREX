@@ -78,7 +78,7 @@ def test_run_D_wserialized(clean_tmp):
 
     tl = tb.run(pickled_file="../../data/test.pickled")
 
-    assert len(tl.tlist) == 2
+    assert len(tl.tlist) == 4
 
 def test_run2(clean_tmp):
     """

@@ -335,15 +335,18 @@ class TradeBot(object):
                         loop += 1
                         startO = startO + delta
                         continue
-                    t.run_trade(expires=2)
-                    if t.entered is True:
-                        if not hasattr(t, 'end'):
-                            tb_logger.info("Trade.end will be n.a. Check if this trade hit the SL/TP in"
-                                           "the analysed timeframe. Skipping...")
-                            tend = None
-                        else:
-                            tlist.append(t)
-                            tend = t.end
+                    if self.settings.getboolean('trade_bot', 'run_trades') is True:
+                        t.run_trade(expires=2)
+                        if t.entered is True:
+                            if not hasattr(t, 'end'):
+                                tb_logger.info("Trade.end will be n.a. Check if this trade hit the SL/TP in"
+                                               "the analysed timeframe. Skipping...")
+                                tend = None
+                            else:
+                                tlist.append(t)
+                                tend = t.end
+                    else:
+                        tlist.append(t)
             startO = startO+delta
             loop += 1
 
@@ -364,8 +367,10 @@ class TradeBot(object):
                            settings=self.settings,
                            ser_data_obj=self.ser_data_obj
                            )
-            tl.analyze()
-            # analyse trades
+
+            if self.settings.getboolean('trade_bot', 'run_trades') is True:
+                # analyse trades
+                tl.analyze()
             return tl
 
     def __calc_diff(self, df_loc, increment_price):
