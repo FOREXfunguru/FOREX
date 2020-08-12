@@ -69,11 +69,11 @@ def test_run_D_wserialized(clean_tmp):
     """
 
     tb = TradeBot(
-        pair='AUD_USD',
+        pair='AUD_CAD',
         timeframe='D',
-        start='2018-01-22 22:00:00',
-        end='2018-02-06 22:00:00',
-        ser_data_f="/Users/ernesto/SCRATCH/FOREX/05_07_2020/AUD_USD.daily.ser.data",
+        start='2014-01-01 22:00:00',
+        end='2014-08-20 22:00:00',
+        ser_data_f="/Users/ernesto/SCRATCH/FOREX/05_07_2020/DAILY/AUD_CAD.DTF.2004_2020.ser.data",
         settingf="../../data/settings.ini")
 
     tl = tb.run(pickled_file="../../data/test.pickled")

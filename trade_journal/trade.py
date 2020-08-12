@@ -220,7 +220,8 @@ class Trade(object):
 
             cl = oanda.fetch_candleset()[0]
             if self.entered is False:
-                entry_time = entry.get_cross_time(candle=cl)
+                entry_time = entry.get_cross_time(candle=cl,
+                                                  granularity=self.settings.get('trade', 'granularity'))
                 if entry_time != 'n.a.':
                     t_logger.info("Trade entered")
                     # modify self.start to the datetime
@@ -230,7 +231,8 @@ class Trade(object):
                     self.entered = True
             if self.entered is True:
                 # will be n.a. is cl does not cross SL
-                failure_time = SL.get_cross_time(candle=cl)
+                failure_time = SL.get_cross_time(candle=cl,
+                                                 granularity=self.settings.get('trade', 'granularity'))
                 # sometimes there is a jump in the price and SL is not crossed
                 is_gap = False
                 if (self.type == "short" and cl.lowAsk > SL.price) or (self.type == "long" and cl.highAsk < SL.price):
@@ -243,7 +245,8 @@ class Trade(object):
                     t_logger.info("S/L was hit")
                     break
                 # will be n.a. if cl does not cross TP
-                success_time = TP.get_cross_time(candle=cl)
+                success_time = TP.get_cross_time(candle=cl,
+                                                 granularity=self.settings.get('trade', 'granularity'))
                 # sometimes there is a jump in the price and TP is not crossed
                 is_gap = False
                 if (self.type == "short" and cl.highAsk < TP.price) or (self.type == "long" and cl.lowAsk > TP.price):

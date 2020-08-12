@@ -8,7 +8,6 @@ from harea.harea import HArea
 from harea.harealist import HAreaList
 from apis.ser_data_obj import ser_data_obj
 
-
 from utils import *
 import pdb
 import pandas as pd

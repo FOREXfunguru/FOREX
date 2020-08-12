@@ -72,6 +72,7 @@ class ser_data_obj(object):
         -------
         dict
         """
+
         inf = open(self.ifile, 'r')
         parsed_json = json.load(inf)
         inf.close()

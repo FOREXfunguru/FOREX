@@ -3,6 +3,7 @@ import warnings
 import numpy as np
 import pdb
 import logging
+from apis.ser_data_obj import ser_data_obj
 from trade_journal.trade import Trade
 from trade_journal.trade_list import TradeList
 from openpyxl import load_workbook, Workbook
@@ -27,12 +28,25 @@ class TradeJournal(object):
                Path to *.ini file with settings
     settings : ConfigParser object generated using 'settingf'
                Optional
+    ser_data_f : str, Optional
+                 ser_data file
+    ser_data_obj : ser_data_obj, Optional
+                   ser_data_obj with serialized data
     '''
 
-    def __init__(self, url, worksheet, settingf=None, settings=None):
+    def __init__(self, url, worksheet, settingf=None, settings=None, ser_data_f=None,
+                 ser_data_obj=None):
         self.url = url
         self.worksheet = worksheet
-        self.settingf=settingf
+        self.settingf = settingf
+
+        if ser_data_f is not None:
+            self.ser_data_obj = ser_data_obj(ifile=ser_data_f)
+        elif ser_data_obj is not None:
+            self.ser_data_obj = ser_data_obj
+        else:
+            self.ser_data_obj = None
+
         #read-in the 'trading_journal' worksheet from a .xlsx file into a pandas dataframe
         try:
             xls_file = pd.ExcelFile(url)
@@ -78,7 +92,8 @@ class TradeJournal(object):
             trade_list.append(t)
 
         tl = TradeList(settingf=self.settingf,
-                       tlist=trade_list)
+                       tlist=trade_list,
+                       ser_data_obj=self.ser_data_obj)
         return tl
 
     def write_tradelist(self, trade_list):

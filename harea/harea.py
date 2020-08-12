@@ -131,21 +131,20 @@ class HArea(object):
 
             cstart = candle.time
             cend = cstart+delta
-
             oanda = None
             if self.settingf is None and self.settings is None:
                 raise Exception("No 'settings' nor 'settingf' defined for this object")
             elif self.settingf is None and self.settings is not None:
                 oanda = OandaAPI(instrument=self.instrument,
-                                 granularity=granularity,  # 'M30' in this case
+                                 granularity=granularity,  # 'M30' is the default
                                  settings=self.settings)
             elif self.settingf is not None and self.settings is None:
                 oanda = OandaAPI(instrument=self.instrument,
-                                 granularity=granularity,  # 'M30' in this case
+                                 granularity=granularity,  # 'M30' is the default
                                  settingf=self.settingf)
             elif self.settingf is not None and self.settings is not None:
                 oanda = OandaAPI(instrument=self.instrument,
-                                 granularity=granularity,  # 'M30' in this case
+                                 granularity=granularity,  # 'M30' is the default
                                  settingf=self.settingf)
 
             if self.ser_data_obj is None:

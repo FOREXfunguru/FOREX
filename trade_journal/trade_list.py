@@ -52,7 +52,6 @@ class TradeList(object):
         #these are the strategies that will be analysed using the Counter pattern
         tl_logger.info("Strategies that will be analysed: {0}".format(self.settings.get('counter', 'strats')))
         strats = self.settings.get('counter', 'strats').split(",")
-
         trade_list = []
         for t in self.tlist:
             tl_logger.info("Processing trade: {0}-{1}".format(t.pair, t.start))
