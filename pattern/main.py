@@ -9,7 +9,6 @@ from apis.ser_data_obj import ser_data_obj
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
-
 def main():
     parser = argparse.ArgumentParser(description='Script to calculate the features for Counter trades')
 
@@ -21,13 +20,20 @@ def main():
     args = parser.parse_args()
     logger.info("Creating TradeJournal")
 
-    td = TradeJournal(url=args.ifile,
-                      worksheet=args.worksheet,
-                      settingf=args.settingf,
-                      ser_data_obj=ser_data_obj(ifile=args.ser_data_f))
+    if args.ser_data_f is None:
+        td = TradeJournal(url=args.ifile,
+                          worksheet=args.worksheet,
+                          settingf=args.settingf)
+    else:
+        td = TradeJournal(url=args.ifile,
+                          worksheet=args.worksheet,
+                          settingf=args.settingf,
+                          ser_data_obj=ser_data_obj(ifile=args.ser_data_f))
     logger.info("Done creating TradeJournal")
 
     trade_list = td.fetch_tradelist()
+    if len(trade_list.tlist)==0:
+        raise Exception("No trades fetched from Tradejournal in {0}".format(args.ifile))
     logger.info("Analysing TradeList")
     trade_list.analyze()
     logger.info("Done TradeList")

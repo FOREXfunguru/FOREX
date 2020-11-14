@@ -120,8 +120,17 @@ class HArea(object):
                  n.a. if crossing time could not retrieved. This can happens
                  when there is an artefactual jump in Oanda's data
         '''
+        # consider both Ask and bid
+        cross = False
+        bit = None
         if candle.lowAsk <= self.price <= candle.highAsk:
+            cross = True
+            bit = "Ask"
+        elif candle.lowBid <= self.price <= candle.highBid:
+            cross = True
+            bit = "Bid"
 
+        if cross is True:
             delta = None
             if self.granularity == "D":
                 delta = timedelta(hours=24)
@@ -158,11 +167,14 @@ class HArea(object):
 
             candle_list = oanda.fetch_candleset()
             seen = False
+            part_low = "low{0}".format(bit)
+            part_high = "high{0}".format(bit)
             for c in candle_list:
-                if c.lowAsk <= self.price <= c.highAsk:
+                low = getattr(c, part_low)
+                high = getattr(c, part_high)
+                if low <= self.price <= high:
                     seen = True
                     return c.time
-
             if seen is False:
                 return 'n.a.'
         else:

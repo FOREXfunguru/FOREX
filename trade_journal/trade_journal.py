@@ -51,6 +51,8 @@ class TradeJournal(object):
         try:
             xls_file = pd.ExcelFile(url)
             df = xls_file.parse(worksheet, converters={'start': str, 'end': str, 'trend_i': str})
+            if df.empty is True:
+                raise Exception("No trades fetched for url:{0} and worksheet:{1}".format(self.url, self.worksheet))
             # replace n.a. string by NaN
             df = df.replace('n.a.', np.NaN)
             # remove trailing whitespaces from col names
@@ -121,16 +123,19 @@ class TradeJournal(object):
         for t in trade_list.tlist:
             row = []
             for a in colnames:
-                value = None
-                try:
-                    value = getattr(t, a)
-                    if isinstance(value, PivotList):
-                        dt_l = value.print_pivots_dates()
-                        value = [d.strftime('%d/%m/%Y:%H:%M') for d in dt_l]
-                except:
-                    tj_logger.warn("No value for attribute: {0}".format(a))
-                    value = "n.a."
-                row.append(value)
+                if a == "session":
+                    row.append(t.calc_trade_session())
+                else:
+                    value = None
+                    try:
+                        value = getattr(t, a)
+                        if isinstance(value, PivotList):
+                            dt_l = value.print_pivots_dates()
+                            value = [d.strftime('%d/%m/%Y:%H:%M') for d in dt_l]
+                    except:
+                        tj_logger.warn("No value for attribute: {0}".format(a))
+                        value = "n.a."
+                    row.append(value)
             data.append(row)
         df = pd.DataFrame(data, columns=colnames)
 

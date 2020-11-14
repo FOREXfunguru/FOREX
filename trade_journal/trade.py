@@ -4,6 +4,7 @@ import math
 import warnings
 import pdb
 import logging
+import datetime as dt
 
 from apis.oanda_api import OandaAPI
 from candle.candlelist import CandleList
@@ -154,6 +155,48 @@ class Trade(object):
 
         return cl
 
+    def calc_trade_session(self):
+        '''
+        Function to calculate the trade session (European, Asian,
+        NAmerican) the trade was taken
+
+        Returns
+        -------
+        str Comma-separated string with different sessions: i.e. european,asian
+                                                                 or namerican, etc...
+        I will return n.a. if self.entry_time is not defined
+        '''
+        if not hasattr(self, 'entry_time'):
+            return "n.a."
+        dtime = datetime.strptime(self.entry_time, '%Y-%m-%dT%H:%M:%S')
+        # define the different sessions time boundaries
+        a_u2 = dt.time(int(7), int(0), int(0))
+        a_l2 = dt.time(int(0), int(0), int(0))
+        a_u1 = dt.time(int(23), int(59), int(59))
+        a_l1 = dt.time(int(23), int(0), int(0))
+        e_u = dt.time(int(15), int(0), int(0))
+        e_l = dt.time(int(7), int(0), int(0))
+        na_u = dt.time(int(19), int(0), int(0))
+        na_l = dt.time(int(12), int(0), int(0))
+
+        sessions = []
+        session_seen = False
+        if dtime.time() >= a_l1 and dtime.time() <= a_u1:
+            sessions.append('asian')
+            session_seen = True
+        if dtime.time() >= a_l2 and dtime.time() <= a_u2:
+            sessions.append('asian')
+            session_seen = True
+        if dtime.time() >= e_l and dtime.time() <= e_u:
+            sessions.append('european')
+            session_seen = True
+        if dtime.time() >= na_l and dtime.time() <= na_u:
+            sessions.append('namerican')
+            session_seen = True
+        if session_seen is False:
+            sessions.append('nosession')
+        return ",".join(sessions)
+
     def run_trade(self, expires=None):
         '''
         Run the trade until conclusion from a start date
@@ -197,7 +240,6 @@ class Trade(object):
 
         count = 0
         self.entered = False
-
         for d in date_list:
             count += 1
             if expires is not None:

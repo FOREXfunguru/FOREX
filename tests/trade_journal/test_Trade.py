@@ -1,4 +1,5 @@
 import pytest
+import pdb
 
 from trade_journal.trade import Trade
 from apis.ser_data_obj import ser_data_obj
@@ -9,7 +10,7 @@ def t_object():
     '''Returns a Trade object'''
 
     td = Trade(
-         start="2017-04-20 14:00:00",
+         start="2017-04-10 14:00:00",
          end="2017-04-26 14:00:00",
          entry=0.75308,
          TP=0.7594,
@@ -53,6 +54,7 @@ def test_fetch_candlelist(t_object):
     assert cl.clist[0].highBid == 0.75464
 
 @pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome", [
+        ('AUD/NZD', '2020-05-18 21:00:00', 'short', 1.08369, 1.06689, 1.07744, 'success'),
         ('NZD/JPY', '2019-03-22 21:00:00', 'short', 76.797, 73.577, 75.509, 'success'),
         ('AUD/CAD', '2009-10-27 21:00:00', 'short', 0.98435, 0.9564, 0.97316, 'failure'),
         ('EUR/GBP', '2009-09-21 21:00:00', 'short', 0.90785, 0.8987, 0.90421, 'failure'),
@@ -83,6 +85,11 @@ def test_run_trade(pair, start, type, SL, TP, entry, outcome):
 
     td.run_trade()
     assert td.outcome == outcome
+
+def test_calc_trade_session(t_object):
+
+    t_object.run_trade()
+    assert t_object.calc_trade_session()== 'nosession'
 
 @pytest.mark.parametrize("pair,start,type,SL,TP,entry,entered", [('EUR/GBP', '2017-03-14 22:00:00', 'short', 0.87885,
                                                                   0.8487, 0.86677, True),
