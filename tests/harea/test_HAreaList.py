@@ -1,5 +1,5 @@
 from harea.harealist import HAreaList
-from harea.harea import HArea
+from harea import HArea
 from candle.candle import BidAskCandle
 
 import pytest

@@ -1,11 +1,16 @@
+'''
+@date: 22/11/2020
+@author: Ernesto Lowy
+@email: ernestolowy@gmail.com
+'''
 import pytest
 
 from candle.candle import BidAskCandle
-from apis.oanda_api import OandaAPI
 
-def test_BidAskCandle_inst():
+@pytest.fixture
+def BidAskCandle_o():
     '''
-    Test BidAskCandle object instantiation
+    BidAskCandle object instantiation
     '''
 
     candle = BidAskCandle(openAsk=0.7889,
@@ -23,34 +28,15 @@ def test_BidAskCandle_inst():
                           representation='bidask',
                           time='2015-01-25 22:00:00')
 
-    assert candle.openAsk == 0.7889
+    return candle
 
-@pytest.mark.parametrize("pair,"
-                         "timeframe,"
-                         "time,"
-                         "colour,"
-                         "upper_wick,"
-                         "lower_wick",
-                         [('AUD_USD', 'D', '2020-03-18T22:00:00',
-                           'red', 0.0196, 0.0236),
-                          ('AUD_USD', 'D', '2020-03-19T22:00:00',
-                           'green', 0.0184, 0.0078)
-                          ])
-def test_set_candle_features(pair, timeframe, time, colour,
-                             upper_wick, lower_wick):
+def test_set_candle_features(BidAskCandle_o):
     '''
     Test function to set basic candle features based on price
     i.e. self.colour, upper_wick, etc...
     '''
-    oanda = OandaAPI(instrument=pair,
-                     granularity=timeframe,
-                     settingf="../../data/settings.ini")
 
-    oanda.run(start=time,
-              count=1)
-
-    candle_list = oanda.fetch_candleset()
-    candle_list[0].set_candle_features()
+    BidAskCandle_o.set_candle_features()
     assert candle_list[0].colour == colour
     assert candle_list[0].upper_wick == upper_wick
     assert candle_list[0].lower_wick == lower_wick

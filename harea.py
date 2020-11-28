@@ -1,9 +1,9 @@
-from datetime import timedelta
-from apis.oanda_api import OandaAPI
-from configparser import ConfigParser
-
 import logging
 import pdb
+
+from datetime import timedelta
+from oanda.connect import Connect
+from config import CONFIG
 
 # create logger
 h_logger = logging.getLogger(__name__)
@@ -33,16 +33,12 @@ class HArea(object):
     tot_score : int, Optional
                 Total score, which is the sum of scores of all pivots
                 on this HArea
-    settingf : str, Optional
-               Path to *.ini file with settings
-    settings : ConfigParser, Optional
-               ConfigParser object with settings
     ser_data_obj : ser_data_obj, Optional
                    ser_data_obj with serialized data
     '''
 
     def __init__(self, price, instrument, granularity, pips, no_pivots=None,
-                 tot_score=None, settingf=None, settings=None, ser_data_obj=None):
+                 tot_score=None, ser_data_obj=None):
 
         (first, second) = instrument.split("_")
         self.instrument = instrument
@@ -59,14 +55,6 @@ class HArea(object):
         self.granularity = granularity
         self.no_pivots = no_pivots
         self.tot_score = tot_score
-        self.settingf = settingf
-        if self.settingf is not None:
-            # parse settings file (in .ini file)
-            parser = ConfigParser()
-            parser.read(settingf)
-            self.settings = parser
-        else:
-            self.settings = settings
 
         self.ser_data_obj = ser_data_obj
         self.upper = round(price+(pips/divisor), 4)
@@ -93,7 +81,7 @@ class HArea(object):
         for c in reversed(clist):
             count += 1
             # Last time has to be at least self.settings.getint('harea', 'min') candles before
-            if count <= self.settings.getint('harea', 'min'):
+            if count <= CONFIG.getint('harea', 'min'):
                 continue
             if position == 'above':
                 price = getattr(c, 'lowAsk')
@@ -140,41 +128,22 @@ class HArea(object):
 
             cstart = candle.time
             cend = cstart+delta
-            oanda = None
-            if self.settingf is None and self.settings is None:
-                raise Exception("No 'settings' nor 'settingf' defined for this object")
-            elif self.settingf is None and self.settings is not None:
-                oanda = OandaAPI(instrument=self.instrument,
-                                 granularity=granularity,  # 'M30' is the default
-                                 settings=self.settings)
-            elif self.settingf is not None and self.settings is None:
-                oanda = OandaAPI(instrument=self.instrument,
-                                 granularity=granularity,  # 'M30' is the default
-                                 settingf=self.settingf)
-            elif self.settingf is not None and self.settings is not None:
-                oanda = OandaAPI(instrument=self.instrument,
-                                 granularity=granularity,  # 'M30' is the default
-                                 settingf=self.settingf)
+            conn = Connect(instrument=self.instrument,
+                           granularity=granularity)  # 'M30' is the default
 
-            if self.ser_data_obj is None:
-                h_logger.debug("Fetching data from API")
-                oanda.run(start=cstart.isoformat(),
-                          end=cend.isoformat())
-            else:
-                h_logger.debug("Fetching data from File")
-                oanda.data = self.ser_data_obj.slice(start=cstart,
-                                                     end=cend)
+            h_logger.debug("Fetching data from API")
+            res = conn.query(start=cstart.isoformat(),
+                             end=cend.isoformat())
 
-            candle_list = oanda.fetch_candleset()
             seen = False
             part_low = "low{0}".format(bit)
             part_high = "high{0}".format(bit)
-            for c in candle_list:
-                low = getattr(c, part_low)
-                high = getattr(c, part_high)
+            for c in res.data['candles']:
+                low = c[part_low]
+                high = c[part_high]
                 if low <= self.price <= high:
                     seen = True
-                    return c.time
+                    return c['time']
             if seen is False:
                 return 'n.a.'
         else:
@@ -182,6 +151,82 @@ class HArea(object):
 
     def __repr__(self):
         return "HArea"
+
+    def __str__(self):
+        out_str = ""
+        for attr, value in self.__dict__.items():
+            out_str += "%s:%s " % (attr, value)
+        return out_str
+
+class HAreaList(object):
+    '''
+    Class that represents a list of HArea objects
+
+    Class variables
+    ---------------
+    halist : list, Required
+            List of HArea objects
+    '''
+
+    def __init__(self, halist):
+        self.halist = halist
+
+    def onArea(self, candle):
+        '''
+        Function that will check which (if any) of the HArea objects
+        in this HAreaList will overlap with 'candle'.
+
+        See comments in code to understand what is considered
+        an overlap
+
+        Parameters
+        ----------
+        candle: BidAskCandle object
+
+        Returns
+        -------
+        An HArea object overlapping with 'candle' and the ix
+        in self.halist for this HArea.
+        None if there are no HArea objects overlapping
+        '''
+        if not hasattr(candle, 'colour'):
+            candle.set_candle_features()
+
+        onArea_hr = None
+        sel_ix = None
+        ix = 0
+        for harea in self.halist:
+            highAttr = "high{0}".format(harea.settings.get('general', 'bit'))
+            lowAttr = "low{0}".format(harea.settings.get('general', 'bit'))
+            if harea.price <= getattr(candle, highAttr) and harea.price >= getattr(candle, lowAttr):
+                onArea_hr = harea
+                sel_ix = ix
+            ix += 1
+
+        return onArea_hr, sel_ix
+
+    def print(self):
+        '''
+        Function to print out basic information on each of the
+        HArea objects in the HAreaList
+
+        Returns
+        -------
+        String with stringified HArea objects
+        '''
+        res ="#pair timeframe upper-price-lower no_pivots tot_score\n"
+        for harea in self.halist:
+            res += "{0} {1} {2}-{3}-{4} {5} {6}\n".format(harea.instrument,
+                                                          harea.granularity,
+                                                          harea.upper,
+                                                          harea.price,
+                                                          harea.lower,
+                                                          harea.no_pivots,
+                                                          harea.tot_score)
+        return res.rstrip("\n")
+
+    def __repr__(self):
+        return "HAreaList"
 
     def __str__(self):
         out_str = ""

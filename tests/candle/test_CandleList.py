@@ -1,69 +1,27 @@
+'''
+@date: 22/11/2020
+@author: Ernesto Lowy
+@email: ernestolowy@gmail.com
+'''
 import pytest
-
-from apis.oanda_api import OandaAPI
-from candle.candlelist import CandleList
-from harea.harea import HArea
-from configparser import ConfigParser
-
 import datetime
 import glob
 import os
+import logging
+import pdb
 
-@pytest.fixture
-def clO():
-    """Returns a CandleList object"""
-
-    oanda = OandaAPI(instrument='AUD_USD',
-                     granularity='D',
-                     settingf='../../data/settings.ini')
-
-    oanda.run(start='2019-03-06T23:00:00',
-              end='2020-01-24T23:00:00')
-
-    candle_list = oanda.fetch_candleset()
-    cl = CandleList(candle_list,
-                    instrument='AUD_USD',
-                    id='test_AUD_USD_clist',
-                    granularity='D',
-                    settingf='../../data/settings.ini')
-    return cl
+from oanda.connect import Connect
+from candle.candlelist import CandleList
+from harea import HArea
 
 @pytest.fixture
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('../../data/IMGS/pivots/*.png')
+    pdb.set_trace()
+    files = glob.glob(os.getenv('DATADIR')+"/imgs/**/*.png",recursive=True)
     for f in files:
         os.remove(f)
-
-@pytest.fixture
-def settings_obj():
-    """
-    This fixture returns a ConfigParser
-    object with settings
-    """
-    parser = ConfigParser()
-    parser.read("../../data/settings.ini")
-
-    return parser
-
-def test_CandleList(clO):
-    """
-    Test the creation of a CandleList object
-    """
-
-    one_c = clO.next()
-    assert one_c.highBid == 0.70507
-    assert one_c.openBid == 0.70308
-    assert one_c.lowBid == 0.70047
-    assert one_c.representation == 'bidask'
-    assert one_c.lowAsk == 0.7006
-    assert one_c.complete is True
-    assert one_c.openAsk == 0.70331
-    assert one_c.highAsk == 0.70521
-    assert one_c.highBid == 0.70507
-    assert one_c.volume == 5937
-    assert one_c.closeBid == 0.70149
 
 @pytest.mark.parametrize("ix,"
                         "rsi",
@@ -73,12 +31,15 @@ def test_CandleList(clO):
                          (136, 63.26),
                          (212, 73.1)])
 def test_calc_rsi(ix, rsi, clO):
+    log = logging.getLogger('Test for calc_rsi function')
+    log.debug('calc_rsi')
 
     clO.calc_rsi()
-
-    assert clO.clist[ix].rsi == rsi
+    assert clO.data['candles'][ix]['rsi'] == rsi
 
 def test_rsibounces(clO):
+    log = logging.getLogger('Test for rsi_bounces function')
+    log.debug('rsi_bounces')
 
     clO.calc_rsi()
     dict1 = clO.calc_rsi_bounces()
@@ -93,15 +54,18 @@ def test_get_length_functions(clO):
     This test check the functions for getting the length of
     the CandleList in number of pips and candles
     '''
+    log = logging.getLogger('Test for different length functions')
+    log.debug('get_length')
 
-    assert clO.get_length_candles() == 215
-    assert clO.get_length_pips() == 61
+    assert clO.get_length_candles() == 230
+    assert clO.get_length_pips() == 190
 
-def test_fit_reg_line(clO):
+def test_fit_reg_line(clO, clean_tmp):
+    log = logging.getLogger('Test for fit_reg_line function')
+    log.debug('get_length')
+    (fitted_model, regression_model_mse) = clO.fit_reg_line(outdir=os.getenv('DATADIR')+"/imgs")
 
-    (fitted_model, regression_model_mse) = clO.fit_reg_line()
-
-    assert regression_model_mse == 1.2922934217942994e-05
+    assert regression_model_mse == 1.8643961557713323e-05
 
 def test_fetch_by_time(clO):
 
@@ -109,37 +73,35 @@ def test_fetch_by_time(clO):
 
     c = clO.fetch_by_time(adatetime)
 
-    assert c.openAsk == 0.70137
-    assert c.highAsk == 0.70277
+    assert c['openAsk'] == 0.70137
+    assert c['highAsk'] == 0.70277
 
 def test_slice_with_start(clO):
 
     adatetime = datetime.datetime(2019, 5, 7, 22, 0)
 
-    new_cl = clO.slice(start=adatetime)
+    new_cl = clO.slice(start = adatetime)
 
-    assert len(new_cl.clist) == 170
+    assert len(new_cl.data['candles']) == 185
 
 def test_slice_with_start_end(clO):
 
     startdatetime = datetime.datetime(2019, 5, 7, 22, 0)
     endatetime = datetime.datetime(2019, 7, 1, 22, 0)
 
-    clO.slice(start=startdatetime,
-              end=endatetime)
+    new_cl = clO.slice(start=startdatetime,
+                       end=endatetime)
 
-    assert len(clO.clist) == 215
+    assert len(new_cl.data['candles']) == 39
 
 def test_get_lasttime():
-    oanda = OandaAPI(instrument='AUD_CHF',
-                     granularity='H12',
-                     settingf='../../data/settings.ini')
+    oanda = Connect(instrument='AUD_CHF',
+                    granularity='H12')
 
     resist = HArea(price=1.00721,
                    pips=45,
                    instrument='AUD_CHF',
-                   granularity='H12',
-                   settingf='../../data/settings.ini')
+                   granularity='H12')
 
     oanda.run(start='2004-11-07T10:00:00',
               end='2010-04-30T09:00:00')
@@ -154,7 +116,7 @@ def test_get_lasttime():
 
     lasttime = cl.get_lasttime(resist)
     assert lasttime == datetime.datetime(2007, 11, 9, 10, 0)
-
+"""
 def test_get_highest(clO):
     clO.get_highest()
 
@@ -214,22 +176,19 @@ def test_calc_itrend(pair, start, end, t_type, itrend, settings_obj, clean_tmp):
 
     assert itrend == cl.calc_itrend(t_type=t_type)
 
-"""
 def test_check_if_divergence():
 
-    oanda = OandaAPI(instrument='EUR_AUD',
-                     granularity='D',
-                     settingf='data/settings.ini')
+    conn = Connect(instrument='EUR_AUD',
+                    granularity='D')
 
-    oanda.run(start='2016-05-23T23:00:00',
-              end='2016-07-19T23:00:00')
+    conn.query(start='2016-05-23T23:00:00',
+               end='2016-07-19T23:00:00')
 
     candle_list = oanda.fetch_candleset()
 
     cl = CandleList(candle_list,
                     instrument='CAD_JPY',
-                    granularity='D',
-                    settingf='data/settings.ini')
+                    granularity='D')
 
     cl.calc_rsi()
 
@@ -342,5 +301,4 @@ def test_get_entropy(oanda_object):
     shared_items = set(dict1.items()) & set(dict2.items())
 
     assert len(shared_items) == 5
-
 """

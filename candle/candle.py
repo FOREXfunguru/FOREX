@@ -1,10 +1,12 @@
 '''
-Created on 07 Mar 2019
-
-@author: ernesto lowy
+@date: 22/11/2020
+@author: Ernesto Lowy
+@email: ernestolowy@gmail.com
 '''
 
 import pdb
+
+from oanda.config import CONFIG
 
 class Candle(object):
     """
@@ -211,38 +213,3 @@ class BidAskCandle(Candle):
         for attr, value in self.__dict__.items():
             out_str += "%s:%s " % (attr, value)
         return out_str
-
-
-class BiCandle:
-    '''
-    Constructor
-
-    This class represents any combination of two candles
-
-    Class variables
-    ---------------
-
-    candleA: BidAskCandle object
-             First candle in the pair
-    candleB: BidAskCandle object
-             Second candle in the pair
-    '''
-
-    def __init__(self, candleA, candleB):
-        self.candleA = candleA
-        self.candleB = candleB
-
-    def is_engulfing(self):
-        '''
-        Does candleB engulfs candleA?. Engulfing happens when candleB body engulfs the whole
-        candleA (including the body and the wicks)
-
-        Returns
-        ------
-        True or False
-        '''
-
-        if self.candleB.openBid > self.candleA.highBid and self.candleB.closeBid < self.candleA.lowBid:
-            return True
-        else:
-            return False

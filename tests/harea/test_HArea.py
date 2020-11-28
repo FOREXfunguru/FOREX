@@ -1,31 +1,11 @@
 import pytest
 
-from apis.oanda_api import OandaAPI
-from harea.harea import HArea
+from oanda.connect import Connect
+from harea import HArea
 from candle.candlelist import CandleList
 import datetime
 
-@pytest.fixture
-def cl_object():
-    '''Returns a CandleList object'''
-
-    oanda = OandaAPI(
-                     instrument='AUD_USD',
-                     granularity='D',
-                     settingf='../../data/settings.ini')
-
-    oanda.run(start='2019-03-06T23:00:00',
-              end='2020-01-03T23:00:00')
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list,
-                    instrument='AUD_USD',
-                    granularity='D',
-                    settingf='../../data/settings.ini')
-    return cl
-
-def test_last_time(cl_object):
+def test_last_time(clO):
     '''
     Test 'last_time' function from HArea
     '''
@@ -33,10 +13,9 @@ def test_last_time(cl_object):
     resist = HArea(price=0.70151,
                    pips=5,
                    instrument='AUD_USD',
-                   granularity='D',
-                   settingf='../../data/settings.ini')
+                   granularity='D')
 
-    lt = resist.last_time(clist=cl_object.clist, position='above')
+    lt = resist.last_time(clist=clO.clist, position='above')
 
     assert lt == datetime.datetime(2019, 7, 21, 21, 0)
 

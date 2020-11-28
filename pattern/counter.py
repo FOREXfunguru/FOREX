@@ -1,5 +1,4 @@
 import matplotlib
-import pdb
 import logging
 
 matplotlib.use('PS')
@@ -8,7 +7,7 @@ import matplotlib.pyplot as plt
 from ast import literal_eval
 from apis.oanda_api import OandaAPI
 from candle.candlelist import CandleList
-from harea.harea import HArea
+from harea import HArea
 from pivot.pivotlist import *
 from configparser import ConfigParser
 from utils import periodToDelta, substract_pips2price, add_pips2price

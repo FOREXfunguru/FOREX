@@ -4,7 +4,6 @@ from pivot.pivot import Pivot
 from segment.segment import Segment
 from configparser import ConfigParser
 
-
 class PivotList(object):
     '''
     Class that represents a list of Pivots as identified

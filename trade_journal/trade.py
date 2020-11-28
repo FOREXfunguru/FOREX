@@ -1,14 +1,12 @@
 from __future__ import division
 
 import math
-import warnings
-import pdb
 import logging
 import datetime as dt
 
 from apis.oanda_api import OandaAPI
 from candle.candlelist import CandleList
-from harea.harea import HArea
+from harea import HArea
 from utils import *
 from configparser import ConfigParser
 
