@@ -4,42 +4,40 @@
 @email: ernestolowy@gmail.com
 '''
 import pytest
+import pdb
 
-from candle.candle import BidAskCandle
+from candle.candle import Candle
+from oanda.connect import Connect
 
 @pytest.fixture
-def BidAskCandle_o():
+def CandleO():
     '''
-    BidAskCandle object instantiation
+    Candle object instantiation
     '''
+    a_dict = {'volume': 86555,
+              'openBid': 1.42813,
+              'complete': True,
+              'time': '2018-04-17T21:00:00.000000Z',
+              'closeBid': 1.41994,
+              'lowBid': 1.41717,
+              'highAsk': 1.43164,
+              'highBid': 1.43143,
+              'lowAsk': 1.41742,
+              'closeAsk': 1.42075,
+              'openAsk': 1.42903}
+    c = Candle(dict_data=a_dict)
 
-    candle = BidAskCandle(openAsk=0.7889,
-                          openBid=0.7889,
-                          granularity='D',
-                          instrument='AUD_USD',
-                          closeAsk=0.79258,
-                          closeBid=0.79258,
-                          highAsk=0.79347,
-                          highBid=0.79347,
-                          lowAsk=0.786,
-                          lowBid=0.786,
-                          complete=True,
-                          volume=12619,
-                          representation='bidask',
-                          time='2015-01-25 22:00:00')
+    return c
 
-    return candle
-
-def test_set_candle_features(BidAskCandle_o):
+def test_set_candle_features(CandleO):
     '''
     Test function to set basic candle features based on price
     i.e. self.colour, upper_wick, etc...
     '''
-
-    BidAskCandle_o.set_candle_features()
-    assert candle_list[0].colour == colour
-    assert candle_list[0].upper_wick == upper_wick
-    assert candle_list[0].lower_wick == lower_wick
+    CandleO.set_candle_features()
+    assert CandleO.colour == 'red'
+    assert CandleO.upper_wick == 0.0033
+    assert CandleO.lower_wick == 0.0028
 
 @pytest.mark.parametrize("pair,"
                          "timeframe,"
@@ -50,15 +48,22 @@ def test_set_candle_features(BidAskCandle_o):
                           ('AUD_USD', 'D', '2019-03-19T22:00:00', False),
                           ('AUD_USD', 'D', '2020-01-22T22:00:00', True)])
 def test_indecision_c(pair, timeframe, time, is_it):
-    oanda = OandaAPI(instrument=pair,
-                     granularity=timeframe,
-                     settingf="../../data/settings.ini")
+    '''
+    Test function to check if a certain Candle has the
+    typical indecission pattern
+    '''
+    conn = Connect(instrument=pair,
+                   granularity=timeframe)
 
-    oanda.run(start=time,
-              count=1)
+    res = conn.query(start=time,
+                     count=1)
 
-    candle_list = oanda.fetch_candleset()
-    candle_list[0].set_candle_features()
-    result = candle_list[0].indecision_c()
+    c_dict = res['candles'][0]
+
+    cObj = Candle(dict_data=c_dict)
+
+
+    cObj.set_candle_features()
+    result = cObj.indecision_c()
 
     assert is_it == result

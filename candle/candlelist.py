@@ -1,6 +1,6 @@
 from oanda.connect import Connect
 from zigzag import *
-from pivot.pivotlist import PivotList
+from pivot import PivotList
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from pandas.plotting import register_matplotlib_converters
@@ -348,27 +348,22 @@ class CandleList(object):
 
         x = []
         values = []
-        for i in range(len(self.clist)):
+        for i in range(len(self.data['candles'])):
             x.append(i)
-            values.append(getattr(self.clist[i],
-                                  self.settings.get('general', 'part')))
+            values.append(self.data['candles'][i][CONFIG.get('general', 'part')])
 
         xarr = np.array(x)
         yarr = np.array(values)
 
         pivots = peak_valley_pivots(yarr, th_bounces,
                                     th_bounces*-1)
-
         pl = PivotList(parray=pivots,
-                       clist=self,
-                       settingf=self.settingf,
-                       settings=self.settings)
-
-        if self.settings.getboolean('pivots', 'plot') is True:
+                       clist=self)
+        if CONFIG.getboolean('pivots', 'plot') is True:
             if outfile is None:
-                outfile = "{0}/pivots/{1}.allpivots.png".format(self.settings.get('images', 'outdir'),
-                                                                self.id.replace(' ', '_'))
-            figsize = literal_eval(self.settings.get('images', 'size'))
+                outfile = "{0}/pivots/{1}.allpivots.png".format(CONFIG.get('images', 'outdir'),
+                                                                self.data['instrument'].replace(' ', '_'))
+            figsize = literal_eval(CONFIG.get('images', 'size'))
             fig = plt.figure(figsize=figsize)
             plt.plot(xarr, yarr, 'k:', alpha=0.5)
             plt.plot(xarr[pivots != 0], yarr[pivots != 0], 'k-')
@@ -564,10 +559,10 @@ class CandleList(object):
 
         cl_logger.debug("Running calc_itrend")
 
-        outfile = "{0}/pivots/{1}.calc_it.allpivots.png".format(self.settings.get('images', 'outdir'),
-                                                                self.id.replace(' ', '_'))
+        outfile = "{0}/pivots/{1}.calc_it.allpivots.png".format(CONFIG.get('images', 'outdir'),
+                                                                self.data['instrument'].replace(' ', '_'))
 
-        pivots = self.get_pivotlist(th_bounces=self.settings.getfloat('it_trend', 'th_bounces'),
+        pivots = self.get_pivotlist(th_bounces=CONFIG.getfloat('it_trend', 'th_bounces'),
                                     outfile=outfile)
 
         # merge segments
@@ -576,10 +571,10 @@ class CandleList(object):
             # get new CandleList with new adjusted time for the end
             newclist = pivots.clist.slice(start=pivots.clist.clist[0].time,
                                           end=adj_t)
-            newp = newclist.get_pivotlist(self.settings.getfloat('it_trend', 'th_bounces')).plist[-1]
+            newp = newclist.get_pivotlist(CONFIG.getfloat('it_trend', 'th_bounces')).plist[-1]
             newp.merge_pre(slist=pivots.slist,
-                           n_candles=self.settings.getint('it_trend', 'n_candles'),
-                           diff_th=self.settings.getint('it_trend', 'diff_th'))
+                           n_candles=CONFIG.getint('it_trend', 'n_candles'),
+                           diff_th=CONFIG.getint('it_trend', 'diff_th'))
             return newp.pre
 
         cl_logger.debug("Done clac_itrend")
@@ -608,12 +603,12 @@ class CandleList(object):
         if self.type == "long":
             position = 'below'
 
-        last_time = hrarea.last_time(clist=self.clist,
+        last_time = hrarea.last_time(clist=self.data['candles'],
                                      position=position)
 
         # if last_time is not defined in this CandleList then assign the time for the first candle
         if last_time is None:
-            last_time = self.clist[0].time
+            last_time = self.clist.data['candles'][0].time
 
         return last_time
 
@@ -628,8 +623,8 @@ class CandleList(object):
         '''
 
         max = 0.0
-        for c in self.clist:
-            price = getattr(c, self.settings.get('general', 'part'))
+        for c in self.data['candles']:
+            price = c[CONFIG.get('general', 'part')]
             if price > max:
                 max = price
 
@@ -646,8 +641,8 @@ class CandleList(object):
         '''
 
         min = None
-        for c in self.clist:
-            price = getattr(c, self.settings.get('general', 'part'))
+        for c in self.data['candles']:
+            price = c[CONFIG.get('general', 'part')]
             if min is None:
                 min = price
             else:

@@ -1,7 +1,7 @@
 import logging
 import pdb
 
-from datetime import timedelta
+from datetime import timedelta,datetime
 from oanda.connect import Connect
 from config import CONFIG
 
@@ -84,13 +84,13 @@ class HArea(object):
             if count <= CONFIG.getint('harea', 'min'):
                 continue
             if position == 'above':
-                price = getattr(c, 'lowAsk')
+                price = c['lowAsk']
                 if price > self.upper:
-                    return c.time
+                    return datetime.strptime(c['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
             elif position == 'below':
-                price = getattr(c, 'highAsk')
+                price = c['highAsk']
                 if price < self.lower:
-                    return c.time
+                    return datetime.strptime(c['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
 
     def get_cross_time(self, candle, granularity='M30'):
         '''
@@ -99,7 +99,7 @@ class HArea(object):
 
         Parameters
         ----------
-        candle :   Candle object that crosses the HArea
+        candle :   Dict with the candle data that crosses the HArea
         granularity : To what granularity we should descend
 
         Returns
@@ -111,10 +111,10 @@ class HArea(object):
         # consider both Ask and bid
         cross = False
         bit = None
-        if candle.lowAsk <= self.price <= candle.highAsk:
+        if candle['lowAsk'] <= self.price <= candle['highAsk']:
             cross = True
             bit = "Ask"
-        elif candle.lowBid <= self.price <= candle.highBid:
+        elif candle['lowBid'] <= self.price <= candle['highBid']:
             cross = True
             bit = "Bid"
 
@@ -126,7 +126,7 @@ class HArea(object):
                 fgran = self.granularity.replace('H', '')
                 delta = timedelta(hours=int(fgran))
 
-            cstart = candle.time
+            cstart = datetime.strptime(candle['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
             cend = cstart+delta
             conn = Connect(instrument=self.instrument,
                            granularity=granularity)  # 'M30' is the default
@@ -189,16 +189,13 @@ class HAreaList(object):
         in self.halist for this HArea.
         None if there are no HArea objects overlapping
         '''
-        if not hasattr(candle, 'colour'):
-            candle.set_candle_features()
-
         onArea_hr = None
         sel_ix = None
         ix = 0
         for harea in self.halist:
-            highAttr = "high{0}".format(harea.settings.get('general', 'bit'))
-            lowAttr = "low{0}".format(harea.settings.get('general', 'bit'))
-            if harea.price <= getattr(candle, highAttr) and harea.price >= getattr(candle, lowAttr):
+            highAttr = "high{0}".format(CONFIG.get('general', 'bit'))
+            lowAttr = "low{0}".format(CONFIG.get('general', 'bit'))
+            if harea.price <= candle[highAttr] and harea.price >= candle[lowAttr]:
                 onArea_hr = harea
                 sel_ix = ix
             ix += 1

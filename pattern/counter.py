@@ -5,12 +5,12 @@ matplotlib.use('PS')
 import matplotlib.pyplot as plt
 
 from ast import literal_eval
-from apis.oanda_api import OandaAPI
+from oanda.connect import Connect
 from candle.candlelist import CandleList
 from harea import HArea
-from pivot.pivotlist import *
-from configparser import ConfigParser
+from pivot import *
 from utils import periodToDelta, substract_pips2price, add_pips2price
+from config import CONFIG
 
 # create logger
 c_logger = logging.getLogger(__name__)
@@ -65,26 +65,14 @@ class Counter(object):
     max_min_rsi : float, Optional
                   max or min RSI for CandleList slice
                   going from self.start-settings.getint('counter', rsi_period') to self.start.
-    settingf : str, Optional
-               Path to *.ini file with settings
-    settings : ConfigParser object generated using 'settingf'
-               Optional
     ser_data_obj : ser_data_obj, Optional
                    ser_data_obj with serialized data
     '''
 
-    def __init__(self, trade, settingf=None, settings=None, init_feats=False,
+    def __init__(self, trade, init_feats=False,
                  ser_data_obj=None, **kwargs):
 
         c_logger.debug("Initializing counter object")
-        self.settingf = settingf
-        if self.settingf is not None:
-            # parse settings file (in .ini file)
-            parser = ConfigParser()
-            parser.read(settingf)
-            self.settings = parser
-        else:
-            self.settings = settings
 
         allowed_keys = ['trend_i', 'pivots', 'clist_period','lasttime',
                         'pivots_lasttime', 'n_rsibounces', 'rsibounces_lengths',
@@ -141,7 +129,7 @@ class Counter(object):
         None if Oanda API query was not successful
         '''
 
-        delta_period = periodToDelta(self.settings.getint('counter', 'period'),
+        delta_period = periodToDelta(CONFIG.getint('counter', 'period'),
                                      self.trade.timeframe)
         delta_1 = periodToDelta(1, self.trade.timeframe)
         start = self.trade.start - delta_period  # get the start datetime for this CandleList period
@@ -149,34 +137,17 @@ class Counter(object):
 
         c_logger.debug("Fetching candlelist for period: {0}-{1}".format(start, end))
 
-        oanda = OandaAPI(url=self.settings.get('oanda_api', 'url'),
-                         instrument=self.trade.pair,
-                         granularity=self.trade.timeframe,
-                         settingf=self.settingf,
-                         settings=self.settings)
+        conn = Connect(url=CONFIG.get('oanda_api', 'url'),
+                       instrument=self.trade.pair,
+                       granularity=self.trade.timeframe)
 
         resp = None
-        if self.ser_data_obj is None:
-            c_logger.debug("Fetching data from API")
-            resp = oanda.run(start=start.isoformat(),
-                             end=end.isoformat())
-        else:
-            c_logger.debug("Fetching data from File")
-            oanda.data = self.ser_data_obj.slice(start=start,
-                                                 end=end)
-            resp = 200
+        c_logger.debug("Fetching data from API")
+        resp = conn.query(start=start.isoformat(),
+                          end=end.isoformat())
 
-        if resp == 200:
-            candle_list = oanda.fetch_candleset()
-
-            cl = CandleList(candle_list,
-                            settingf=self.settingf,
-                            settings=self.settings,
-                            instrument=self.trade.pair,
-                            granularity=self.trade.timeframe,
-                            id=self.trade.id,
-                            ser_data_obj=self.ser_data_obj,
-                            type=self.trade.type)
+        cl = CandleList(candle_list,
+                        type=self.trade.type)
 
             self.clist_period = cl
         else:

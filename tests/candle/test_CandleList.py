@@ -10,15 +10,14 @@ import os
 import logging
 import pdb
 
-from oanda.connect import Connect
 from candle.candlelist import CandleList
+from oanda.connect import Connect
 from harea import HArea
 
 @pytest.fixture
 def clean_tmp():
     yield
     print("Cleanup files")
-    pdb.set_trace()
     files = glob.glob(os.getenv('DATADIR')+"/imgs/**/*.png",recursive=True)
     for f in files:
         os.remove(f)
@@ -95,28 +94,25 @@ def test_slice_with_start_end(clO):
     assert len(new_cl.data['candles']) == 39
 
 def test_get_lasttime():
-    oanda = Connect(instrument='AUD_CHF',
-                    granularity='H12')
+    log = logging.getLogger('Test for get_lasttime')
+    log.debug('get_lasttime')
+
+    conn= Connect(instrument='AUD_CHF',
+                  granularity='H12')
 
     resist = HArea(price=1.00721,
                    pips=45,
                    instrument='AUD_CHF',
                    granularity='H12')
 
-    oanda.run(start='2004-11-07T10:00:00',
-              end='2010-04-30T09:00:00')
+    res = conn.query(start='2004-11-07T10:00:00',
+                     end='2010-04-30T09:00:00')
 
-    candle_list = oanda.fetch_candleset()
-    cl = CandleList(candle_list,
-                    instrument='AUD_CHF',
-                    id='test_AUD_CHF_clist',
-                    granularity='H12',
-                    type='short',
-                    settingf='../../data/settings.ini')
+    cl = CandleList(res, type='short')
 
     lasttime = cl.get_lasttime(resist)
     assert lasttime == datetime.datetime(2007, 11, 9, 10, 0)
-"""
+
 def test_get_highest(clO):
     clO.get_highest()
 
@@ -126,7 +122,6 @@ def test_get_lowest(clO):
     clO.get_lowest()
 
     assert clO.get_lowest() == 0.67047
-
 
 @pytest.mark.parametrize("pair,"
                          "start,"
@@ -155,150 +150,16 @@ def test_get_lowest(clO):
                            datetime.datetime(2012, 9, 7, 22, 0), 'long', datetime.datetime(2012, 8, 8, 21, 0)),
                           ('AUD_USD', datetime.datetime(2015, 9, 7, 22, 0),
                            datetime.datetime(2016, 4, 25, 22, 0), 'short', datetime.datetime(2016, 1, 17, 22, 0))])
-def test_calc_itrend(pair, start, end, t_type, itrend, settings_obj, clean_tmp):
+def test_calc_itrend(pair, start, end, t_type, itrend, clean_tmp):
+    log = logging.getLogger('Test for calc_itrend')
+    log.debug('calc_itrend')
 
-    settings_obj.set('it_trend', 'th_bounces', '0.02')
-    settings_obj.set('it_trend', 'n_candles', '12')
+    conn = Connect(instrument=pair,
+                   granularity='D')
 
-    oanda = OandaAPI(instrument=pair,
-                     granularity='D',
-                     settings=settings_obj)
+    res = conn.query(start=start.isoformat(),
+                     end=end.isoformat())
 
-    oanda.run(start=start.isoformat(),
-              end=end.isoformat())
+    cl = CandleList(res)
 
-    candle_list = oanda.fetch_candleset()
-    cl = CandleList(candle_list,
-                    instrument=pair,
-                    id='test_clist',
-                    granularity='D',
-                    settings=settings_obj)
-
-    assert itrend == cl.calc_itrend(t_type=t_type)
-
-def test_check_if_divergence():
-
-    conn = Connect(instrument='EUR_AUD',
-                    granularity='D')
-
-    conn.query(start='2016-05-23T23:00:00',
-               end='2016-07-19T23:00:00')
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list,
-                    instrument='CAD_JPY',
-                    granularity='D')
-
-    cl.calc_rsi()
-
-    (model, outfile) = cl.fit_reg_line()
-
-    direction = None
-    if model.coef_[0, 0] > 0:
-        direction = 'up'
-    else:
-        direction = 'down'
-
-    assert cl.check_if_divergence(direction=direction) == True
-
-def get_dictionary(k, v):
-    d = dict([x, ord(x)] for x in  string.printable)
-    d[k] = v
-    return d
-
-def test_calc_binary_seq(oanda_object):
-    
-    candle_list=oanda_object.fetch_candleset()
-
-    cl=CandleList(candle_list, type='short')
-
-    cl.calc_binary_seq(merge=False)
-    dict1=cl.seq
-    dict2={'open': '01', 'colour': '011', 'high': '01', 'close': '11', 'low': '11'}
-
-    shared_items = set(dict1.items()) & set(dict2.items())
-
-    assert len(shared_items) == 5
-
-def test_calc_binary_seq_withmerge(oanda_object):
-    '''
-    Test the calc_binary_seq function with the merge=True option
-    '''
-
-    candle_list=oanda_object.fetch_candleset()
-
-    cl=CandleList(candle_list, type='short')
-
-    cl.calc_binary_seq(merge=True)
-    dict1=cl.seq
-    dict2={'close': '11', 'colour': '011', 'merge': '01110111011', 'open': '01', 'high': '01', 'low': '11'}
-
-    shared_items = set(dict1.items()) & set(dict2.items())
-
-    assert len(shared_items) == 6
-
-def test_number_of_0s(oanda_object):
-  
-    candle_list=oanda_object.fetch_candleset()
-    
-    cl=CandleList(candle_list, type='short')
-
-    cl.calc_binary_seq()
-
-    cl.calc_number_of_0s(norm=True)
-
-    dict1=cl.number_of_0s
-    dict2={'open': 0.5, 'close': 0.0, 'colour': 0.3333333333333333, 'low': 0.0, 'high': 0.5, 'merge':0.2727272727272727}
-
-    shared_items = set(dict1.items()) & set(dict2.items())
-
-    assert len(shared_items) == 6
-
-def test_calc_number_of_doubles0s(oanda_object):
-    
-    candle_list=oanda_object.fetch_candleset()
-
-    cl=CandleList(candle_list, type='short')
-
-    cl.calc_binary_seq()
-
-    cl.calc_number_of_doubles0s(norm=True)
-
-    assert cl.highlow_double0s==0.0
-    assert cl.openclose_double0s==0.0
-
-def test_longest_stretch(oanda_object):
-
-    candle_list=oanda_object.fetch_candleset()
-
-    cl=CandleList(candle_list, type='short')
-
-    cl.calc_binary_seq()
-
-    cl.calc_longest_stretch()
-
-    dict1=cl.longest_stretch
-    dict2={'close': 0, 'high': 0, 'open': 0, 'low': 0, 'colour': 0}
-
-    shared_items = set(dict1.items()) & set(dict2.items())
-
-    assert len(shared_items) == 5
-
-def test_get_entropy(oanda_object):
-    
-    candle_list=oanda_object.fetch_candleset()
-
-    cl=CandleList(candle_list, type='short')
-
-    cl.calc_binary_seq()
-
-    cl.get_entropy()
-
-    dict1=cl.entropy
-    dict2={'open': 0.34657359027997264, 'colour': 0.21217138943160427, 'high': 0.34657359027997264, 'close': 0.0, 'low': 0.0}
-
-    shared_items = set(dict1.items()) & set(dict2.items())
-
-    assert len(shared_items) == 5
-"""
+    assert itrend == cl.calc_itrend()

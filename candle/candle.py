@@ -6,7 +6,8 @@
 
 import pdb
 
-from oanda.config import CONFIG
+from oanda.connect import Connect
+from config import CONFIG
 
 class Candle(object):
     """
@@ -14,85 +15,13 @@ class Candle(object):
 
     Class variables
     ---------------
-    representation : str, either 'midpoint' or 'bidask'
-           The candle's representation type
-    time : datetime
-        Candle's date and time
-    volume : int
-        Candle's volume
-    complete : boolean
-        Is the candle complete?
-    formation : candle formation
-        Possible values are:
-    instrument : string
-                pair for this candle. Optional
-    granularity : D, H12, H8, etc...
+    dict_data : dict
+                Dictionary with data as genererated by
+                the Oanda REST API
     """
-
-    def __init__(self, representation=None, time=None, volume=0, complete=True,
-                 instrument=None, formation=None, granularity=None):
-        self.representation = representation
-        self.time = time
-        self.volume = volume
-        if complete not in [True, False]:
-            raise Exception(("complete %s is not valid. Complete should be True or False")) % complete
-        self.complete = complete
-        self.formation = formation
-        self.instrument = instrument
-        self.granularity = granularity
-
-class BidAskCandle(Candle):
-    '''
-    Constructor
-
-    Class variables
-    ---------------
-    openBid : float
-              Candle's openBid value
-    openAsk : float
-              Candle's openAsk value
-    highBid : float
-              Candle's highBid value
-    highAsk : float
-              Candle's highAsk value
-    lowBid  : float
-              Candle's lowBid value
-    lowAsk  : float
-              Candle's lowAsk value
-    closeBid : float
-               Candle's lowAsk value
-    closeAsk : float
-               Candle's closeAsk value
-    upper_wick : float
-                 Candle's upper_wick
-                 length
-    lower_wick : float
-                 Candle's lower wick
-                 length
-    midAsk : float
-             Middle of the candle. Calculated by doing
-             (highAsk+lowAsk)/2
-    midBid : float
-              Middle of the candle. Calculated by doing
-             (highBid+lowBid)/2
-
-    Inherits from Candle
-    '''
-
-    def __init__(self, time=None,
-                 instrument=None,
-                 granularity=None,
-                 representation=None, **kwargs):
-        Candle.__init__(self, time=time,
-                        representation=representation,
-                        instrument=instrument,
-                        granularity=granularity)
-
-        allowed_keys = ['representation', 'openBid', 'openAsk', 'highBid', 'highAsk',
-                        'lowBid', 'lowAsk', 'closeBid', 'closeAsk', 'upper_wick', 'lower_wick', 'colour',
-                        'perc_body', 'perc_uwick', 'perc_lwick', 'midAsk', 'midBid']
-
-        self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
+    def __init__(self, dict_data):
+        for key in dict_data:
+            setattr(self, key, dict_data[key])
 
     def set_candle_features(self):
         '''
@@ -206,7 +135,7 @@ class BidAskCandle(Candle):
             self.representation = "undefined"
 
     def __repr__(self):
-        return "BidAskCandle"
+        return "Candle"
 
     def __str__(self):
         out_str = ""

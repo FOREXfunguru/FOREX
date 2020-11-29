@@ -12,7 +12,7 @@ def env_setup(monkeypatch):
     monkeypatch.setenv('DATADIR', '../../data/')
 
 @pytest.fixture
-def clO(scope="session"):
+def clO(scope="session" ):
     log = logging.getLogger('cl_object')
     log.debug('Create a CandleList object')
 

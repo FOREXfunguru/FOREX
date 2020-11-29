@@ -8,7 +8,7 @@ from trade_journal.trade import Trade
 from trade_journal.trade_list import TradeList
 from openpyxl import load_workbook, Workbook
 from configparser import ConfigParser
-from pivot.pivotlist import PivotList
+from pivot import PivotList
 
 # create logger
 tj_logger = logging.getLogger(__name__)

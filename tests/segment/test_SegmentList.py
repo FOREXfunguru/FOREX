@@ -1,32 +1,15 @@
-from apis.oanda_api import OandaAPI
-from candle.candlelist import CandleList
+from config import CONFIG
 
 import datetime
-
 import pytest
 
 
 @pytest.fixture
-def pl_object():
+def pl_object(clO):
     '''Returns PivotList object'''
 
-    oanda = OandaAPI(instrument='AUD_USD',
-                     granularity='D',
-                     settingf='../../data/settings.ini')
-
-    oanda.run(start='2019-03-08T22:00:00',
-              end='2019-08-09T22:00:00')
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list,
-                    instrument='AUD_USD',
-                    id='AUD_USD_test',
-                    type='long',
-                    settingf='../../data/settings.ini')
-
-    pl = cl.get_pivotlist(th_bounces=cl.settings.getfloat('pivots',
-                                                          'th_bounces'))
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots',
+                                                      'th_bounces'))
 
     return pl
 
@@ -38,35 +21,35 @@ def test_calc_diff(pl_object):
 
     #when diff is + it means that
     #the Segment is in a downtrend
-    assert slist.diff == 262.9
+    assert slist.diff == 167.3
 
 def test_length_of_segment(pl_object):
     """Test the length function of Segment"""
 
     slist = pl_object.slist
 
-    assert slist.slist[0].length() == 27
+    assert slist.slist[0].length() == 29
 
 def test_length_of_segmentlist(pl_object):
     """Test the length function of SegmentList"""
 
     slist = pl_object.slist
 
-    assert slist.length() == 109
+    assert slist.length() == 229
 
 def test_start(pl_object):
     """Test start"""
 
     slist = pl_object.slist
 
-    assert slist.start() == datetime.datetime(2019, 3, 10, 21, 0)
+    assert slist.start() == datetime.datetime(2019, 3, 6, 22, 0)
 
 def test_end(pl_object):
     """Test end function"""
 
     slist = pl_object.slist
 
-    assert slist.end() == datetime.datetime(2019, 8, 7, 21, 0)
+    assert slist.end() == datetime.datetime(2020, 1, 22, 22, 0)
 
 def test_fetch_by_start(pl_object):
     """Test fetch_by_start"""

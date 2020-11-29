@@ -1,66 +1,46 @@
-from apis.oanda_api import OandaAPI
+from oanda.connect import Connect
 from candle.candlelist import CandleList
+from config import CONFIG
 
 import pytest
 import glob
 import os
 import datetime
-
+import logging
 
 @pytest.fixture
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob('../data/IMGS/pivots/*')
+    files = glob.glob('../../data/imgs/pivots/*')
     for f in files:
         os.remove(f)
 
-
-@pytest.fixture
-def cl_object(clean_tmp):
-    '''Returns CandleList object'''
-
-    oanda = OandaAPI(instrument='AUD_USD',
-                     granularity='D',
-                     settingf='../../data/settings.ini')
-
-    oanda.run(start='2015-06-24T22:00:00',
-              end='2019-06-21T22:00:00')
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list,
-                    instrument='AUD_USD',
-                    id='AUD_USD_testclist',
-                    type='long',
-                    settingf='../../data/settings.ini')
-    return cl
-
-def test_pre_aft_lens(cl_object, clean_tmp):
+def test_pre_aft_lens(clO, clean_tmp):
     '''
     Check if 'pre' and 'aft' Segments have the
     correct number of candles
     '''
 
-    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
 
     pivot = pl.plist[3]
 
-    assert len(pivot.pre.clist) == 21
-    assert len(pivot.aft.clist) == 18
+    assert len(pivot.pre.clist) == 23
+    assert len(pivot.aft.clist) == 32
 
-def test_pre_aft_start(cl_object, clean_tmp):
+def test_pre_aft_start(clO, clean_tmp):
     '''
     Check if 'pre' and 'aft' Segments have the
     correct start Datetimes
     '''
 
-    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
 
     pivot = pl.plist[3]
 
-    assert datetime.datetime(2015, 10, 11, 21, 0) == pivot.pre.start()
-    assert datetime.datetime(2015, 11, 9, 22, 0) == pivot.aft.start()
+    assert datetime.datetime(2019, 6, 16, 21, 0) == pivot.pre.start()
+    assert datetime.datetime(2019, 7, 17, 21, 0) == pivot.aft.start()
 
 @pytest.mark.parametrize("ix,"
                          "pair,"
@@ -83,21 +63,13 @@ def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post, cle
     Test function 'merge_pre' to merge the 'pre' Segment
     '''
 
-    oanda = OandaAPI(instrument=pair,
-                     granularity=timeframe,
-                     settingf='../../data/settings.ini')
+    conn = Connect(instrument=pair,
+                    granularity=timeframe)
 
-    oanda.run(start=start,
-              end=end)
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list,
-                    instrument=pair,
-                    id=id,
-                    settingf='../../data/settings.ini')
-
-    pl = cl.get_pivotlist(th_bounces=cl.settings.getfloat('pivots', 'th_bounces'))
+    res = conn.query(start=start,
+                     end=end)
+    cl = CandleList(res)
+    pl = cl.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
 
     pivot = pl.plist[ix]
     # Check pivot.pre.start() before running 'merge_pre'
@@ -105,42 +77,42 @@ def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post, cle
 
     # run 'merge_pre' function
     pivot.merge_pre(slist=pl.slist,
-                    n_candles=cl.settings.getint('pivots', 'n_candles'),
-                    diff_th=cl.settings.getint('pivots', 'diff_th'))
+                    n_candles=CONFIG.getint('pivots', 'n_candles'),
+                    diff_th=CONFIG.getint('pivots', 'diff_th'))
 
     # Check pivot.pre.start() after running 'merge_pre'
     assert date_pre == pivot.pre.start()
 
-def test_merge_aft(cl_object, clean_tmp):
+def test_merge_aft(clO, clean_tmp):
     '''
     Test function to merge 'aft' Segment
     '''
-    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
 
     pivot = pl.plist[3]
 
     # Check pivot.aft.end() before running 'merge_aft'
-    assert datetime.datetime(2015, 12, 2, 22, 0) == pivot.aft.end()
+    assert datetime.datetime(2019, 8, 29, 21, 0) == pivot.aft.end()
 
     # run 'merge_aft' function
     pivot.merge_aft(slist=pl.slist,
-                    n_candles=cl.settings.getint('pivots', 'n_candles'),
-                    diff_th=cl.settings.getint('pivots', 'diff_th'))
+                    n_candles=CONFIG.getint('pivots', 'n_candles'),
+                    diff_th=CONFIG.getint('pivots', 'diff_th'))
 
     # Check pivot.aft.end() after running 'merge_aft'
 
-    assert datetime.datetime(2015, 12, 2, 22, 0) == pivot.aft.end()
+    assert datetime.datetime(2019, 9, 29, 21, 0) == pivot.aft.end()
 
-def test_calc_score(cl_object, clean_tmp):
+def test_calc_score(clO, clean_tmp):
     '''
     Test function named 'calc_score'
     '''
-    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
 
     pivot = pl.plist[3]
     score = pivot.calc_score()
 
-    assert score == 623.3
+    assert score == 489.8
 
 @pytest.mark.parametrize("ix,"
                          "pair,"
@@ -156,21 +128,16 @@ def test_calc_score(cl_object, clean_tmp):
                           (-1, 'EUR_AUD', 'D', 'EUR_AUD 24MAY2019D', '2009-02-23T22:00:00',
                            '2009-05-23T22:00:00',datetime.datetime(2009, 5, 18, 21, 0)) ])
 def test_adjust_pivottime(ix, pair, timeframe, id, start, end, new_b, clean_tmp):
-    oanda = OandaAPI(instrument=pair,
-                     granularity=timeframe,
-                     settingf='../../data/settings.ini')
+    conn = Connect(instrument=pair,
+                   granularity=timeframe)
 
-    oanda.run(start=start,
-              end=end)
+    res = conn.query(start=start,
+                     end=end)
 
-    candle_list = oanda.fetch_candleset()
 
-    cl = CandleList(candle_list,
-                    instrument=pair,
-                    id=id,
-                    settingf='../../data/settings.ini')
+    cl = CandleList(res)
 
-    pl = cl.get_pivotlist(th_bounces=cl.settings.getfloat('pivots', 'th_bounces'))
+    pl = cl.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
 
     p = pl.plist[ix]
     newt = p.adjust_pivottime(clistO=cl)
