@@ -1,74 +1,38 @@
-from apis.oanda_api import OandaAPI
+from oanda.connect import Connect
 from candle.candlelist import CandleList
+from config import CONFIG
 
 import pytest
 import glob
 import os
 import datetime
 
-
-@pytest.fixture
-def cl_object():
-    '''Returns CandleList object'''
-
-    oanda = OandaAPI(instrument='AUD_USD',
-                     granularity='D',
-                     settingf='../../data/settings.ini')
-
-    oanda.run(start='2015-06-24T22:00:00',
-              end='2019-06-21T22:00:00')
-
-    candle_list = oanda.fetch_candleset()
-
-    cl = CandleList(candle_list,
-                    instrument='AUD_USD',
-                    id='AUD_USD_testclist',
-                    type='long',
-                    settingf='../../data/settings.ini')
-
-    return cl
-
-@pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    files = glob.glob('data/tmp/*')
-    for f in files:
-        os.remove(f)
-
-def test_get_pivotlist(cl_object):
+def test_get_pivotlist(clO):
     """Obtain a pivotlist"""
 
-    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
+    assert len(pl.plist) == 11
+    assert pl.plist[10].candle['openAsk'] == 0.68495
+    assert len(pl.plist[7].pre.clist) == 23
+    assert len(pl.plist[9].aft.clist) == 17
 
-    assert len(pl.plist) == 24
-    assert pl.plist[10].candle.openAsk == 0.76752
-    assert len(pl.plist[7].pre.clist) == 25
-    assert len(pl.plist[10].aft.clist) == 24
-
-def test_print_pivots_dates(cl_object):
-    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
-
+def test_print_pivots_dates(clO):
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
     dtl = pl.print_pivots_dates()
+    assert len(dtl) == 11
 
-    assert len(dtl) == 24
-
-def test_fetch_by_type(cl_object):
+def test_fetch_by_type(clO):
     """Obtain a pivotlist of a certain type"""
 
-    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
-
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
     newpl = pl.fetch_by_type(type=-1)
+    assert len(newpl.plist) == 6
 
-    assert len(newpl.plist) == 11
-
-def test_fetch_by_time(cl_object):
+def test_fetch_by_time(clO):
     """Obtain a Pivot object by datetime"""
 
-    pl = cl_object.get_pivotlist(th_bounces=cl_object.settings.getfloat('pivots', 'th_bounces'))
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
 
-    adt = datetime.datetime(2016, 1, 17, 22, 0)
-
+    adt = datetime.datetime(2019, 4, 16, 21, 0)
     rpt = pl.fetch_by_time(adt)
-
-    assert rpt.candle.time == adt
+    assert rpt.candle['time'] == '2019-04-16T21:00:00.000000Z'

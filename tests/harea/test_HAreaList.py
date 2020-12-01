@@ -1,6 +1,5 @@
 from harea import HAreaList
 from harea import HArea
-from candle.candle import BidAskCandle
 
 import pytest
 import glob

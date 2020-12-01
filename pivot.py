@@ -74,7 +74,7 @@ class Pivot(object):
                 # This is not necessarily an error, it could be that there is not the required Segment in slist
                 # because it is out of the time period
                 p_logger.info("No Segment could be retrieved for pivot falling in time {0} "
-                              "by using s.fetch_by_end and date: {1} in function 'merge_pre'".format(self.candle.time,
+                              "by using s.fetch_by_end and date: {1} in function 'merge_pre'".format(self.candle['time'],
                                                                                                      start_dt))
                 extension_needed = False
                 continue
@@ -342,7 +342,9 @@ class PivotList(object):
         '''
 
         for p in self.plist:
-            if p.candle.time == d:
+            c_time = datetime.strptime(p.candle['time'],
+                                       '%Y-%m-%dT%H:%M:%S.%fZ')
+            if c_time == d:
                 return p
         return None
 
@@ -379,7 +381,7 @@ class PivotList(object):
 
         datelist = []
         for p in self.plist:
-            datelist.append(p.candle.time)
+            datelist.append(p.candle['time'])
 
         return datelist
 

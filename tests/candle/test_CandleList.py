@@ -162,4 +162,4 @@ def test_calc_itrend(pair, start, end, t_type, itrend, clean_tmp):
 
     cl = CandleList(res)
 
-    assert itrend == cl.calc_itrend()
+    assert itrend == cl.calc_itrend().start()

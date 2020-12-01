@@ -569,7 +569,8 @@ class CandleList(object):
         for p in reversed(pivots.plist):
             adj_t = p.adjust_pivottime(clistO=pivots.clist)
             # get new CandleList with new adjusted time for the end
-            newclist = pivots.clist.slice(start=pivots.clist.clist[0].time,
+            start = datetime.strptime(pivots.clist.data['candles'][0]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            newclist = pivots.clist.slice(start= start,
                                           end=adj_t)
             newp = newclist.get_pivotlist(CONFIG.getfloat('it_trend', 'th_bounces')).plist[-1]
             newp.merge_pre(slist=pivots.slist,
