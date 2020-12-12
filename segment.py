@@ -128,7 +128,7 @@ class Segment(object):
         -------
         datetime
         '''
-        return datetime.datetime.strptime(self.clist[0]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        return self.clist[0]['time']
 
     def end(self):
         '''
@@ -139,7 +139,7 @@ class Segment(object):
         -------
         datetime
         '''
-        return datetime.datetime.strptime(self.clist[-1]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        return self.clist[-1]['time']
 
 
     def get_lowest(self):
@@ -302,10 +302,9 @@ class SegmentList(object):
         -------
         A datetime object
         '''
-        start = datetime.datetime.strptime(self.slist[0].clist[0]['time'],'%Y-%m-%dT%H:%M:%S.%fZ')
-        self.start = start
+        self.start = self.slist[0].clist[0]['time']
 
-        return start
+        return self.start
 
     def end(self):
         '''
@@ -317,10 +316,9 @@ class SegmentList(object):
         A datetime object
         '''
 
-        end = datetime.datetime.strptime(self.slist[-1].clist[-1]['time'],'%Y-%m-%dT%H:%M:%S.%fZ')
-        self.end = end
+        self.end = self.slist[-1].clist[-1]['time']
 
-        return end
+        return self.end
 
     def fetch_by_start(self, dt):
         '''

@@ -18,7 +18,7 @@ class Pivot(object):
     ---------------
     type : int, Required
            Type of pivot. It can be 1 or -1
-    candle : Candle Object
+    candle : Dict
              Candle representing the pivot
     pre : Segment object
           Segment object before this pivot
@@ -240,8 +240,7 @@ class Pivot(object):
                 # change in candle colour
                 new_pc = c
                 it = False
-
-        return datetime.strptime(new_pc.time, '%Y-%m-%dT%H:%M:%S.%fZ')
+        return new_pc.time
 
     def __repr__(self):
         return "Pivot"
@@ -342,9 +341,7 @@ class PivotList(object):
         '''
 
         for p in self.plist:
-            c_time = datetime.strptime(p.candle['time'],
-                                       '%Y-%m-%dT%H:%M:%S.%fZ')
-            if c_time == d:
+            if p.candle['time'] == d:
                 return p
         return None
 

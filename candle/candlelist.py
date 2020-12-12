@@ -42,6 +42,13 @@ class CandleList(object):
     '''
 
     def __init__(self, data, type=None):
+        # Transforming all datetime strs to datetime objects
+        for c in data['candles']:
+            if isinstance(c['time'], datetime):
+                continue
+            else:
+                c['time'] = datetime.strptime(c['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+
         self.data = data
 
         # set type if not defined depending on
@@ -87,7 +94,7 @@ class CandleList(object):
         if period == 0:
             sel_c = None
             for c in self.data['candles']:
-                start = datetime.strptime(c['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                start = c['time']
                 end = start+delta
                 if d >= start and d < end:
                     sel_c = c
@@ -113,8 +120,8 @@ class CandleList(object):
         '''
         cl_logger.debug("Running calc_rsi")
 
-        start_time = datetime.strptime(self.data['candles'][0]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
-        end_time = datetime.strptime(self.data['candles'][-1]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        start_time = self.data['candles'][0]['time']
+        end_time = self.data['candles'][-1]['time']
 
         delta_period = None
         if self.data['granularity'] == "D":
@@ -464,18 +471,13 @@ class CandleList(object):
 
         sliced_clist = []
         if start is not None and end is None:
-            sliced_clist = [c for c in self.data['candles'] if datetime.strptime(c['time'],
-                                                                                 '%Y-%m-%dT%H:%M:%S.%fZ') >= start]
+            sliced_clist = [c for c in self.data['candles'] if c['time'] >= start]
         elif start is not None and end is not None:
             if start > end:
                 raise Exception("Start is greater than end. Can't slice this CandleList")
-            sliced_clist = [c for c in self.data['candles'] if datetime.strptime(c['time'],
-                                                                                 '%Y-%m-%dT%H:%M:%S.%fZ') >= start
-                                                                                  and datetime.strptime(c['time'],
-                                                                                  '%Y-%m-%dT%H:%M:%S.%fZ')  <= end]
+            sliced_clist = [c for c in self.data['candles'] if c['time'] >= start and c['time'] <= end]
         elif start is None and end is not None:
-            sliced_clist = [c for c in self['candles'] if datetime.strptime(c['time'],
-                                                                            '%Y-%m-%dT%H:%M:%S.%fZ') <= end]
+            sliced_clist = [c for c in self['candles'] if c['time'] <= end ]
         new_dict = {}
         new_dict['candles'] = sliced_clist
         new_dict['instrument'] = self.data['instrument']
@@ -569,7 +571,7 @@ class CandleList(object):
         for p in reversed(pivots.plist):
             adj_t = p.adjust_pivottime(clistO=pivots.clist)
             # get new CandleList with new adjusted time for the end
-            start = datetime.strptime(pivots.clist.data['candles'][0]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            start = pivots.clist.data['candles'][0]['time']
             newclist = pivots.clist.slice(start= start,
                                           end=adj_t)
             newp = newclist.get_pivotlist(CONFIG.getfloat('it_trend', 'th_bounces')).plist[-1]

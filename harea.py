@@ -86,11 +86,11 @@ class HArea(object):
             if position == 'above':
                 price = c['lowAsk']
                 if price > self.upper:
-                    return datetime.strptime(c['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                    return c['time']
             elif position == 'below':
                 price = c['highAsk']
                 if price < self.lower:
-                    return datetime.strptime(c['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                    return c['time']
 
     def get_cross_time(self, candle, granularity='M30'):
         '''
@@ -138,12 +138,13 @@ class HArea(object):
             seen = False
             part_low = "low{0}".format(bit)
             part_high = "high{0}".format(bit)
-            for c in res.data['candles']:
+            for c in res['candles']:
                 low = c[part_low]
                 high = c[part_high]
                 if low <= self.price <= high:
                     seen = True
-                    return c['time']
+                    return datetime.strptime(c['time'],
+                                             '%Y-%m-%dT%H:%M:%S.%fZ')
             if seen is False:
                 return 'n.a.'
         else:

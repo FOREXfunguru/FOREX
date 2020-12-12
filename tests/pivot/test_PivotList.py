@@ -35,4 +35,4 @@ def test_fetch_by_time(clO):
 
     adt = datetime.datetime(2019, 4, 16, 21, 0)
     rpt = pl.fetch_by_time(adt)
-    assert rpt.candle['time'] == '2019-04-16T21:00:00.000000Z'
+    assert rpt.candle['time'] == datetime.datetime(2019, 4, 16, 21, 0)
