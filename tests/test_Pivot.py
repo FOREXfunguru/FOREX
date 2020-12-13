@@ -3,18 +3,7 @@ from candle.candlelist import CandleList
 from config import CONFIG
 
 import pytest
-import glob
-import os
 import datetime
-import logging
-
-@pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    files = glob.glob('../../data/imgs/pivots/*')
-    for f in files:
-        os.remove(f)
 
 def test_pre_aft_lens(clO, clean_tmp):
     '''
@@ -103,9 +92,10 @@ def test_merge_aft(clO, clean_tmp):
 
     assert datetime.datetime(2019, 9, 29, 21, 0) == pivot.aft.end()
 
-def test_calc_score(clO, clean_tmp):
+def test_calc_score_d(clO, clean_tmp):
     '''
     Test function named 'calc_score'
+    with 'diff' parameter (def option)
     '''
     pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
 
@@ -113,6 +103,18 @@ def test_calc_score(clO, clean_tmp):
     score = pivot.calc_score()
 
     assert score == 489.8
+
+def test_calc_score_c(clO, clean_tmp):
+    '''
+    Test function named 'calc_score'
+    with 'candle' parameter
+    '''
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
+
+    pivot = pl.plist[3]
+    score = pivot.calc_score(type="candles")
+
+    assert score == 55
 
 @pytest.mark.parametrize("ix,"
                          "pair,"
@@ -136,9 +138,7 @@ def test_adjust_pivottime(ix, pair, timeframe, id, start, end, new_b, clean_tmp)
 
 
     cl = CandleList(res)
-
     pl = cl.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
-
     p = pl.plist[ix]
     newt = p.adjust_pivottime(clistO=cl)
 

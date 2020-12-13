@@ -1,6 +1,6 @@
 from oanda.connect import Connect
 from zigzag import *
-from pivot import PivotList
+from pivot_list import PivotList
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 from pandas.plotting import register_matplotlib_converters
@@ -560,7 +560,6 @@ class CandleList(object):
         '''
 
         cl_logger.debug("Running calc_itrend")
-
         outfile = "{0}/pivots/{1}.calc_it.allpivots.png".format(CONFIG.get('images', 'outdir'),
                                                                 self.data['instrument'].replace(' ', '_'))
 

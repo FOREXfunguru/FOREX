@@ -27,7 +27,10 @@ class Segment(object):
         self.count = count
         self.clist = clist
         self.instrument = instrument
-        self.diff = diff
+        if diff is None:
+            self.calc_diff()
+        else:
+            self.diff = diff
 
     def prepend(self, s):
         '''
@@ -69,7 +72,8 @@ class Segment(object):
         '''
         Function to calculate the absolute difference in
         number of pips between the first and the last candles
-        of this segment
+        of this segment. The candle part considered is
+        controlled by CONFIG.get('general', 'part')
 
         Returns
         -------

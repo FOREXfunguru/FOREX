@@ -3,6 +3,7 @@ import re
 import pdb
 from datetime import datetime,timedelta
 
+
 def try_parsing_date(text):
     '''
     Function to parse a string that can be formatted in

@@ -1,5 +1,5 @@
 from oanda.connect import Connect
-from candle.candlelist import CandleList
+from pivot_list import PivotList
 from config import CONFIG
 
 import pytest
@@ -15,6 +15,13 @@ def test_get_pivotlist(clO):
     assert pl.plist[10].candle['openAsk'] == 0.68495
     assert len(pl.plist[7].pre.clist) == 23
     assert len(pl.plist[9].aft.clist) == 17
+
+def test_get_score(clO):
+    """
+    Test 'get_score' function
+    """
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
+    assert pl.get_score() == 3932.8
 
 def test_print_pivots_dates(clO):
     pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))

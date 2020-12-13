@@ -4,8 +4,6 @@
 @email: ernestolowy@gmail.com
 '''
 
-import pdb
-
 from oanda.connect import Connect
 from config import CONFIG
 
