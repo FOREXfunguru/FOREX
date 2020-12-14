@@ -2,7 +2,23 @@ from zigzag import *
 from segment import SegmentList
 from segment import Segment
 from pivot import Pivot
-from utils import periodToDelta, substract_pips2price, add_pips2price
+from utils import substract_pips2price, add_pips2price
+from config import CONFIG
+from candle.candle import Candle
+from ast import literal_eval
+
+import matplotlib
+matplotlib.use('PS')
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
+
+import logging
+
+logging.basicConfig(level=logging.INFO)
+
+# create logger
+pl_logger = logging.getLogger(__name__)
+pl_logger.setLevel(logging.INFO)
 
 import pdb
 
@@ -157,7 +173,7 @@ class PivotList(object):
 
         return round(tot_score, 1)
 
-    def inarea_pivots(self, last_pivot=True):
+    def inarea_pivots(self, SR, last_pivot=True):
         '''
         Function to identify the candles for which price is in the area defined
         by SR+HRpips and SR-HRpips
@@ -177,34 +193,34 @@ class PivotList(object):
         '''
 
         # get bounces in the horizontal SR area
-        lower = substract_pips2price(trade.pair,
-                                     trade.SR,
+        lower = substract_pips2price(self.clist.data['instrument'],
+                                     SR,
                                      CONFIG.getint('pivots',
                                                    'hr_pips'))
-        upper = add_pips2price(trade.pair,
-                               trade.SR,
+        upper = add_pips2price(self.clist.data['instrument'],
+                               SR,
                                CONFIG.getint('pivots',
                                              'hr_pips'))
 
-        p_logger.warn("SR U-limit: {0}; L-limit: {1}".format(round(upper, 4), round(lower, 4)))
+        pl_logger.warn("SR U-limit: {0}; L-limit: {1}".format(round(upper, 4), round(lower, 4)))
 
         pl = []
-        for p in pivots.plist:
+        for p in self.plist:
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
-            if pivots.plist[-1].candle['time'] == p.candle['time'] and last_pivot is True:
-                adj_t = p.adjust_pivottime(clistO=pivots.clist)
+            if self.plist[-1].candle['time'] == p.candle['time'] and last_pivot is True:
+                adj_t = p.adjust_pivottime(clistO=self.clist)
                 # get new CandleList with new adjusted time for the end
-                newclist = pivots.clist.slice(start=pivots.clist.clist[0].time,
-                                              end=adj_t)
-                newp = newclist.get_pivotlist(self.settings.getfloat('pivots', 'th_bounces')).plist[-1]
-                if self.settings.getboolean('counter', 'runmerge_pre') is True and newp.pre is not None:
-                    newp.merge_pre(slist=pivots.slist,
+                newclist = self.clist.slice(start=self.clist.data['candles'][0]['time'],
+                                            end=adj_t)
+                newp = newclist.get_pivotlist(CONFIG.getfloat('pivots', 'th_bounces')).plist[-1]
+                if CONFIG.getboolean('counter', 'runmerge_pre') is True and newp.pre is not None:
+                    newp.merge_pre(slist=self.slist,
                                    n_candles=CONFIG.getint('pivots', 'n_candles'),
                                    diff_th=CONFIG.getint('pivots', 'diff_th'))
-                if self.settings.getboolean('counter', 'runmerge_aft') is True and newp.aft is not None:
-                    newp.merge_aft(slist=pivots.slist,
-                                   n_candles=self.settings.getint('pivots', 'n_candles'),
-                                   diff_th=self.settings.getint('pivots', 'diff_th'))
+                if CONFIG.getboolean('counter', 'runmerge_aft') is True and newp.aft is not None:
+                    newp.merge_aft(slist=self.slist,
+                                   n_candles=CONFIG.getint('pivots', 'n_candles'),
+                                   diff_th=CONFIG.getint('pivots', 'diff_th'))
                 pl.append(newp)
             else:
                 part_list = ['close{0}'.format(CONFIG.get('general', 'bit'))]
@@ -228,21 +244,97 @@ class PivotList(object):
                             if op.candle['time'] == p.candle['time']:
                                 p_seen = True
                         if p_seen is False:
-                            p_logger.debug("Pivot {0} identified in area".format(p.candle['time']))
+                            pl_logger.debug("Pivot {0} identified in area".format(p.candle['time']))
                             if CONFIG.getboolean('counter', 'runmerge_pre') is True and p.pre is not None:
-                                p.merge_pre(slist=pivots.slist,
+                                p.merge_pre(slist=self.slist,
                                             n_candles=CONFIG.getint('pivots', 'n_candles'),
                                             diff_th=CONFIG.getint('pivots', 'diff_th'))
                             if CONFIG.getboolean('counter', 'runmerge_aft') is True and p.aft is not None:
-                                p.merge_aft(slist=pivots.slist,
+                                p.merge_aft(slist=self.slist,
                                             n_candles=CONFIG.getint('pivots', 'n_candles'),
                                             diff_th=CONFIG.getint('pivots', 'diff_th'))
                             pl.append(p)
 
-        p_logger.debug("Done __inarea_pivots")
         return PivotList(plist=pl,
-                         clist=pivots.clist,
-                         slist=pivots.slist)
+                         clist=self.clist,
+                         slist=self.slist)
+
+    def get_pl_bytime(self, adatetime):
+        """
+        Function that returns a new PivotList in which
+        the plist is >= 'adatetime'
+
+        Returns
+        -------
+        PivotList object
+        """
+        pl_logger.debug("Running get_pivots_lasttime")
+
+        new_pl = []
+        for p in self.plist:
+            if p.candle['time'] >= adatetime:
+                new_pl.append(p)
+
+        new_PLobj = PivotList(plist=new_pl,
+                              clist=self.clist,
+                              slist=self.slist)
+
+        pl_logger.debug("Done set_pivots_lasttime")
+
+        return new_PLobj
+
+    def plot_pivots(self, outfile_prices, outfile_rsi):
+        '''
+        Function to plot all pivots that are in the area
+
+        Parameters
+        ----------
+        outfile_prices : filename
+                         Output file for prices plot
+        outfile_rsi : filename
+                      Output file for rsi plot
+        '''
+        pl_logger.debug("Running plot_pivots")
+
+        prices, rsi, datetimes = ([] for i in range(3))
+        for c in self.clist.data['candles']:
+            prices.append(c[CONFIG.get('general', 'part')])
+            rsi.append(c['rsi'])
+            datetimes.append(c['time'])
+
+        # getting the fig size from settings
+        figsize = literal_eval(CONFIG.get('images', 'size'))
+        # massage datetimes so they can be plotted in X-axis
+        x = [mdates.date2num(i) for i in datetimes]
+
+        # plotting the rsi values
+        fig_rsi = plt.figure(figsize=figsize)
+        ax_rsi = plt.axes()
+        ax_rsi.plot(datetimes, rsi, color="black")
+        fig_rsi.savefig(outfile_rsi, format='png')
+
+        # plotting the prices for part
+        fig = plt.figure(figsize=figsize)
+        ax = plt.axes()
+        ax.plot(datetimes, prices, color="black")
+
+        for p in self.plist:
+            dt = p.candle['time']
+            ix = datetimes.index(dt)
+            # prepare the plot for 'pre' segment
+            if p.pre is not None:
+                ix_pre_s = datetimes.index(p.pre.start())
+                plt.scatter(datetimes[ix_pre_s], prices[ix_pre_s], s=200, c='green', marker='v')
+            # prepare the plot for 'aft' segment
+            if p.aft is not None:
+                ix_aft_e = datetimes.index(p.aft.end())
+                plt.scatter(datetimes[ix_aft_e], prices[ix_aft_e], s=200, c='red', marker='v')
+            # plot
+            plt.scatter(datetimes[ix], prices[ix], s=50)
+
+        fig.savefig(outfile_prices, format='png')
+
+        pl_logger.debug("plot_pivots Done")
 
     def __str__(self):
         sb = []

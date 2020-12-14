@@ -366,18 +366,6 @@ class CandleList(object):
                                     th_bounces*-1)
         pl = PivotList(parray=pivots,
                        clist=self)
-        if CONFIG.getboolean('pivots', 'plot') is True:
-            if outfile is None:
-                outfile = "{0}/pivots/{1}.allpivots.png".format(CONFIG.get('images', 'outdir'),
-                                                                self.data['instrument'].replace(' ', '_'))
-            figsize = literal_eval(CONFIG.get('images', 'size'))
-            fig = plt.figure(figsize=figsize)
-            plt.plot(xarr, yarr, 'k:', alpha=0.5)
-            plt.plot(xarr[pivots != 0], yarr[pivots != 0], 'k-')
-            plt.scatter(xarr[pivots == 1], yarr[pivots == 1], color='g')
-            plt.scatter(xarr[pivots == -1], yarr[pivots == -1], color='r')
-
-            fig.savefig(outfile, format='png')
 
         cl_logger.debug("Done get_pivotlist")
 

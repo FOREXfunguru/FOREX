@@ -1,11 +1,9 @@
-from oanda.connect import Connect
-from pivot_list import PivotList
 from config import CONFIG
 
 import pytest
-import glob
-import os
 import datetime
+import pdb
+import os
 
 def test_get_pivotlist(clO):
     """Obtain a pivotlist"""
@@ -22,6 +20,46 @@ def test_get_score(clO):
     """
     pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
     assert pl.get_score() == 3932.8
+
+def test_in_area(clO, clean_tmp):
+    """
+    Test 'inarea_pivots' function
+    """
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
+    # check the len of pl.plist before getting the pivots in the S/R area
+    assert len(pl.plist) == 11
+    pl_inarea = pl.inarea_pivots(SR=0.67117)
+
+    # check the len of pl.plist after getting the pivots in the S/R area
+    assert len(pl_inarea.plist) == 3
+
+def test_get_pl_bytime(clO, clean_tmp):
+    """
+    Test 'get_pl_bytime"
+    """
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
+    dt = datetime.datetime(2019, 7, 1, 21, 0)
+    newpl = pl.get_pl_bytime(adatetime=dt)
+    assert len(newpl.plist) == 8
+
+
+def test_plot_pivots(clO, clean_tmp):
+    """
+    Test plot_pivots
+    """
+
+    clO.calc_rsi()
+    outfile = CONFIG. get('images', 'outdir') + "/pivots/{0}.png".format(clO.data['instrument'].
+                                                                                    replace(' ', '_'))
+    outfile_rsi = CONFIG.get('images', 'outdir') + "/pivots/{0}.final_rsi.png".format(clO.data['instrument'].
+                                                                                      replace(' ', '_'))
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
+
+    pl.plot_pivots(outfile_prices=outfile,
+                   outfile_rsi=outfile_rsi)
+
+    assert os.path.exists(outfile) == 1
+    assert os.path.exists(outfile_rsi) == 1
 
 def test_print_pivots_dates(clO):
     pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
