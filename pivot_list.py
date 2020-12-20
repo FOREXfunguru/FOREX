@@ -6,12 +6,10 @@ from utils import substract_pips2price, add_pips2price
 from config import CONFIG
 from candle.candle import Candle
 from ast import literal_eval
-
 import matplotlib
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-
 import logging
 
 logging.basicConfig(level=logging.INFO)
@@ -173,6 +171,25 @@ class PivotList(object):
 
         return round(tot_score, 1)
 
+    def get_avg_score(self):
+        '''
+        Function to calculate the avg score
+        for all pivots in this PivotList.
+        This calculation is done by dividing the
+        total score by the number of pivots
+
+        Returns
+        -------
+        float
+        '''
+        tot_score = 0
+        for p in self.plist:
+            tot_score += p.score
+
+        avg = tot_score/len(self.plist)
+        return round(avg, 1)
+
+
     def inarea_pivots(self, SR, last_pivot=True):
         '''
         Function to identify the candles for which price is in the area defined
@@ -205,6 +222,7 @@ class PivotList(object):
         pl_logger.warn("SR U-limit: {0}; L-limit: {1}".format(round(upper, 4), round(lower, 4)))
 
         pl = []
+
         for p in self.plist:
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
             if self.plist[-1].candle['time'] == p.candle['time'] and last_pivot is True:

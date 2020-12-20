@@ -136,7 +136,7 @@ class Pivot(object):
                 # This is not necessarily an error, it could be that there is not the required Segment in slist
                 # because it is out of the time period
                 p_logger.info("No Segment could be retrieved for pivot falling in time {0} by using s.fetch_by_"
-                              "start and date: {1} in function 'merge_aft'. ".format(self.candle.time, start_dt))
+                              "start and date: {1} in function 'merge_aft'. ".format(self.candle['time'], start_dt))
                 extension_needed = False
                 continue
 

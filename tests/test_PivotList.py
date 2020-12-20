@@ -21,6 +21,15 @@ def test_get_score(clO):
     pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
     assert pl.get_score() == 3932.8
 
+def test_get_avg_score(clO):
+    """
+    Test 'get_avg_score' function
+    """
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
+    assert pl.get_avg_score() == 357.5
+
+
+
 def test_in_area(clO, clean_tmp):
     """
     Test 'inarea_pivots' function

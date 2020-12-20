@@ -4,6 +4,12 @@ import pdb
 from datetime import timedelta,datetime
 from oanda.connect import Connect
 from config import CONFIG
+from ast import literal_eval
+
+import matplotlib
+matplotlib.use('PS')
+import matplotlib.pyplot as plt
+import matplotlib.dates as mdates
 
 # create logger
 h_logger = logging.getLogger(__name__)
@@ -182,7 +188,7 @@ class HAreaList(object):
 
         Parameters
         ----------
-        candle: BidAskCandle object
+        candle: Candle object
 
         Returns
         -------
@@ -190,8 +196,7 @@ class HAreaList(object):
         in self.halist for this HArea.
         None if there are no HArea objects overlapping
         '''
-        onArea_hr = None
-        sel_ix = None
+        onArea_hr = sel_ix = None
         ix = 0
         for harea in self.halist:
             highAttr = "high{0}".format(CONFIG.get('general', 'bit'))
@@ -201,6 +206,7 @@ class HAreaList(object):
                 sel_ix = ix
             ix += 1
 
+        pdb.set_trace()
         return onArea_hr, sel_ix
 
     def print(self):
@@ -222,6 +228,41 @@ class HAreaList(object):
                                                           harea.no_pivots,
                                                           harea.tot_score)
         return res.rstrip("\n")
+
+    def plot(self, clO, outfile):
+        """
+        Plot this HAreaList
+
+        Parameters
+        ----------
+        clO : CandeList object
+              Used for plotting
+        outfile : str
+                  Output file
+        """
+        prices, datetimes = ([] for i in range(2))
+        for c in clO.data['candles']:
+            prices.append(c[CONFIG.get('general', 'part')])
+            datetimes.append(c['time'])
+
+        # getting the fig size from settings
+        figsize = literal_eval(CONFIG.get('images', 'size'))
+        # massage datetimes so they can be plotted in X-axis
+        x = [mdates.date2num(i) for i in datetimes]
+
+        # plotting the prices for part
+        fig = plt.figure(figsize=figsize)
+        ax = plt.axes()
+        ax.plot(datetimes, prices, color="black")
+
+        xmax1 = len(datetimes)-1
+        prices = [x.price for x in self.halist]
+
+        # now, print an horizontal line for each S/R
+        ax.hlines(prices, datetimes[0], datetimes[-1], color="green")
+
+        fig.savefig(outfile, format='png')
+
 
     def __repr__(self):
         return "HAreaList"

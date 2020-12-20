@@ -1,11 +1,13 @@
 from harea import HAreaList
 from harea import HArea
+from candle.candle import Candle
 
 import pytest
 import glob
 import os
 import numpy as np
 import logging
+import pdb
 
 instrument = 'AUD_USD'
 granularity = 'D'
@@ -17,13 +19,12 @@ def hlist_factory():
     log.debug('hlist_factory')
 
     hlist = []
-    for p in np.arange(0.67116, 0.82877, 0.042):
+    for p in np.arange(0.660, 0.720, 0.020):
         area = HArea(price=p,
                      pips=30,
                      instrument=instrument,
                      granularity=granularity)
         hlist.append(area)
-
     return hlist
 
 def test_HAreaList_inst(hlist_factory):
@@ -53,6 +54,8 @@ def test_onArea(hlist_factory):
               'volume' : 12619,
               'time' : '2015-08-26 22:00:00'}
 
+    c_candle = Candle(dict_data=candle)
+
     (hrsel, ix) = halist.onArea(candle=candle)
 
     assert hrsel.price == 0.7132
@@ -64,4 +67,13 @@ def test_print(hlist_factory):
     halist = HAreaList(
         halist=hlist_factory)
 
-    halist.print()
+    res = halist.print()
+    print(res)
+
+def test_plot(hlist_factory, clO, clean_tmp):
+    '''Test 'plot' function'''
+
+    halist = HAreaList(halist=hlist_factory)
+
+    halist.plot(clO, outfile=os.getenv('DATADIR')+
+                             "/imgs/halist/AUD_USD.halist.png")

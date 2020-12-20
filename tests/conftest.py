@@ -18,7 +18,10 @@ def env_setup(monkeypatch):
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob(os.getenv('DATADIR')+"/imgs/pivots/*")
+    pdb.set_trace()
+    files1 = glob.glob(os.getenv('DATADIR')+"/imgs/pivots/*")
+    files2 = glob.glob(os.getenv('DATADIR')+"/imgs/halist/*")
+    files = files1 + files2
     for f in files:
         os.remove(f)
 

@@ -370,64 +370,6 @@ class TradeBot(object):
                 tl.analyze()
             return tl
 
-    def __calc_diff(self, df_loc, increment_price):
-        '''
-        Function to select the best S/R for areas that
-        are less than 3*increment_price
-
-        Parameters
-        ----------
-        df_loc : Pandas dataframe with S/R areas
-        increment_price : float
-                          This is the increment_price
-                          between different price levels
-                          in order to identify S/Rs
-
-        Returns
-        -------
-        Pandas dataframe with selected S/R
-        '''
-        prev_price = None
-        prev_row = None
-        prev_ix = None
-        tog_seen = False
-        for index, row in df_loc.iterrows():
-            if prev_price is None:
-                prev_price = float(row['price'])
-                prev_row = row
-                prev_ix = index
-            else:
-                diff = round(float(row['price']) - prev_price, 4)
-                if diff < 3 * increment_price:
-                    tog_seen = True
-                    if row['bounces'] <= prev_row['bounces'] and row['tot_score'] < prev_row['tot_score']:
-                        # remove current row
-                        df_loc.drop(index, inplace=True)
-                    elif row['bounces'] >= prev_row['bounces'] and row['tot_score'] > prev_row['tot_score']:
-                        # remove previous row
-                        df_loc.drop(prev_ix, inplace=True)
-                        prev_price = float(row['price'])
-                        prev_row = row
-                        prev_ix = index
-                    elif row['bounces'] <= prev_row['bounces'] and row['tot_score'] > prev_row['tot_score']:
-                        # remove previous row as scores in current takes precedence
-                        df_loc.drop(prev_ix, inplace=True)
-                        prev_price = float(row['price'])
-                        prev_row = row
-                        prev_ix = index
-                    elif row['bounces'] >= prev_row['bounces'] and row['tot_score'] < prev_row['tot_score']:
-                        # remove current row as scores in current takes precedence
-                        df_loc.drop(index, inplace=True)
-                    elif row['bounces'] == prev_row['bounces'] and row['tot_score'] == prev_row['tot_score']:
-                        # exactly same quality for row and prev_row
-                        # remove current arbitrarily
-                        df_loc.drop(index, inplace=True)
-                else:
-                    prev_price = float(row['price'])
-                    prev_row = row
-                    prev_ix = index
-        return df_loc, tog_seen
-
     def get_max_min(self, adateObj):
         '''
         Function to get the price range for identifying S/R by checking the max
