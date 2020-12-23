@@ -201,12 +201,11 @@ class HAreaList(object):
         for harea in self.halist:
             highAttr = "high{0}".format(CONFIG.get('general', 'bit'))
             lowAttr = "low{0}".format(CONFIG.get('general', 'bit'))
-            if harea.price <= candle[highAttr] and harea.price >= candle[lowAttr]:
+            if harea.price <= getattr(candle, highAttr) and harea.price >= getattr(candle, lowAttr):
                 onArea_hr = harea
                 sel_ix = ix
             ix += 1
 
-        pdb.set_trace()
         return onArea_hr, sel_ix
 
     def print(self):

@@ -12,13 +12,12 @@ def env_setup(monkeypatch):
     """
     Defining the environment
     """
-    monkeypatch.setenv('DATADIR', '../data/')
+    monkeypatch.setenv('DATADIR', '../../data/')
 
 @pytest.fixture
 def clean_tmp():
     yield
     print("Cleanup files")
-    pdb.set_trace()
     files1 = glob.glob(os.getenv('DATADIR')+"/imgs/pivots/*")
     files2 = glob.glob(os.getenv('DATADIR')+"/imgs/halist/*")
     files3 = glob.glob(os.getenv('DATADIR')+"/imgs/srareas/*")
@@ -32,7 +31,7 @@ def clO(scope="session"):
     log.debug('Create a CandleList object')
 
     conn = Connect(instrument='AUD_USD',
-                   granularity='D')
+                   granularity='D',)
 
     res = conn.query(start='2019-03-06T23:00:00',
                      end='2020-01-24T23:00:00')

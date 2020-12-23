@@ -67,3 +67,24 @@ def test_indecision_c(pair, timeframe, time, is_it):
     result = cObj.indecision_c()
 
     assert is_it == result
+
+def test_volatile_c():
+    '''
+    Test for volatile_c function
+    '''
+    a_dict = {'volume': 18481,
+              'openBid': 0.90822 ,
+              'complete': True,
+              'time': '2020-06-28T21:00:00.000000Z',
+              'closeBid': 0.91386,
+              'lowBid': 0.90793,
+              'highAsk': 0.91765,
+              'highBid': 0.91747,
+              'lowAsk': 0.90858,
+              'closeAsk': 0.9142,
+              'openAsk': 0.90972}
+    c = Candle(dict_data=a_dict)
+
+    assert c.volatile_c(diff_cutoff=70, bit='Ask', pair='EUR_GBP') is True
+
+

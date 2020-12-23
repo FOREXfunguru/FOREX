@@ -40,26 +40,25 @@ def test_onArea(hlist_factory):
 
     halist = HAreaList(halist=hlist_factory)
 
-    candle = {'openAsk' : 0.71195,
-              'openBid' : 0.71195,
+    candle = {'openAsk' : 0.69,
+              'openBid' : 0.69,
               'granularity' : 'D',
               'instrument' : 'AUD_USD',
-              'closeAsk' : 0.71619,
-              'closeBid' : 0.71619,
-              'highAsk' : 0.71767,
-              'highBid' : 0.71767,
-              'lowAsk' : 0.70983,
-              'lowBid' : 0.70983,
+              'closeAsk' : 0.67,
+              'closeBid' : 0.67,
+              'highAsk' : 0.70,
+              'highBid' : 0.70,
+              'lowAsk' : 0.66,
+              'lowBid' : 0.66,
               'complete' : True,
               'volume' : 12619,
               'time' : '2015-08-26 22:00:00'}
-
     c_candle = Candle(dict_data=candle)
 
-    (hrsel, ix) = halist.onArea(candle=candle)
+    (hrsel, ix) = halist.onArea(candle=c_candle)
 
-    assert hrsel.price == 0.7132
-    assert ix == 1
+    assert hrsel.price == 0.70
+    assert ix == 2
 
 def test_print(hlist_factory):
     '''Test 'print' function'''

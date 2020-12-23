@@ -219,7 +219,7 @@ class PivotList(object):
                                CONFIG.getint('pivots',
                                              'hr_pips'))
 
-        pl_logger.warn("SR U-limit: {0}; L-limit: {1}".format(round(upper, 4), round(lower, 4)))
+        pl_logger.debug("SR U-limit: {0}; L-limit: {1}".format(round(upper, 4), round(lower, 4)))
 
         pl = []
 
