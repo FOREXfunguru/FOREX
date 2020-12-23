@@ -52,7 +52,7 @@ __pycache__/
 *.py[cod]
 
 # Sphinx build files
-docs/_build/
+../entry_scripts/docs/_build/
 
 
 # Editor backup files #
