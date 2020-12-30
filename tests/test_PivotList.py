@@ -28,8 +28,6 @@ def test_get_avg_score(clO):
     pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
     assert pl.get_avg_score() == 357.5
 
-
-
 def test_in_area(clO, clean_tmp):
     """
     Test 'inarea_pivots' function
@@ -51,14 +49,13 @@ def test_get_pl_bytime(clO, clean_tmp):
     newpl = pl.get_pl_bytime(adatetime=dt)
     assert len(newpl.plist) == 8
 
-
 def test_plot_pivots(clO, clean_tmp):
     """
     Test plot_pivots
     """
 
     clO.calc_rsi()
-    outfile = CONFIG. get('images', 'outdir') + "/pivots/{0}.png".format(clO.data['instrument'].
+    outfile = CONFIG.get('images', 'outdir') + "/pivots/{0}.png".format(clO.data['instrument'].
                                                                                     replace(' ', '_'))
     outfile_rsi = CONFIG.get('images', 'outdir') + "/pivots/{0}.final_rsi.png".format(clO.data['instrument'].
                                                                                       replace(' ', '_'))
@@ -90,3 +87,11 @@ def test_fetch_by_time(clO):
     adt = datetime.datetime(2019, 4, 16, 21, 0)
     rpt = pl.fetch_by_time(adt)
     assert rpt.candle['time'] == datetime.datetime(2019, 4, 16, 21, 0)
+
+def test_pivots_report(clO, clean_tmp):
+    """Get a PivotList report"""
+
+    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
+    routfile = CONFIG.get('images', 'outdir') + "/pivots_report/{0}.preport.txt".format(clO.data['instrument'].
+                                                                                        replace(' ', '_'))
+    pl.pivots_report(outfile=routfile)

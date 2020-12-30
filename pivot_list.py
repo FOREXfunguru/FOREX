@@ -11,6 +11,7 @@ matplotlib.use('PS')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import logging
+import datetime
 
 logging.basicConfig(level=logging.INFO)
 
@@ -222,7 +223,6 @@ class PivotList(object):
         pl_logger.debug("SR U-limit: {0}; L-limit: {1}".format(round(upper, 4), round(lower, 4)))
 
         pl = []
-
         for p in self.plist:
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
             if self.plist[-1].candle['time'] == p.candle['time'] and last_pivot is True:
@@ -231,11 +231,11 @@ class PivotList(object):
                 newclist = self.clist.slice(start=self.clist.data['candles'][0]['time'],
                                             end=adj_t)
                 newp = newclist.get_pivotlist(CONFIG.getfloat('pivots', 'th_bounces')).plist[-1]
-                if CONFIG.getboolean('counter', 'runmerge_pre') is True and newp.pre is not None:
+                if CONFIG.getboolean('pivots', 'runmerge_pre') is True and newp.pre is not None:
                     newp.merge_pre(slist=self.slist,
                                    n_candles=CONFIG.getint('pivots', 'n_candles'),
                                    diff_th=CONFIG.getint('pivots', 'diff_th'))
-                if CONFIG.getboolean('counter', 'runmerge_aft') is True and newp.aft is not None:
+                if CONFIG.getboolean('pivots', 'runmerge_aft') is True and newp.aft is not None:
                     newp.merge_aft(slist=self.slist,
                                    n_candles=CONFIG.getint('pivots', 'n_candles'),
                                    diff_th=CONFIG.getint('pivots', 'diff_th'))
@@ -263,11 +263,11 @@ class PivotList(object):
                                 p_seen = True
                         if p_seen is False:
                             pl_logger.debug("Pivot {0} identified in area".format(p.candle['time']))
-                            if CONFIG.getboolean('counter', 'runmerge_pre') is True and p.pre is not None:
+                            if CONFIG.getboolean('pivots', 'runmerge_pre') is True and p.pre is not None:
                                 p.merge_pre(slist=self.slist,
                                             n_candles=CONFIG.getint('pivots', 'n_candles'),
                                             diff_th=CONFIG.getint('pivots', 'diff_th'))
-                            if CONFIG.getboolean('counter', 'runmerge_aft') is True and p.aft is not None:
+                            if CONFIG.getboolean('pivots', 'runmerge_aft') is True and p.aft is not None:
                                 p.merge_aft(slist=self.slist,
                                             n_candles=CONFIG.getint('pivots', 'n_candles'),
                                             diff_th=CONFIG.getint('pivots', 'diff_th'))
@@ -353,6 +353,33 @@ class PivotList(object):
         fig.savefig(outfile_prices, format='png')
 
         pl_logger.debug("plot_pivots Done")
+
+    def pivots_report(self, outfile):
+        """
+        Function to generate a report of the pivots in the PivotList
+
+        Parameter
+        ---------
+        outfile : str
+                  Path to file with report
+        Returns
+        -------
+        str: file with PivotList report with Pivots information.
+             This file will have the following format:
+             #pre.start|p.candle['time']|p.aft.end
+        """
+        f = open(outfile, 'w')
+        f.write("#pre.start|p.candle['time']|p.aft.end\n")
+        for p in self.plist:
+            if p.pre is None and p.aft is not None:
+                f.write("{0}|{1}|{2}\n".format("n.a.", p.candle['time'], p.aft.end()))
+            elif p.pre is not None and p.aft is not None:
+                f.write("{0}|{1}|{2}\n".format(p.pre.start(), p.candle['time'], p.aft.end()))
+            elif p.pre is not None and p.aft is None:
+                f.write("{0}|{1}|{2}\n".format(p.pre.start(), p.candle['time'], "n.a."))
+        f.close
+
+        return outfile
 
     def __str__(self):
         sb = []

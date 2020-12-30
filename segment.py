@@ -49,6 +49,7 @@ class Segment(object):
 
         self.clist = s.clist+self.clist
         self.count = len(self.clist)
+        self.calc_diff()
 
         return self
 
@@ -65,6 +66,7 @@ class Segment(object):
 
         self.clist = self.clist+s.clist
         self.count = len(self.clist)
+        self.calc_diff()
 
         return self
 

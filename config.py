@@ -8,6 +8,7 @@ import os
 import pdb
 
 DEFAULT_CONFIG_FILE = 'settings.ini'
+
 def get_config_file():
     return os.environ.get('CONFIG_FILE', DEFAULT_CONFIG_FILE)
 
