@@ -9,7 +9,7 @@ import pandas as pd
 cl_logger = logging.getLogger(__name__)
 cl_logger.setLevel(logging.INFO)
 
-def calc_SR(clO):
+def calc_SR(clO, outfile):
     '''
     Function to calculate S/R lines
 
@@ -17,6 +17,8 @@ def calc_SR(clO):
     ----------
     clO: CandleList object
          Used for calculation
+    outfile : str
+              Output filename for .png file
 
     Return
     ------
@@ -24,9 +26,11 @@ def calc_SR(clO):
     '''
     PL = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
 
-    # now calculate the price range for calculating the S/R
-    ul = clO.get_highest()
-    ll = clO.get_lowest()
+    ## now calculate the price range for calculating the S/R
+    # add a number of pips to max,min to be sure that we
+    # also detect the extreme pivots
+    ul = add_pips2price(clO.data['instrument'], clO.get_highest(), CONFIG.getint('trade_bot', 'add_pips'))
+    ll = substract_pips2price(clO.data['instrument'], clO.get_lowest(), CONFIG.getint('trade_bot', 'add_pips'))
 
     cl_logger.debug("Running calc_SR for estimated range: {0}-{1}".format(ll, ul))
 
@@ -113,9 +117,8 @@ def calc_SR(clO):
     halistObj = HAreaList(halist=halist)
 
     # Plot the HAreaList
-    halistObj.plot(clO= clO, outfile=CONFIG.get("images", "outdir") +
-                                  "/srareas/{0}.{1}.halist.png".format(clO.data['instrument'],
-                                                                       clO.data['granularity']))
+    dt_str = clO.data['candles'][-1]['time'].strftime("%d_%m_%Y_%H_%M")
+    halistObj.plot(clO= clO, outfile=outfile)
 
     cl_logger.info("Run done")
 

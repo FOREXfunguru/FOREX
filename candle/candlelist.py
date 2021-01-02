@@ -140,13 +140,19 @@ class CandleList(object):
         This 2-step API call is necessary in order to avoid
         maximum number of candles errors
         '''
+        ser_file = None
+        if CONFIG.has_option('general', 'ser_data_file'):
+            ser_file = CONFIG.get('general', 'ser_data_file')
+
         cl_logger.debug("Fetching data from API")
         cl1_res = conn.query(start=start_calc_time.isoformat(),
-                             end=start_time.isoformat())
+                             end=start_time.isoformat(),
+                             infile=ser_file)
 
         '''Get candlelist from start_time to end_time'''
         cl2_res = conn.query(start=start_time.isoformat(),
-                             end=end_time.isoformat())
+                             end=end_time.isoformat(),
+                             infile=ser_file)
 
         if cl1_res['candles'][-1]['time'] == cl2_res['candles'][0]['time']:
             del cl1_res['candles'][-1]
@@ -598,7 +604,7 @@ class CandleList(object):
 
         # if last_time is not defined in this CandleList then assign the time for the first candle
         if last_time is None:
-            last_time = self.clist.data['candles'][0].time
+            last_time = self.data['candles'][0]['time']
 
         return last_time
 

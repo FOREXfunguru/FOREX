@@ -136,10 +136,13 @@ class HArea(object):
             cend = cstart+delta
             conn = Connect(instrument=self.instrument,
                            granularity=granularity)  # 'M30' is the default
-
             h_logger.debug("Fetching data from API")
+            ser_file = None
+            if CONFIG.has_option('general', 'ser_data_file_gran'):
+                ser_file = CONFIG.get('general', 'ser_data_file_gran')
             res = conn.query(start=cstart.isoformat(),
-                             end=cend.isoformat())
+                             end=cend.isoformat(),
+                             infile=ser_file)
 
             seen = False
             part_low = "low{0}".format(bit)
