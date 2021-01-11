@@ -42,14 +42,6 @@ def calc_SR(clO, outfile):
 
     while p <= float(ul):
         cl_logger.debug("Processing S/R at {0}".format(round(p, 4)))
-        # each of 'p' will become a S/R that will be tested for bounces
-        # set entry to price+self.settings.getint('candlelist','i_pips')
-        entry = add_pips2price(clO.data['instrument'],
-                               p, CONFIG.getint('candlelist', 'i_pips'))
-        # set S/L to price-self.settings.getint('candlelist','i_pips')
-        SL = substract_pips2price(clO.data['instrument'],
-                                  p, CONFIG.getint('candlelist', 'i_pips'))
-
         # get a PivotList for this particular S/R
         newPL = PL.inarea_pivots(SR=p)
         if len(newPL.plist) == 0:
@@ -65,7 +57,8 @@ def calc_SR(clO, outfile):
         # Because the increment is made in pips
         # it does not suffer of the JPY pairs
         # issue
-        p = add_pips2price(clO.data['instrument'], p, 2*CONFIG.getint('candlelist', 'i_pips'))
+        p = add_pips2price(clO.data['instrument'], p,
+                           2*CONFIG.getint('candlelist', 'i_pips'))
         if prev_p is None:
             prev_p = p
         else:
