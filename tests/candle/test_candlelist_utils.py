@@ -4,8 +4,6 @@ from oanda.connect import Connect
 from candle.candlelist_utils import *
 from candle.candlelist import CandleList
 
-import datetime
-
 def test_calc_SR(clO, clean_tmp):
     """
     Check 'calc_SR' function
@@ -14,6 +12,14 @@ def test_calc_SR(clO, clean_tmp):
 
     # check the length of HAreaList.halist
     assert len(harealst.halist) == 2
+
+def test_calc_atr(clO, clean_tmp):
+    """
+    Check 'calc_atr' function
+    """
+    atr = calc_atr(clO)
+
+    assert atr == 43.937
 
 @pytest.mark.parametrize("pair,"
                          "start,"

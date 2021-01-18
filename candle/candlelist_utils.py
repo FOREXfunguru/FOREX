@@ -117,6 +117,33 @@ def calc_SR(clO, outfile):
 
     return halistObj
 
+def calc_atr(clO):
+     '''
+     Function to calculate the ATR (average timeframe rate)
+     This is the average candle variation in pips for the desired
+     timeframe. The variation is measured as the abs diff
+     (in pips) between the high and low of the candle
+
+     Parameters
+     ----------
+     clO: CandleList object
+          Used for calculation
+
+     Returns
+     -------
+     float
+     '''
+     length = 0
+     tot_diff_in_pips = 0
+     for c in clO.data['candles']:
+         high_val = c["high{0}".format(CONFIG.get('general','bit'))]
+         low_val = c["low{0}".format(CONFIG.get('general','bit'))]
+         diff = abs(high_val-low_val)
+         tot_diff_in_pips = tot_diff_in_pips + float(calculate_pips(clO.data['instrument'], diff))
+         length += 1
+
+     return round(tot_diff_in_pips/length, 3)
+
 def calc_diff(df_loc, increment_price):
     '''
     Function to select the best S/R for areas that
