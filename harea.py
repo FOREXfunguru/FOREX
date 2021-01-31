@@ -142,7 +142,7 @@ class HArea(object):
                 ser_file = CONFIG.get('general', 'ser_data_file_gran')
             res = conn.query(start=cstart.isoformat(),
                              end=cend.isoformat(),
-                             infile=ser_file)
+                             indir=ser_file)
 
             seen = False
             part_low = "low{0}".format(bit)
