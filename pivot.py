@@ -1,6 +1,7 @@
 import logging
 from utils import *
 from candle.candle import Candle
+import datetime
 
 # create logger
 p_logger = logging.getLogger(__name__)

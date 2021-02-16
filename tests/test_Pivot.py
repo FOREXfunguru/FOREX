@@ -4,6 +4,7 @@ from config import CONFIG
 
 import pytest
 import datetime
+import pdb
 
 def test_pre_aft_lens(clO, clean_tmp):
     '''
@@ -39,11 +40,10 @@ def test_pre_aft_start(clO, clean_tmp):
                          "end,"
                          "date_pre,"
                          "date_post",
-                         # This date wil skip the merge, as %_diff is greater than threshold
                          [
-                          #(-1, 'NZD_USD', 'H12', 'NZD_USD 01JUL2019H12', '2019-03-26T21:00:00',
-                          # '2019-07-01T09:00:00', datetime.datetime(2019, 5, 22, 21, 0),
-                          # datetime.datetime(2019, 5, 22, 21, 0)),
+                          (-1, 'AUD_USD', 'H1', 'AUD_USD 13MAR2020H12', '2020-03-01T22:00:00',
+                           '2020-04-01T22:00:00', datetime.datetime(2019, 5, 22, 21, 0),
+                           datetime.datetime(2019, 5, 22, 21, 0)),
                           (-1, 'EUR_JPY', 'D', 'EUR_JPY 27OCT2009D', '2004-02-03T21:00:00',
                            '2004-05-16T21:00:00', datetime.datetime(2004, 4, 4, 21, 0),
                            datetime.datetime(2004, 4, 4, 21, 0))])
@@ -51,7 +51,7 @@ def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post, cle
     '''
     Test function 'merge_pre' to merge the 'pre' Segment
     '''
-
+    pdb.set_trace()
     conn = Connect(instrument=pair,
                     granularity=timeframe)
 
@@ -62,7 +62,7 @@ def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post, cle
 
     pivot = pl.plist[ix]
     # Check pivot.pre.start() before running 'merge_pre'
-    assert date_post == pivot.pre.start()
+   # assert date_post == pivot.pre.start()
 
     # run 'merge_pre' function
     pivot.merge_pre(slist=pl.slist,
