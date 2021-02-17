@@ -111,7 +111,9 @@ def calc_SR(clO, outfile):
 
     # Plot the HAreaList
     dt_str = clO.data['candles'][-1]['time'].strftime("%d_%m_%Y_%H_%M")
-    halistObj.plot(clO= clO, outfile=outfile)
+
+    if CONFIG.getboolean('images', 'plot') is True:
+        halistObj.plot(clO= clO, outfile=outfile)
 
     cl_logger.info("Run done")
 

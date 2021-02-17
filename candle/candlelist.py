@@ -327,13 +327,14 @@ class CandleList(object):
 
         # generate output file with fitted regression line
         # parse string from parser object into a tuple
-        figsize = literal_eval(CONFIG.get('images', 'size'))
-        fig = plt.figure(figsize=figsize)
-        plt.scatter(x, prices)
-        plt.plot(x, y_pred, color='red')
-        outfile = "{0}/fitted_line/{1}.fitted.png".format(outdir,
-                                                          self.data['instrument'])
-        fig.savefig(outfile, format='png')
+        if CONFIG.getboolean('images', 'plot') is True:
+            figsize = literal_eval(CONFIG.get('images', 'size'))
+            fig = plt.figure(figsize=figsize)
+            plt.scatter(x, prices)
+            plt.plot(x, y_pred, color='red')
+            outfile = "{0}/fitted_line/{1}.fitted.png".format(outdir,
+                                                              self.data['instrument'])
+            fig.savefig(outfile, format='png')
 
         return model, regression_model_mse
 
