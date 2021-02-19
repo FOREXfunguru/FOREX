@@ -1,7 +1,7 @@
 import logging
 from utils import *
 from candle.candle import Candle
-import datetime
+from config import CONFIG
 
 # create logger
 p_logger = logging.getLogger(__name__)
@@ -67,7 +67,12 @@ class Pivot(object):
             start_dt = self.pre.start() - periodToDelta(1, self.candle['granularity'])
 
             # fetch previous segment
-            s = slist.fetch_by_end(start_dt)
+            s = None
+            if CONFIG.has_option('pivots', 'max_diff'):
+                s = slist.fetch_by_end(start_dt, max_diff=0)
+            else:
+                s = slist.fetch_by_end(start_dt)
+
             if s is None:
                 # This is not necessarily an error, it could be that there is not the required Segment in slist
                 # because it is out of the time period
@@ -132,7 +137,11 @@ class Pivot(object):
             start_dt = self.aft.end()+periodToDelta(1, self.candle['granularity'])
 
             # fetch next segment
-            s = slist.fetch_by_start(start_dt)
+            s = None
+            if CONFIG.has_option('pivots', 'max_diff'):
+                s = slist.fetch_by_start(start_dt, max_diff=0)
+            else:
+                s = slist.fetch_by_start(start_dt)
             if s is None:
                 # This is not necessarily an error, it could be that there is not the required Segment in slist
                 # because it is out of the time period

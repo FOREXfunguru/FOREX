@@ -326,7 +326,7 @@ class SegmentList(object):
 
         return self.end
 
-    def fetch_by_start(self, dt):
+    def fetch_by_start(self, dt, max_diff=3600):
         '''
         Function to get a certain Segment by
         the start Datetime
@@ -336,18 +336,22 @@ class SegmentList(object):
         dt: Datetime
             Start of segment datetime used
             for fetching the Segment
+        max_diff : int
+                   Max discrepancy in number of seconds for the difference dt-s.start()
+                   Default: 3600 secs (i.e. 1hr). This is relevant when analysing
+                   with granularity = H1 or lower.
 
         Returns
         -------
         Segment object. None if not found
         '''
         for s in self.slist:
-            if s.start() == dt or s.start() > dt or abs(s.start()-dt) <= datetime.timedelta(0, 3600):
+            if s.start() == dt or s.start() > dt or abs(s.start()-dt) <= datetime.timedelta(0, max_diff):
                 return s
 
         return None
 
-    def fetch_by_end(self, dt):
+    def fetch_by_end(self, dt, max_diff=3600):
         '''
         Function to get a certain Segment by
         the end Datetime
@@ -357,6 +361,10 @@ class SegmentList(object):
         dt: Datetime
             End of segment datetime used
             for fetching the Segment
+        max_diff : int
+                   Max discrepancy in number of seconds for the difference dt-s.end()
+                   Default: 3600 secs (i.e. 1hr). This is relevant when analysing
+                   with granularity = H1 or lower.
 
         Returns
         -------
@@ -364,7 +372,7 @@ class SegmentList(object):
         '''
 
         for s in reversed(self.slist):
-            if s.end() == dt or s.end() < dt or s.end()-dt <= datetime.timedelta(0, 3600):
+            if s.end() == dt or s.end() < dt or s.end()-dt <= datetime.timedelta(0, max_diff):
                 return s
 
         return None

@@ -38,6 +38,9 @@ def calc_SR(clO, outfile):
 
     # the increment of price in number of pips is double the hr_extension
     prev_p = None
+    ##
+    ll=0.6444
+    ##
     p = float(ll)
 
     while p <= float(ul):
