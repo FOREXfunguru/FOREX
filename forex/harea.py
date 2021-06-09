@@ -1,8 +1,7 @@
 import logging
-import pdb
 
 from datetime import timedelta,datetime
-from oanda.connect import Connect
+from api.oanda.connect import Connect
 from config import CONFIG
 from ast import literal_eval
 

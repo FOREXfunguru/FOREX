@@ -1,5 +1,5 @@
 from config import CONFIG
-from harea import HArea, HAreaList
+from forex.harea import HArea, HAreaList
 from utils import *
 
 import logging

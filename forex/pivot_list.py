@@ -1,17 +1,15 @@
 from zigzag import *
-from segment import SegmentList
-from segment import Segment
-from pivot import Pivot
+from forex.segment import SegmentList, Segment
+from forex.pivot import Pivot
 from utils import substract_pips2price, add_pips2price
 from config import CONFIG
-from candle.candle import Candle
+from forex.candle.candle import Candle
 from ast import literal_eval
 import matplotlib
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import logging
-import datetime
 
 logging.basicConfig(level=logging.INFO)
 

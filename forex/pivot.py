@@ -1,6 +1,6 @@
 import logging
 from utils import *
-from candle.candle import Candle
+from forex.candle.candle import Candle
 from config import CONFIG
 
 # create logger

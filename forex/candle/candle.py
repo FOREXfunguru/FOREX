@@ -4,11 +4,9 @@
 @email: ernestolowy@gmail.com
 '''
 
-from oanda.connect import Connect
+from api.oanda.connect import Connect
 from config import CONFIG
 from utils import *
-
-import pdb
 
 class Candle(object):
     """
