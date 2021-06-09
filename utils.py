@@ -1,8 +1,13 @@
 import datetime
 import re
 import pdb
+import os
 from datetime import datetime,timedelta
 
+ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
+
+# location of directory used to store all data used by Unit Tests
+DATA_DIR = ROOT_DIR+"/tests/data"
 
 def try_parsing_date(text):
     '''

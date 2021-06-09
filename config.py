@@ -6,8 +6,9 @@
 from configparser import ConfigParser
 import os
 import pdb
+from utils import ROOT_DIR
 
-DEFAULT_CONFIG_FILE = 'settings.ini'
+DEFAULT_CONFIG_FILE = ROOT_DIR+'/settings.ini'
 
 def get_config_file():
     return os.environ.get('CONFIG_FILE', DEFAULT_CONFIG_FILE)
