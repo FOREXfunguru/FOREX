@@ -4,10 +4,10 @@ import pdb
 import datetime as dt
 
 from utils import *
-from harea import HArea
+from forex.harea import HArea
 from config import CONFIG
-from candle.candlelist_utils import *
-from trade import Trade
+from forex.candle.candlelist_utils import *
+from trading_journal.trade import Trade
 
 # create logger
 t_logger = logging.getLogger(__name__)

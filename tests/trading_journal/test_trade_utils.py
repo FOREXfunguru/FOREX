@@ -1,13 +1,11 @@
 import pytest
 import pdb
 import datetime
-import glob
-import os
 
-from trade_utils import *
-from trade import Trade
-from oanda.connect import Connect
-from candle.candlelist import CandleList
+from trading_journal.trade_utils import *
+from trading_journal.trade import Trade
+from api.oanda.connect import Connect
+from forex.candle.candlelist import CandleList
 
 @pytest.mark.parametrize("pair,"
                          "timeframe,"
@@ -46,7 +44,8 @@ def test_is_entry_onrsi(pair, id, timeframe, start, type, SR, SL, TP, entry, ent
         SL=SL,
         TP=TP,
         entry=entry,
-        strat='counter_b1')
+        strat='counter_b1',
+        init=True)
 
     assert entry_onrsi == is_entry_onrsi(t)
 
@@ -79,7 +78,8 @@ def test_get_lasttime(start, type, SR, SL, TP, entry, lasttime):
         SL=SL,
         TP=TP,
         entry=entry,
-        strat='counter_b1')
+        strat='counter_b1',
+        init=True)
 
     assert get_lasttime(t)  == lasttime
 

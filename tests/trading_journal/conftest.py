@@ -4,12 +4,13 @@ import os
 
 from trading_journal.trade import Trade
 from trading_journal.trade_journal import TradeJournal
+from utils import DATA_DIR
 
 @pytest.fixture
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob(os.getenv('DATADIR')+"/imgs/pivots/*")
+    files = glob.glob(DATA_DIR+"/imgs/pivots/*")
     for f in files:
         os.remove(f)
 
@@ -52,6 +53,6 @@ def t_object_list(scope="session"):
 @pytest.fixture
 def tjO(scope="session"):
     '''Returns a trade_journal object for a Counter trade'''
-    td = TradeJournal(url=os.getenv('DATADIR')+"/testCounter.xlsx",
+    td = TradeJournal(url=DATA_DIR+"/testCounter.xlsx",
                       worksheet="trading_journal")
     return td
