@@ -5,14 +5,14 @@ from datetime import datetime
 import pandas as pd
 import os
 
-from oanda.connect import Connect
+from api.oanda.connect import Connect
 from config import CONFIG
 from utils import *
-from candle.candle import *
-from candle.candlelist import CandleList
-from candle.candlelist_utils import *
-from trade_utils import *
-from trade import Trade
+from forex.candle.candle import *
+from forex.candle.candlelist import CandleList
+from forex.candle.candlelist_utils import *
+from trading_journal.trade_utils import *
+from trading_journal.trade import Trade
 
 # create logger
 tb_logger = logging.getLogger(__name__)

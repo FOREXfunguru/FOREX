@@ -1,7 +1,7 @@
 import pytest
 import logging
 
-from harea import HArea
+from forex.harea import HArea
 import datetime
 
 def test_last_time(clO):

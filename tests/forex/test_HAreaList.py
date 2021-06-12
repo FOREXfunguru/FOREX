@@ -1,6 +1,6 @@
-from harea import HAreaList
-from harea import HArea
-from candle.candle import Candle
+from forex.harea import HAreaList
+from forex.harea import HArea
+from forex.candle.candle import Candle
 
 import pytest
 import glob

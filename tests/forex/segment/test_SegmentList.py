@@ -3,7 +3,6 @@ from config import CONFIG
 import datetime
 import pytest
 
-
 @pytest.fixture
 def pl_object(clO):
     '''Returns PivotList object'''
