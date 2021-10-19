@@ -8,6 +8,8 @@ import time
 import logging
 import requests
 import re
+import pdb
+import os
 import pandas as pd
 import json
 
@@ -59,7 +61,7 @@ class Connect(object):
 
         return real_decorator
 
-    def __parse_ser_data_c(self, indir, params):
+    def _parse_ser_data_c(self, indir, params):
         """
         Private function that will parse the serialized JSON file
         with FOREX data and will execute the desired query with
@@ -103,7 +105,7 @@ class Connect(object):
 
         return new_dict
 
-    def __parse_ser_data_s_e(self, indir, params):
+    def _parse_ser_data_s_e(self, indir, params):
         """
         Private function that will parse the serialized JSON file
         with FOREX data and will execute the desired query with
@@ -276,26 +278,29 @@ class Connect(object):
             min = datetime.timedelta(minutes=1)
             endObj = endObj + min
             end = endObj.isoformat()
-            params['end'] = end
+            params['to'] = end
         elif count is not None:
             params['count'] = count
         elif end is None and count is None:
-            raise Exception("You need to set at least the 'end' or the 'count' attribute")
+            raise Exception("You need to set at least the 'end' or the "
+                            "'count' attribute")
 
-        params['instrument'] = self.instrument
         params['granularity'] = self.granularity
-        params['start'] = start
+        params['from'] = start
         if indir is not None:
             o_logger.debug("Serialized data provided. Candles will be "
                           "fetched from files in dir {0}".format(indir))
             if 'end' in params:
-                return self.__parse_ser_data_s_e(indir, params)
+                return self._parse_ser_data_s_e(indir, params)
             elif 'count' in params:
-                return self.__parse_ser_data_c(indir, params)
+                return self._parse_ser_data_c(indir, params)
         else:
+            resp = None
             try:
-                resp = requests.get(url=CONFIG.get('oanda_api', 'url'),
-                                    params=params)
+                resp = requests.get(url=f"{CONFIG.get('oanda_api', 'url')}/{self.instrument}/candles",
+                                    params=params,
+                                    headers={"content-type": f"{CONFIG.get('oanda_api', 'content_type')}",
+                                             "Authorization": f"{os.environ.get('TOKEN')}"})
                 if resp.status_code != 200:
                     raise Exception(resp.status_code)
                 else:
@@ -311,7 +316,6 @@ class Connect(object):
                 print("Something went wrong. url used was:\n{0}".format(resp.url))
                 print("Error message was: {0}".format(err))
                 return resp.status_code
-            return resp.status_code
 
     def validate_datetime(self, datestr, granularity):
         '''
@@ -331,7 +335,7 @@ class Connect(object):
         except ValueError:
             raise ValueError("Incorrect date format, should be %Y-%m-%dT%H:%M:%S")
 
-        patt = re.compile("\dD")
+        patt = re.compile(r"\dD")
         nhours = delta = None
         if patt.match(granularity):
             raise Exception("{0} is not valid. Oanda REST service does not accept it".format(granularity))
