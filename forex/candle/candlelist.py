@@ -36,12 +36,11 @@ class CandleList(object):
 
     Class variables
     ---------------
-    data : dict containing the FOREX data, Required
+    data : FOREX data
     type : str, Optional
            Type of this CandleList. Possible values are 'long'/'short'
     '''
-
-    def __init__(self, data, type=None):
+    def __init__(self, data: dict, type=None):
         # Transforming all datetime strs to datetime objects
         for c in data['candles']:
             if isinstance(c['time'], datetime):
@@ -201,7 +200,6 @@ class CandleList(object):
         has been in overbought/oversold each of the times
         sorted from older to newer
         '''
-
         adj = False
         num_times = 0
         length = 0
@@ -253,13 +251,12 @@ class CandleList(object):
         '''
         return len(self.data['candles'])
 
-    def get_length_pips(self):
-        '''
-        Function to calculate the length of CandleList in number of pips
+    def get_length_pips(self):->int
+        '''Function to calculate the length of CandleList in number of pips
 
         Returns
         -------
-        int Length in number of pips
+        Length in number of pips
         '''
 
         start_cl = self.data['candles'][0]
@@ -609,14 +606,13 @@ class CandleList(object):
 
         return last_time
 
-    def get_highest(self):
-        '''
-        Function to calculate the highest
+    def get_highest(self):->float
+        '''Function to calculate the highest
         price in this CandleList
 
         Returns
         -------
-        Float representing highest price
+        highest price
         '''
 
         max = 0.0
@@ -627,14 +623,13 @@ class CandleList(object):
 
         return max
 
-    def get_lowest(self):
-        '''
-        Function to calculate the lowest
+    def get_lowest(self):->float
+        '''Function to calculate the lowest
         price in this CandeList
 
         Returns
         -------
-        Float representing lowest price
+        lowest price
         '''
 
         min = None

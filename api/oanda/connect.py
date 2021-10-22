@@ -14,6 +14,7 @@ import pandas as pd
 import json
 
 from config import CONFIG
+from typing import Dict
 import time
 
 # create logger
@@ -21,27 +22,18 @@ o_logger = logging.getLogger(__name__)
 o_logger.setLevel(logging.INFO)
 
 class Connect(object):
-    """
-    Class representing a connection to the Oanda's REST API
-    """
-    def __init__(self, instrument, granularity):
-        '''
-        Constructor
+    """Class representing a connection to the Oanda's REST API.
 
-        Class variables
-        ---------------
-        instrument: string
-                    Trading pair. i.e. AUD_USD. Required
-        granularity: string
-                     Timeframe. i.e. D. Required
-        '''
+    Args:
+        instrument: i.e. AUD_USD
+        granularity: i.e. D, H12, ...
+    """
+    def __init__(self, instrument: str, granularity: str)->None:
         self.instrument = instrument
         self.granularity = granularity
 
-    def retry(cooloff=5, exc_type=None):
-        '''
-        Decorator for retrying connection and prevent TimeOut errors
-        '''
+    def retry(cooloff: int=5, exc_type=None):
+        """Decorator for retrying connection and prevent TimeOut errors"""
         if not exc_type:
             exc_type = [requests.exceptions.ConnectionError]
 
@@ -61,12 +53,11 @@ class Connect(object):
 
         return real_decorator
 
-    def _parse_ser_data_c(self, indir, params):
-        """
-        Private function that will parse the serialized JSON file
+    def _parse_ser_data_c(self, indir, params)->Dict[str, Any]:
+        """Private function that will parse the serialized JSON file
         with FOREX data and will execute the desired query with
-        a 'start' and 'count' params
-        """
+        a 'start' and 'count' params."""
+
         start = datetime.datetime.strptime(params['start'], '%Y-%m-%dT%H:%M:%S')
         year_start = start.year
         new_candles = []
@@ -99,17 +90,14 @@ class Connect(object):
                                 new_candles.append(c)
                                 ct = ct+1
 
-        new_dict = {'granularity': self.granularity,
-                    'instrument' : self.instrument,
-                    'candles' : new_candles}
+        return {'granularity': self.granularity,
+                'instrument' : self.instrument,
+                'candles' : new_candles}
 
-        return new_dict
-
-    def _parse_ser_data_s_e(self, indir, params):
-        """
-        Private function that will parse the serialized JSON file
+    def _parse_ser_data_s_e(self, indir : str, params : Dict[str, Any]):
+        """Private function that will parse the serialized JSON file
         with FOREX data and will execute the desired query with
-        a 'start' and 'end' params
+        a 'start' and 'end' params.
 
         Parameters
         ----------
@@ -477,9 +465,7 @@ class Connect(object):
             return 1
 
     def print_url(self):
-        '''
-        Print url from requests module
-        '''
+        """Print url from requests module"""
         
         print("URL: %s" % self.resp.url)
 

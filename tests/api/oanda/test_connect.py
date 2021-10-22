@@ -26,6 +26,7 @@ def clean_tmp():
 def test_query_s_e(conn_o):
     log = logging.getLogger('test_query_s_e')
     log.debug('Test for \'query\' function with a start and end datetimes')
+    pdb.set_trace()
     res = conn_o.query('2018-11-16T22:00:00', '2018-11-20T22:00:00')
     assert res['instrument'] == 'AUD_USD'
     assert res['granularity'] == 'D'
