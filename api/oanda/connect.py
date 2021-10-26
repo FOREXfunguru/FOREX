@@ -10,11 +10,11 @@ import requests
 import re
 import pdb
 import os
-import pandas as pd
+import datetime
 import json
-
+import pandas as pd
 from config import CONFIG
-from typing import Dict
+from typing import Dict, List, Any
 import time
 
 # create logger
@@ -29,8 +29,16 @@ class Connect(object):
         granularity: i.e. D, H12, ...
     """
     def __init__(self, instrument: str, granularity: str)->None:
-        self.instrument = instrument
-        self.granularity = granularity
+        self._instrument = instrument
+        self._granularity = granularity
+
+    @property
+    def instrument(self)->str:
+        return self._instrument
+
+    @property
+    def granularity(self)->str:
+        return self._granularity
 
     def retry(cooloff: int=5, exc_type=None):
         """Decorator for retrying connection and prevent TimeOut errors"""
@@ -48,13 +56,11 @@ class Connect(object):
                             time.sleep(cooloff)
                         else:
                             raise e
-
             return wrapper
-
         return real_decorator
 
-    def _parse_ser_data_c(self, indir, params)->Dict[str, Any]:
-        """Private function that will parse the serialized JSON file
+    def _parse_ser_data_c(self, indir : str, params)->Dict[str, Any]:
+        """Function to parse the serialized JSON file
         with FOREX data and will execute the desired query with
         a 'start' and 'count' params."""
 
@@ -67,44 +73,41 @@ class Connect(object):
         for year in range(2007, 2021):
             if year < year_start:
                 continue
-            else:
-                if inyear is True:
-                    year_start = year
-                infile = "{0}/{1}.{2}.{3}.ser".format(indir, self.instrument,
+            if inyear is True:
+                year_start = year
+            infile = "{0}/{1}.{2}.{3}.ser".format(indir, self.instrument,
                                                       self.granularity, year)
-                inf = open(infile, 'r')
-                parsed_json = json.load(inf)
-                inf.close()
-                if year == year_start:
-                    inyear = True
-                    for c in parsed_json['candles']:
-                        if ct == params['count']:
-                            break
-                        c_time = datetime.datetime.strptime(c['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                        if self.granularity == 'H1':
-                            if (c_time >= start):
-                                new_candles.append(c)
-                                ct = ct + 1
-                        else:
-                            if ((c_time >= start) or (abs(c_time - start) <= delta1hr)):
-                                new_candles.append(c)
-                                ct = ct+1
+            inf = open(infile, 'r')
+            parsed_json = json.load(inf)
+            inf.close()
+            if year == year_start:
+                inyear = True
+                for c in parsed_json['candles']:
+                    if ct == params['count']:
+                        break
+                    c_time = datetime.datetime.strptime(c['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                    if self.granularity == 'H1':
+                        if (c_time >= start):
+                            new_candles.append(c)
+                            ct = ct + 1
+                    else:
+                        if ((c_time >= start) or (abs(c_time - start) <= delta1hr)):
+                            new_candles.append(c)
+                            ct = ct+1
 
         return {'granularity': self.granularity,
                 'instrument' : self.instrument,
                 'candles' : new_candles}
 
-    def _parse_ser_data_s_e(self, indir : str, params : Dict[str, Any]):
+    def _parse_ser_data_s_e(self, indir : str, params : Dict[str, Any])-> List:
         """Private function that will parse the serialized JSON file
         with FOREX data and will execute the desired query with
         a 'start' and 'end' params.
 
-        Parameters
-        ----------
-        indir : str
-                path to dir containing the serialized data
-        params : Dictionary with params of the query.
-                 i.e. start, end, count ...
+        Args:
+            indir : path to dir containing the serialized data
+            params : Params of the query. i.e. start, end, count ...
+
         Returns
         -------
         List of dicts. Each dict contains data for a candle
@@ -121,52 +124,40 @@ class Connect(object):
                 continue
             elif year > year_end:
                 break
+
+            infile = "{0}/{1}.{2}.{3}.ser".format(indir, self.instrument,
+                                                  self.granularity, year)
+            inf = open(infile, 'r')
+            parsed_json = json.load(inf)
+            inf.close()
+            if year == year_start or year == year_end:
+                for c in parsed_json['candles']:
+                    c_time = datetime.datetime.strptime(c['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+                    if ((c_time >= start) or (abs(c_time - start) <= delta1hr)) and ((c_time <= end) or (abs(c_time - end) <= delta1hr)):
+                        new_candles.append(c)
+                    elif (c_time >= end) and (abs(c_time - end) > delta1hr):
+                        break
             else:
-                infile = "{0}/{1}.{2}.{3}.ser".format(indir, self.instrument,
-                                                      self.granularity, year)
-                inf = open(infile, 'r')
-                parsed_json = json.load(inf)
-                inf.close()
-                if year == year_start or year == year_end:
-                    for c in parsed_json['candles']:
-                        c_time = datetime.datetime.strptime(c['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                        if ((c_time >= start) or (abs(c_time - start) <= delta1hr)) and ((c_time <= end) or (abs(c_time - end) <= delta1hr)):
-                            new_candles.append(c)
-                        elif (c_time >= end) and (abs(c_time - end) > delta1hr):
-                            break
-                else:
-                    new_candles = new_candles + parsed_json['candles']
+                new_candles = new_candles + parsed_json['candles']
 
-        new_dict = {'granularity': self.granularity,
-                    'instrument' : self.instrument,
-                    'candles' : new_candles}
+        return {'granularity': self.granularity,
+                'instrument' : self.instrument,
+                'candles' : new_candles}
 
-        return new_dict
-
-    def mquery(self, start, end, outfile=None):
-        '''
-        Function to execute a batch query on the Oanda API
+    def mquery(self, start : datetime, end : datetime, outfile : str =None)->List[Dict]:
+        """Function to execute a batch query on the Oanda API
         This is necessary when for example, the query hits
         the max number of returned candles for the Oanda API
 
-        Parameters
-        ----------
-        start: Datetime in isoformat
-               Date and time for first candle. Required
-        end:   Datetime in isoformat
-               Date and time for last candle. Required
-        outfile: str
-                 File to write the serialized data returned
-                 by the API. Optional
-
-        Returns
-        -------
-        List of dicts. Each dict contains data for a candle
-        '''
+        Args:
+            start: isoformat
+            end: isoformat
+            outfile: File to write the serialized data returned
+        """
 
         startO = datetime.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
         endO = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
-        patt = re.compile("\dD")
+        patt = re.compile(r"\dD")
         delta = nhours = None
         if patt.match(self.granularity):
             raise Exception("{0} is not valid. Oanda REST service does not accept it".format(granularity))
@@ -193,13 +184,13 @@ class Connect(object):
             else:
                 res_l = self.query(startO.isoformat(), count=5000)
                 res['candles'] = res['candles'] + res_l['candles']
-            startO = datetime.datetime.strptime(res['candles'][-1]['time'],
-                                                '%Y-%m-%dT%H:%M:%S.%fZ')
+            startO = datetime.datetime.strptime(res['candles'][-1]['time'][:-4],
+                                                '%Y-%m-%dT%H:%M:%S.%f')
             if startO > endO:
                 new_list = []
                 for c in res['candles']:
-                    adtime = datetime.datetime.strptime(c['time'],
-                                                        '%Y-%m-%dT%H:%M:%S.%fZ')
+                    adtime = datetime.datetime.strptime(c['time'][:-4],
+                                                        '%Y-%m-%dT%H:%M:%S.%f')
                     if adtime <= endO:
                         new_list.append(c)
                 res['candles'] = new_list
@@ -211,13 +202,13 @@ class Connect(object):
             f = open(outfile, "w")
             f.write(ser_data)
             f.close()
+
         return res
 
     @retry()
-    def query(self, start, end=None, count=None,
-              indir=None, outfile=None):
-        '''
-        Function 'query' overloads and will behave differently
+    def query(self, start : datetime, end : datetime = None, count : int = None,
+              indir : str = None, outfile : str = None)-> list[Dict]:
+        """Function 'query' overloads and will behave differently
         depending on the presence/absence of the following args:
 
         'indir': If this arg is present, then the query of FOREX
@@ -228,30 +219,22 @@ class Connect(object):
         Finally, if neither 'indir' nor 'outfile' are present, then
         the function will do a REST API query and nothing else
 
-        Parameters
-        ----------
-        start: Datetime in isoformat
-               Date and time for first candle. Required
-        end:   Datetime in isoformat
-               Date and time for last candle. Optional
-        count: int
-               If end is not defined, this controls the
-               number of candles from the start
-               that will be retrieved
-        indir: path
-               path to DIR containing the JSON files with serialized FOREX data
-        outfile: str
-                 File to write the serialized data returned
-                 by the API. Optional
+        Args:
+            start: isoformat
+            end:   isoformat
+            count: If end is not defined, this controls the
+                   number of candles from the start
+                   that will be retrieved
+            indir: path to DIR containing the JSON files with serialized FOREX data
+            outfile: File to write the serialized data returned
+                     by the API.
 
-        Returns
-        -------
-        List of dicts. Each dict contains data for a candle
-        '''
+        Returns:
+            Each dict contains data for a candle"""
         startObj = None
         if indir is not None:
             # do not validate if there is serialized data
-            startObj = pd.datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
+            startObj = datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
         else:
             startObj = self.validate_datetime(start, self.granularity)
         start = startObj.isoformat()
@@ -260,7 +243,7 @@ class Connect(object):
             endObj = None
             if indir is not None:
                 # do not validate if there is serialized data
-                endObj = pd.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
+                endObj = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
             else:
                 endObj = self.validate_datetime(end, self.granularity)
             min = datetime.timedelta(minutes=1)
@@ -305,21 +288,18 @@ class Connect(object):
                 print("Error message was: {0}".format(err))
                 return resp.status_code
 
-    def validate_datetime(self, datestr, granularity):
-        '''
-        Function to parse a string datetime to return a datetime object and to validate the datetime
+    def validate_datetime(self, datestr : str, granularity: str):
+        """Function to parse a string datetime to return
+         a datetime object and to validate the datetime.
 
-        Parameters
-        ----------
-        datestr : string
-                  String representing a date
-        granularity : string
-                      Timeframe
-        '''
+        Args:
+            datestr : String representing a date
+            granularity : Timeframe
+        """
         # Generate a datetime object from string
         dateObj = None
         try:
-            dateObj = pd.datetime.strptime(datestr, '%Y-%m-%dT%H:%M:%S')
+            dateObj = datetime.datetime.strptime(datestr, '%Y-%m-%dT%H:%M:%S')
         except ValueError:
             raise ValueError("Incorrect date format, should be %Y-%m-%dT%H:%M:%S")
 
@@ -373,23 +353,20 @@ class Connect(object):
                             datetime.timedelta(hours=x)).time() for x in range(0, 24, nhours)]
         return dateObj
 
-    def __roll_datetime(self, dateObj, granularity):
-        '''
-        Private function to roll the datetime, which falls on a closed market to the next period (set by granularity)
-        with open market
+    def _roll_datetime(self, dateObj : datetime, granularity : str)->datetime:
+        """Private function to roll the datetime, which falls on a closed market to the next period (set by granularity)
+        with open market.
 
         If dateObj falls before the start of the historical data record for self.instrument then roll to the start
         of the historical record
 
-        Parameters
-        ----------
-        dateObj : datetime object
+        Args:
+            dateObj
+            granularity : D, H12 and so on
 
-        Returns
-        -------
-        datetime object
-                 Returns the rolled datetime object
-        '''
+        Returns:
+            rolled datetime object
+        """
         # check if dateObj is previous to the start of historical data for self.instrument
         if not CONFIG.has_option('pairs_start', self.instrument):
             raise Exception("Inexistent start of historical record info for {0}".format(self.instrument))
@@ -434,21 +411,17 @@ class Connect(object):
         o_logger.debug("Time was rolled from {0} to {1}".format(dateObj, startObj))
         return startObj
 
-    def __validate_end(self, endObj):
-        '''
-        Private method to check that last candle time matches the 'end' time provided
-        within params
+    def _validate_end(self, endObj : datetime)->int:
+        """Private method to check that last candle time matches the 'end' time provided
+        within params.
 
-        Parameters
-        ---------
-        endObj :   Datetime object
+        Args:
+            endObj
 
-        Returns
-        -------
-        1 if it validates
-        '''
-
-        endFetched = pd.datetime.strptime(self.data['candles'][-1]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+        Returns:
+            1 if it validates
+        """
+        endFetched = datetime.datetime.strptime(self.data['candles'][-1]['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
         if endObj != endFetched:
             #check if discrepancy is not in the daylight savings period
             fetched_time = endFetched.time()
@@ -464,7 +437,7 @@ class Connect(object):
         else:
             return 1
 
-    def print_url(self):
+    def print_url(self)->str:
         """Print url from requests module"""
         
         print("URL: %s" % self.resp.url)
@@ -485,10 +458,10 @@ class Connect(object):
                 pass
         raise ValueError('no valid date format found')
 
-    def __repr__(self):
+    def __repr__(self)->str:
         return "connect"
 
-    def __str__(self):
+    def __str__(self)->str:
         out_str = ""
         for attr, value in self.__dict__.items():
             out_str += "%s:%s " % (attr, value)

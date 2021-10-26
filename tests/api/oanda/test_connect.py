@@ -25,8 +25,7 @@ def clean_tmp():
 
 def test_query_s_e(conn_o):
     log = logging.getLogger('test_query_s_e')
-    log.debug('Test for \'query\' function with a start and end datetimes')
-    pdb.set_trace()
+    log.debug("Test for 'query' function with a start and end datetimes")
     res = conn_o.query('2018-11-16T22:00:00', '2018-11-20T22:00:00')
     assert res['instrument'] == 'AUD_USD'
     assert res['granularity'] == 'D'
@@ -34,7 +33,7 @@ def test_query_s_e(conn_o):
 
 def test_query_c(conn_o):
     log = logging.getLogger('test_query_c')
-    log.debug('Test for \'query\' function with a start and count parameters')
+    log.debug("Test for 'query' function with a start and count parameters")
     res = conn_o.query('2018-11-16T22:00:00', count=1)
     assert res['instrument'] == 'AUD_USD'
     assert res['granularity'] == 'D'
@@ -42,13 +41,15 @@ def test_query_c(conn_o):
 
 def test_query_ser_out(conn_o, clean_tmp):
     log = logging.getLogger('test_query_ser_out')
-    log.debug('Test for \'query\' function and serializing returned data')
+    log.debug("Test for 'query' function and serializing returned data")
     conn_o.query('2018-11-16T22:00:00', count=1, outfile=DATA_DIR+"/ser.dmp")
+    assert os.path.isfile(DATA_DIR+"/ser.dmp") is True
+
 
 def test_query_ser_out_max():
     log = logging.getLogger('test_query_ser_out_max_number')
-    log.debug('Test for \'query\' function and serializing returned data with a query'
-              'above the max number of candles that Oanda accepts')
+    log.debug("Test for 'query' function and serializing returned data with a query"
+              "above the max number of candles that Oanda accepts")
 
     conn = Connect(
         instrument="AUD_USD",
@@ -61,8 +62,8 @@ def test_query_ser_out_max():
 
 def test_query_ser_M30():
     log = logging.getLogger('test_query_ser_M30')
-    log.debug('Test for \'query\' function and serializing returned data with a query'
-              'using a M30 granularity')
+    log.debug("Test for 'query' function and serializing returned data with a query"
+              "using a M30 granularity")
 
     conn = Connect(
         instrument="AUD_USD",
@@ -71,14 +72,14 @@ def test_query_ser_M30():
     res = conn.mquery(start='2010-11-30T22:00:00',
                       end='2011-01-01T22:00:00')
 
-    assert 1147 == len(res['candles'])
+    assert 1137 == len(res['candles'])
 
 def test_query_e():
     '''
     Test a simple query to Oanda's REST API using a non-valid pair
     '''
     log = logging.getLogger('test_query_ser')
-    log.debug('Test for \'query\' function with a non-valid instrument')
+    log.debug("Test for 'query' function with a non-valid instrument")
     conn = Connect(
         instrument="AUD_MOCK",
         granularity='D')
@@ -104,7 +105,7 @@ def test_query_e():
                                      ('AUD_USD', 'H12', '2000-11-21T22:00:00', '2002-06-15T22:00:00')])
 def test_m_queries(i, g, s, e):
     log = logging.getLogger('test_query_ser')
-    log.debug('Test for \'query\' function with a mix of instruments and different datetimes')
+    log.debug("Test for 'query' function with a mix of instruments and different datetimes")
 
     conn = Connect(
         instrument=i,
@@ -115,7 +116,7 @@ def test_m_queries(i, g, s, e):
 
 def test_query_M30():
     log = logging.getLogger('test_query_M30')
-    log.debug('Test for \'query\' function with granularity M30')
+    log.debug("Test for 'query' function with granularity M30")
 
     conn = Connect(
         instrument='AUD_USD',
