@@ -4,6 +4,8 @@ from datetime import timedelta,datetime
 from api.oanda.connect import Connect
 from config import CONFIG
 from ast import literal_eval
+from forex.params import Params as fxparams
+from typing import List
 
 import matplotlib
 matplotlib.use('PS')
@@ -65,35 +67,31 @@ class HArea(object):
         self.upper = round(price+(pips/divisor), 4)
         self.lower = round(price-(pips/divisor), 4)
 
-    def last_time(self, clist, position):
-        '''
-        Function that returns the datetime of the moment where prices were over/below this HArea.
+    def last_time(self, clist: List, position: str):
+        '''Function that returns the datetime of the moment where prices were over/below this HArea.
 
-        Parameters
-        ----------
-        clist   list
-                List with Candles
-        position    This parameter controls if price should cross the HArea.upper for 'above'
-                    or HArea.lower for 'below'
-                    Possible values are: 'above' or 'below'
+        Arguments:
+            clist   List with Candles
+            position    This parameter controls if price should cross the HArea.upper for 'above'
+                        or HArea.lower for 'below'
+                        Possible values are: 'above' or 'below'
 
-        Return
-        ------
-        datetime object of the moment that the price crosses the HArea
+        Returns:
+            datetime object of the moment that the price crosses the HArea
         '''
         count = 0
 
         for c in reversed(clist):
             count += 1
-            # Last time has to be at least self.settings.getint('harea', 'min') candles before
-            if count <= CONFIG.getint('harea', 'min'):
+            # Last time has to be at least forexparams.min candles before
+            if count <= fxparams.min :
                 continue
             if position == 'above':
-                price = c['lowAsk']
+                price = float(c['mid']['l'])
                 if price > self.upper:
                     return c['time']
             elif position == 'below':
-                price = c['highAsk']
+                price = float(c['mid']['h'])
                 if price < self.lower:
                     return c['time']
 

@@ -5,6 +5,8 @@ from utils import substract_pips2price, add_pips2price
 from config import CONFIG
 from forex.candle.candle import Candle
 from ast import literal_eval
+from forex.params import Params as fxparams
+
 import matplotlib
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
@@ -97,19 +99,13 @@ class PivotList(object):
             self.plist = plist
             self.slist = slist
 
-    def fetch_by_time(self, d):
-        '''
-        Function to fetch a Pivot object using a
+    def fetch_by_time(self, d: datetime):
+        '''Function to fetch a Pivot object using a
         datetime
 
-        Parameters
-        ----------
-        d : Datetime object
-
-        Returns
-        -------
-        Pivot object
-              None if not Pivot found
+        Returns:
+            Pivot object
+                  None if not Pivot found
         '''
 
         for p in self.plist:
@@ -117,18 +113,16 @@ class PivotList(object):
                 return p
         return None
 
-    def fetch_by_type(self, type):
+    def fetch_by_type(self, type: int):
         '''
         Function to get all pivots from a certain type
 
-        Parameters
-        ----------
-        type : int
-               1 or -1
+        Arguments:
+            type : int
+                   1 or -1
 
-        Returns
-        -------
-        PivotList of the desired type
+        Returns:
+            PivotList of the desired type
         '''
 
         pl = []
@@ -144,8 +138,8 @@ class PivotList(object):
         '''
         Function to generate a list with the datetimes of the different Pivots in PivotList
 
-        :return:
-        List of datetimes
+        Returns:
+            List of datetimes
         '''
 
         datelist = []
@@ -154,14 +148,12 @@ class PivotList(object):
 
         return datelist
 
-    def get_score(self):
-        '''
-        Function to calculate the score after adding the score
+    def get_score(self)->float:
+        '''Function to calculate the score after adding the score
         for each individual pivot
 
-        returns
-        -------
-        float with score
+        Returns:
+            Score
         '''
 
         tot_score = 0
@@ -170,16 +162,11 @@ class PivotList(object):
 
         return round(tot_score, 1)
 
-    def get_avg_score(self):
-        '''
-        Function to calculate the avg score
+    def get_avg_score(self)->float:
+        '''Function to calculate the avg score
         for all pivots in this PivotList.
         This calculation is done by dividing the
         total score by the number of pivots
-
-        Returns
-        -------
-        float
         '''
         tot_score = 0
         for p in self.plist:
@@ -189,23 +176,19 @@ class PivotList(object):
         return round(avg, 1)
 
 
-    def inarea_pivots(self, SR, last_pivot=True):
+    def inarea_pivots(self, SR: float, last_pivot: bool=True):
         '''
         Function to identify the candles for which price is in the area defined
         by SR+HRpips and SR-HRpips
 
-        Parameters
-        ---------
-        pivots: PivotList object
-        SR: float
-            price of the S/R area
-        last_pivot: Boolean
-                    If True, then the last pivot will be considered as it is part
-                    of the setup. Default: True
+        Arguments:
+            pivots: PivotList object
+            SR: price of the S/R area
+            last_pivot: If True, then the last pivot will be considered as it is part
+                        of the setup. Default: True
 
-        Returns
-        -------
-        PivotList with pivots that are in the area
+        Returns:
+            PivotList with pivots that are in the area
         '''
 
         # get bounces in the horizontal SR area
@@ -276,8 +259,7 @@ class PivotList(object):
                          slist=self.slist)
 
     def get_pl_bytime(self, adatetime):
-        """
-        Function that returns a new PivotList in which
+        """Function that returns a new PivotList in which
         the plist is >= 'adatetime'
 
         Returns
@@ -352,17 +334,14 @@ class PivotList(object):
 
         pl_logger.debug("plot_pivots Done")
 
-    def pivots_report(self, outfile):
-        """
-        Function to generate a report of the pivots in the PivotList
+    def pivots_report(self, outfile: str)->str:
+        """Function to generate a report of the pivots in the PivotList
 
-        Parameter
-        ---------
-        outfile : str
-                  Path to file with report
-        Returns
-        -------
-        str: file with PivotList report with Pivots information.
+        Arguments:
+            outfile : Path to file with report
+
+        Returns:
+            file with PivotList report with Pivots information.
              This file will have the following format:
              #pre.start|p.candle['time']|p.aft.end
         """

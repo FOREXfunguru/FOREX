@@ -25,11 +25,11 @@ def clean_tmp():
 
 @pytest.mark.parametrize("ix,"
                         "rsi",
-                        [(4, 48.2),
-                         (51, 25.94),
-                         (130, 53.37),
-                         (136, 63.26),
-                         (212, 73.1)])
+                        [(4, 48.42),
+                         (51, 25.63),
+                         (130, 53.63),
+                         (136, 62.97),
+                         (212, 73.64)])
 def test_calc_rsi(ix, rsi, clO):
     log = logging.getLogger('Test for calc_rsi function')
     log.debug('calc_rsi')
@@ -58,16 +58,15 @@ def test_get_length_functions(clO):
     log.debug('get_length')
 
     assert clO.get_length_candles() == 230
-    assert clO.get_length_pips() == 190
+    assert clO.get_length_pips() == 191
 
 def test_fetch_by_time(clO):
 
     adatetime = datetime.datetime(2019, 5, 7, 22, 0)
-
     c = clO.fetch_by_time(adatetime)
 
-    assert c['openAsk'] == 0.70137
-    assert c['highAsk'] == 0.70277
+    assert float(c['mid']['o']) == 0.70118
+    assert float(c['mid']['h']) == 0.70270
 
 def test_slice_with_start(clO):
 
@@ -110,12 +109,12 @@ def test_get_lasttime():
 def test_get_highest(clO):
     clO.get_highest()
 
-    assert clO.get_highest() == 0.718
+    assert clO.get_highest() == 0.71789
 
 def test_get_lowest(clO):
     clO.get_lowest()
 
-    assert clO.get_lowest() == 0.67047
+    assert clO.get_lowest() == 0.67038
 
 @pytest.mark.parametrize("pair,"
                          "start,"

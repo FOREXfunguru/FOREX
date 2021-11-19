@@ -13,7 +13,7 @@ import os
 import datetime
 import json
 import pandas as pd
-from config import CONFIG
+from api.params import Params as apiparams
 from typing import Dict, List, Any
 import time
 
@@ -207,7 +207,7 @@ class Connect(object):
 
     @retry()
     def query(self, start : datetime, end : datetime = None, count : int = None,
-              indir : str = None, outfile : str = None)-> list[Dict]:
+              indir : str = None, outfile : str = None)-> List[Dict]:
         """Function 'query' overloads and will behave differently
         depending on the presence/absence of the following args:
 
@@ -231,6 +231,7 @@ class Connect(object):
 
         Returns:
             Each dict contains data for a candle"""
+        
         startObj = None
         if indir is not None:
             # do not validate if there is serialized data
@@ -268,9 +269,9 @@ class Connect(object):
         else:
             resp = None
             try:
-                resp = requests.get(url=f"{CONFIG.get('oanda_api', 'url')}/{self.instrument}/candles",
+                resp = requests.get(url=f"{apiparams.url}/{self.instrument}/candles",
                                     params=params,
-                                    headers={"content-type": f"{CONFIG.get('oanda_api', 'content_type')}",
+                                    headers={"content-type": f"{apiparams.content_type}",
                                              "Authorization": f"{os.environ.get('TOKEN')}"})
                 if resp.status_code != 200:
                     raise Exception(resp.status_code)
@@ -332,11 +333,11 @@ class Connect(object):
         params['granularity'] = self.granularity
         params['start'] = datestr
         params['end'] = endObj.isoformat()
-        resp = requests.get(url=CONFIG.get('oanda_api', 'url'),
+        resp = requests.get(url=apiparams.url,
                             params=params)
         # 204 code means 'no_content'
         if resp.status_code == 204:
-            if CONFIG.getboolean('oanda_api', 'roll') is True:
+            if apiparams.roll is True:
                 dateObj = self.__roll_datetime(dateObj, granularity)
             else:
                 raise Exception("Date {0} is not valid and falls on closed market".format(datestr))
@@ -368,10 +369,10 @@ class Connect(object):
             rolled datetime object
         """
         # check if dateObj is previous to the start of historical data for self.instrument
-        if not CONFIG.has_option('pairs_start', self.instrument):
+        if not self.instrument in apiparams().pairs_start:
             raise Exception("Inexistent start of historical record info for {0}".format(self.instrument))
 
-        start_hist_dtObj = self.try_parsing_date(CONFIG.get('pairs_start', self.instrument))
+        start_hist_dtObj = self.try_parsing_date(apiparams().pairs_start[self.instrument])
         if dateObj < start_hist_dtObj:
             rolledateObj = start_hist_dtObj
             o_logger.debug("Date precedes the start of the historical record.\n"
@@ -405,7 +406,7 @@ class Connect(object):
             params['start'] = dateObj.isoformat()
             params['end'] = endObj.isoformat()
 
-            resp = requests.get(url=CONFIG.get('oanda_api', 'url'),
+            resp = requests.get(url=apiparams.url,
                                 params=params)
             resp_code = resp.status_code
         o_logger.debug("Time was rolled from {0} to {1}".format(dateObj, startObj))

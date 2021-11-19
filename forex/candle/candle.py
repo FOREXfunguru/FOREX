@@ -5,7 +5,6 @@
 '''
 
 from api.oanda.connect import Connect
-from config import CONFIG
 from utils import *
 
 class Candle(object):
@@ -51,7 +50,6 @@ class Candle(object):
     def perc_lwick(self)->float:
         """Candle's perc_lwick"""
         return self._perc_lwick
-
 
     def _set_colour(self)->str:
         if self.o < self.c:
