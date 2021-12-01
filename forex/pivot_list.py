@@ -2,16 +2,16 @@ from zigzag import *
 from forex.segment import SegmentList, Segment
 from forex.pivot import Pivot
 from utils import substract_pips2price, add_pips2price
-from config import CONFIG
 from forex.candle.candle import Candle
 from ast import literal_eval
-from forex.params import Params as fxparams
+from forex.params import gparams
 
 import matplotlib
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import logging
+import datetime
 
 logging.basicConfig(level=logging.INFO)
 
@@ -22,22 +22,18 @@ pl_logger.setLevel(logging.INFO)
 import pdb
 
 class PivotList(object):
-    '''
-    Class that represents a list of Pivots as identified
+    """Class that represents a list of Pivots as identified
     by the Zigzag indicator
 
     Class variables
     ---------------
     clist : CandleList object
-            CandleList for this PivotList. Required
-    parray : Array of 1s and -1s obtained directly using the Zigzag indicator. Optional
-    plist : list of Pivot objects, Optional
-            List of pivot objects obtained using the 'peak_valley_pivots' function from Zigzag indicator
-    slist : SegmentList object, Optional
-    '''
+    parray : Array of 1s and -1s obtained directly using the Zigzag indicator.
+    plist : List of pivot objects obtained using the 'peak_valley_pivots' function from Zigzag indicator.
+    slist : SegmentList object"""
 
     def __init__(self, clist, parray=None, plist=None,
-                 slist=None):
+                 slist=None)->None:
 
         self.clist = clist
 
@@ -62,7 +58,7 @@ class PivotList(object):
                         submode = [modes[start_ix+1]]
                     #checking if all elements in submode are the same:
                     assert len(np.unique(submode).tolist()) == 1, "more than one type in modes"
-                    # create Segment
+
                     s = Segment(type=submode[0],
                                 count=end_ix-start_ix,
                                 clist=clist.data['candles'][start_ix:end_ix],
@@ -71,8 +67,10 @@ class PivotList(object):
                     c_dict = clist.data['candles'][start_ix]
                     # add granularity to dict
                     c_dict['granularity'] = clist.data['granularity']
-                    pobj = Pivot(type=pre_i,candle=c_dict,
-                                 pre=pre_s, aft=s)
+                    pobj = Pivot(type=pre_i,
+                                 candle=c_dict,
+                                 pre=pre_s, 
+                                 aft=s)
                     pobj.score = pobj.calc_score()
                     # Append it to list
                     plist_o.append(pobj)
@@ -105,21 +103,18 @@ class PivotList(object):
 
         Returns:
             Pivot object
-                  None if not Pivot found
+            None if not Pivot found
         '''
-
         for p in self.plist:
             if p.candle['time'] == d:
                 return p
         return None
 
     def fetch_by_type(self, type: int):
-        '''
-        Function to get all pivots from a certain type
+        '''Function to get all pivots from a certain type
 
         Arguments:
-            type : int
-                   1 or -1
+            type : 1 or -1
 
         Returns:
             PivotList of the desired type
@@ -134,9 +129,8 @@ class PivotList(object):
                          clist=self.clist,
                          slist=self.slist)
 
-    def print_pivots_dates(self):
-        '''
-        Function to generate a list with the datetimes of the different Pivots in PivotList
+    def print_pivots_dates(self)->list:
+        '''Function to generate a list with the datetimes of the different Pivots in PivotList
 
         Returns:
             List of datetimes
@@ -194,12 +188,10 @@ class PivotList(object):
         # get bounces in the horizontal SR area
         lower = substract_pips2price(self.clist.data['instrument'],
                                      SR,
-                                     CONFIG.getint('pivots',
-                                                   'hr_pips'))
+                                     pivots_params.hr_pips)
         upper = add_pips2price(self.clist.data['instrument'],
                                SR,
-                               CONFIG.getint('pivots',
-                                             'hr_pips'))
+                               pivots_params.hr_pips)
 
         pl_logger.debug("SR U-limit: {0}; L-limit: {1}".format(round(upper, 4), round(lower, 4)))
 
@@ -211,22 +203,22 @@ class PivotList(object):
                 # get new CandleList with new adjusted time for the end
                 newclist = self.clist.slice(start=self.clist.data['candles'][0]['time'],
                                             end=adj_t)
-                newp = newclist.get_pivotlist(CONFIG.getfloat('pivots', 'th_bounces')).plist[-1]
-                if CONFIG.getboolean('pivots', 'runmerge_pre') is True and newp.pre is not None:
+                newp = newclist.get_pivotlist(pivots_params.th_bounces).plist[-1]
+                if pivots_params.runmerge_pre is True and newp.pre is not None:
                     newp.merge_pre(slist=self.slist,
-                                   n_candles=CONFIG.getint('pivots', 'n_candles'),
-                                   diff_th=CONFIG.getint('pivots', 'diff_th'))
-                if CONFIG.getboolean('pivots', 'runmerge_aft') is True and newp.aft is not None:
+                                   n_candles=pivots_params.n_candles,
+                                   diff_th=pivots_params.diff_th)
+                if pivots_params.runmerge_aft is True and newp.aft is not None:
                     newp.merge_aft(slist=self.slist,
-                                   n_candles=CONFIG.getint('pivots', 'n_candles'),
-                                   diff_th=CONFIG.getint('pivots', 'diff_th'))
+                                   n_candles=pivots_params.n_candles,
+                                   diff_th=pivots_params.diff_th)
                 pl.append(newp)
             else:
-                part_list = ['close{0}'.format(CONFIG.get('general', 'bit'))]
+                part_list = ['close{0}'.format(gparams.bit)]
                 if p.type == 1:
-                    part_list.append('high{0}'.format(CONFIG.get('general', 'bit')))
+                    part_list.append('high{0}'.format(gparams.bit))
                 elif p.type == -1:
-                    part_list.append('low{0}'.format(CONFIG.get('general', 'bit')))
+                    part_list.append('low{0}'.format(gparams.bit))
 
                 # initialize candle features to be sure that midAsk or midBid are
                 # initialized
@@ -244,14 +236,14 @@ class PivotList(object):
                                 p_seen = True
                         if p_seen is False:
                             pl_logger.debug("Pivot {0} identified in area".format(p.candle['time']))
-                            if CONFIG.getboolean('pivots', 'runmerge_pre') is True and p.pre is not None:
+                            if pivots_params.runmerge_pre is True and p.pre is not None:
                                 p.merge_pre(slist=self.slist,
-                                            n_candles=CONFIG.getint('pivots', 'n_candles'),
-                                            diff_th=CONFIG.getint('pivots', 'diff_th'))
-                            if CONFIG.getboolean('pivots', 'runmerge_aft') is True and p.aft is not None:
+                                            n_candles=pivots_params.n_candles,
+                                            diff_th=pivots_params.diff_th)
+                            if pivots_params.runmerge_aft is True and p.aft is not None:
                                 p.merge_aft(slist=self.slist,
-                                            n_candles=CONFIG.getint('pivots', 'n_candles'),
-                                            diff_th=CONFIG.getint('pivots', 'diff_th'))
+                                            n_candles=pivots_params.n_candles,
+                                            diff_th=pivots_params.diff_th)
                             pl.append(p)
 
         return PivotList(plist=pl,
@@ -281,27 +273,23 @@ class PivotList(object):
 
         return new_PLobj
 
-    def plot_pivots(self, outfile_prices, outfile_rsi):
-        '''
-        Function to plot all pivots that are in the area
+    def plot_pivots(self, outfile_prices: str, outfile_rsi: str):
+        '''Function to plot all pivots that are in the area
 
-        Parameters
-        ----------
-        outfile_prices : filename
-                         Output file for prices plot
-        outfile_rsi : filename
-                      Output file for rsi plot
+        Arguments:
+            outfile_prices : Output file for prices plot.
+            outfile_rsi : Output file for rsi plot.
         '''
         pl_logger.debug("Running plot_pivots")
 
         prices, rsi, datetimes = ([] for i in range(3))
         for c in self.clist.data['candles']:
-            prices.append(c[CONFIG.get('general', 'part')])
+            prices.append(c[gparams.part])
             rsi.append(c['rsi'])
             datetimes.append(c['time'])
 
         # getting the fig size from settings
-        figsize = literal_eval(CONFIG.get('images', 'size'))
+        figsize = literal_eval(gparams.size)
         # massage datetimes so they can be plotted in X-axis
         x = [mdates.date2num(i) for i in datetimes]
 

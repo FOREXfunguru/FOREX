@@ -1,4 +1,4 @@
-from config import CONFIG
+from forex.params import pivots_params
 
 import pytest
 import datetime
@@ -8,7 +8,8 @@ import os
 def test_get_pivotlist(clO):
     """Obtain a pivotlist"""
 
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
+    pdb.set_trace()
+    pl = clO.get_pivotlist(th_bounces=pivots_params.th_bounces)
     assert len(pl.plist) == 11
     assert pl.plist[10].candle['openAsk'] == 0.68495
     assert len(pl.plist[7].pre.clist) == 23

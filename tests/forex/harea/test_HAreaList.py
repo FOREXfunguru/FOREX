@@ -1,6 +1,7 @@
 from forex.harea import HAreaList
 from forex.harea import HArea
 from forex.candle.candle import Candle
+import datetime
 
 import pytest
 import glob
@@ -32,7 +33,7 @@ def test_HAreaList_inst(hlist_factory):
     log.debug('HAreaList')
 
     halist = HAreaList(halist=hlist_factory)
-    assert len(halist.halist) == 4
+    assert len(halist.halist) == 3
 
 def test_onArea(hlist_factory):
     log = logging.getLogger('Test for test_onArea function')
@@ -40,20 +41,13 @@ def test_onArea(hlist_factory):
 
     halist = HAreaList(halist=hlist_factory)
 
-    candle = {'openAsk' : 0.69,
-              'openBid' : 0.69,
-              'granularity' : 'D',
-              'instrument' : 'AUD_USD',
-              'closeAsk' : 0.67,
-              'closeBid' : 0.67,
-              'highAsk' : 0.70,
-              'highBid' : 0.70,
-              'lowAsk' : 0.66,
-              'lowBid' : 0.66,
-              'complete' : True,
-              'volume' : 12619,
-              'time' : '2015-08-26 22:00:00'}
-    c_candle = Candle(dict_data=candle)
+    candle = {'complete': True, 
+              'volume': 5937, 
+              'time': datetime.datetime(2019, 3, 6, 22, 0), 
+              'mid': {'o': '0.70320', 'h': '0.721', 'l': '0.719', 'c': '0.70158'}
+              }
+
+    c_candle = Candle(**candle)
 
     (hrsel, ix) = halist.onArea(candle=c_candle)
 

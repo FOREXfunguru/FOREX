@@ -1,22 +1,20 @@
-from api.oanda.connect import Connect
 from zigzag import *
-from forex.pivot_list import PivotList
-from sklearn.linear_model import LinearRegression
-from sklearn.metrics import mean_squared_error
+#from forex.pivot_list import PivotList
 from pandas.plotting import register_matplotlib_converters
-from ast import literal_eval
 register_matplotlib_converters()
 import pandas as pd
 import numpy as np
 import matplotlib
+import datetime
 import logging
 from utils import *
 from typing import List
-from forex.params import Params as fxparams
+from forex.candle.candle import Candle
 
-from config import CONFIG
+from forex.params import gparams, pivots_params, clist_params
+
 matplotlib.use('PS')
-import matplotlib.pyplot as plt
+import matplotlib.pyplot as plt                                                                                                                                                        
 
 logging.basicConfig(level=logging.INFO)
 
@@ -25,43 +23,49 @@ cl_logger = logging.getLogger(__name__)
 cl_logger.setLevel(logging.INFO)
 
 class CandleList(object):
-    '''
-    Container for the FOREX data that is passed through the data class variable
-    as a dict with the following format:
-
-    {'instrument' : 'AUD_USD',
-     'granularity' : 'D',
-     'candles' : [{...},{...}]}
-
-     The value for the key named 'candles' in the dictionary will be a list of dicts,
-     where each of the dicts is a single candle
+    """Class containing a list of Candles
 
     Class variables
     ---------------
-    data : FOREX data
-    type : str, Optional
-           Type of this CandleList. Possible values are 'long'/'short'
-    '''
-    def __init__(self, data: dict, type: str=None):
-        # Transforming all datetime strs to datetime objects
-        for c in data['candles']:
-            if isinstance(c['time'], datetime):
-                continue
-            else:
-                c['time'] = datetime.strptime(c['time'][:-4], '%Y-%m-%dT%H:%M:%S.%f')
-        self.data = data
-        if type is None:
-            self._type = self._guess_type()
-        else:
-            self._type = type
-            
+    instrument : i.e. 'AUD_USD'
+    granularity : i.e. 'D'
+    candles : List of Candle objects
+    type : Type of this CandleList. Possible values are 'long'/'short'"""
+    def __init__(self, instrument: str, granularity: str, data: list):
+        """Constructor
+
+        Arguments:
+            data: list of Dictionaries, each dict containing data for a Candle
+        """
+        self.candles = [Candle(**d) for d in data]
+        self.instrument = instrument
+        self.granularity = granularity
+        self._type = self._guess_type()
+
     @property
     def type(self):
         return self._type
     
-    def _guess_type(self):
-        price_1st = float(self.data['candles'][0]['mid']['c'])
-        price_last = float(self.data['candles'][-1]['mid']['c'])
+    def __iter__(self):
+        self.pos = 0
+        return self
+ 
+    def __next__(self):
+        if(self.pos < len(self.candles)):
+            self.pos += 1
+            return self.candles[self.pos - 1]
+        else:
+            raise StopIteration
+    
+    def __getitem__(self, key):
+        return self.candles[key]
+    
+    def __len__(self):
+        return len(self.candles)
+    
+    def _guess_type(self)->str:
+        price_1st = self.candles[0].c
+        price_last = self.candles[-1].c
         if price_1st > price_last:
             return 'short'
         elif price_1st < price_last:
@@ -123,10 +127,10 @@ class CandleList(object):
 
         delta_period = None
         if self.data['granularity'] == "D":
-            delta_period = timedelta(hours=24 * fxparams.period)
+            delta_period = timedelta(hours=24 * clist_params.period)
         else:
             fgran = self.data['granularity'].replace('H', '')
-            delta_period = timedelta(hours=int(fgran) * fxparams.period)
+            delta_period = timedelta(hours=int(fgran) * clist_params.period)
 
         start_calc_time = start_time - delta_period
 
@@ -139,8 +143,8 @@ class CandleList(object):
         maximum number of candles errors
         '''
         ser_dir = None
-        if hasattr(fxparams, 'ser_data_dir'):
-            ser_dir = fxparams.set_data_dir
+        if hasattr(gparams, 'ser_data_dir'):
+            ser_dir = gparams.set_data_dir
 
         cl_logger.debug("Fetching data from API")
         cl1_res = conn.query(start=start_calc_time.isoformat(),
@@ -164,7 +168,7 @@ class CandleList(object):
         gain = chg.mask(chg < 0, 0)
         loss = chg.mask(chg > 0, 0)
 
-        rsi_period = fxparams.rsi_period
+        rsi_period = clist_params.rsi_period
         avg_gain = gain.ewm(com=rsi_period - 1, min_periods=rsi_period).mean()
         avg_loss = loss.ewm(com=rsi_period - 1, min_periods=rsi_period).mean()
 
@@ -262,68 +266,13 @@ class CandleList(object):
 
         return abs(int(round(diff, 0)))
 
-    def fit_reg_line(self, outdir: str, smooth: str='rolling_average', k_perc: int=25):
-        '''Function to fit a linear regression line on candle list.
-        This can be used in order to assess the direction of the trend (upwards, downwards)
-
-        Arguments:
-            outdir : Directory for output files
-            smooth : What method will be used in order to smooth the data
-                     Possible values are: 'rolling_average'.
-            k_perc : % of CandleList length that will be used as window size used for calculating the rolling average.
-                     For example, if CandleList length = 20 Candles. Then the k=25% will be a window_size of 5
-
-        Returns:
-            Fitted model, regression_model_mse
-        '''
-
-        prices = []
-        x = []
-        for i in range(len(self.data['candles'])):
-            x.append(i)
-            prices.append(self.data['candles'][i][CONFIG.get('general', 'part')])
-
-        model = LinearRegression(fit_intercept=True)
-
-        if smooth == 'rolling_average':
-            k = int(abs((k_perc*len(self.data['candles'])/100)))
-            d = {'x': x, 'prices': prices}
-            df = pd.DataFrame(data=d)
-            df['prices_norm'] = df[['prices']].rolling(k).mean()
-            df = df.dropna()
-            prices = df['prices_norm']
-            x = df['x']
-
-        model.fit(np.array(x).reshape(-1, 1), np.array(prices).reshape(-1, 1))
-
-        y_pred = model.predict(np.array(x).reshape(-1, 1))
-
-        # Evaluation of the model with MSE
-        regression_model_mse = mean_squared_error(y_pred, np.array(prices).reshape(-1, 1))
-
-        # generate output file with fitted regression line
-        # parse string from parser object into a tuple
-        if CONFIG.getboolean('images', 'plot') is True:
-            figsize = literal_eval(CONFIG.get('images', 'size'))
-            fig = plt.figure(figsize=figsize)
-            plt.scatter(x, prices)
-            plt.plot(x, y_pred, color='red')
-            outfile = "{0}/fitted_line/{1}.fitted.png".format(outdir,
-                                                              self.data['instrument'])
-            fig.savefig(outfile, format='png')
-
-        return model, regression_model_mse
-
-    def get_pivotlist(self, th_bounces: float, outfile: str=None):
+    def get_pivotlist(self, th_bounces: float):
         '''Function to obtain a pivotlist object containing pivots identified using the
         Zigzag indicator.
-        It will also generate a .png image of the identified pivots
 
         Arguments:
             th_bounces: Value used by ZigZag to identify pivots. The lower the
                         value the higher the sensitivity
-            outfile: .png file for saving the plot with pivots.
-                     Optional
 
         Returns:
             PivotList object
@@ -337,76 +286,13 @@ class CandleList(object):
             x.append(i)
             values.append(float(self.data['candles'][i]['mid']['c']))
 
-        pdb.set_trace()
-        xarr = np.array(x)
         yarr = np.array(values)
-
         pivots = peak_valley_pivots(yarr, th_bounces,
                                     th_bounces*-1)
         pl = PivotList(parray=pivots,
                        clist=self)
-
         cl_logger.debug("Done get_pivotlist")
-
         return pl
-
-    def check_if_divergence(self, number_of_bounces: int=3)->bool:
-        '''Function to check if there is divergence between prices
-        and RSI indicator
-
-        Arguments:
-            number_of_bounces : Number of rsi bounces from last (most recent)
-                                to consider for calculating divergence. Default=3
-
-        Returns:
-            True if there is divergence. "n.a." if the divergence was not calculated
-        '''
-
-        outfile_rsi="{0}/{1}.rsi.png".format(config.PNGFILES['div'],
-                                             self.id.replace(' ', '_'))
-
-        plist = self.get_pivotlist(outfile=outfile_rsi, part="rsi", th_up=0.1, th_down=-0.1)
-
-        bounce_rsi=plist.plist
-
-        arr = np.array(self.clist)
-
-        # consider type of trade in order to select peaks or valleys
-        bounce_rsiA=None
-        if self.type == 'short':
-            bounce_rsiA = arr[bounce_rsi == 1]
-        elif self.type == 'long':
-            bounce_rsiA = arr[bounce_rsi == -1]
-
-        #consider only the  desired number_of_bounces
-        candles_rsi = bounce_rsiA[-number_of_bounces:]
-
-        if len(candles_rsi)<2:
-            print("WARN: No enough bounces after the trend start were found. Divergence assessment will be skipped")
-            return "n.a."
-
-        cl = CandleList(candles_rsi,
-                        instrument=self.instrument,
-                        granularity=self.granularity,
-                        id=self.id,
-                        type=self.type)
-
-        # fit a regression line for rsi bounces
-        outfile_rsi = "{0}/{1}.reg_rsi.png".format(config.PNGFILES['div'],
-                                               self.id.replace(' ', '_'))
-        (model_rsi, regression_model_mse_rsi)=cl.fit_reg_line(outfile=outfile_rsi, part='rsi', smooth=None )
-
-        # fit a regression line for price bounces
-        outfile_price = "{0}/{1}.reg_price.png".format(config.PNGFILES['div'],
-                                                       self.id.replace(' ', '_'))
-        (model_price, regression_model_mse_price) = cl.fit_reg_line(outfile=outfile_price, part=part, smooth=None)
-
-
-        # check if sign of slope is different between rsi and price lines
-        if np.sign(model_rsi.coef_[0, 0])!= np.sign(model_price.coef_[0, 0]):
-            return True
-        else:
-            return False
 
     def slice(self, start : datetime = None, end : datetime = None):
         '''Function to slice self on a date interval. It will return the sliced CandleList
@@ -507,12 +393,11 @@ class CandleList(object):
         Returns:
             Merged segment containing the trend_i
         '''
-        pdb.set_trace()
         cl_logger.debug("Running calc_itrend")
-        outfile = "{0}/pivots/{1}.calc_it.allpivots.png".format(fxparams.outdir,
+        outfile = "{0}/pivots/{1}.calc_it.allpivots.png".format(gparams.outdir,
                                                                 self.data['instrument'].replace(' ', '_'))
 
-        pivots = self.get_pivotlist(th_bounces=fxparams.th_bounces,
+        pivots = self.get_pivotlist(th_bounces=pivots_params.th_bounces,
                                     outfile=outfile)
 
         # merge segments
@@ -522,10 +407,10 @@ class CandleList(object):
             start = pivots.clist.data['candles'][0]['time']
             newclist = pivots.clist.slice(start= start,
                                           end=adj_t)
-            newp = newclist.get_pivotlist(fxparams.th_bounces).plist[-1]
+            newp = newclist.get_pivotlist(pivots_params.th_bounces).plist[-1]
             newp.merge_pre(slist=pivots.slist,
-                           n_candles=fxparams.n_candles,
-                           diff_th=fxparams.diff_th)
+                           n_candles=pivots_params.n_candles,
+                           diff_th=pivots_params.diff_th)
             return newp.pre
 
         cl_logger.debug("Done clac_itrend")

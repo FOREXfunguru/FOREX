@@ -12,26 +12,22 @@ from api.oanda.connect import Connect
 @pytest.fixture
 def CandleO():
     '''Candle object instantiation.'''
-
     a_dict = {'complete': True,
               'volume': 8726, 
               'time': '2018-11-18T22:00:00.000000000Z',
-              'mid': {'o': '0.73093',
-                      'h': '0.73258',
-                      'l': '0.72776', 
-                      'c': '0.72950'}}
+              'o': '0.73093',
+              'h': '0.73258',
+              'l': '0.72776', 
+              'c': '0.72950'}
 
     c = Candle(**a_dict)
 
     return c
 
-def test_set_candle_features(CandleO):
-    '''Test function to set basic candle features based on price
-    i.e. self.colour, upper_wick, etc...'''
-    CandleO.set_candle_features()
+def test_check_candle_feats(CandleO):
+    '''Check that candle has the right attributes'''
     assert CandleO.colour == 'red'
-    assert CandleO.upper_wick == 0.0017
-    assert CandleO.lower_wick == 0.0017
+    assert CandleO.perc_body == 29.67
 
 @pytest.mark.parametrize("pair,"
                          "timeframe,"
@@ -55,20 +51,3 @@ def test_indecision_c(pair, timeframe, time, is_it):
     cObj.set_candle_features()
     result = cObj.indecision_c()
     assert is_it == result
-
-def test_volatile_c():
-    '''Test for volatile_c function.'''
-
-    a_dict = {'complete': True,
-              'volume': 18481, 
-              'time': '2020-06-28T21:00:00.000000Z',
-              'mid': {'o': '0.90972',
-                      'h': '0.91765',
-                      'l': '0.90858', 
-                      'c': '0.9142'}}
-
-    c = Candle(**a_dict)
-
-    assert c.volatile_c(diff_cutoff=70, bit='Ask', pair='EUR_GBP') is True
-
-

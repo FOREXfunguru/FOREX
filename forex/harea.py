@@ -1,16 +1,17 @@
 import logging
 
 from datetime import timedelta,datetime
+from os import getcwd
 from api.oanda.connect import Connect
-from config import CONFIG
 from ast import literal_eval
-from forex.params import Params as fxparams
+from forex.params import harea_params, gparams
 from typing import List
 
 import matplotlib
 matplotlib.use('PS')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
+import pdb
 
 # create logger
 h_logger = logging.getLogger(__name__)
@@ -22,30 +23,20 @@ class HArea(object):
 
     Class variables
     ---------------
-    price : float, Required
-            Price in the chart used as the middle point that will be extended on both sides a certain
+    price : Price in the chart used as the middle point that will be extended on both sides a certain
             number of pips
-    instrument : str, Required
-                 Instrument for this CandleList (i.e. AUD_USD or EUR_USD etc...)
-    granularity : str, Required
-                Granularity for this CandleList (i.e. D, H12, H8 etc...)
-    pips : int, Required
-        Number of pips above/below self.price to calculate self.upper and self.lower
-    upper : float, Optional
-           Upper limit price of area
-    lower : float, Optional
-            Lower limit price of area
-    no_pivots : int, Optional
-                Number of pivots bouncing on self
-    tot_score : int, Optional
-                Total score, which is the sum of scores of all pivots
-                on this HArea
-    ser_data_obj : ser_data_obj, Optional
-                   ser_data_obj with serialized data
+    instrument : Instrument for this CandleList (i.e. AUD_USD or EUR_USD etc...)
+    granularity : Granularity for this CandleList (i.e. D, H12, H8 etc...)
+    pips : Number of pips above/below self.price to calculate self.upper and self.lower
+    upper : Upper limit price of area
+    lower : Lower limit price of area
+    no_pivots : Number of pivots bouncing on self
+    tot_score : Total score, which is the sum of scores of all pivots on this HArea
+    ser_data_obj : ser_data_obj with serialized data
     '''
 
-    def __init__(self, price, instrument, granularity, pips, no_pivots=None,
-                 tot_score=None, ser_data_obj=None):
+    def __init__(self, price: float, instrument: str, granularity: str, pips: int, no_pivots: int=None,
+                 tot_score: int=None, ser_data_obj=None):
 
         (first, second) = instrument.split("_")
         self.instrument = instrument
@@ -67,24 +58,22 @@ class HArea(object):
         self.upper = round(price+(pips/divisor), 4)
         self.lower = round(price-(pips/divisor), 4)
 
-    def last_time(self, clist: List, position: str):
+    def last_time(self, clist: List, position: str)->datetime:
         '''Function that returns the datetime of the moment where prices were over/below this HArea.
 
         Arguments:
-            clist   List with Candles
-            position    This parameter controls if price should cross the HArea.upper for 'above'
-                        or HArea.lower for 'below'
-                        Possible values are: 'above' or 'below'
+            clist: List with Candles
+            position: This parameter controls if price should cross the HArea.upper for 'above'
+                      or HArea.lower for 'below'
+                      Possible values are: 'above' or 'below'
 
         Returns:
-            datetime object of the moment that the price crosses the HArea
-        '''
+            datetime the price crosses the HArea'''
         count = 0
-
         for c in reversed(clist):
             count += 1
             # Last time has to be at least forexparams.min candles before
-            if count <= fxparams.min :
+            if count <= harea_params.min :
                 continue
             if position == 'above':
                 price = float(c['mid']['l'])
@@ -95,31 +84,24 @@ class HArea(object):
                 if price < self.lower:
                     return c['time']
 
-    def get_cross_time(self, candle, granularity='M30'):
+    def get_cross_time(self, candle, granularity='M30')->datetime:
         '''
         This function is used get the time that the candle
         crosses (go through) HArea
 
-        Parameters
-        ----------
-        candle :   Dict with the candle data that crosses the HArea
-        granularity : To what granularity we should descend
+        Arguments:
+            candle : Dict with the candle data that crosses the HArea
+            granularity : To what granularity we should descend
 
-        Returns
-        ------
-        datetime object with crossing time.
-                 n.a. if crossing time could not retrieved. This can happens
-                 when there is an artefactual jump in Oanda's data
+        Returns:
+            crossing time.
+            n.a. if crossing time could not retrieved. This can happens
+            when there is an artefactual jump in Oanda's data
         '''
         # consider both Ask and bid
         cross = False
-        bit = None
-        if candle['lowAsk'] <= self.price <= candle['highAsk']:
+        if float(candle['mid']['l']) <= self.price <= float(candle['mid']['h']):
             cross = True
-            bit = "Ask"
-        elif candle['lowBid'] <= self.price <= candle['highBid']:
-            cross = True
-            bit = "Bid"
 
         if cross is True:
             delta = None
@@ -129,28 +111,25 @@ class HArea(object):
                 fgran = self.granularity.replace('H', '')
                 delta = timedelta(hours=int(fgran))
 
-            cstart = datetime.strptime(candle['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
+            cstart = candle['time']
             cend = cstart+delta
             conn = Connect(instrument=self.instrument,
                            granularity=granularity)  # 'M30' is the default
+           
             h_logger.debug("Fetching data from API")
             ser_file = None
-            if CONFIG.has_option('general', 'ser_data_file_gran'):
-                ser_file = CONFIG.get('general', 'ser_data_file_gran')
+            if gparams.ser_data_file_gran:
+                ser_file = gparams.ser_data_file_gran
+
             res = conn.query(start=cstart.isoformat(),
                              end=cend.isoformat(),
                              indir=ser_file)
 
             seen = False
-            part_low = "low{0}".format(bit)
-            part_high = "high{0}".format(bit)
             for c in res['candles']:
-                low = c[part_low]
-                high = c[part_high]
-                if low <= self.price <= high:
+                if float(candle['mid']['l']) <= self.price <= float(candle['mid']['h']):
                     seen = True
-                    return datetime.strptime(c['time'],
-                                             '%Y-%m-%dT%H:%M:%S.%fZ')
+                    return c['time']
             if seen is False:
                 return 'n.a.'
         else:
@@ -171,41 +150,35 @@ class HAreaList(object):
 
     Class variables
     ---------------
-    halist : list, Required
-            List of HArea objects
+    halist : List of HArea objects
     '''
 
     def __init__(self, halist):
         self.halist = halist
 
     def onArea(self, candle):
-        '''
-        Function that will check which (if any) of the HArea objects
+        '''Function that will check which (if any) of the HArea objects
         in this HAreaList will overlap with 'candle'.
 
         See comments in code to understand what is considered
         an overlap
 
-        Parameters
-        ----------
-        candle: Candle object
+        Arguments:
+            candle: Candle object
 
-        Returns
-        -------
-        An HArea object overlapping with 'candle' and the ix
-        in self.halist for this HArea.
-        None if there are no HArea objects overlapping
-        '''
+        Returns:
+            An HArea object overlapping with 'candle' and the ix
+            in self.halist for this HArea.
+            None if there are no HArea objects overlapping'''
+        pdb.set_trace()
         onArea_hr = sel_ix = None
         ix = 0
         for harea in self.halist:
-            highAttr = "high{0}".format(CONFIG.get('general', 'bit'))
-            lowAttr = "low{0}".format(CONFIG.get('general', 'bit'))
-            if harea.price <= getattr(candle, highAttr) and harea.price >= getattr(candle, lowAttr):
+            if harea.price <= float(candle.mid['h']) and harea.price >= float(candle.mid['l']):
                 onArea_hr = harea
                 sel_ix = ix
             ix += 1
-
+        pdb.set_trace()
         return onArea_hr, sel_ix
 
     def print(self):
@@ -241,11 +214,11 @@ class HAreaList(object):
         """
         prices, datetimes = ([] for i in range(2))
         for c in clO.data['candles']:
-            prices.append(c[CONFIG.get('general', 'part')])
+            prices.append(c[gparams.general])
             datetimes.append(c['time'])
 
         # getting the fig size from settings
-        figsize = literal_eval(CONFIG.get('images', 'size'))
+        figsize = literal_eval(gparams.size)
         # massage datetimes so they can be plotted in X-axis
         x = [mdates.date2num(i) for i in datetimes]
 

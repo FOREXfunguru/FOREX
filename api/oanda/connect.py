@@ -12,9 +12,12 @@ import pdb
 import os
 import datetime
 import json
-import pandas as pd
+import sys
+import flatdict
+
 from api.params import Params as apiparams
 from typing import Dict, List, Any
+from forex.candle.candlelist import CandleList
 import time
 
 # create logger
@@ -58,91 +61,6 @@ class Connect(object):
                             raise e
             return wrapper
         return real_decorator
-
-    def _parse_ser_data_c(self, indir : str, params)->Dict[str, Any]:
-        """Function to parse the serialized JSON file
-        with FOREX data and will execute the desired query with
-        a 'start' and 'count' params."""
-
-        start = datetime.datetime.strptime(params['start'], '%Y-%m-%dT%H:%M:%S')
-        year_start = start.year
-        new_candles = []
-        delta1hr = datetime.timedelta(hours=1)
-        ct = 0
-        inyear = False
-        for year in range(2007, 2021):
-            if year < year_start:
-                continue
-            if inyear is True:
-                year_start = year
-            infile = "{0}/{1}.{2}.{3}.ser".format(indir, self.instrument,
-                                                      self.granularity, year)
-            inf = open(infile, 'r')
-            parsed_json = json.load(inf)
-            inf.close()
-            if year == year_start:
-                inyear = True
-                for c in parsed_json['candles']:
-                    if ct == params['count']:
-                        break
-                    c_time = datetime.datetime.strptime(c['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                    if self.granularity == 'H1':
-                        if (c_time >= start):
-                            new_candles.append(c)
-                            ct = ct + 1
-                    else:
-                        if ((c_time >= start) or (abs(c_time - start) <= delta1hr)):
-                            new_candles.append(c)
-                            ct = ct+1
-
-        return {'granularity': self.granularity,
-                'instrument' : self.instrument,
-                'candles' : new_candles}
-
-    def _parse_ser_data_s_e(self, indir : str, params : Dict[str, Any])-> List:
-        """Private function that will parse the serialized JSON file
-        with FOREX data and will execute the desired query with
-        a 'start' and 'end' params.
-
-        Args:
-            indir : path to dir containing the serialized data
-            params : Params of the query. i.e. start, end, count ...
-
-        Returns
-        -------
-        List of dicts. Each dict contains data for a candle
-        """
-        start = datetime.datetime.strptime(params['start'], '%Y-%m-%dT%H:%M:%S')
-        end = datetime.datetime.strptime(params['end'], '%Y-%m-%dT%H:%M:%S')
-        year_start = start.year
-        year_end = end.year
-
-        new_candles = []
-        delta1hr = datetime.timedelta(hours=1)
-        for year in range(2007, 2021+1):
-            if year < year_start:
-                continue
-            elif year > year_end:
-                break
-
-            infile = "{0}/{1}.{2}.{3}.ser".format(indir, self.instrument,
-                                                  self.granularity, year)
-            inf = open(infile, 'r')
-            parsed_json = json.load(inf)
-            inf.close()
-            if year == year_start or year == year_end:
-                for c in parsed_json['candles']:
-                    c_time = datetime.datetime.strptime(c['time'], '%Y-%m-%dT%H:%M:%S.%fZ')
-                    if ((c_time >= start) or (abs(c_time - start) <= delta1hr)) and ((c_time <= end) or (abs(c_time - end) <= delta1hr)):
-                        new_candles.append(c)
-                    elif (c_time >= end) and (abs(c_time - end) > delta1hr):
-                        break
-            else:
-                new_candles = new_candles + parsed_json['candles']
-
-        return {'granularity': self.granularity,
-                'instrument' : self.instrument,
-                'candles' : new_candles}
 
     def mquery(self, start : datetime, end : datetime, outfile : str =None)->List[Dict]:
         """Function to execute a batch query on the Oanda API
@@ -197,17 +115,10 @@ class Connect(object):
 
             startO = startO + delta
 
-        if outfile is not None:
-            ser_data = json.dumps(res)
-            f = open(outfile, "w")
-            f.write(ser_data)
-            f.close()
-
         return res
 
     @retry()
-    def query(self, start : datetime, end : datetime = None, count : int = None,
-              indir : str = None, outfile : str = None)-> List[Dict]:
+    def query(self, start : datetime, end : datetime = None, count : int = None)-> List[Dict]:
         """Function 'query' overloads and will behave differently
         depending on the presence/absence of the following args:
 
@@ -225,28 +136,14 @@ class Connect(object):
             count: If end is not defined, this controls the
                    number of candles from the start
                    that will be retrieved
-            indir: path to DIR containing the JSON files with serialized FOREX data
-            outfile: File to write the serialized data returned
-                     by the API.
-
         Returns:
-            Each dict contains data for a candle"""
+            CandleList"""
         
-        startObj = None
-        if indir is not None:
-            # do not validate if there is serialized data
-            startObj = datetime.strptime(start, '%Y-%m-%dT%H:%M:%S')
-        else:
-            startObj = self.validate_datetime(start, self.granularity)
+        startObj = self.validate_datetime(start, self.granularity)
         start = startObj.isoformat()
         params = {}
         if end is not None and count is None:
-            endObj = None
-            if indir is not None:
-                # do not validate if there is serialized data
-                endObj = datetime.datetime.strptime(end, '%Y-%m-%dT%H:%M:%S')
-            else:
-                endObj = self.validate_datetime(end, self.granularity)
+            endObj = self.validate_datetime(end, self.granularity)
             min = datetime.timedelta(minutes=1)
             endObj = endObj + min
             end = endObj.isoformat()
@@ -259,35 +156,30 @@ class Connect(object):
 
         params['granularity'] = self.granularity
         params['from'] = start
-        if indir is not None:
-            o_logger.debug("Serialized data provided. Candles will be "
-                          "fetched from files in dir {0}".format(indir))
-            if 'end' in params:
-                return self._parse_ser_data_s_e(indir, params)
-            elif 'count' in params:
-                return self._parse_ser_data_c(indir, params)
-        else:
-            resp = None
-            try:
-                resp = requests.get(url=f"{apiparams.url}/{self.instrument}/candles",
-                                    params=params,
-                                    headers={"content-type": f"{apiparams.content_type}",
-                                             "Authorization": f"{os.environ.get('TOKEN')}"})
-                if resp.status_code != 200:
-                    raise Exception(resp.status_code)
-                else:
-                    data = json.loads(resp.content.decode("utf-8"))
-                    if outfile is not None:
-                        ser_data = json.dumps(data)
-                        f = open(outfile, "w")
-                        f.write(ser_data)
-                        f.close()
-                    return data
-            except Exception as err:
-                # Something went wrong.
-                print("Something went wrong. url used was:\n{0}".format(resp.url))
-                print("Error message was: {0}".format(err))
-                return resp.status_code
+        try:
+            resp = requests.get(url=f"{apiparams.url}/{self.instrument}/candles",
+                                params=params,
+                                headers={"content-type": f"{apiparams.content_type}",
+                                         "Authorization": f"{os.environ.get('TOKEN')}"})
+            if resp.status_code != 200:
+                raise Exception(resp.status_code)
+            else:
+                data = json.loads(resp.content.decode("utf-8"))
+                newdata = [flatdict.FlatDict(c, delimiter='.') for c in data['candles']]
+                for mydict in newdata:
+                    mydict['h'] = mydict.pop('mid.h')
+                    mydict['l'] = mydict.pop('mid.l')
+                    mydict['o'] = mydict.pop('mid.o')
+                    mydict['c'] = mydict.pop('mid.c')
+                cl = CandleList(instrument=self.instrument,
+                                granularity=self.granularity,
+                                data=newdata)
+                return cl
+        except Exception as err:
+            # Something went wrong.
+            print("Something went wrong. url used was:\n{0}".format(resp.url))
+            print("Error message was: {0}".format(err))
+            sys.exit(1)
 
     def validate_datetime(self, datestr : str, granularity: str):
         """Function to parse a string datetime to return

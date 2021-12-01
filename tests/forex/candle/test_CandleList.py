@@ -4,15 +4,11 @@
 @email: ernestolowy@gmail.com
 '''
 import pytest
-import datetime
 import glob
 import os
 import logging
 import pdb
 
-from forex.candle.candlelist import CandleList
-from api.oanda.connect import Connect
-from forex.harea import HArea
 from utils import DATA_DIR
 
 @pytest.fixture
@@ -23,6 +19,14 @@ def clean_tmp():
     for f in files:
         os.remove(f)
 
+def test_candlelist_inst(clO):
+    log = logging.getLogger('Test CandleList instantiation')
+    log.debug('CandleList instantation')
+    assert clO.type == 'short'
+    assert clO[0].colour == 'red'
+    assert len(clO) == 2
+
+"""
 @pytest.mark.parametrize("ix,"
                         "rsi",
                         [(4, 48.42),
@@ -156,3 +160,5 @@ def test_calc_itrend(pair, start, end, t_type, itrend, clean_tmp):
     cl = CandleList(res)
 
     assert itrend == cl.calc_itrend().start()
+
+"""

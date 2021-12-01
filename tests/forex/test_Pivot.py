@@ -1,6 +1,6 @@
-from oanda.connect import Connect
-from candle.candlelist import CandleList
-from config import CONFIG
+from api.oanda.connect import Connect
+from forex.candle.candlelist import CandleList
+from forex.params import pivots_params
 
 import pytest
 import datetime
@@ -12,7 +12,7 @@ def test_pre_aft_lens(clO, clean_tmp):
     correct number of candles
     '''
 
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
+    pl = clO.get_pivotlist(th_bounces=pivots_params.th_bounces)
 
     pivot = pl.plist[3]
 
@@ -25,7 +25,7 @@ def test_pre_aft_start(clO, clean_tmp):
     correct start Datetimes
     '''
 
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
+    pl = clO.get_pivotlist(th_bounces=pivots_params.th_bounces)
 
     pivot = pl.plist[3]
 
