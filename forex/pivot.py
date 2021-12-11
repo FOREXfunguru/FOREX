@@ -1,59 +1,44 @@
 import logging
 from utils import *
 from forex.candle.candle import Candle
-from config import CONFIG
-
+from forex.params import pivots_params
 # create logger
 p_logger = logging.getLogger(__name__)
 p_logger.setLevel(logging.INFO)
 
 class Pivot(object):
     """
-    Class that represents a single Pivot as identified
-    by the Zigzag indicator
+    Class representing a single Pivot
 
     Class variables
     ---------------
-    type : int, Required
-           Type of pivot. It can be 1 or -1
-    candle : Dict
-             Candle representing the pivot
+    type : Type of pivot. It can be 1 or -1
+    candle : Candle object ovrerlapping this pivot
     pre : Segment object
           Segment object before this pivot
     aft : Segment object
           Segment object after this pivot
-    score : int
-            Result of adding the number
+    score : iResult of adding the number
             of candles of the 'pre' and 'aft' segment (if defined). Optional
     """
-
-    def __init__(self, type, candle, pre, aft,
-                 score=None):
+    def __init__(self, type: int, candle, pre, aft,
+                 score: int=None):
         self.type = type
         self.candle = candle
         self.pre = pre
         self.aft = aft
         self.score = score
 
-    def merge_pre(self, slist, n_candles, diff_th):
-        """
-        Function to merge 'pre' Segment. It will merge self.pre with previous segment
+    def merge_pre(self, slist, n_candles: int, diff_th: int)->None:
+        """Function to merge 'pre' Segment. It will merge self.pre with previous segment
         if self.pre and previous segment are of the same type (1 or -1) or count of
-        previous segment is less than CONFIG.getint('pivots', 'n_candles')
+        previous segment is less than pivots_params.n_candles
 
-        Parameters
-        ----------
-        slist : SegmentList object
-                SegmentList for PivotList of this Pivot.
-                Required
-        n_candles : int
-                    Skip merge if Segment is greater than 'n_candles'
-        diff_th : int
-                  % of diff in pips threshold
-
-        Returns
-        -------
-        Nothing
+        Arguments:
+            slist : SegmentList object
+                    SegmentList for PivotList of this Pivot.
+            n_candles : Skip merge if Segment is greater than 'n_candles'
+            diff_th : % of diff in pips threshold
         """
         p_logger.debug("Running merge_pre")
         p_logger.debug("Analysis of pivot {0}".format(self.candle['time']))
@@ -68,7 +53,7 @@ class Pivot(object):
 
             # fetch previous segment
             s = None
-            if CONFIG.has_option('pivots', 'max_diff'):
+            if pivots_params.max_diff:
                 s = slist.fetch_by_end(start_dt, max_diff=0)
             else:
                 s = slist.fetch_by_end(start_dt)
@@ -87,7 +72,7 @@ class Pivot(object):
                 self.pre = self.pre.prepend(s)
             elif self.pre.type != s.type and s.count < n_candles:
                 # merge if types of previous (s) and self.pre are different but
-                # s.count is less than CONFIG.getint('pivots', 'n_candles')
+                # s.count is less than pivots_params.n_candles
                 # calculate the % that s.diff is with respect to self.pre.diff
                 perc_diff = s.diff*100/self.pre.diff
                 # do not merge if perc_diff that s represents with respect
@@ -100,33 +85,23 @@ class Pivot(object):
                     extension_needed = False
             else:
                 # exit the while loop, as type of previous (s) and self.pre are different
-                # and s.count is greater than CONFIG.getint('pivots', 'n_candles')
+                # and s.count is greater than pivots_params.n_candles
                 extension_needed = False
 
         p_logger.debug("self.pre start after-merge: {0}".format(self.pre.start()))
         p_logger.debug("Done merge_pre")
 
-    def merge_aft(self, slist, n_candles, diff_th):
-        """
-        Function to merge 'aft' Segment. It will merge self.aft with next segment
+    def merge_aft(self, slist, n_candles: int, diff_th: int)->None:
+        """Function to merge 'aft' Segment. It will merge self.aft with next segment
         if self.aft and next segment are of the same type (1 or -1) or count of
         next segment is less than 'n_candles'
 
-        Parameters
-        ----------
-        slist : SegmentList object
-                SegmentList for PivotList of this Pivot.
-                Required
-        n_candles : int
-                    Skip merge if Segment is greater than 'n_candles'
-        diff_th : int
-                  % of diff in pips threshold
-
-        Returns
-        -------
-        Nothing
+        Arguments:
+            slist : SegmentList object
+                    SegmentList for PivotList of this Pivot.
+            n_candles : Skip merge if Segment is greater than 'n_candles'
+            diff_th : % of diff in pips threshold
         """
-
         p_logger.debug("Running merge_aft")
         p_logger.debug("Analysis of pivot {0}".format(self.candle['time']))
         p_logger.debug("self.aft end before the merge: {0}".format(self.aft.end()))
@@ -138,7 +113,7 @@ class Pivot(object):
 
             # fetch next segment
             s = None
-            if CONFIG.has_option('pivots', 'max_diff'):
+            if pivots_params.max_diff:
                 s = slist.fetch_by_start(start_dt, max_diff=0)
             else:
                 s = slist.fetch_by_start(start_dt)
@@ -178,18 +153,14 @@ class Pivot(object):
         values or adding the number of candles of the 'pre' and 'aft'
         segments (if defined)
 
-        Parameters
-        ----------
-        type : Type of score that will be
-               calculated. Possible values: 'diff' , 'candles'
-               Default: 'diff'
+        Arguments:
+            type : Type of score that will be
+                   calculated. Possible values: 'diff' , 'candles'
 
-        Returns
-        -------
-        int /float with the score of this pivot.
-                   It will also set the score class attribute
+        Returns:
+            int /float with the score of this pivot.
+            It will also set the score class attribute
         """
-
         if self.pre:
             score_pre = 0
             if type == 'diff':
@@ -213,18 +184,15 @@ class Pivot(object):
         return score_pre+score_aft
 
     def adjust_pivottime(self, clistO):
-        '''
-        Function to adjust the pivot time
+        '''Function to adjust the pivot time
         This is necessary as sometimes the Zigzag algorithm
         does not find the correct pivot
 
-        Parameters
-        ----------
-        clistO : CandleList object used to identify the
-                PivotList, Required
-        Returns
-        -------
-        New adjusted datetime
+        Arguments:
+            clistO : CandleList object used to identify the
+                    PivotListt
+        Returns:
+            New adjusted datetime
         '''
         clist = clistO.data['candles'][:-1] # reduce index by 1 so start candle+1 is not included
         new_pc = pre_colour = None

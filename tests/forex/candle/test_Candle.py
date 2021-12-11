@@ -6,7 +6,7 @@
 import pytest
 import pdb
 
-from forex.candle.candle import Candle
+from forex.candle import Candle
 from api.oanda.connect import Connect
 
 @pytest.fixture
@@ -40,14 +40,13 @@ def test_check_candle_feats(CandleO):
 def test_indecision_c(pair, timeframe, time, is_it):
     '''Test function to check if a certain Candle has the
     typical indecission pattern'''
+
     conn = Connect(instrument=pair,
                    granularity=timeframe)
 
     res = conn.query(start=time,
                      count=1)
 
-    c_dict = res['candles'][0]
-    cObj = Candle(**c_dict)
-    cObj.set_candle_features()
+    cObj = res.candles[0]
     result = cObj.indecision_c()
     assert is_it == result

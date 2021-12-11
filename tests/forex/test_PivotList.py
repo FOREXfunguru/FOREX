@@ -5,15 +5,15 @@ import datetime
 import pdb
 import os
 
-def test_get_pivotlist(clO):
-    """Obtain a pivotlist"""
+@pytest.fixture
+def pivotlist(clO_pickled):
+    """Obtain a PivotList object"""
 
     pdb.set_trace()
-    pl = clO.get_pivotlist(th_bounces=pivots_params.th_bounces)
-    assert len(pl.plist) == 11
-    assert pl.plist[10].candle['openAsk'] == 0.68495
-    assert len(pl.plist[7].pre.clist) == 23
-    assert len(pl.plist[9].aft.clist) == 17
+    pl, modes = clO_pickled.get_pivotlist(th_bounces=pivots_params.th_bounces)
+
+    PivotList(clist=clO_pickled)
+    return pl
 
 def test_get_score(clO):
     """

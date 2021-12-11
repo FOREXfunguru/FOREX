@@ -76,6 +76,8 @@ class clist_params:
     rsi_period : int = 14
     # SR detection
     i_pips : int = 30
+    # Minimum number of candles from start to be required
+    min : int = 5
 
 @dataclass
 class trade_params:

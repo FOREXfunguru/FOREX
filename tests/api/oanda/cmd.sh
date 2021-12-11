@@ -1,0 +1,1 @@
+curl -H "Authorization: $TOKEN" "https://api-fxtrade.oanda.com/v3/instruments//AUD_USD/candles?count=6000&granularity=D&from=2000-12-28T22%3A00%3A00"

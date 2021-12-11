@@ -1,10 +1,9 @@
 import pytest
-import logging
-import pdb
 import os
 import glob
+import pdb
 
-from forex.candle.candlelist import CandleList
+from forex.candle import CandleList
 from utils import DATA_DIR
 
 @pytest.fixture
@@ -21,27 +20,6 @@ def clean_tmp():
         os.remove(f)
 
 @pytest.fixture
-def clO(scope="session"):
-    log = logging.getLogger('cl_object')
-    log.debug('Create a CandleList object')
+def clO_pickled():
+    return CandleList.pickle_load(DATA_DIR+"/clist_audusd_2010_2020.pckl")
 
-    alist = [
-        {'complete': True,
-        'volume': 8726, 
-        'time': '2018-11-18T22:00:00.000000000Z',
-        'o': '0.73093',
-        'h': '0.73258',
-        'l': '0.72776', 
-        'c': '0.72950'},
-        {'complete': True,
-        'volume': 1000, 
-        'time': '2018-11-19T22:00:00.000000000Z',
-        'o': '0.70123',
-        'h': '0.75123',
-        'l': '0.68123', 
-        'c': '0.72000'}
-    ]
-    cl = CandleList(instrument='AUD_USD',
-                    granularity='D',
-                    data=alist)
-    return cl

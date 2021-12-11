@@ -1,5 +1,9 @@
-from zigzag import *
-#from forex.pivot_list import PivotList
+'''
+@date: 22/11/2020
+@author: Ernesto Lowy
+@email: ernestolowy@gmail.com
+'''
+from utils import *
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 import pandas as pd
@@ -7,9 +11,8 @@ import numpy as np
 import matplotlib
 import datetime
 import logging
+import pickle
 from utils import *
-from typing import List
-from forex.candle.candle import Candle
 
 from forex.params import gparams, pivots_params, clist_params
 
@@ -21,6 +24,62 @@ logging.basicConfig(level=logging.INFO)
 # create logger
 cl_logger = logging.getLogger(__name__)
 cl_logger.setLevel(logging.INFO)
+
+class Candle(object):
+    """Class representing a particular Candle"""
+    def __init__(self, **kwargs)->None:
+        allowed_keys = ['complete', 'volume', 'time', 'o','h','c','l'] # allowed arbitrary argsa
+        self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
+        numeric = ['o', 'h', 'c', 'l']
+        self.__dict__.update((k, float(v)) for k,v in self.__dict__.items() if k in numeric)
+        self._colour = self._set_colour()
+        self._perc_body = self._calc_perc_body()
+
+    @property
+    def colour(self)->str:
+        """Candle's body colour"""
+        return self._colour
+    
+    @property
+    def perc_body(self)->float:
+        """Candle's body percentage"""
+        return self._perc_body
+
+    def _set_colour(self)->str:
+        if self.o < self.c:
+            return "green"
+        elif self.o > self.c:
+            return "red"
+        else:
+            return "undefined"
+    
+    def _calc_perc_body(self)->float:
+        height = self.h - self.l
+        if height ==0: 
+            return 0
+        body = abs(self.o- self.c)
+        return round((body * 100) / height, 2)
+
+    def indecision_c(self, ic_perc: int=10)->bool:
+        """Function to check if 'self' is an indecision candle.
+
+        Args:
+            ic_perc : Candle's body percentage below which the candle will be considered 
+                      indecision candle.
+        """
+        if self.perc_body <= ic_perc:
+            return True
+        else:
+            return False
+    
+    def __repr__(self):
+        return "Candle"
+
+    def __str__(self):
+        out_str = ""
+        for attr, value in self.__dict__.items():
+            out_str += "%s:%s " % (attr, value)
+        return out_str
 
 class CandleList(object):
     """Class containing a list of Candles
@@ -64,6 +123,8 @@ class CandleList(object):
         return len(self.candles)
     
     def _guess_type(self)->str:
+        if len(self.candles)==0:
+            return None
         price_1st = self.candles[0].c
         price_last = self.candles[-1].c
         if price_1st > price_last:
@@ -87,32 +148,32 @@ class CandleList(object):
         delta = None
         delta_period = None
 
-        if self.data['granularity'] == "D":
+        if self.granularity == "D":
             delta = timedelta(hours=24)
             delta_period = timedelta(hours=24*period)
         else:
-            fgran = self.data['granularity'].replace('H', '')
+            fgran = self.granularity.replace('H', '')
             delta = timedelta(hours=int(fgran))
             delta_period = timedelta(hours=int(fgran)*period)
 
         if period == 0:
             sel_c = None
-            for c in self.data['candles']:
-                start = c['time']
+            for c in self.candles:
+                start = datetime.strptime(c.time, '%Y-%m-%dT%H:%M:%S')
                 end = start+delta
                 if d >= start and d < end:
                     sel_c = c
 
             if sel_c is None:
                 raise Exception("No candle was selected with time: {0}\n."
-                                " It is good to check if the marked is closed".format(datetime))
+                                " It is good to check if the market is closed".format(datetime))
             return sel_c
         elif period > 0:
             start = d-delta_period
             end = d+delta_period
             sel_c = []
-            for c in self.data['candles']:
-                if c['time'] >= start and c['time'] <= end:
+            for c in self.candles:
+                if c.time >= start and c.time <= end:
                     sel_c.append(c)
             if len(sel_c) == 0: raise Exception("No candle was selected"
                                                 " for range: {0}-{1}".format(start, end))
@@ -122,45 +183,7 @@ class CandleList(object):
         '''Calculate the RSI for a certain candle list.'''
         cl_logger.debug("Running calc_rsi")
 
-        start_time = self.data['candles'][0]['time']
-        end_time = self.data['candles'][-1]['time']
-
-        delta_period = None
-        if self.data['granularity'] == "D":
-            delta_period = timedelta(hours=24 * clist_params.period)
-        else:
-            fgran = self.data['granularity'].replace('H', '')
-            delta_period = timedelta(hours=int(fgran) * clist_params.period)
-
-        start_calc_time = start_time - delta_period
-
-        #fetch candles from start_calc_time
-        conn = Connect(instrument=self.data['instrument'],
-                       granularity=self.data['granularity'])
-        '''
-        Get candlelist from start_calc_time to (start_time-1)
-        This 2-step API call is necessary in order to avoid
-        maximum number of candles errors
-        '''
-        ser_dir = None
-        if hasattr(gparams, 'ser_data_dir'):
-            ser_dir = gparams.set_data_dir
-
-        cl_logger.debug("Fetching data from API")
-        cl1_res = conn.query(start=start_calc_time.isoformat(),
-                             end=start_time.isoformat(),
-                             indir=ser_dir)
-
-        '''Get candlelist from start_time to end_time'''
-        cl2_res = conn.query(start=start_time.isoformat(),
-                             end=end_time.isoformat(),
-                             indir=ser_dir)
-
-        if cl1_res['candles'][-1]['time'] == cl2_res['candles'][0]['time']:
-            del cl1_res['candles'][-1]
-
-        candle_list = cl1_res['candles'] + cl2_res['candles']
-        series = [float(c['mid']['c']) for c in candle_list]
+        series = [c.c for c in self.candles]
 
         df = pd.DataFrame({'close': series})
         chg = df['close'].diff(1)
@@ -175,15 +198,46 @@ class CandleList(object):
         rs = abs(avg_gain / avg_loss)
         rsi = 100 - (100 / (1 + rs))
 
-        rsi4cl = rsi[-len(self.data['candles']):]
+        rsi4cl = rsi[-len(self.candles):]
         # set rsi attribute in each candle of the CandleList
         ix = 0
-        for c, v in zip(self.data['candles'], rsi4cl):
-            self.data['candles'][ix]['rsi'] = round(v, 2)
+        for c, v in zip(self.candles, rsi4cl):
+            self.candles[ix].rsi = round(v, 2)
             ix += 1
         cl_logger.debug("Done calc_rsi")
 
-    def calc_rsi_bounces(self):
+    def pickle_dump(self, outfile: str)->str:
+        '''Function to pickle this particular CandleList
+        
+        Arguments:
+            outfile: Path used to pickle
+            
+        Returns:
+            path to file with pickled data
+        '''
+        
+        pickle_out = open(outfile,"wb")
+        pickle.dump(self, pickle_out)
+        pickle_out.close()
+
+        return outfile
+
+    @classmethod
+    def pickle_load(self, infile: str):
+        '''Function to pickle this particular CandleList
+        
+        Arguments:
+            infile: Path used to load in pickled data
+            
+        Returns:
+            inclO: CandleList object    
+        '''
+        pickle_in = open(infile,"rb")
+        inclO = pickle.load(pickle_in)
+
+        return inclO
+
+    def calc_rsi_bounces(self)->dict:
         '''Calculate the number of times that the
         price has been in overbought (>70) or
         oversold (<30) regions
@@ -203,31 +257,31 @@ class CandleList(object):
         length = 0
         lengths = []
 
-        for c in self.data['candles']:
-            if c['rsi'] is None:
+        for c in self.candles:
+            if c.rsi is None:
                 raise Exception("RSI values are not defined for this Candlelist, "
                                 "run calc_rsi first")
             if self.type is None:
                 raise Exception("type is not defined for this Candlelist")
 
             if self.type == 'short':
-                if c['rsi'] > 70 and adj is False:
+                if c.rsi > 70 and adj is False:
                     num_times += 1
                     length = 1
                     adj = True
-                elif c['rsi'] > 70 and adj is True:
+                elif c.rsi > 70 and adj is True:
                     length += 1
-                elif c['rsi'] < 70:
+                elif c.rsi < 70:
                     if adj is True: lengths.append(length)
                     adj = False
             elif self.type == 'long':
-                if c['rsi']<30 and adj is False:
+                if c.rsi<30 and adj is False:
                     num_times += 1
                     length = 1
                     adj=True
-                elif c['rsi'] < 30 and adj is True:
+                elif c.rsi < 30 and adj is True:
                     length += 1
-                elif c['rsi'] > 30:
+                elif c.rsi > 30:
                     if adj is True: lengths.append(length)
                     adj = False
 
@@ -239,60 +293,25 @@ class CandleList(object):
         return { 'number' : num_times,
                  'lengths' : lengths}
 
-    def get_length_candles(self)->int:
-        '''Function to calculate the length of CandleList in number of candles.'''
-        return len(self.data['candles'])
-
     def get_length_pips(self)->int:
-        '''Function to calculate the length of CandleList in number of pips
+        '''Function to calculate the length of CandleList in number of pips'''
 
-        Returns:
-            Length in number of pips
-        '''
-        start_cl = self.data['candles'][0]
-        end_cl = self.data['candles'][-1]
+        start_cl = self.candles[0]
+        end_cl = self.candles[-1]
 
-        (first, second) = self.data['instrument'].split("_")
+        (first, second) = self.instrument.split("_")
         round_number = None
         if first == 'JPY' or second == 'JPY':
             round_number = 2
         else:
             round_number = 4
 
-        start_price = round(float(start_cl['mid']['c']), round_number)
-        end_price = round(float(end_cl['mid']['c']), round_number)
+        start_price = round(float(start_cl.c), round_number)
+        end_price = round(float(end_cl.c), round_number)
 
         diff = (start_price-end_price)*10**round_number
 
         return abs(int(round(diff, 0)))
-
-    def get_pivotlist(self, th_bounces: float):
-        '''Function to obtain a pivotlist object containing pivots identified using the
-        Zigzag indicator.
-
-        Arguments:
-            th_bounces: Value used by ZigZag to identify pivots. The lower the
-                        value the higher the sensitivity
-
-        Returns:
-            PivotList object
-        '''
-
-        cl_logger.debug("Running get_pivotlist")
-
-        x = []
-        values = []
-        for i in range(len(self.data['candles'])):
-            x.append(i)
-            values.append(float(self.data['candles'][i]['mid']['c']))
-
-        yarr = np.array(values)
-        pivots = peak_valley_pivots(yarr, th_bounces,
-                                    th_bounces*-1)
-        pl = PivotList(parray=pivots,
-                       clist=self)
-        cl_logger.debug("Done get_pivotlist")
-        return pl
 
     def slice(self, start : datetime = None, end : datetime = None):
         '''Function to slice self on a date interval. It will return the sliced CandleList
@@ -311,79 +330,23 @@ class CandleList(object):
         Exception
             If start > end
         '''
+        fmt = '%Y-%m-%dT%H:%M:%S'
 
         sliced_clist = []
         if start is not None and end is None:
-            sliced_clist = [c for c in self.data['candles'] if c['time'] >= start]
+            sliced_clist = [c.__dict__ for c in self.candles if datetime.strptime(c.time, fmt) >= start]
         elif start is not None and end is not None:
             if start > end:
                 raise Exception("Start is greater than end. Can't slice this CandleList")
-            sliced_clist = [c for c in self.data['candles'] if c['time'] >= start and c['time'] <= end]
+            sliced_clist = [c.__dict__ for c in self.candles if datetime.strptime(c.time, fmt) >= start and datetime.strptime(c.time, fmt) <= end]
         elif start is None and end is not None:
-            sliced_clist = [c for c in self['candles'] if c['time'] <= end ]
-        new_dict = {}
-        new_dict['candles'] = sliced_clist
-        new_dict['instrument'] = self.data['instrument']
-        new_dict['granularity'] = self.data['granularity']
+            sliced_clist = [c.__dict__ for c in self.candles if datetime.strptime(c.time, fmt) <= end ]
 
-        cl = CandleList(new_dict,
-                        type=self.type)
+        cl = CandleList(instrument=self.instrument,
+                        granularity=self.granularity,
+                        data=sliced_clist)
 
         return cl
-
-    def improve_resolution(self, price : float, min_dist : int, part : str ='closeAsk')->list:
-        '''Function used to improve the resolution of the identified maxima/minima. This function will select
-        the candle closer to 'price' when there are 2 candles less than 'min_dist' apart
-
-        Arguments:
-            price : Price that will be used as the reference to select one of the candles
-            min_dist : minimum distance between the identified max/min
-            part: Candle part used for the calculation
-
-        Returns:
-            list containing the selected candles
-        '''
-
-        min_distDelta=None
-        if min_dist is not None:
-            # convert the min_dist integer to a timedelta
-            min_distDelta = periodToDelta(ncandles=min_dist,
-                                          timeframe=self.granularity)
-
-        list_c=self.clist
-        res = [x.time - y.time for x, y in zip(list_c, list_c[1:])]
-        below = []  # below will contain the list_c indexes separated by <min_dist
-        ix = 0
-        for i in res:
-            i = abs(i)
-            if min_distDelta is not None:
-                if i < min_distDelta:
-                    below.append((ix, ix + 1))
-            else:
-                below.append((ix,ix+1))
-            ix += 1
-
-        remove_l = [] #list with the indexes to remove
-        if below:
-            for i in below:
-                x0 = getattr(list_c[i[0]], part)
-                x1 = getattr(list_c[i[1]], part)
-                diff0=abs(x0-price)
-                diff1=abs(x1-price)
-                #ix to be removed: the furthest
-                # from self.price
-                if diff0>diff1:
-                    remove_l.append(i[0])
-                elif diff1>diff0:
-                    remove_l.append(i[1])
-                elif diff1==diff0:
-                    remove_l.append(i[0])
-
-        if remove_l:
-            sorted_removel=sorted(list(set(remove_l)))
-            list_c = [i for j, i in enumerate(list_c) if j not in sorted_removel]
-
-        return list_c
 
     def calc_itrend(self):
         '''Function to calculate the datetime for the start of this CandleList, assuming that this
@@ -415,20 +378,13 @@ class CandleList(object):
 
         cl_logger.debug("Done clac_itrend")
 
-    def get_lasttime(self, hrarea):
+    def get_lasttime(self, price: float):
         '''Function to get the datetime for last time that price has been above/below a HArea
 
         Arguments:
-            hrarea : HArea object used to calculate the lasttime
+            price: value to calculate the last time in this CandleList the price was above/below
 
         Returns:
-            Will return the last time the price was above/below the self.SR.
-            Price is considered to be above (for short trades) the self.SR when candle's lowAsk is
-            above self.SR.upper and considered to be below (for long trades) the self.SR when candle's
-            highAsk is below sel.SR.below.
-
-            Returned datetime will be the datetime for the first candle in self.clist
-            if last time was not found
         '''
 
         if self.type == "short":
@@ -436,14 +392,20 @@ class CandleList(object):
         if self.type == "long":
             position = 'below'
 
-        last_time = hrarea.last_time(clist=self.data['candles'],
-                                     position=position)
-
-        # if last_time is not defined in this CandleList then assign the time for the first candle
-        if last_time is None:
-            last_time = self.data['candles'][0]['time']
-
-        return last_time
+        count = 0
+        for c in reversed(self.candles):
+            count += 1
+            # Last time has to be at least forexparams.min candles before
+            if count <= clist_params.min :
+                continue
+            if position == 'above':
+                if c.l > price:
+                    return c.time
+            elif position == 'below':
+                if c.h < price:
+                    return c.time
+        
+        return self.candles[0].time
 
     def get_highest(self)->float:
         '''Function to calculate the highest
@@ -454,8 +416,8 @@ class CandleList(object):
         '''
 
         max = 0.0
-        for c in self.data['candles']:
-            price = float(c['mid']['c'])
+        for cl in self.candles:
+            price = cl.c
             if price > max:
                 max = price
 
@@ -470,8 +432,8 @@ class CandleList(object):
         '''
 
         min = None
-        for c in self.data['candles']:
-            price = float(c['mid']['c'])
+        for cl in self.candles:
+            price = cl.c
             if min is None:
                 min = price
             else:

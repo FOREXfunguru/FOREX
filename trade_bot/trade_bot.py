@@ -10,7 +10,7 @@ from config import CONFIG
 from utils import *
 from forex.candle.candle import *
 from forex.candle.candlelist import CandleList
-from forex.candle.candlelist_utils import *
+from forex.candlelist_utils import *
 from trading_journal.trade_utils import *
 from trading_journal.trade import Trade
 

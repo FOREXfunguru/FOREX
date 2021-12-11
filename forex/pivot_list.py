@@ -1,10 +1,7 @@
-from zigzag import *
 from forex.segment import SegmentList, Segment
 from forex.pivot import Pivot
-from utils import substract_pips2price, add_pips2price
-from forex.candle.candle import Candle
-from ast import literal_eval
-from forex.params import gparams
+from forex.params import pivots_params
+from zigzag import *
 
 import matplotlib
 matplotlib.use('PS')
@@ -28,74 +25,110 @@ class PivotList(object):
     Class variables
     ---------------
     clist : CandleList object
-    parray : Array of 1s and -1s obtained directly using the Zigzag indicator.
-    plist : List of pivot objects obtained using the 'peak_valley_pivots' function from Zigzag indicator.
+    pivots: List with Pivot objects
     slist : SegmentList object"""
 
-    def __init__(self, clist, parray=None, plist=None,
-                 slist=None)->None:
-
+    def __init__(self, clist)->None:
         self.clist = clist
-
-        if parray is not None:
-            # pivots_to_modes function from the Zigzag indicator
-            modes = pivots_to_modes(parray)
-            segs = [] # this list will hold the Segment objects
-            plist_o = [] # this list will hold the Pivot objects
-            pre_s = None # Variable that will hold pre Segments
-            start_ix = end_ix = pre_i = None
-            ix = 0
-            for i in parray:
-                if (i == 1 or i == -1) and start_ix is None:
-                    # First pivot
-                    start_ix = ix
-                    pre_i = i
-                elif (i == 1 or i == -1) and start_ix is not None:
-                    end_ix=ix
-                    if parray[start_ix+1] == 0:
-                        submode = modes[start_ix+1:end_ix]
-                    else:
-                        submode = [modes[start_ix+1]]
-                    #checking if all elements in submode are the same:
-                    assert len(np.unique(submode).tolist()) == 1, "more than one type in modes"
-
-                    s = Segment(type=submode[0],
-                                count=end_ix-start_ix,
-                                clist=clist.data['candles'][start_ix:end_ix],
-                                instrument=clist.data['instrument'])
-                    # create Pivot object
-                    c_dict = clist.data['candles'][start_ix]
-                    # add granularity to dict
-                    c_dict['granularity'] = clist.data['granularity']
-                    pobj = Pivot(type=pre_i,
-                                 candle=c_dict,
-                                 pre=pre_s, 
-                                 aft=s)
-                    pobj.score = pobj.calc_score()
-                    # Append it to list
-                    plist_o.append(pobj)
-                    # Append it to segs
-                    segs.append(s)
-                    start_ix = ix
-                    pre_s = s
-                    pre_i = i
-                ix += 1
-            # add last Pivot
-            c_dict = clist.data['candles'][start_ix]
-            c_dict['granularity'] = clist.data['granularity']
-            l_pivot = Pivot(type=pre_i,
-                                 candle=c_dict,
-                                 pre=pre_s,
-                                 aft=None)
-            l_pivot.score = l_pivot.calc_score()
-            plist_o.append(l_pivot)
-
-            self.plist = plist_o
-            self.slist = SegmentList(slist=segs,
-                                     instrument=clist.data['instrument'])
+        pdb.set_trace()
+        po_l, segs = self._get_pivot_list(pivots_params.th_bounces)
+        self.pivots = po_l
+        self.slist = SegmentList(slist=segs,
+                                 instrument=clist.instrument)
+    
+    def __iter__(self):
+        self.pos = 0
+        return self
+    
+    def __next__(self):
+        if(self.pos < len(self.pivots):
+            self.pos += 1
+            return self.candles[self.pos - 1]
         else:
-            self.plist = plist
-            self.slist = slist
+            raise StopIteration
+    
+    def __getitem__(self, key):
+        return self.pivots[key]
+    
+    def __len__(self):
+        return len(self.pivots)
+
+    def _get_pivotlist(self, th_bounces: float):
+        '''Function to obtain a pivotlist object containing pivots identified using the
+        Zigzag indicator.
+
+        Arguments:
+            th_bounces: Value used by ZigZag to identify pivots. The lower the
+                        value the higher the sensitivity
+
+        Returns:
+            List with Pivot objects
+            List with Segment objects
+        '''
+
+        x = []
+        values = []
+        for i in range(len(self.clist.candles)):
+            x.append(i)
+            values.append(self.clist.candles[i].c)
+
+        yarr = np.array(values)
+        pivots = peak_valley_pivots(yarr, th_bounces,
+                                    th_bounces*-1)
+        modes = pivots_to_modes(pivots)
+
+        segs = [] # this list will hold the Segment objects
+        plist_o = [] # this list will hold the Pivot objects
+        pre_s = None # Variable that will hold pre Segments
+        start_ix = end_ix = pre_i = None
+        ix = 0
+        for i in pivots:
+            if (i == 1 or i == -1) and start_ix is None:
+                # First pivot
+                start_ix = ix
+                pre_i = i
+            elif (i == 1 or i == -1) and start_ix is not None:
+                end_ix=ix
+                if pivots[start_ix+1] == 0:
+                    submode = modes[start_ix+1:end_ix]
+                else:
+                    submode = [modes[start_ix+1]]
+                #checking if all elements in submode are the same:
+                assert len(np.unique(submode).tolist()) == 1, "more than one type in modes"
+
+                s = Segment(type=submode[0],
+                            count=end_ix-start_ix,
+                            clist=self.clist.candles[start_ix:end_ix],
+                            instrument=self.clist.instrument)
+                # create Pivot object
+                cl = self.clist.candles[start_ix]
+                # add granularity to dict
+                cl['granularity'] = self.clist.granularity
+                pobj = Pivot(type=pre_i,
+                             candle=c_dict,
+                             pre=pre_s, 
+                             aft=s)
+                pobj.score = pobj.calc_score()
+                # Append it to list
+                plist_o.append(pobj)
+                # Append it to segs
+                segs.append(s)
+                start_ix = ix
+                pre_s = s
+                pre_i = i
+                ix += 1
+    
+        # add last Pivot
+        c_dict = self.clist.candles[start_ix]
+        c_dict['granularity'] = self.clist.granularity
+        l_pivot = Pivot(type=pre_i,
+                        candle=c_dict,
+                        pre=pre_s,
+                        aft=None)
+        l_pivot.score = l_pivot.calc_score()
+        plist_o.append(l_pivot)
+
+        return plist_o, segs
 
     def fetch_by_time(self, d: datetime):
         '''Function to fetch a Pivot object using a
@@ -106,7 +139,7 @@ class PivotList(object):
             None if not Pivot found
         '''
         for p in self.plist:
-            if p.candle['time'] == d:
+            if p.candle.time == d:
                 return p
         return None
 

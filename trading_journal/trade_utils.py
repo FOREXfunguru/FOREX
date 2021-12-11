@@ -6,7 +6,7 @@ import datetime as dt
 from utils import *
 from forex.harea import HArea
 from config import CONFIG
-from forex.candle.candlelist_utils import *
+from forex.candlelist_utils import *
 from trading_journal.trade import Trade
 
 # create logger

@@ -1,7 +1,7 @@
 import pytest
 
 from api.oanda.connect import Connect
-from forex.candle.candlelist_utils import *
+from forex.candlelist_utils import *
 from forex.candle.candlelist import CandleList
 from utils import DATA_DIR
 

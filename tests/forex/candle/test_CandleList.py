@@ -8,14 +8,16 @@ import glob
 import os
 import logging
 import pdb
+import datetime
 
 from utils import DATA_DIR
+from forex.candle import CandleList
 
 @pytest.fixture
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob(DATA_DIR+"/imgs/**/*.png",recursive=True)
+    files = glob.glob(DATA_DIR+"/out/*",recursive=True)
     for f in files:
         os.remove(f)
 
@@ -26,34 +28,46 @@ def test_candlelist_inst(clO):
     assert clO[0].colour == 'red'
     assert len(clO) == 2
 
-"""
-@pytest.mark.parametrize("ix,"
-                        "rsi",
-                        [(4, 48.42),
-                         (51, 25.63),
-                         (130, 53.63),
-                         (136, 62.97),
-                         (212, 73.64)])
-def test_calc_rsi(ix, rsi, clO):
+def test_pickle_dump(clO):
+    log = logging.getLogger('Test for pickle_dump')
+    log.debug('pickle_dump')
+
+    clO.pickle_dump(DATA_DIR+"/out/clist.pckl")
+
+    assert os.path.exists(DATA_DIR+"/out/clist.pckl") == 1
+
+def test_pickle_load(clean_tmp):
+    log = logging.getLogger('Test for pickle_load')
+    log.debug('pickle_load')
+
+    loadedCL = CandleList.pickle_load(DATA_DIR+"/out/clist.pckl")
+    assert loadedCL.instrument == 'AUD_USD'
+    assert len(loadedCL) == 2
+
+def test_calc_rsi(clO_pickled):
     log = logging.getLogger('Test for calc_rsi function')
     log.debug('calc_rsi')
 
-    clO.calc_rsi()
-    assert clO.data['candles'][ix]['rsi'] == rsi
+    clO_pickled.calc_rsi()
 
-def test_rsibounces(clO):
+    assert clO_pickled[15].rsi == 61.54
+    assert clO_pickled[50].rsi == 48.59
+
+def test_rsibounces(clO_pickled):
     log = logging.getLogger('Test for rsi_bounces function')
     log.debug('rsi_bounces')
 
-    clO.calc_rsi()
-    dict1 = clO.calc_rsi_bounces()
+    clO_pickled.calc_rsi()
+    dict1 = clO_pickled.calc_rsi_bounces()
 
-    dict2 = {'number': 1,
-             'lengths': [3]}
+    dict2 = {'number': 31,
+             'lengths': [1, 1, 3, 4, 5, 7, 1, 1, 
+             4, 5, 4, 3, 1, 1, 4, 5, 1, 2, 1, 1, 
+             1, 1, 12, 7, 14, 3, 8, 2, 3, 1, 3]}
 
     assert dict1 == dict2
 
-def test_get_length_functions(clO):
+def test_get_length_pips(clO_pickled):
     '''
     This test check the functions for getting the length of
     the CandleList in number of pips and candles
@@ -61,65 +75,58 @@ def test_get_length_functions(clO):
     log = logging.getLogger('Test for different length functions')
     log.debug('get_length')
 
-    assert clO.get_length_candles() == 230
-    assert clO.get_length_pips() == 191
+    assert clO_pickled.get_length_pips() == 2493
 
-def test_fetch_by_time(clO):
-
-    adatetime = datetime.datetime(2019, 5, 7, 22, 0)
-    c = clO.fetch_by_time(adatetime)
-
-    assert float(c['mid']['o']) == 0.70118
-    assert float(c['mid']['h']) == 0.70270
-
-def test_slice_with_start(clO):
+def test_fetch_by_time(clO_pickled):
 
     adatetime = datetime.datetime(2019, 5, 7, 22, 0)
+    c = clO_pickled.fetch_by_time(adatetime)
 
-    new_cl = clO.slice(start = adatetime)
+    assert c.o == 0.70118
+    assert c.h == 0.70270
 
-    assert len(new_cl.data['candles']) == 185
+def test_slice_with_start(clO_pickled):
 
-def test_slice_with_start_end(clO):
+    adatetime = datetime.datetime(2019, 5, 7, 21, 0)
 
-    startdatetime = datetime.datetime(2019, 5, 7, 22, 0)
-    endatetime = datetime.datetime(2019, 7, 1, 22, 0)
+    new_cl = clO_pickled.slice(start = adatetime)
 
-    new_cl = clO.slice(start=startdatetime,
-                       end=endatetime)
+    assert len(new_cl) == 401
 
-    assert len(new_cl.data['candles']) == 39
+def test_slice_with_start_end(clO_pickled):
 
-def test_get_lasttime():
-    log = logging.getLogger('Test for get_lasttime')
-    log.debug('get_lasttime')
+    startdatetime = datetime.datetime(2019, 5, 7, 21, 0)
+    endatetime = datetime.datetime(2019, 7, 1, 21, 0)
 
-    conn= Connect(instrument='AUD_CHF',
-                  granularity='H12')
+    new_cl = clO_pickled.slice(start=startdatetime,
+                               end=endatetime)
 
-    resist = HArea(price=1.00721,
-                   pips=45,
-                   instrument='AUD_CHF',
-                   granularity='H12')
+    assert len(new_cl) == 40
 
-    res = conn.query(start='2004-11-07T10:00:00',
-                     end='2010-04-30T09:00:00')
+def test_last_time(clO_pickled):
+    log = logging.getLogger('Test for last_time function')
+    log.debug('last_time')
 
-    cl = CandleList(res, type='short')
+    lt = clO_pickled.get_lasttime(price=0.78608)
+    assert lt == '2018-02-19T22:00:00'
 
-    lasttime = cl.get_lasttime(resist)
-    assert lasttime == datetime.datetime(2007, 11, 9, 10, 0)
+def test_get_highest(clO_pickled):
+    log = logging.getLogger('Test get_highest')
+    log.debug('get_highest')
 
-def test_get_highest(clO):
-    clO.get_highest()
+    clO_pickled.get_highest()
 
-    assert clO.get_highest() == 0.71789
+    assert clO_pickled.get_highest() == 1.10307
 
-def test_get_lowest(clO):
-    clO.get_lowest()
+def test_get_lowest(clO_pickled):
+    log = logging.getLogger('Test get_lowest')
+    log.debug('get_lowest')
 
-    assert clO.get_lowest() == 0.67038
+    clO_pickled.get_lowest()
 
+    assert clO_pickled.get_lowest() == 0.57444
+
+"""
 @pytest.mark.parametrize("pair,"
                          "start,"
                          "end,"
@@ -147,18 +154,10 @@ def test_get_lowest(clO):
                            datetime.datetime(2012, 9, 7, 22, 0), 'long', datetime.datetime(2012, 8, 8, 21, 0)),
                           ('AUD_USD', datetime.datetime(2015, 9, 7, 22, 0),
                            datetime.datetime(2016, 4, 25, 22, 0), 'short', datetime.datetime(2016, 1, 17, 22, 0))])
-def test_calc_itrend(pair, start, end, t_type, itrend, clean_tmp):
+def test_calc_itrend(pair, start, end, t_type, itrend, clean_tmp, clO_pickled):
     log = logging.getLogger('Test for calc_itrend')
     log.debug('calc_itrend')
 
-    conn = Connect(instrument=pair,
-                   granularity='D')
 
-    res = conn.query(start=start.isoformat(),
-                     end=end.isoformat())
-
-    cl = CandleList(res)
-
-    assert itrend == cl.calc_itrend().start()
-
+    assert itrend == clO_pickled.calc_itrend().start()
 """

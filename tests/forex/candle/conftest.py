@@ -4,8 +4,7 @@ import pdb
 import os
 import glob
 
-from api.oanda.connect import Connect
-from forex.candle.candlelist import CandleList
+from forex.candle import CandleList
 from utils import DATA_DIR
 
 @pytest.fixture
@@ -20,21 +19,21 @@ def clean_tmp():
         os.remove(f)
 
 @pytest.fixture
-def clO(scope="session"):
+def clO():
     log = logging.getLogger('cl_object')
     log.debug('Create a CandleList object')
 
     alist = [
         {'complete': True,
         'volume': 8726, 
-        'time': '2018-11-18T22:00:00.000000000Z',
+        'time': '2018-11-18T22:00:00',
         'o': '0.73093',
         'h': '0.73258',
         'l': '0.72776', 
         'c': '0.72950'},
         {'complete': True,
         'volume': 1000, 
-        'time': '2018-11-19T22:00:00.000000000Z',
+        'time': '2018-11-19T22:00:00',
         'o': '0.70123',
         'h': '0.75123',
         'l': '0.68123', 
