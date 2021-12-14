@@ -20,18 +20,11 @@ class Segment(object):
         self.count = count
         self.clist = clist
         self.instrument = instrument
-        self._diff = 0.0
+        self._diff = self._calc_diff()
 
     @property
     def diff(self):
         return self._diff
-	
-    @diff.setter
-    def diff(self, a: float = None ):
-        if a:
-            self._diff = a
-        else:
-            self._calc_diff()
 
     def prepend(self, s):
         '''Function to prepend s to self. The merge will be done by
@@ -64,11 +57,10 @@ class Segment(object):
         of this segment. The candle part considered is
         controlled by gparams.part
         '''
-        # calculate the diff in pips between the last and first candles of this segment
-        diff = abs(self.clist[-1][part] - self.clist[0][gparams.part])
+        diff = abs(self.clist[-1].c - self.clist[0].c)
         diff_pips = float(calculate_pips(self.instrument, diff))
         if diff_pips ==0:
-            diff_pips = 1 
+            diff_pips = 1.0 
         return diff_pips
 
     def is_short(self, min_n_candles: int, diff_in_pips: int)->bool:
@@ -161,10 +153,9 @@ class SegmentList(object):
     '''
 
     def __init__(self, slist: list, instrument: str):
-        pdb.set_trace()
-        self.slist = [s.diff() for s in slist]
+        self.slist = slist
         self.instrument = instrument
-        self._diff = self.diff() 
+        self._diff = self.calc_diff() 
 
     def calc_diff(self)->float:
         '''Function to calculate the difference in terms
@@ -176,12 +167,11 @@ class SegmentList(object):
             float representing the diff in pips. It will be positive
             when it is a downtrend and negative otherwise
         '''
-        pdb.set_trace()
-        diff = self.slist[0].clist[0][part] - self.slist[-1].clist[-1][gparams.part]
+        diff = self.slist[0].clist[0].c - self.slist[-1].clist[-1].c
         diff_pips = float(calculate_pips(self.instrument, diff))
 
         if diff_pips == 0:
-            diff_pips += 1
+            diff_pips += 1.0
         self.diff = diff_pips
 
     def length(self)->int:

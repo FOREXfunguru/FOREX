@@ -1,5 +1,5 @@
 from api.oanda.connect import Connect
-from forex.candle.candlelist import CandleList
+from forex.candle import CandleList
 from forex.params import pivots_params
 
 import pytest

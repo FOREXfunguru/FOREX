@@ -90,6 +90,7 @@ class CandleList(object):
     granularity : i.e. 'D'
     candles : List of Candle objects
     type : Type of this CandleList. Possible values are 'long'/'short'"""
+
     def __init__(self, instrument: str, granularity: str, data: list):
         """Constructor
 

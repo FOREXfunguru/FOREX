@@ -1,4 +1,5 @@
 from forex.params import pivots_params
+from forex.pivot import PivotList
 
 import pytest
 import datetime
@@ -9,25 +10,20 @@ import os
 def pivotlist(clO_pickled):
     """Obtain a PivotList object"""
 
-    pdb.set_trace()
-    pl, modes = clO_pickled.get_pivotlist(th_bounces=pivots_params.th_bounces)
-
-    PivotList(clist=clO_pickled)
+    pl = PivotList(clist=clO_pickled)
     return pl
 
-def test_get_score(clO):
+def test_get_score(pivotlist):
     """
     Test 'get_score' function
     """
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
-    assert pl.get_score() == 3932.8
+    assert pivotlist.get_score() == 90358.0
 
-def test_get_avg_score(clO):
+def test_get_avg_score(pivotlist):
     """
     Test 'get_avg_score' function
     """
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
-    assert pl.get_avg_score() == 357.5
+    assert pivotlist.get_avg_score() == 654.8
 
 def test_in_area(clO, clean_tmp):
     """
