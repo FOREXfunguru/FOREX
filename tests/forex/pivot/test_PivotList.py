@@ -1,17 +1,9 @@
-from forex.params import pivots_params
-from forex.pivot import PivotList
+from utils import DATA_DIR
 
-import pytest
 import datetime
 import pdb
 import os
-
-@pytest.fixture
-def pivotlist(clO_pickled):
-    """Obtain a PivotList object"""
-
-    pl = PivotList(clist=clO_pickled)
-    return pl
+import pytest
 
 def test_get_score(pivotlist):
     """
@@ -25,70 +17,63 @@ def test_get_avg_score(pivotlist):
     """
     assert pivotlist.get_avg_score() == 654.8
 
-def test_in_area(clO, clean_tmp):
+def test_in_area(pivotlist):
     """
     Test 'inarea_pivots' function
     """
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
-    # check the len of pl.plist before getting the pivots in the S/R area
-    assert len(pl.plist) == 11
-    pl_inarea = pl.inarea_pivots(SR=0.67117)
+    pl_inarea = pivotlist.inarea_pivots(price=0.75)
 
     # check the len of pl.plist after getting the pivots in the S/R area
-    assert len(pl_inarea.plist) == 3
+    assert len(pl_inarea) == 6
 
-def test_get_pl_bytime(clO, clean_tmp):
+def test_get_pl_bytime(pivotlist):
     """
     Test 'get_pl_bytime"
     """
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
     dt = datetime.datetime(2019, 7, 1, 21, 0)
-    newpl = pl.get_pl_bytime(adatetime=dt)
-    assert len(newpl.plist) == 8
+    newpl = pivotlist.get_pl_bytime(adatetime=dt)
+    assert len(newpl) == 25
 
-def test_plot_pivots(clO, clean_tmp):
+def test_plot_pivots(pivotlist,clean_tmp):
     """
     Test plot_pivots
     """
+    outfile = f"{DATA_DIR}/out/{pivotlist.clist.instrument}.png"
+    outfile_rsi = f"{DATA_DIR}/out/{pivotlist.clist.instrument}.final_rsi.png"
 
-    clO.calc_rsi()
-    outfile = CONFIG.get('images', 'outdir') + "/pivots/{0}.png".format(clO.data['instrument'].
-                                                                                    replace(' ', '_'))
-    outfile_rsi = CONFIG.get('images', 'outdir') + "/pivots/{0}.final_rsi.png".format(clO.data['instrument'].
-                                                                                      replace(' ', '_'))
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
-
-    pl.plot_pivots(outfile_prices=outfile,
-                   outfile_rsi=outfile_rsi)
+    pivotlist.clist.calc_rsi()
+    pivotlist.plot_pivots(outfile_prices=outfile,
+                          outfile_rsi=outfile_rsi)
 
     assert os.path.exists(outfile) == 1
     assert os.path.exists(outfile_rsi) == 1
 
-def test_print_pivots_dates(clO):
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
-    dtl = pl.print_pivots_dates()
-    assert len(dtl) == 11
+def test_print_pivots_dates(pivotlist):
+    dtl = pivotlist.print_pivots_dates()
+    assert len(dtl) == 138
 
-def test_fetch_by_type(clO):
+def test_fetch_by_type(pivotlist):
     """Obtain a pivotlist of a certain type"""
 
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
-    newpl = pl.fetch_by_type(type=-1)
-    assert len(newpl.plist) == 6
+    newpl = pivotlist.fetch_by_type(type=-1)
+    assert len(newpl.pivots) == 70
 
-def test_fetch_by_time(clO):
+def test_fetch_by_time(pivotlist):
     """Obtain a Pivot object by datetime"""
 
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
+    adt = datetime.datetime(2014, 10, 2, 21, 0)
+    rpt = pivotlist.fetch_by_time(adt)
+    assert rpt.candle.time == datetime.datetime(2014, 10, 2, 21, 0)
 
-    adt = datetime.datetime(2019, 4, 16, 21, 0)
-    rpt = pl.fetch_by_time(adt)
-    assert rpt.candle['time'] == datetime.datetime(2019, 4, 16, 21, 0)
-
-def test_pivots_report(clO, clean_tmp):
+def test_pivots_report(pivotlist, clean_tmp):
     """Get a PivotList report"""
 
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
-    routfile = CONFIG.get('images', 'outdir') + "/pivots_report/{0}.preport.txt".format(clO.data['instrument'].
-                                                                                        replace(' ', '_'))
-    pl.pivots_report(outfile=routfile)
+    outfile = f"{DATA_DIR}/out/{pivotlist.clist.instrument}.preport.txt"
+    pivotlist.pivots_report(outfile=outfile)
+
+
+@pytest.mark.parametrize('itrend',
+                         [(datetime.datetime(2020, 10, 28, 21, 0))])
+def test_calc_itrend(itrend, pivotlist):
+    """Calc init of trend"""
+    assert itrend == pivotlist.calc_itrend().start()

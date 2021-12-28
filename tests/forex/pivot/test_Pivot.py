@@ -1,145 +1,103 @@
 from api.oanda.connect import Connect
 from forex.candle import CandleList
 from forex.params import pivots_params
+from forex.pivot import PivotList
+
 
 import pytest
 import datetime
 import pdb
 
-def test_pre_aft_lens(clO, clean_tmp):
+@pytest.fixture
+def pivot(clO_pickled):
+    """Obtain a Pivot object"""
+
+    pl = PivotList(clist=clO_pickled)
+    return pl[5]
+
+def test_pre_aft_lens(pivot):
     '''
     Check if 'pre' and 'aft' Segments have the
     correct number of candles
     '''
 
-    pl = clO.get_pivotlist(th_bounces=pivots_params.th_bounces)
+    assert len(pivot.pre.clist) == 39
+    assert len(pivot.aft.clist) == 17
 
-    pivot = pl.plist[3]
-
-    assert len(pivot.pre.clist) == 23
-    assert len(pivot.aft.clist) == 32
-
-def test_pre_aft_start(clO, clean_tmp):
+def test_pre_aft_start(pivot):
     '''
     Check if 'pre' and 'aft' Segments have the
     correct start Datetimes
     '''
 
-    pl = clO.get_pivotlist(th_bounces=pivots_params.th_bounces)
-
-    pivot = pl.plist[3]
-
-    assert datetime.datetime(2019, 6, 16, 21, 0) == pivot.pre.start()
-    assert datetime.datetime(2019, 7, 17, 21, 0) == pivot.aft.start()
+    assert datetime.datetime(2011, 1, 19, 22, 0) == pivot.pre.start()
+    assert datetime.datetime(2011, 2, 27, 22, 0) == pivot.aft.start()
 
 @pytest.mark.parametrize("ix,"
-                         "pair,"
-                         "timeframe,"
-                         "id,"
-                         "start,"
-                         "end,"
                          "date_pre,"
                          "date_post",
-                         [
-                          (-1, 'AUD_USD', 'H1', 'AUD_USD 13MAR2020H12', '2020-03-01T22:00:00',
-                           '2020-04-01T22:00:00', datetime.datetime(2019, 5, 22, 21, 0),
-                           datetime.datetime(2019, 5, 22, 21, 0)),
-                          (-1, 'EUR_JPY', 'D', 'EUR_JPY 27OCT2009D', '2004-02-03T21:00:00',
-                           '2004-05-16T21:00:00', datetime.datetime(2004, 4, 4, 21, 0),
-                           datetime.datetime(2004, 4, 4, 21, 0))])
-def test_merge_pre(ix, pair, timeframe, id, start, end, date_pre, date_post, clean_tmp):
+                         [(40, datetime.datetime(2013, 8, 8, 21, 0), datetime.datetime(2013, 8, 8, 21, 0)),
+                          (50, datetime.datetime(2014, 6, 30, 21, 0), datetime.datetime(2014, 6, 30, 21, 0))])
+def test_merge_pre(pivotlist, ix, date_pre, date_post):
     '''
-    Test function 'merge_pre' to merge the 'pre' Segment
+    Test function 'merge_pre'
     '''
-    pdb.set_trace()
-    conn = Connect(instrument=pair,
-                    granularity=timeframe)
-
-    res = conn.query(start=start,
-                     end=end)
-    cl = CandleList(res)
-    pl = cl.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
-
-    pivot = pl.plist[ix]
+    pivot = pivotlist.pivots[ix]
     # Check pivot.pre.start() before running 'merge_pre'
-   # assert date_post == pivot.pre.start()
-
-    # run 'merge_pre' function
-    pivot.merge_pre(slist=pl.slist,
-                    n_candles=CONFIG.getint('pivots', 'n_candles'),
-                    diff_th=CONFIG.getint('pivots', 'diff_th'))
-
-    # Check pivot.pre.start() after running 'merge_pre'
     assert date_pre == pivot.pre.start()
 
-def test_merge_aft(clO, clean_tmp):
+    pivot.merge_pre(slist=pivotlist.slist,
+                    n_candles=pivots_params.n_candles,
+                    diff_th=pivots_params.diff_th)
+
+    # Check pivot.pre.start() after running 'merge_pre'
+    assert date_post == pivot.pre.start()
+
+@pytest.mark.parametrize("ix,"
+                         "date_pre,"
+                         "date_post",
+                         [(70, datetime.datetime(2015, 10, 8, 21, 0), datetime.datetime(2015, 10, 8, 21, 0)),
+                          (80, datetime.datetime(2016, 6, 21, 21, 0), datetime.datetime(2016, 11, 6, 22, 0))])
+def test_merge_aft(pivotlist, ix, date_pre, date_post):
     '''
     Test function to merge 'aft' Segment
     '''
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
-
-    pivot = pl.plist[3]
-
+    pivot = pivotlist.pivots[ix]
     # Check pivot.aft.end() before running 'merge_aft'
-    assert datetime.datetime(2019, 8, 29, 21, 0) == pivot.aft.end()
+    assert date_pre == pivot.aft.end()
 
-    # run 'merge_aft' function
-    pivot.merge_aft(slist=pl.slist,
-                    n_candles=CONFIG.getint('pivots', 'n_candles'),
-                    diff_th=CONFIG.getint('pivots', 'diff_th'))
+    pivot.merge_aft(slist=pivotlist.slist,
+                    n_candles=pivots_params.n_candles,
+                    diff_th=pivots_params.diff_th)
 
     # Check pivot.aft.end() after running 'merge_aft'
+    assert date_post == pivot.aft.end()
 
-    assert datetime.datetime(2019, 9, 29, 21, 0) == pivot.aft.end()
-
-def test_calc_score_d(clO, clean_tmp):
+def test_calc_score_d(pivot):
     '''
     Test function named 'calc_score'
     with 'diff' parameter (def option)
     '''
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
-
-    pivot = pl.plist[3]
     score = pivot.calc_score()
 
-    assert score == 489.8
+    assert score == 627.4
 
-def test_calc_score_c(clO, clean_tmp):
+def test_calc_score_c(pivot):
     '''
     Test function named 'calc_score'
     with 'candle' parameter
     '''
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
-
-    pivot = pl.plist[3]
     score = pivot.calc_score(type="candles")
 
-    assert score == 55
+    assert score == 56
 
 @pytest.mark.parametrize("ix,"
-                         "pair,"
-                         "timeframe,"
-                         "id,"
-                         "start,"
-                         "end,"
                          "new_b",
-                         [(-1, 'GBP_USD', 'D', 'GBP_USD 18APR2018D', '2018-03-01T22:00:00',
-                           '2018-04-18T22:00:00', datetime.datetime(2018, 4, 15, 21, 0)),
-                          (-1, 'EUR_JPY', 'D', 'EUR_JPY 15JUL2009D', '2009-05-01T22:00:00',
-                           '2009-07-14T22:00:00', datetime.datetime(2009, 7, 11, 21, 0)),
-                          (-1, 'EUR_AUD', 'D', 'EUR_AUD 24MAY2019D', '2009-02-23T22:00:00',
-                           '2009-05-23T22:00:00',datetime.datetime(2009, 5, 18, 21, 0)) ])
-def test_adjust_pivottime(ix, pair, timeframe, id, start, end, new_b, clean_tmp):
-    conn = Connect(instrument=pair,
-                   granularity=timeframe)
-
-    res = conn.query(start=start,
-                     end=end)
-
-
-    cl = CandleList(res)
-    pl = cl.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
-    p = pl.plist[ix]
-    newt = p.adjust_pivottime(clistO=cl)
+                         [(10, datetime.datetime(2020, 11, 17, 22, 0)),
+                          (20, datetime.datetime(2020, 11, 17, 22, 0)),
+                          (30, datetime.datetime(2020, 11, 17, 22, 0)) ])
+def test_adjust_pivottime(pivotlist, ix, new_b):
+    p = pivotlist[ix]
+    newt = p.adjust_pivottime(clistO=pivotlist.clist)
 
     assert new_b == newt

@@ -7,7 +7,6 @@ from utils import *
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 import pandas as pd
-import numpy as np
 import matplotlib
 import datetime
 import logging
@@ -17,7 +16,6 @@ from utils import *
 from forex.params import gparams, pivots_params, clist_params
 
 matplotlib.use('PS')
-import matplotlib.pyplot as plt                                                                                                                                                        
 
 logging.basicConfig(level=logging.INFO)
 
@@ -32,6 +30,8 @@ class Candle(object):
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         numeric = ['o', 'h', 'c', 'l']
         self.__dict__.update((k, float(v)) for k,v in self.__dict__.items() if k in numeric)
+        if isinstance(self.__dict__['time'], str):
+            self.__dict__.update({'time': datetime.strptime(self.__dict__['time'], '%Y-%m-%dT%H:%M:%S') })
         self._colour = self._set_colour()
         self._perc_body = self._calc_perc_body()
 
@@ -160,9 +160,8 @@ class CandleList(object):
         if period == 0:
             sel_c = None
             for c in self.candles:
-                start = datetime.strptime(c.time, '%Y-%m-%dT%H:%M:%S')
-                end = start+delta
-                if d >= start and d < end:
+                end = c.time+delta
+                if d >= c.time and d < end:
                     sel_c = c
 
             if sel_c is None:
@@ -331,53 +330,21 @@ class CandleList(object):
         Exception
             If start > end
         '''
-        fmt = '%Y-%m-%dT%H:%M:%S'
-
         sliced_clist = []
         if start is not None and end is None:
-            sliced_clist = [c.__dict__ for c in self.candles if datetime.strptime(c.time, fmt) >= start]
+            sliced_clist = [c.__dict__ for c in self.candles if c.time >= start]
         elif start is not None and end is not None:
             if start > end:
                 raise Exception("Start is greater than end. Can't slice this CandleList")
-            sliced_clist = [c.__dict__ for c in self.candles if datetime.strptime(c.time, fmt) >= start and datetime.strptime(c.time, fmt) <= end]
+            sliced_clist = [c.__dict__ for c in self.candles if c.time >= start and c.time <= end]
         elif start is None and end is not None:
-            sliced_clist = [c.__dict__ for c in self.candles if datetime.strptime(c.time, fmt) <= end ]
+            sliced_clist = [c.__dict__ for c in self.candles if c.time <= end ]
 
         cl = CandleList(instrument=self.instrument,
                         granularity=self.granularity,
                         data=sliced_clist)
 
         return cl
-
-    def calc_itrend(self):
-        '''Function to calculate the datetime for the start of this CandleList, assuming that this
-        CandleList is trending. This function will calculate the start of the trend by using the self.get_pivots
-        function
-
-        Returns:
-            Merged segment containing the trend_i
-        '''
-        cl_logger.debug("Running calc_itrend")
-        outfile = "{0}/pivots/{1}.calc_it.allpivots.png".format(gparams.outdir,
-                                                                self.data['instrument'].replace(' ', '_'))
-
-        pivots = self.get_pivotlist(th_bounces=pivots_params.th_bounces,
-                                    outfile=outfile)
-
-        # merge segments
-        for p in reversed(pivots.plist):
-            adj_t = p.adjust_pivottime(clistO=pivots.clist)
-            # get new CandleList with new adjusted time for the end
-            start = pivots.clist.data['candles'][0]['time']
-            newclist = pivots.clist.slice(start= start,
-                                          end=adj_t)
-            newp = newclist.get_pivotlist(pivots_params.th_bounces).plist[-1]
-            newp.merge_pre(slist=pivots.slist,
-                           n_candles=pivots_params.n_candles,
-                           diff_th=pivots_params.diff_th)
-            return newp.pre
-
-        cl_logger.debug("Done clac_itrend")
 
     def get_lasttime(self, price: float):
         '''Function to get the datetime for last time that price has been above/below a HArea

@@ -15,57 +15,37 @@ t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
 
 class Trade(object):
-    '''
-    This class represents a single row from the dataframe in the trade_journal class
+    """This class represents a single row from the TradeJournal class
 
     Class variables
     ---------------
-
-    entered: Boolean, Optional
+    entered: Boolean
              False if trade not taken (price did not cross self.entry). True otherwise
-             Default : False
-    start: datetime, Required
+    start: datetime
            Time/date when the trade was taken. i.e. 20-03-2017 08:20:00s
-    pair: str, Required
-          Currency pair used in the trade. i.e. AUD_USD
-    timeframe: str, Required
-               Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
-    outcome: str, Optional
-             Outcome of the trade. Possible values are: success, failure, breakeven
-    end: datetime, Optional
-         Time/date when the trade ended. i.e. 20-03-2017 08:20:00
-    entry: float, Optional
-           entry price
-    exit: float, Optional
-          exit price
-    entry_time: datetime.optional
-                Datetime for price reaching the entry price
-    type: str, Optional
-          What is the type of the trade (long,short)
-    SL:  float, Optional
-         Stop/Loss price
-    TP:  float, Optional
-         Take profit price. If not defined then it will calculated by using the RR
-    SR:  float, Optional
-         Support/Resistance area
-    RR:  float, Optional
-         Risk Ratio
-    pips:  int, Optional
-           Number of pips of profit/loss. This number will be negative if outcome was failure
-    strat: string, Required
-           What strategy was used for this trade.
-    id : str, Required
-         Id used for this object
-    period : CandleList
-             CandleList from trade.start-CONFIG.getint('trade_bot', 'period_range') to trade.start
-    trend_i : Start of the trend. Datetime
-    init : Bool
-           If true then invoke the 'self.__initclist()' function to initialize the self.period
-           class attribute. Default: False
-    '''
+    pair: Currency pair used in the trade. i.e. AUD_USD
+    timeframe: Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
+    outcome: Outcome of the trade. Possible values are: success, failure, breakeven
+    end: time/date when the trade ended. i.e. 20-03-2017 08:20:00
+    entry: entry price
+    exit: exit price
+    entry_time: Datetime for price reaching the entry price
+    type: What is the type of the trade (long,short)
+    SL:  float, Stop/Loss price
+    TP:  float, Take profit price. If not defined then it will calculated by using the RR
+    SR:  float, Support/Resistance area
+    RR:  float, Risk Ratio
+    pips:  Number of pips of profit/loss. This number will be negative if outcome was failure"""
 
-    def __init__(self, strat, start, type=None, entered=False, init=False, **kwargs):
-        self.__dict__.update(kwargs)
+    def __init__(self, **kwargs)->None:
+        allowed_keys = ['entered', 'start', 'pair', 'timeframe', 'outcome', 'end', 'entry', 'exit', 
+        'entry_time', 'type', 'SL', 'TP', 'SR', 'RR', 'pips']
+        self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
+        self._validate_params()
+        self.type = type
+        self.trend_i = self.get_trend_i()
+
+    def _validate_params(self):
         if not hasattr(self, 'TP') and not hasattr(self, 'RR'):
             raise Exception("Neither the RR not "
                             "the TP is defined. Please provide RR")
@@ -75,17 +55,6 @@ class Trade(object):
         elif hasattr(self, 'RR') and not math.isnan(self.RR):
             diff = (self.entry - self.SL) * self.RR
             self.TP = round(self.entry + diff, 4)
-
-        self.strat = strat
-        self.start = datetime.strptime(start,
-                                      '%Y-%m-%d %H:%M:%S')
-        self.pair = re.sub('/', '_', self.pair)
-        self.strat = strat
-        self.entered = entered
-        self.type = type
-        if init is True:
-            self.period = self.initclist()
-            self.trend_i = self.get_trend_i()
 
     def initclist(self):
         '''

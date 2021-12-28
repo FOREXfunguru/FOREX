@@ -1,7 +1,7 @@
 from utils import *
 import matplotlib
 import datetime
-from forex.params import gparams
+import pickle
 
 matplotlib.use('PS')
 
@@ -11,13 +11,11 @@ class Segment(object):
     Class variables
     ---------------
     type : 1 or -1
-    count : Number of candles
     clist : List of dictionaries, in which each of the dicts is a candle
     instrument : Pair"""
 
-    def __init__(self, type: int, count: int, clist: list, instrument: str):
+    def __init__(self, type: int, clist: list, instrument: str):
         self.type = type
-        self.count = count
         self.clist = clist
         self.instrument = instrument
         self._diff = self._calc_diff()
@@ -25,8 +23,39 @@ class Segment(object):
     @property
     def diff(self):
         return self._diff
+    
+    def pickle_dump(self, outfile: str)->str:
+        '''Function to pickle this particular Segment
+        
+        Arguments:
+            outfile: Path used to pickle
+            
+        Returns:
+            path to file with pickled data
+        '''
+        
+        pickle_out = open(outfile,"wb")
+        pickle.dump(self, pickle_out)
+        pickle_out.close()
 
-    def prepend(self, s):
+        return outfile
+
+    @classmethod
+    def pickle_load(self, infile: str):
+        '''Function to pickle this particular Segment
+        
+        Arguments:
+            infile: Path used to load in pickled data
+            
+        Returns:
+            inseg: Segment object    
+        '''
+        pickle_in = open(infile,"rb")
+        inseg = pickle.load(pickle_in)
+
+        return inseg
+
+    def prepend(self, s)->None:
         '''Function to prepend s to self. The merge will be done by
         concatenating s.clist to self.clist and increasing self.count to
         self.count+s.count
@@ -36,20 +65,18 @@ class Segment(object):
         '''
 
         self.clist = s.clist+self.clist
-        self.count = len(self.clist)
-        self._calc_diff()
+        self._diff = self._calc_diff()
 
-    def append(self, s):
+    def append(self, s)->None:
         '''Function to append s to self. The merge will be done by
         concatenating self.clist to self.clist and increasing self.count to
         self.count+s.count
 
-        Returns:
-            self
+        Arguments:
+            s : Segment object to be merged        
         '''
         self.clist = self.clist+s.clist
-        self.count = len(self.clist)
-        self.calc_diff()
+        self._diff = self._calc_diff()
 
     def _calc_diff(self)->float:
         '''Private function to calculate the absolute difference in
@@ -79,25 +106,16 @@ class Segment(object):
         else:
             return False
 
-    def length(self)->int:
-        '''Function to get the length of a segment
-
-        Returns:
-            Number of candles of this segment
-        '''
-        return len(self.clist)
-
     def start(self)->datetime:
         '''Function that returns the start of this Segment'''
-        return self.clist[0]['time']
+        return self.clist[0].time
 
     def end(self)->datetime:
         '''Function that returns the end of this Segment'''
-        return self.clist[-1]['time']
+        return self.clist[-1].time
 
     def get_lowest(self):
-        '''Function to get the lowest candle (i.e., the candle with the lowest lo
-        candle.lowAsk) price in self.clist
+        '''Function to get the candle with the lowest price in self.clist
 
         Returns:
             Candle object
@@ -105,31 +123,27 @@ class Segment(object):
         sel_c = price = None
         for c in self.clist:
             if price is None:
-                price = c['lowAsk']
+                price = c.l
                 sel_c = c
-            elif c['lowAsk'] < price:
-                price = c['lowAsk']
+            elif c.l < price:
+                price = c.l
                 sel_c = c
-
         return sel_c
 
     def get_highest(self):
-        '''Function to get the highest candle (i.e., the candle with the highest lo
-        candle.highAsk) price in self.clist
+        '''Function to get the candle with the highest price in self.clist
 
         Returns:
             Candle object
         '''
-
         price = sel_c = None
         for c in self.clist:
             if price is None:
-                price = c['highAsk']
+                price = c.h
                 sel_c = c
-            elif c['lowAsk'] > price:
-                price = c['highAsk']
+            elif c.h > price:
+                price = c.h
                 sel_c = c
-
         return sel_c
 
     def __repr__(self):
@@ -155,7 +169,59 @@ class SegmentList(object):
     def __init__(self, slist: list, instrument: str):
         self.slist = slist
         self.instrument = instrument
-        self._diff = self.calc_diff() 
+        self._diff = self.calc_diff()
+    
+    @property
+    def diff(self):
+        return self._diff
+    
+    def __iter__(self):
+        self.pos = 0
+        return self
+ 
+    def __next__(self):
+        if(self.pos < len(self.slist)):
+            self.pos += 1
+            return self.slist[self.pos - 1]
+        else:
+            raise StopIteration
+    
+    def __getitem__(self, key):
+        return self.slist[key]
+    
+    def __len__(self):
+        return len(self.slist)
+    
+    def pickle_dump(self, outfile: str)->str:
+        '''Function to pickle this particular SegmentList
+        
+        Arguments:
+            outfile: Path used to pickle
+            
+        Returns:
+            path to file with pickled data
+        '''
+        
+        pickle_out = open(outfile,"wb")
+        pickle.dump(self, pickle_out)
+        pickle_out.close()
+
+        return outfile
+
+    @classmethod
+    def pickle_load(self, infile: str):
+        '''Function to pickle this particular SegmentList
+        
+        Arguments:
+            infile: Path used to load in pickled data
+            
+        Returns:
+            inseg: Segment object    
+        '''
+        pickle_in = open(infile,"rb")
+        inseglst = pickle.load(pickle_in)
+
+        return inseglst
 
     def calc_diff(self)->float:
         '''Function to calculate the difference in terms
@@ -172,34 +238,29 @@ class SegmentList(object):
 
         if diff_pips == 0:
             diff_pips += 1.0
-        self.diff = diff_pips
 
-    def length(self)->int:
+        self._diff = diff_pips
+
+    def length_cl(self)->int:
         '''Get length in terms of number of candles representing the sum of candles in each Segment
         of the SegmentList'''
 
         length=0
         for s in self.slist:
             length = length+len(s.clist)
-
-        self.length = length
-
         return length
 
     def start(self)->datetime:
         '''Get the start datetime for this SegmentList
         This start will be the time of the first candle in SegmentList'''
-        self.start = self.slist[0].clist[0]['time']
-
-        return self.start
+        
+        return self.slist[0].clist[0].time
 
     def end(self)->datetime:
         '''Get the end datetime for this SegmentList
         This start will be the time of the first candle in SegmentList'''
 
-        self.end = self.slist[-1].clist[-1]['time']
-
-        return self.end
+        return self.slist[-1].clist[-1].time
 
     def fetch_by_start(self, dt: datetime, max_diff: int=3600):
         '''Function to get a certain Segment by

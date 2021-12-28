@@ -12,8 +12,6 @@ class gparams:
     ic_perc : int = 15
     # size of images
     size = (20, 10)
-    # serialized data
-    ser_data_file_gran = None
 
 @dataclass
 class tjournal_params:

@@ -14,7 +14,7 @@ def CandleO():
     '''Candle object instantiation.'''
     a_dict = {'complete': True,
               'volume': 8726, 
-              'time': '2018-11-18T22:00:00.000000000Z',
+              'time': '2018-11-18T22:00:00',
               'o': '0.73093',
               'h': '0.73258',
               'l': '0.72776', 

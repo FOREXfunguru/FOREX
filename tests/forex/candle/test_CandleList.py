@@ -3,23 +3,14 @@
 @author: Ernesto Lowy
 @email: ernestolowy@gmail.com
 '''
-import pytest
-import glob
 import os
 import logging
+import pytest
 import pdb
 import datetime
 
 from utils import DATA_DIR
 from forex.candle import CandleList
-
-@pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    files = glob.glob(DATA_DIR+"/out/*",recursive=True)
-    for f in files:
-        os.remove(f)
 
 def test_candlelist_inst(clO):
     log = logging.getLogger('Test CandleList instantiation')
@@ -108,7 +99,7 @@ def test_last_time(clO_pickled):
     log.debug('last_time')
 
     lt = clO_pickled.get_lasttime(price=0.78608)
-    assert lt == '2018-02-19T22:00:00'
+    assert lt.isoformat() == '2018-02-19T22:00:00'
 
 def test_get_highest(clO_pickled):
     log = logging.getLogger('Test get_highest')
@@ -125,39 +116,3 @@ def test_get_lowest(clO_pickled):
     clO_pickled.get_lowest()
 
     assert clO_pickled.get_lowest() == 0.57444
-
-"""
-@pytest.mark.parametrize("pair,"
-                         "start,"
-                         "end,"
-                         "t_type,"
-                         'itrend',
-                         [('AUD_CAD', datetime.datetime(2009, 7, 8, 22, 0),
-                           datetime.datetime(2012, 5, 28, 22, 0), 'long', datetime.datetime(2012, 2, 7, 22, 0)),
-                          ('AUD_CAD', datetime.datetime(2009, 7, 8, 22, 0),
-                           datetime.datetime(2012, 9, 6, 22, 0), 'long', datetime.datetime(2012, 8, 4, 21, 0)),
-                          ('AUD_CAD', datetime.datetime(2009, 7, 8, 22, 0),
-                           datetime.datetime(2012, 10, 8, 22, 0), 'long', datetime.datetime(2012, 8, 4, 21, 0)),
-                          ('AUD_CAD', datetime.datetime(2012, 6, 5, 22, 0),
-                           datetime.datetime(2012, 9, 5, 22, 0), 'long', datetime.datetime(2012, 8, 4, 21, 0)),
-                          ('AUD_USD', datetime.datetime(2014, 1, 1, 22, 0),
-                           datetime.datetime(2015, 9, 10, 22, 0), 'long', datetime.datetime(2015, 6, 17, 21, 0)),
-                          ('AUD_USD', datetime.datetime(2019, 7, 12, 22, 0),
-                           datetime.datetime(2019, 8, 6, 22, 0), 'long', datetime.datetime(2019, 7, 14, 21, 0)),
-                          ('AUD_USD', datetime.datetime(2017, 5, 7, 22, 0),
-                           datetime.datetime(2017, 12, 12, 22, 0), 'long', datetime.datetime(2017, 9, 7, 21, 0)),
-                          ('AUD_USD', datetime.datetime(2014, 1, 2, 22, 0),
-                           datetime.datetime(2015, 10, 1, 22, 0), 'long', datetime.datetime(2015, 9, 15, 21, 0)),
-                          ('AUD_USD', datetime.datetime(2012, 2, 29, 22, 0),
-                           datetime.datetime(2013, 8, 5, 22, 0), 'long', datetime.datetime(2013, 7, 22, 21, 0)),
-                          ('AUD_USD', datetime.datetime(2012, 2, 27, 22, 0),
-                           datetime.datetime(2012, 9, 7, 22, 0), 'long', datetime.datetime(2012, 8, 8, 21, 0)),
-                          ('AUD_USD', datetime.datetime(2015, 9, 7, 22, 0),
-                           datetime.datetime(2016, 4, 25, 22, 0), 'short', datetime.datetime(2016, 1, 17, 22, 0))])
-def test_calc_itrend(pair, start, end, t_type, itrend, clean_tmp, clO_pickled):
-    log = logging.getLogger('Test for calc_itrend')
-    log.debug('calc_itrend')
-
-
-    assert itrend == clO_pickled.calc_itrend().start()
-"""

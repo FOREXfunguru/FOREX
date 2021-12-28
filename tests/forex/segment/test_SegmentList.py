@@ -1,72 +1,35 @@
-from config import CONFIG
-
 import datetime
-import pytest
 
-@pytest.fixture
-def pl_object(clO):
-    '''Returns PivotList object'''
+def test_calc_diff(seglist_pickled):
 
-    pl = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots',
-                                                      'th_bounces'))
+    seglist_pickled.calc_diff()
 
-    return pl
+    assert seglist_pickled.diff == 2513.6
 
-def test_calc_diff(pl_object):
-    """Function to test the 'calc_diff' function"""
+def test_length_cl(seglist_pickled):
 
-    slist = pl_object.slist
-    slist.calc_diff()
+    assert seglist_pickled.length_cl() == 2801
 
-    #when diff is + it means that
-    #the Segment is in a downtrend
-    assert slist.diff == 167.3
+def test_start(seglist_pickled):
 
-def test_length_of_segment(pl_object):
-    """Test the length function of Segment"""
+    assert seglist_pickled.start() == datetime.datetime(2010, 11, 16, 22, 0)
 
-    slist = pl_object.slist
+def test_end(seglist_pickled):
 
-    assert slist.slist[0].length() == 29
+    assert seglist_pickled.end() == datetime.datetime(2020, 11, 18, 22, 0)
 
-def test_length_of_segmentlist(pl_object):
-    """Test the length function of SegmentList"""
-
-    slist = pl_object.slist
-
-    assert slist.length() == 229
-
-def test_start(pl_object):
-    """Test start"""
-
-    slist = pl_object.slist
-
-    assert slist.start() == datetime.datetime(2019, 3, 6, 22, 0)
-
-def test_end(pl_object):
-    """Test end function"""
-
-    slist = pl_object.slist
-
-    assert slist.end() == datetime.datetime(2020, 1, 22, 22, 0)
-
-def test_fetch_by_start(pl_object):
-    """Test fetch_by_start"""
-
-    slist = pl_object.slist
+def test_fetch_by_start(seglist_pickled):
 
     adt = datetime.datetime(2019, 4, 16, 21, 0)
-    s = slist.fetch_by_start(adt)
+    s = seglist_pickled.fetch_by_start(adt)
 
     assert s.start() == adt
 
-def test_fetch_by_end(pl_object):
+def test_fetch_by_end(seglist_pickled):
     """Test fetch_by_end"""
-
-    slist = pl_object.slist
 
     adt = datetime.datetime(2019, 6, 13, 21, 0)
 
-    s = slist.fetch_by_end(adt)
+    s = seglist_pickled.fetch_by_end(adt)
 
     assert s.end() == adt
