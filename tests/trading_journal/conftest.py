@@ -4,6 +4,7 @@ import os
 
 from trading_journal.trade import Trade
 from trading_journal.trade_journal import TradeJournal
+from forex.candle import CandleList
 from utils import DATA_DIR
 
 @pytest.fixture
@@ -15,7 +16,11 @@ def clean_tmp():
         os.remove(f)
 
 @pytest.fixture
-def t_object():
+def clO_pickled():
+    return CandleList.pickle_load(DATA_DIR+"/clist_audusd_2010_2020.pckl")
+
+@pytest.fixture
+def t_object(clO_pickled):
     '''Returns a Trade object'''
 
     td = Trade(
@@ -25,11 +30,10 @@ def t_object():
         TP=0.75592,
         SL=0.74718,
         SR=0.74784,
-        pair="AUD/USD",
+        pair="AUD_USD",
         type="long",
-        timeframe="H8",
-        strat="counter_b1",
-        id="AUD_USD 10APR2017H8")
+        timeframe="D",
+        clist=clO_pickled)
     return td
 
 @pytest.fixture

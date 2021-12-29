@@ -5,7 +5,6 @@
 '''
 import os
 import logging
-import pytest
 import pdb
 import datetime
 

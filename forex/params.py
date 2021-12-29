@@ -85,7 +85,7 @@ class trade_params:
     # number of candles from start of trade to run the trade and assess the outcome
     numperiods : int = 300
     # granularity for HArea.get_cross_time
-    granularity : str = 'M30'
+    granularity : str = 'H8'
     # num of candles from trade.start to calc ATR
     period_atr : int = 20
 

@@ -13,7 +13,7 @@ import logging
 import pickle
 from utils import *
 
-from forex.params import gparams, pivots_params, clist_params
+from forex.params import clist_params
 
 matplotlib.use('PS')
 
@@ -163,10 +163,6 @@ class CandleList(object):
                 end = c.time+delta
                 if d >= c.time and d < end:
                     sel_c = c
-
-            if sel_c is None:
-                raise Exception("No candle was selected with time: {0}\n."
-                                " It is good to check if the market is closed".format(datetime))
             return sel_c
         elif period > 0:
             start = d-delta_period

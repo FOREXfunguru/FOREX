@@ -76,7 +76,7 @@ class HArea(object):
                 fgran = self.granularity.replace('H', '')
                 delta = timedelta(hours=int(fgran))
 
-            cstart = datetime.strptime(candle.time, '%Y-%m-%dT%H:%M:%S' )
+            cstart = candle.time
             cend = cstart+delta
             conn = Connect(instrument=self.instrument,
                            granularity=granularity)
@@ -85,7 +85,6 @@ class HArea(object):
             res = conn.query(start=cstart.isoformat(),
                              end=cend.isoformat())
 
-            pdb.set_trace()
             seen = False
             for c in res:
                 if c.l <= self.price <= c.h:
