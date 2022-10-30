@@ -1,6 +1,6 @@
 from forex.harea import HAreaList
 from forex.harea import HArea
-from forex.candle.candle import Candle
+from forex.candle import Candle
 import datetime
 
 import pytest

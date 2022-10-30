@@ -9,21 +9,17 @@ import pandas as pd
 cl_logger = logging.getLogger(__name__)
 cl_logger.setLevel(logging.INFO)
 
-def calc_SR(clO, outfile):
-    '''
-    Function to calculate S/R lines
+def calc_SR(clO, outfile: str):
+    """Function to calculate S/R lines.
 
-    Parameters
-    ----------
-    clO: CandleList object
-         Used for calculation
-    outfile : str
-              Output filename for .png file
+    Args:
+        clO: CandleList object
+             Used for calculation
+        outfile : Output filename for .png file
 
-    Return
-    ------
-    HAreaList object
-    '''
+    Returns:
+        HAreaList object
+    """
     PL = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
 
     ## now calculate the price range for calculating the S/R

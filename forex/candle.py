@@ -249,8 +249,7 @@ class CandleList(object):
             sorted from older to newer
         '''
         adj = False
-        num_times = 0
-        length = 0
+        num_times, length = 0, 0
         lengths = []
 
         for c in self.candles:

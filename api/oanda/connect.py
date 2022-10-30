@@ -75,7 +75,6 @@ class Connect(object):
                    that will be retrieved
         Returns:
             CandleList"""
-        
         startObj = self.validate_datetime(start, self.granularity)
         start = startObj.isoformat()
         params = {}
@@ -97,7 +96,7 @@ class Connect(object):
             resp = requests.get(url=f"{apiparams.url}/{self.instrument}/candles",
                                 params=params,
                                 headers={"content-type": f"{apiparams.content_type}",
-                                         "Authorization": f"{os.environ.get('TOKEN')}"})
+                                         "Authorization": f"Bearer {os.environ.get('TOKEN')}"})
             if resp.status_code != 200:
                 raise Exception(resp.status_code)
             else:
