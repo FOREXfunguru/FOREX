@@ -308,7 +308,7 @@ class CandleList(object):
         return abs(int(round(diff, 0)))
 
     def slice(self, start : datetime = None, end : datetime = None):
-        '''Function to slice self on a date interval. It will return the sliced CandleList
+        '''Function to slice self on a date interval. It will return the sliced CandleList.
 
         Arguments:
             start: Slice the CandleList from this start datetime. It will create a new CandleList starting

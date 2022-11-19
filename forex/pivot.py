@@ -250,7 +250,7 @@ class PivotList(object):
         return len(self.pivots)
 
     def _get_pivotlist(self, th_bounces: float):
-        '''Function to obtain a pivotlist object containing pivots identified using the
+        """Function to obtain a pivotlist object containing pivots identified using the
         Zigzag indicator.
 
         Arguments:
@@ -260,7 +260,7 @@ class PivotList(object):
         Returns:
             List with Pivot objects
             List with Segment objects
-        '''
+        """
         x = []
         values = []
         for i in range(len(self.clist.candles)):

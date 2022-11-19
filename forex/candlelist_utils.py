@@ -20,8 +20,6 @@ def calc_SR(pvLO, outfile: str):
     Returns:
         HAreaList object
     """
-    pdb.set_trace()
-
     ## now calculate the price range for calculating the S/R , add a number of pips to max,min to be sure that we
     # also detect the extreme pivots
     ul = add_pips2price(pvLO.clist.instrument, pvLO.clist.get_highest(), tradebot_params.add_pips)
@@ -33,28 +31,24 @@ def calc_SR(pvLO, outfile: str):
 
     # the increment of price in number of pips is double the hr_extension
     prev_p = None
-    ##
-    ll=0.6444
-    ##
+
     p = float(ll)
 
     while p <= float(ul):
         cl_logger.debug("Processing S/R at {0}".format(round(p, 4)))
         # get a PivotList for this particular S/R
-        newPL = pvLO.inarea_pivots(SR=p)
-        if len(newPL.plist) == 0:
+        newPL = pvLO.inarea_pivots(price=p)
+        if len(newPL.pivots) == 0:
             mean_pivot = 0
         else:
             mean_pivot = newPL.get_avg_score()
 
         prices.append(round(p, 5))
-        bounces.append(len(newPL.plist))
+        bounces.append(len(newPL.pivots))
         tot_score.append(newPL.get_score())
         score_per_bounce.append(mean_pivot)
-        # increment price to following price.
-        # Because the increment is made in pips
-        # it does not suffer of the JPY pairs
-        # issue
+        # increment price to following price. Because the increment is made in pips
+        # it does not suffer of the JPY pairs issue
         p = add_pips2price(pvLO.clist.instrument, p,
                            2*clist_params.i_pips)
         if prev_p is None:
@@ -108,7 +102,7 @@ def calc_SR(pvLO, outfile: str):
     halistObj = HAreaList(halist=halist)
 
     # Plot the HAreaList
-    dt_str = pvLO.clist.data['candles'][-1]['time'].strftime("%d_%m_%Y_%H_%M")
+    dt_str = pvLO.clist.candles[-1].time.strftime("%d_%m_%Y_%H_%M")
     print(dt_str)
 
     if pivots_params.plot is True:
@@ -118,32 +112,22 @@ def calc_SR(pvLO, outfile: str):
 
     return halistObj
 
-def calc_atr(clO):
-     '''
-     Function to calculate the ATR (average timeframe rate)
-     This is the average candle variation in pips for the desired
-     timeframe. The variation is measured as the abs diff
-     (in pips) between the high and low of the candle
+def calc_atr(clO)->float:
+    '''Function to calculate the ATR (average timeframe rate)
+    This is the average candle variation in pips for the desired
+    timeframe. The variation is measured as the abs diff
+    (in pips) between the high and low of the candle
 
-     Parameters
-     ----------
-     clO: CandleList object
-          Used for calculation
-
-     Returns
-     -------
-     float
-     '''
-     length = 0
-     tot_diff_in_pips = 0
-     for c in clO.data['candles']:
-         high_val = c["high{0}".format(CONFIG.get('general','bit'))]
-         low_val = c["low{0}".format(CONFIG.get('general','bit'))]
-         diff = abs(high_val-low_val)
-         tot_diff_in_pips = tot_diff_in_pips + float(calculate_pips(clO.data['instrument'], diff))
-         length += 1
-
-     return round(tot_diff_in_pips/length, 3)
+    Arguments:
+        clO: CandleList object
+             Used for calculation
+    '''
+    length, tot_diff_in_pips  = 0,0
+    for c in clO.candles:
+        diff = abs(c.h-c.l)
+        tot_diff_in_pips = tot_diff_in_pips + float(calculate_pips(clO.instrument, diff))
+        length += 1
+    return round(tot_diff_in_pips/length, 3)
 
 def calc_diff(df_loc, increment_price):
     '''

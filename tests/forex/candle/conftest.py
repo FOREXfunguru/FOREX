@@ -15,8 +15,9 @@ def clean_tmp():
     files2 = glob.glob(DATA_DIR+"/imgs/halist/*")
     files3 = glob.glob(DATA_DIR+"/imgs/srareas/*")
     files4 = glob.glob(DATA_DIR+"/out/*.pckl")
+    files5 = glob.glob(DATA_DIR+"/out/*.png")
 
-    files = files1 + files2 + files3 + files4
+    files = files1 + files2 + files3 + files4 +files5
     for f in files:
         os.remove(f)
 

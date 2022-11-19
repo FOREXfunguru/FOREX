@@ -2,12 +2,9 @@ import logging
 
 from datetime import timedelta,datetime
 from api.oanda.connect import Connect
-from ast import literal_eval
 from forex.params import harea_params, gparams
 from typing import List
 
-import matplotlib
-matplotlib.use('PS')
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 import pdb
@@ -17,22 +14,19 @@ h_logger = logging.getLogger(__name__)
 h_logger.setLevel(logging.INFO)
 
 class HArea(object):
-    '''
-    Class to represent a horizontal area in the chart
+    '''Class to represent a horizontal area in the chart.
 
-    Class variables
-    ---------------
-    price : Price in the chart used as the middle point that will be extended on both sides a certain
-            number of pips
-    instrument : Instrument for this CandleList (i.e. AUD_USD or EUR_USD etc...)
-    granularity : Granularity for this CandleList (i.e. D, H12, H8 etc...)
-    pips : Number of pips above/below self.price to calculate self.upper and self.lower
-    upper : Upper limit price of area
-    lower : Lower limit price of area
-    no_pivots : Number of pivots bouncing on self
-    tot_score : Total score, which is the sum of scores of all pivots on this HArea
+    Class variables:
+        price: Price in the chart used as the middle point that will be extended on both sides a certain
+               number of pips
+        instrument: Instrument for this CandleList (i.e. AUD_USD or EUR_USD etc...)
+        granularity: Granularity for this CandleList (i.e. D, H12, H8 etc...)
+        pips: Number of pips above/below self.price to calculate self.upper and self.lower
+        upper: Upper limit price of area
+        lower: Lower limit price of area
+        no_pivots: Number of pivots bouncing on self
+        tot_score: Total score, which is the sum of scores of all pivots on this HArea
     '''
-
     def __init__(self, price: float, instrument: str, granularity: str, pips: int, no_pivots: int=None,
                  tot_score: int=None):
 
@@ -55,13 +49,12 @@ class HArea(object):
         self.lower = round(price-(pips/divisor), 4)
 
     def get_cross_time(self, candle, granularity='M30')->datetime:
-        '''
-        This function is used get the time that the candle
+        '''This function is used get the time that the candle
         crosses (go through) HArea
 
         Arguments:
-            candle : Candle crossing the HArea
-            granularity : To what granularity we should descend
+            candle: Candle crossing the HArea
+            granularity: To what granularity we should descend
 
         Returns:
             crossing time.
@@ -106,12 +99,10 @@ class HArea(object):
         return out_str
 
 class HAreaList(object):
-    '''
-    Class that represents a list of HArea objects
+    '''Class that represents a list of HArea objects.
 
-    Class variables
-    ---------------
-    halist : List of HArea objects
+    Class variables:
+        halist : List of HArea objects
     '''
     def __init__(self, halist):
         self.halist = halist
@@ -130,7 +121,6 @@ class HAreaList(object):
             An HArea object overlapping with 'candle' and the ix
             in self.halist for this HArea.
             None if there are no HArea objects overlapping'''
-        pdb.set_trace()
         onArea_hr = sel_ix = None
         ix = 0
         for harea in self.halist:
@@ -141,14 +131,12 @@ class HAreaList(object):
         pdb.set_trace()
         return onArea_hr, sel_ix
 
-    def print(self):
-        '''
-        Function to print out basic information on each of the
+    def print(self)->str:
+        '''Function to print out basic information on each of the
         HArea objects in the HAreaList
 
-        Returns
-        -------
-        String with stringified HArea objects
+        Returns:
+            String with stringified HArea objects
         '''
         res ="#pair timeframe upper-price-lower no_pivots tot_score\n"
         for harea in self.halist:
@@ -161,33 +149,27 @@ class HAreaList(object):
                                                           harea.tot_score)
         return res.rstrip("\n")
 
-    def plot(self, clO, outfile):
-        """
-        Plot this HAreaList
+    def plot(self, clO, outfile: str)->None:
+        """Plot this HAreaList
 
-        Parameters
-        ----------
-        clO : CandeList object
-              Used for plotting
-        outfile : str
-                  Output file
+        Args:
+            clO : CandeList object
+                  Used for plotting
+            outfile : Output file
         """
         prices, datetimes = ([] for i in range(2))
-        for c in clO.data['candles']:
-            prices.append(c[gparams.general])
-            datetimes.append(c['time'])
+        for c in clO.candles:
+            prices.append(c.c)
+            datetimes.append(c.time)
 
-        # getting the fig size from settings
-        figsize = literal_eval(gparams.size)
         # massage datetimes so they can be plotted in X-axis
         x = [mdates.date2num(i) for i in datetimes]
 
         # plotting the prices for part
-        fig = plt.figure(figsize=figsize)
+        fig = plt.figure(figsize=gparams.size)
         ax = plt.axes()
         ax.plot(datetimes, prices, color="black")
 
-        xmax1 = len(datetimes)-1
         prices = [x.price for x in self.halist]
 
         # now, print an horizontal line for each S/R
