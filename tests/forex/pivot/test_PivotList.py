@@ -1,9 +1,9 @@
-from utils import DATA_DIR
-
 import datetime
 import pdb
 import os
 import pytest
+
+from utils import DATA_DIR
 
 def test_get_score(pivotlist):
     """

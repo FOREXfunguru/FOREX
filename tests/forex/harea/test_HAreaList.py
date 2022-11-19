@@ -1,10 +1,9 @@
 from forex.harea import HAreaList
 from forex.harea import HArea
 from forex.candle import Candle
-import datetime
+from utils import DATA_DIR
 
 import pytest
-import glob
 import os
 import numpy as np
 import logging
@@ -40,15 +39,15 @@ def test_onArea(hlist_factory):
     log.debug('test_onArea')
 
     halist = HAreaList(halist=hlist_factory)
-
-    candle = {'complete': True, 
-              'volume': 5937, 
-              'time': datetime.datetime(2019, 3, 6, 22, 0), 
-              'mid': {'o': '0.70320', 'h': '0.721', 'l': '0.719', 'c': '0.70158'}
-              }
+    candle = {'complete': True,
+              'volume': 8726, 
+              'time': '2018-11-18T22:00:00',
+              'o': '0.68093',
+              'h': '0.71258',
+              'l': '0.67776', 
+              'c': '0.70950'}
 
     c_candle = Candle(**candle)
-
     (hrsel, ix) = halist.onArea(candle=c_candle)
 
     assert hrsel.price == 0.70
@@ -63,10 +62,9 @@ def test_print(hlist_factory):
     res = halist.print()
     print(res)
 
-def test_plot(hlist_factory, clO, clean_tmp):
+def test_plot(hlist_factory, clO_pickled, clean_tmp):
     '''Test 'plot' function'''
 
     halist = HAreaList(halist=hlist_factory)
 
-    halist.plot(clO, outfile=os.getenv('DATADIR')+
-                             "/imgs/halist/AUD_USD.halist.png")
+    halist.plot(clO_pickled, outfile=f"{DATA_DIR}/out/AUD_USD.halist.png")

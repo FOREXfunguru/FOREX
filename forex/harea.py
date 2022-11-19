@@ -124,11 +124,10 @@ class HAreaList(object):
         onArea_hr = sel_ix = None
         ix = 0
         for harea in self.halist:
-            if harea.price <= float(candle.mid['h']) and harea.price >= float(candle.mid['l']):
+            if harea.price <= float(candle.h) and harea.price >= float(candle.l):
                 onArea_hr = harea
                 sel_ix = ix
             ix += 1
-        pdb.set_trace()
         return onArea_hr, sel_ix
 
     def print(self)->str:
