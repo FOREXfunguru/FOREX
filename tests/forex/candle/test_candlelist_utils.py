@@ -5,11 +5,11 @@ from forex.candlelist_utils import *
 from forex.candle import CandleList
 from utils import DATA_DIR
 
-def test_calc_SR(clO, clean_tmp):
+def test_calc_SR(pivotlist, clean_tmp):
     """
     Check 'calc_SR' function
     """
-    harealst = calc_SR(clO, outfile=DATA_DIR+"/imgs/srareas/calc_sr.png")
+    harealst = calc_SR(pivotlist, outfile=DATA_DIR+"/imgs/srareas/calc_sr.png")
 
     # check the length of HAreaList.halist
     assert len(harealst.halist) == 2

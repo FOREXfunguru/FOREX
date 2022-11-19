@@ -1,7 +1,6 @@
 import logging
 import datetime
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 
 from utils import *
 from forex.params import pivots_params
@@ -171,16 +170,16 @@ class Pivot(object):
         return round(score_pre+score_aft,2)
 
     def adjust_pivottime(self, clistO):
-        '''Function to adjust the pivot time
+        """Function to adjust the pivot time
         This is necessary as sometimes the Zigzag algorithm
-        does not find the correct pivot
+        does not find the correct pivot.
 
         Arguments:
             clistO : CandleList object used to identify the
                      PivotList
         Returns:
             New adjusted datetime
-        '''
+        """
         clist = clistO[:-1] # reduce index by 1 so start candle+1 is not included
         new_pc = pre_colour = None
         it = True
@@ -214,13 +213,12 @@ class Pivot(object):
 
 class PivotList(object):
     """Class that represents a list of Pivots as identified
-    by the Zigzag indicator
+    by the Zigzag indicator.
 
-    Class variables
-    ---------------
-    clist : CandleList object
-    pivots: List with Pivot objects
-    slist : SegmentList object"""
+    Class variables:
+        clist: CandleList object
+        pivots: List with Pivot objects
+        slist: SegmentList object"""
 
     def __init__(self, clist, pivots = None, slist = None)->None:
         self.clist = clist

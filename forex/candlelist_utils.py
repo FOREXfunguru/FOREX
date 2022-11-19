@@ -1,4 +1,4 @@
-from config import CONFIG
+from forex.params import tradebot_params, clist_params, pivots_params
 from forex.harea import HArea, HAreaList
 from utils import *
 
@@ -9,24 +9,23 @@ import pandas as pd
 cl_logger = logging.getLogger(__name__)
 cl_logger.setLevel(logging.INFO)
 
-def calc_SR(clO, outfile: str):
+def calc_SR(pvLO, outfile: str):
     """Function to calculate S/R lines.
 
     Args:
-        clO: CandleList object
-             Used for calculation
+        pvlO: PivotList object
+              used for calculation
         outfile : Output filename for .png file
 
     Returns:
         HAreaList object
     """
-    PL = clO.get_pivotlist(th_bounces=CONFIG.getfloat('pivots', 'th_bounces'))
+    pdb.set_trace()
 
-    ## now calculate the price range for calculating the S/R
-    # add a number of pips to max,min to be sure that we
+    ## now calculate the price range for calculating the S/R , add a number of pips to max,min to be sure that we
     # also detect the extreme pivots
-    ul = add_pips2price(clO.data['instrument'], clO.get_highest(), CONFIG.getint('trade_bot', 'add_pips'))
-    ll = substract_pips2price(clO.data['instrument'], clO.get_lowest(), CONFIG.getint('trade_bot', 'add_pips'))
+    ul = add_pips2price(pvLO.clist.instrument, pvLO.clist.get_highest(), tradebot_params.add_pips)
+    ll = substract_pips2price(pvLO.clist.instrument, pvLO.clist.get_lowest(), tradebot_params.add_pips)
 
     cl_logger.debug("Running calc_SR for estimated range: {0}-{1}".format(ll, ul))
 
@@ -42,7 +41,7 @@ def calc_SR(clO, outfile: str):
     while p <= float(ul):
         cl_logger.debug("Processing S/R at {0}".format(round(p, 4)))
         # get a PivotList for this particular S/R
-        newPL = PL.inarea_pivots(SR=p)
+        newPL = pvLO.inarea_pivots(SR=p)
         if len(newPL.plist) == 0:
             mean_pivot = 0
         else:
@@ -56,8 +55,8 @@ def calc_SR(clO, outfile: str):
         # Because the increment is made in pips
         # it does not suffer of the JPY pairs
         # issue
-        p = add_pips2price(clO.data['instrument'], p,
-                           2*CONFIG.getint('candlelist', 'i_pips'))
+        p = add_pips2price(pvLO.clist.instrument, p,
+                           2*clist_params.i_pips)
         if prev_p is None:
             prev_p = p
         else:
@@ -77,8 +76,8 @@ def calc_SR(clO, outfile: str):
     # and selection is not biased when range of prices is wide
     dfgt1 = df.loc[(df['bounces'] > 0)]
     dfgt2 = df.loc[(df['tot_score'] > 0)]
-    bounce_th = dfgt1.bounces.quantile(CONFIG.getfloat('trade_bot', 'th'))
-    score_th = dfgt2.tot_score.quantile(CONFIG.getfloat('trade_bot', 'th'))
+    bounce_th = dfgt1.bounces.quantile(tradebot_params.th)
+    score_th = dfgt2.tot_score.quantile(tradebot_params.th)
 
     print("Selected number of pivot threshold: {0}".format(bounce_th))
     print("Selected tot score threshold: {0}".format(round(score_th,1)))
@@ -99,9 +98,9 @@ def calc_SR(clO, outfile: str):
     halist = []
     for index, row in dfsel.iterrows():
         resist = HArea(price=row['price'],
-                       pips=CONFIG.getint('pivots', 'hr_pips'),
-                       instrument=clO.data['instrument'],
-                       granularity=clO.data['granularity'],
+                       pips=pivots_params.hr_pips,
+                       instrument=pvLO.clist.instrument,
+                       granularity=pvLO.clist.granularity,
                        no_pivots=row['bounces'],
                        tot_score=round(row['tot_score'], 5))
         halist.append(resist)
@@ -109,10 +108,11 @@ def calc_SR(clO, outfile: str):
     halistObj = HAreaList(halist=halist)
 
     # Plot the HAreaList
-    dt_str = clO.data['candles'][-1]['time'].strftime("%d_%m_%Y_%H_%M")
+    dt_str = pvLO.clist.data['candles'][-1]['time'].strftime("%d_%m_%Y_%H_%M")
+    print(dt_str)
 
-    if CONFIG.getboolean('images', 'plot') is True:
-        halistObj.plot(clO= clO, outfile=outfile)
+    if pivots_params.plot is True:
+        halistObj.plot(clO= pvLO.clist, outfile=outfile)
 
     cl_logger.info("Run done")
 

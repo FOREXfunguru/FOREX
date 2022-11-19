@@ -82,14 +82,13 @@ class Candle(object):
         return out_str
 
 class CandleList(object):
-    """Class containing a list of Candles
+    """Class containing a list of Candles.
 
-    Class variables
-    ---------------
-    instrument : i.e. 'AUD_USD'
-    granularity : i.e. 'D'
-    candles : List of Candle objects
-    type : Type of this CandleList. Possible values are 'long'/'short'"""
+    Class variables:
+        instrument: i.e. 'AUD_USD'
+        granularity: i.e. 'D'
+        candles: List of Candle objects
+        type: Type of this CandleList. Possible values are 'long'/'short'"""
 
     def __init__(self, instrument: str, granularity: str, data: list):
         """Constructor
