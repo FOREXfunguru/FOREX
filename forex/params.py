@@ -1,10 +1,11 @@
 from dataclasses import dataclass, field
+from utils import DATA_DIR
 
 @dataclass
 class gparams:
     """General paramaters"""
     # Folder to store all output files
-    outdir : str = '../data/imgs'
+    outdir : str = f"{DATA_DIR}/out/"
     # Increase verbosity
     debug : bool = True
     # candle's body percentage below which the candle will be considered

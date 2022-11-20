@@ -1,8 +1,6 @@
 import pytest
 
-from api.oanda.connect import Connect
 from forex.candlelist_utils import *
-from forex.candle import CandleList
 from utils import DATA_DIR
 
 def test_calc_SR(pivotlist, clean_tmp):

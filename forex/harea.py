@@ -2,7 +2,7 @@ import logging
 
 from datetime import timedelta,datetime
 from api.oanda.connect import Connect
-from forex.params import harea_params, gparams
+from forex.params import gparams
 from typing import List
 
 import matplotlib.pyplot as plt

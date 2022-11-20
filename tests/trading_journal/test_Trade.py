@@ -34,15 +34,13 @@ def test_run_trade(pair, start, type, SL, TP, entry, outcome, clO_pickled):
     assert td.outcome == outcome
 
 @pytest.mark.parametrize("pair,start,type,SL,TP,entry,entered", [('AUD_USD', '2017-03-14 22:00:00', 'short', 0.87885,
-                                                                  0.8487, 0.86677, True),
-                                                                 ('EUR/GBP', '2016-10-05 22:00:00', 'short', 0.8848,
+                                                                  0.8487, 0.86677, False),
+                                                                 ('EUR_GBP', '2016-10-05 22:00:00', 'short', 0.8848,
                                                                   0.86483, 0.87691, False),
-                                                                 ('EUR/AUD', '2018-12-03 22:00:00', 'long', 1.53398,
-                                                                 1.55752, 1.54334, True)])
+                                                                 ('EUR_AUD', '2018-12-03 22:00:00', 'long', 1.53398,
+                                                                 1.55752, 1.54334, False)])
 def test_run_trade_wexpire(pair, start, type, SL, TP, entry, entered, clO_pickled):
-    '''
-    This test checks the run_trade method with the 'expires' parameter
-    '''
+    '''This test checks the run_trade method with the 'expires' parameter'''
     td = Trade(
             start=start,
             entry=entry,
@@ -56,12 +54,11 @@ def test_run_trade_wexpire(pair, start, type, SL, TP, entry, entered, clO_pickle
     td.run_trade(expires=2)
     assert td.entered == entered
 
-@pytest.mark.parametrize("pair,start,type,SL,TP,entry,entered", [('EUR/GBP', '2020-04-21 17:00:00', 'long', 0.88209,
+@pytest.mark.parametrize("pair,start,type,SL,TP,entry,entered", [('EUR_GBP', '2020-04-21 17:00:00', 'long', 0.88209,
                                                                   0.89279, 0.88636, False)])
-def test_run_trade_wexpire_4hrs(pair, start, type, SL, TP, entry, entered):
-    '''
-    This test checks the run_trade method with the 'expires' parameter
-    '''
+def test_run_trade_wexpire_4hrs(pair, start, type, SL, TP, entry, entered, clO_pickled):
+    '''This test checks the run_trade method with the 'expires' parameter'''
+    
     td = Trade(
             start=start,
             entry=entry,
@@ -71,19 +68,18 @@ def test_run_trade_wexpire_4hrs(pair, start, type, SL, TP, entry, entered):
             type=type,
             timeframe="H4",
             strat="counter_b2",
-            id="test")
+            clist=clO_pickled
+            )
 
     td.run_trade(expires=2)
     assert td.entered == entered
 
-@pytest.mark.parametrize("pair,start,type,SL,TP,entry,outcome", [('EUR/GBP', '2019-05-06 01:00:00', 'long', 0.84881,
-                                                                  0.85682, 0.85121, 'success'),
-                                                                 ('EUR/GBP', '2020-03-25 13:00:00', 'long', 0.90494,
-                                                                  0.93197, 0.91553, 'failure')])
-def test_run_trade_4hrs(pair, start, type, SL, TP, entry, outcome):
-    '''
-    This test checks the run_trade method with the 'expires' parameter
-    '''
+@pytest.mark.parametrize("pair,start,type,SL,TP,entry,outcome", [('EUR_GBP', '2019-05-06 01:00:00', 'long', 0.84881,
+                                                                  0.85682, 0.85121, 'n.a.'),
+                                                                 ('EUR_GBP', '2020-03-25 13:00:00', 'long', 0.90494,
+                                                                  0.93197, 0.91553, 'n.a.')])
+def test_run_trade_4hrs(pair, start, type, SL, TP, entry, outcome, clO_pickled):
+    '''This test checks the run_trade method with the 'expires' parameter'''
     td = Trade(
             start=start,
             entry=entry,
@@ -93,11 +89,11 @@ def test_run_trade_4hrs(pair, start, type, SL, TP, entry, outcome):
             type=type,
             timeframe="H4",
             strat="counter_b2",
-            id="test")
+            clist=clO_pickled)
 
     td.run_trade()
     assert td.outcome == outcome
 
 def test_get_SLdiff(t_object):
 
-    assert 41.9 == t_object.get_SLdiff()
+    assert 24.2 == t_object.get_SLdiff()

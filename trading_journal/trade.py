@@ -4,7 +4,7 @@ import math
 import logging
 import datetime
 
-from forex.candle import CandleList
+from forex.pivot import PivotList
 from forex.harea import HArea
 from utils import *
 from forex.params import trade_params
@@ -16,24 +16,23 @@ t_logger.setLevel(logging.INFO)
 class Trade(object):
     """This class represents a single row from the TradeJournal class
 
-    Class variables
-    ---------------
-    entered: False if trade not taken (price did not cross self.entry). True otherwise
-    start: Time/date when the trade was taken. i.e. 20-03-2017 08:20:00s
-    pair: Currency pair used in the trade. i.e. AUD_USD
-    timeframe: Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
-    outcome: Outcome of the trade. Possible values are: success, failure, breakeven
-    end: time/date when the trade ended. i.e. 20-03-2017 08:20:00
-    entry: entry price
-    exit: exit price
-    entry_time: Datetime for price reaching the entry price
-    type: What is the type of the trade (long,short)
-    SL:  float, Stop/Loss price
-    TP:  float, Take profit price. If not defined then it will calculated by using the RR
-    SR:  float, Support/Resistance area
-    RR:  float, Risk Ratio
-    pips:  Number of pips of profit/loss. This number will be negative if outcome was failure
-    clist: CandleList object"""
+    Class variables:
+        entered: False if trade not taken (price did not cross self.entry). True otherwise
+        start: Time/date when the trade was taken. i.e. 20-03-2017 08:20:00s
+        pair: Currency pair used in the trade. i.e. AUD_USD
+        timeframe: Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
+        outcome: Outcome of the trade. Possible values are: success, failure, breakeven
+        end: time/date when the trade ended. i.e. 20-03-2017 08:20:00
+        entry: entry price
+        exit: exit price
+        entry_time: Datetime for price reaching the entry price
+        type: What is the type of the trade (long,short)
+        SL:  float, Stop/Loss price
+        TP:  float, Take profit price. If not defined then it will calculated by using the RR
+        SR:  float, Support/Resistance area
+        RR:  float, Risk Ratio
+        pips:  Number of pips of profit/loss. This number will be negative if outcome was failure
+        clist: CandleList object"""
 
     def __init__(self, clist, **kwargs)->None:
         allowed_keys = ['entered', 'start', 'pair', 'timeframe', 'outcome', 'end', 'entry', 'exit', 
@@ -71,24 +70,23 @@ class Trade(object):
         return new_cl
 
     def get_trend_i(self):
-        '''
-        Function to calculate the start of the trend
+        '''Function to calculate the start of the trend.
 
         Returns:
-        Datetime
+            Datetime
         '''
-        merged_s = self.period.calc_itrend()
+        pvLst = PivotList(self.clist)
+        merged_s = pvLst.calc_itrend()
 
         if self.type == "long":
             candle = merged_s.get_highest()
         elif self.type == "short":
             candle = merged_s.get_lowest()
 
-        return candle['time']
+        return candle.time
 
     def run_trade(self, expires: int=2):
-        '''
-        Run the trade until conclusion from a start date
+        '''Run the trade until conclusion from a start date.
 
         Arguments:
             expires : Number of candles after start datetime to check

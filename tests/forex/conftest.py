@@ -35,9 +35,7 @@ def seglist_pickled():
 @pytest.fixture
 def pivotlist(clO_pickled):
     """Obtain a PivotList object"""
-
-    pl = PivotList(clist=clO_pickled)
-    return pl
+    return PivotList(clist=clO_pickled)
 
 
 

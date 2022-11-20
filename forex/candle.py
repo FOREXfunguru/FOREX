@@ -345,10 +345,7 @@ class CandleList(object):
 
         Arguments:
             price: value to calculate the last time in this CandleList the price was above/below
-
-        Returns:
         '''
-
         if self.type == "short":
             position = 'above'
         if self.type == "long":

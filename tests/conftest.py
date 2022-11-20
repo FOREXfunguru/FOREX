@@ -17,7 +17,10 @@ def clean_tmp():
 
 @pytest.fixture
 def clO_pickled():
-    return CandleList.pickle_load(DATA_DIR+"/clist_audusd_2010_2020.pckl")
+    clO = CandleList.pickle_load(DATA_DIR+"/clist_audusd_2010_2020.pckl")
+    clO.calc_rsi()
+
+    return clO
 
 @pytest.fixture
 def t_object(clO_pickled):

@@ -129,22 +129,18 @@ def calc_atr(clO)->float:
         length += 1
     return round(tot_diff_in_pips/length, 3)
 
-def calc_diff(df_loc, increment_price):
-    '''
-    Function to select the best S/R for areas that
-    are less than 3*increment_price
+def calc_diff(df_loc, increment_price: float):
+    '''Function to select the best S/R for areas that
+    are less than 3*increment_price.
 
-    Parameters
-    ----------
-    df_loc : Pandas dataframe with S/R areas
-    increment_price : float
-                      This is the increment_price
-                      between different price levels
-                      in order to identify S/Rs
+    Arguments:
+        df_loc: Pandas dataframe with S/R areas
+        increment_price : This is the increment_price
+                          between different price levels
+                          in order to identify S/Rs
 
-    Returns
-    -------
-    Pandas dataframe with selected S/R
+    Returns:
+        Pandas dataframe with selected S/R
     '''
     prev_price = prev_row = prev_ix = None
     tog_seen = False

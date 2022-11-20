@@ -16,10 +16,6 @@ def clean_tmp():
         os.remove(f)
 
 @pytest.fixture
-def clO_pickled():
-    return CandleList.pickle_load(DATA_DIR+"/clist_audusd_2010_2020.pckl")
-
-@pytest.fixture
 def t_object(clO_pickled):
     '''Returns a Trade object'''
 
