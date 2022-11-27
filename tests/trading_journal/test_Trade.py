@@ -3,13 +3,21 @@ import datetime
 
 from trading_journal.trade import Trade
 
-def test_candlelist_inst(t_object):
+def test_init_clist():
     '''
-    This test checks that the CandeList has been correctly
-    instantiated
+    This test checks the init_clist function
     '''
-    assert t_object.start == datetime.datetime(2017, 4, 10, 14, 0)
-    assert t_object.SL == 0.74718
+    td = Trade(
+            start='2020-02-19T21:00:00',
+            end='2020-03-25T21:00:00',  
+            entry=0.83585,
+            SL=0.82467,
+            TP=0.86032,
+            pair='EUR_GBP',
+            type='long',
+            timeframe="D",
+            init_clist=True)
+    assert len(td.clist.candles) == 26
 
 @pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome", [
         ('AUD_USD', '2017-05-10 21:00:00', 'long', 0.73176, 0.75323, 0.73953, 'success'),

@@ -17,7 +17,6 @@ def test_fetch_trades(tjO):
     assert len(tlist) == 4
 
 def test_win_rate(tjO):
-
     (number_s, number_f, tot_pips) = tjO.win_rate(strats="counter")
 
     assert number_s == 2

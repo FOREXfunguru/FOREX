@@ -3,6 +3,7 @@ import numpy as np
 import logging
 import math
 import re
+import pdb
 from trading_journal.trade import Trade
 from openpyxl import load_workbook, Workbook
 from config import CONFIG
@@ -15,15 +16,12 @@ class TradeJournal(object):
     '''
     Constructor
 
-    Class variables
-    ---------------
-    url: path to the .xlsx file with the trade journal
-    worksheet: str, Required
-               Name of the worksheet that will be used to create the object.
-               i.e. trading_journal
+    Class variables:
+        url: path to the .xlsx file with the trade journal
+        worksheet: Name of the worksheet that will be used to create the object.
+                   i.e. trading_journal
     '''
-
-    def __init__(self, url, worksheet):
+    def __init__(self, url:str, worksheet:str):
         self.url = url
         self.worksheet = worksheet
 
@@ -43,53 +41,36 @@ class TradeJournal(object):
             wb.create_sheet(worksheet)
             wb.save(str(self.url))
 
-    def fetch_trades(self, init_period=False):
-        '''
-        Function to fetch a list of Trade objects
+    def fetch_trades(self):
+        '''Function to fetch a list of Trade objects.
 
-        Parameter
-        ---------
-        init_period : bool
-                      If true, then the CandleList
-                      used for the 'period' class attribute
-                      will be initialized. Default: False
-
-        Return
-        ------
-        list with trades
+        Returns:
+            list with trades
         '''
-        trade_list = []
-        args = {}
+        trade_list, args = [], {}
         for index, row in self.df.iterrows():
             pair = re.split(r'\.| ', row['id'])[0]
             args = {'pair': pair}
             for c in row.keys():
                 args[c] = row[c]
-            if init_period is True:
-                t = Trade(**args, init=True)
-            else:
-                t = Trade(**args)
+            t = Trade(**args)
             trade_list.append(t)
 
         return trade_list
 
-    def win_rate(self, strats):
-        '''
-        Calculate win rate and pips balance
+    def win_rate(self, strats: str):
+        '''Calculate win rate and pips balance
         for this TradeJournal. If outcome attrb is not
         defined then it will invoke the run_trade method
         on each particular trade
 
-        Parameters
-        ----------
-        strats : str
-                 Comma-separated list of strategies to analyse: i.e. counter,counter_b1
+        Arguments:
+            strats : Comma-separated list of strategies to analyse: i.e. counter,counter_b1
 
-        Returns
-        -------
-        int : number of successes
-        int : number of failures
-        pips : pips balance in this TradeList
+        Returns:
+            int : number of successes
+            int : number of failures
+            pips : pips balance in this TradeList
         '''
 
         strat_l = strats.split(",")
@@ -99,6 +80,7 @@ class TradeJournal(object):
             args = {'pair': pair}
             for c in row.keys():
                 args[c] = row[c]
+            pdb.set_trace()
             t = Trade(**args)
             if t.strat not in strat_l:
                 continue

@@ -10,14 +10,12 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = ROOT_DIR+"/tests/data"
 
 def try_parsing_date(text):
-    '''
-    Function to parse a string that can be formatted in
+    '''Function to parse a string that can be formatted in
     different datetime formats
 
-    :returns
-    datetime object
+    Returns:
+        datetime object
     '''
-
     for fmt in ('%Y-%m-%dT%H:%M:%S', '%Y-%m-%d %H:%M:%S'):
         try:
             return datetime.strptime(text, fmt)
@@ -25,23 +23,17 @@ def try_parsing_date(text):
             pass
     raise ValueError('no valid date format found')
 
-def calculate_pips(pair, price):
-    '''
-    Function to calculate the number of pips
+def calculate_pips(pair: str, price: float)->float:
+    '''Function to calculate the number of pips
     for a given price
 
-    Parameters
-    ----------
-    pair : str, Required
-           Currency pair used in the trade. i.e. AUD_USD
-    price : float
+    Args:
+        pair : Currency pair used in the trade. i.e. AUD_USD
+        price : Provided price
 
-    Returns
-    -------
-    float
-          Number of pips
+    Returns:
+        Number of pips
     '''
-
     pips = None
     (first, second) = pair.split("_")
     if first == 'JPY' or second == 'JPY':
@@ -51,24 +43,18 @@ def calculate_pips(pair, price):
 
     return '%.1f' % pips
 
-def add_pips2price(pair, price, pips):
+def add_pips2price(pair: str, price: float, pips: int)->float:
+    '''Function that gets a price value and adds
+    a certain number of pips to the price.
+
+    Arguments:
+        pair : Currency pair used in the trade. i.e. AUD_USD
+        price : This price
+        pips : Number of pips to increase
+
+    Returns:
+        New price
     '''
-    Function that gets a price value and adds
-    a certain number of pips to the price
-
-    Parameters
-    ----------
-    pair : str, Required
-           Currency pair used in the trade. i.e. AUD_USD
-    price : float
-    pips : int
-           Number of pips to increase
-
-    Returns
-    -------
-    float value
-    '''
-
     (first, second) = pair.split("_")
     round_number = None
     divisor = None
@@ -84,24 +70,18 @@ def add_pips2price(pair, price, pips):
 
     return iprice
 
-def substract_pips2price(pair, price, pips):
-    '''
-    Function that gets a price value and substracts
+def substract_pips2price(pair:str, price:float, pips:int)->float:
+    '''Function that gets a price value and substracts
     a certain number of pips to the price
 
-    Parameters
-    ----------
-    pair : str, Required
-           Currency pair used in the trade. i.e. AUD_USD
-    price : float
-    pips : int
-           Number of pips to decrease
+    Arguments:
+        pair : Currency pair used in the trade. i.e. AUD_USD
+        price : Price to modify
+        pips : Number of pips to decrease
 
-    Returns
-    -------
-    float value
+    Returns:
+        New price
     '''
-
     (first, second) = pair.split("_")
     round_number = None
     divisor = None
@@ -117,22 +97,17 @@ def substract_pips2price(pair, price, pips):
 
     return dprice
 
-def periodToDelta(ncandles, timeframe):
-    '''
-    Function that receives an int representing a number of candles using the 'ncandles' param
+def periodToDelta(ncandles: int, timeframe: str):
+    '''Function that receives an int representing a number of candles using the 'ncandles' param
     and returns a datetime timedelta object
 
-    Parameters
-    ----------
-    ncandles: Number of candles for which the timedelta will be retrieved. Required
-    timeframe: str, Required
-               Timeframe used for getting the delta object. Possible values are: 2D,D,H12,H10,H8,H4
+    Arguments:
+        ncandles: Number of candles for which the timedelta will be retrieved
+        timeframe: Timeframe used for getting the delta object. Possible values are: 2D,D,H12,H10,H8,H4
 
-    Returns
-    -------
-    datetime timedelta object
+    Returns:
+        datetime timedelta object
     '''
-
     patt=re.compile("(\d)D")
 
     delta = None
@@ -146,20 +121,17 @@ def periodToDelta(ncandles, timeframe):
 
     return delta
 
-def get_ixfromdatetimes_list(datetimes_list, d):
-    '''
-    Function to get the index of the element that is closest
+def get_ixfromdatetimes_list(datetimes_list, d)->int:
+    '''Function to get the index of the element that is closest
     to the passed datetime
 
-    Parameters
-    ----------
-    datetimes_list : list
+    Arguments:
+        datetimes_list : list
                      List with datetimes
-    d : datetime
+        d : datetime
 
-    Returns
-    -------
-    int with index of the closest datetime to d
+    Returns:
+        index of the closest datetime to d
     '''
 
     sel_ix=None
@@ -183,20 +155,17 @@ def pairwise(iterable):
     return zip(a, a)
 
 def correct_timeframe(settings, timeframe):
-    """
-    This utility function is used for correcting
+    '''This utility function is used for correcting
     all the pips-related settings depending
     on the selected timeframe
 
-    Parameters
-    ----------
-    settings: ConfigParser object
-    timeframe : D,H12,H8,4
+    Arguments:
+        settings: ConfigParser object
+        timeframe : D,H12,H8,4
 
-    Returns
-    -------
-    settings : ConfigParser object timeframe corrected
-    """
+    Returns:
+        settings : ConfigParser object timeframe corrected
+    '''
     timeframe = int(timeframe.replace('H', ''))
     ratio = round(timeframe/24, 2)
 

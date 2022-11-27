@@ -8,13 +8,14 @@ from forex.pivot import PivotList
 from forex.harea import HArea
 from utils import *
 from forex.params import trade_params
+from api.oanda.connect import Connect
 
 # create logger
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
 
 class Trade(object):
-    """This class represents a single row from the TradeJournal class
+    """This is the parent class represents a single row from the TradeJournal class
 
     Class variables:
         entered: False if trade not taken (price did not cross self.entry). True otherwise
@@ -34,15 +35,16 @@ class Trade(object):
         pips:  Number of pips of profit/loss. This number will be negative if outcome was failure
         clist: CandleList object"""
 
-    def __init__(self, clist, **kwargs)->None:
+    def __init__(self, init_clist:bool=False, **kwargs)->None:
         allowed_keys = ['entered', 'start', 'pair', 'timeframe', 'outcome', 'end', 'entry', 'exit', 
-        'entry_time', 'type', 'SL', 'TP', 'SR', 'RR', 'pips']
+        'entry_time', 'type', 'SL', 'TP', 'SR', 'RR', 'pips', 'clist', 'strat']
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
+        if init_clist and not hasattr(self, 'clist'):
+            self._init_clist()
         self.__dict__.update({'start' : try_parsing_date(self.__dict__['start'])})
         if hasattr(self, 'end'):
             self.__dict__.update({'end' : try_parsing_date(self.__dict__['end'])})
         self._validate_params()
-        self.clist = clist
 
     def _validate_params(self):
         if not hasattr(self, 'TP') and not hasattr(self, 'RR'):
@@ -54,20 +56,14 @@ class Trade(object):
         elif hasattr(self, 'RR') and not math.isnan(self.RR):
             diff = (self.entry - self.SL) * self.RR
             self.TP = round(self.entry + diff, 4)
-
-    def sliceclist(self, clist):
-        '''Function to generate a new CandleList object that ends in self.trade.start
-        and starts in self.start
-
-        Returns:
-            New CandleList object'''
-        delta_1 = periodToDelta(1, self.timeframe)
-        end = self.end + delta_1
-        if end > datetime.now():
-            end = datetime.now().replace(microsecond=0)
-
-        new_cl = clist.slice(self.start, end)
-        return new_cl
+    
+    def _init_clist(self)->None:
+        '''Init clist for this Trade'''
+        conn = Connect(
+            instrument=self.pair,
+            granularity=self.timeframe)
+        clO = conn.query(self.start, self.end)
+        self.clist = clO
 
     def get_trend_i(self):
         '''Function to calculate the start of the trend.
@@ -85,13 +81,14 @@ class Trade(object):
 
         return candle.time
 
-    def run_trade(self, expires: int=2):
+    def run_trade(self, expires: int=2)->None:
         '''Run the trade until conclusion from a start date.
 
         Arguments:
             expires : Number of candles after start datetime to check
                       for entry
         '''
+        pdb.set_trace()
         t_logger.info(f"Run run_trade with id: {self.pair}:{self.start}")
 
         entry = HArea(price=self.entry,
@@ -126,6 +123,7 @@ class Trade(object):
                 if count > expires and self.entered is False:
                     self.outcome = 'n.a.'
                     break
+            pdb.set_trace()
             cl = self.clist.fetch_by_time(d)
             if cl is None:
                 continue
@@ -178,14 +176,12 @@ class Trade(object):
 
         t_logger.info("Done run_trade")
 
-    def get_SLdiff(self):
-        """
-        Function to calculate the difference in number of pips between the entry and
-        the SL prices
+    def get_SLdiff(self)->float:
+        """Function to calculate the difference in number of pips between the entry and
+        the SL prices.
 
-        Returns
-        -------
-        float with pips
+        Returns:
+            number of pips
         """
 
         diff = abs(self.entry - self.SL)
