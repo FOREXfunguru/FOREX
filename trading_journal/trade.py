@@ -15,7 +15,7 @@ t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
 
 class Trade(object):
-    """This is the parent class represents a single row from the TradeJournal class
+    """This is the parent class represents a single row from the TradeJournal class.
 
     Class variables:
         entered: False if trade not taken (price did not cross self.entry). True otherwise
@@ -23,7 +23,6 @@ class Trade(object):
         pair: Currency pair used in the trade. i.e. AUD_USD
         timeframe: Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
         outcome: Outcome of the trade. Possible values are: success, failure, breakeven
-        end: time/date when the trade ended. i.e. 20-03-2017 08:20:00
         entry: entry price
         exit: exit price
         entry_time: Datetime for price reaching the entry price
@@ -36,7 +35,7 @@ class Trade(object):
         clist: CandleList object"""
 
     def __init__(self, init_clist:bool=False, **kwargs)->None:
-        allowed_keys = ['entered', 'start', 'pair', 'timeframe', 'outcome', 'end', 'entry', 'exit', 
+        allowed_keys = ['entered', 'start', 'end', 'pair', 'timeframe', 'outcome', 'entry', 'exit', 
         'entry_time', 'type', 'SL', 'TP', 'SR', 'RR', 'pips', 'clist', 'strat']
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         if init_clist and not hasattr(self, 'clist'):
@@ -65,12 +64,8 @@ class Trade(object):
         clO = conn.query(self.start, self.end)
         self.clist = clO
 
-    def get_trend_i(self):
-        '''Function to calculate the start of the trend.
-
-        Returns:
-            Datetime
-        '''
+    def get_trend_i(self)->datetime:
+        '''Function to calculate the start of the trend'''
         pvLst = PivotList(self.clist)
         merged_s = pvLst.calc_itrend()
 
@@ -88,7 +83,6 @@ class Trade(object):
             expires : Number of candles after start datetime to check
                       for entry
         '''
-        pdb.set_trace()
         t_logger.info(f"Run run_trade with id: {self.pair}:{self.start}")
 
         entry = HArea(price=self.entry,
@@ -123,7 +117,6 @@ class Trade(object):
                 if count > expires and self.entered is False:
                     self.outcome = 'n.a.'
                     break
-            pdb.set_trace()
             cl = self.clist.fetch_by_time(d)
             if cl is None:
                 continue
@@ -183,7 +176,6 @@ class Trade(object):
         Returns:
             number of pips
         """
-
         diff = abs(self.entry - self.SL)
         number_pips = float(calculate_pips(self.pair, diff))
 
@@ -198,3 +190,7 @@ class Trade(object):
 
     def __repr__(self):
         return self.__str__()
+
+class cTrade(Trade):
+    """This is subclass representing a Trade having a start and currently ongoing."""
+    pass

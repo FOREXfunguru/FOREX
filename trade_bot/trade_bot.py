@@ -3,7 +3,6 @@ import pdb
 import datetime
 from datetime import datetime
 import pandas as pd
-import os
 
 from api.oanda.connect import Connect
 from forex.candle import Candle
@@ -21,16 +20,12 @@ class TradeBot(object):
     '''This class represents an automatic Trading bot.
 
     Class variables:
-        start: datetime, Required
-        Datetime that this Bot will start operating. i.e. 20-03-2017 08:20:00s
-        end: datetime, Required
-             Datetime that this Bot will end operating. i.e. 20-03-2020 08:20:00s
-        pair: str, Required
-              Currency pair used in the trade. i.e. AUD_USD
-        timeframe: str, Required
-                  Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4,H1
+        start: Datetime that this Bot will start operating. i.e. 20-03-2017 08:20:00s
+        end: Datetime that this Bot will end operating. i.e. 20-03-2020 08:20:00s
+        pair: Currency pair used in the trade. i.e. AUD_USD
+        timeframe: Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4,H1
     '''
-    def __init__(self, start, end, pair, timeframe):
+    def __init__(self, start:datetime, end:datetime, pair:str, timeframe:str):
         self.start = start
         self.end = end
         self.pair = pair
@@ -81,6 +76,7 @@ class TradeBot(object):
                          end=endO.isoformat())
 
         while startO <= endO:
+            """
             if tend is not None:
                 # this means that there is currently an active trade
                 if startO <= tend:
@@ -89,8 +85,11 @@ class TradeBot(object):
                     continue
                 else:
                     tend = None
+            """
+            pdb.set_trace()
             tb_logger.info("Trade bot - analyzing candle: {0}".format(startO.isoformat()))
-            sub_pvtlst = PivotList(clist=clO.slice(initc_date, startO))
+            subclO = clO.slice(initc_date, startO)
+            sub_pvtlst = PivotList(clist=subclO)
             dt_str = startO.strftime("%d_%m_%Y_%H_%M")
             if loop == 0:
                 outfile_txt = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.txt"
@@ -118,29 +117,26 @@ class TradeBot(object):
                 f.close()
                 loop = 0
 
-            # fetch candle for current datetime
-            clO = conn.query(start=startO.isoformat(),
-                             count=1)
-
-            # this is the current candle that
+            #  Fetch candle for current datetime. this is the current candle that
             # is being checked
-            c_candle = clO.candles[0]
+            c_candle = conn.query(start=startO.isoformat(),
+                                  count=1).candles[0]
 
             # c_candle.time is not equal to startO
             # when startO is non-working day, for example
             delta1hr = timedelta(hours=1)
             if (c_candle.time != startO) and (abs(c_candle.time-startO) > delta1hr):
                 loop += 1
-                tb_logger.info("Analysed dt {0} is not the same than APIs returned dt {1}."
-                               " Skipping...".format(startO, c_candle.time))
+                tb_logger.info(f"Analysed dt {startO} is not the same than APIs returned dt {c_candle.time}."
+                               " Skipping...")
                 startO = startO + delta
                 continue
 
             #check if there is any HArea overlapping with c_candle
             HAreaSel, sel_ix = SRlst.onArea(candle=c_candle)
-            pdb.set_trace()
             if HAreaSel is not None:
                 # guess the if trade is 'long' or 'short'
+                pdb.set_trace()
                 newCl = clO.slice(start=initc_date, end=c_candle.time)
                 type = get_trade_type(c_candle.time, newCl)
                 prepare = False
@@ -153,10 +149,11 @@ class TradeBot(object):
 
                 # discard if IC falls on a Saturday
                 if c_candle.time.weekday() == 5 and discard_sat is True:
-                    tb_logger.info("Possible trade at {0} falls on Sat. Skipping...".format(c_candle.time))
+                    tb_logger.info(f"Possible trade at {c_candle.time} falls on Sat. Skipping...")
                     prepare = False
 
                 if prepare is True:
+                    pdb.set_trace()
                     t = prepare_trade(
                         tb_obj=self,
                         type=type,
@@ -232,10 +229,8 @@ class TradeDiscover(object):
         initc_date = self.start - delta_period
         # Get now a CandleList from 'initc_date' to 'startO' which is the
         # total time interval for this TradeBot
-        res = conn.query(start=initc_date.strftime("%Y-%m-%dT%H:%M:%S"),
-                         end=self.start.strftime("%Y-%m-%dT%H:%M:%S"),
-                         indir=ser_dir)
-        clO = CandleList(res)
+        clO = conn.query(start=initc_date.strftime("%Y-%m-%dT%H:%M:%S"),
+                         end=self.start.strftime("%Y-%m-%dT%H:%M:%S"))
         dt_str = self.start.strftime("%d_%m_%Y_%H_%M")
         outfile_png = "{0}/srareas/{1}.{2}.{3}.halist.png".format(CONFIG.get("images", "outdir"),
                                                                   self.pair, self.timeframe, dt_str)

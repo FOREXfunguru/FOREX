@@ -5,7 +5,6 @@ import os
 import logging
 
 from trade_bot.trade_bot import TradeBot
-from config import CONFIG
 
 # create logger
 tb_logger = logging.getLogger(__name__)
@@ -23,15 +22,11 @@ def test_run1():
     Test tradebot on a really easy to identify
     short trade on a tight time interval
     """
-
-    CONFIG.set('trade_bot', 'period_range', '1500')
-
     tb = TradeBot(
         pair='AUD_USD',
         timeframe='D',
         start='2018-01-22 22:00:00',
         end='2018-02-06 22:00:00')
-
     tl = tb.run()
 
     assert len(tl.tlist) == 2

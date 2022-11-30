@@ -92,6 +92,7 @@ def test_slice_with_start_end(clO_pickled):
                                end=endatetime)
 
     assert len(new_cl) == 40
+    assert 0
 
 def test_last_time(clO_pickled):
     log = logging.getLogger('Test for last_time function')

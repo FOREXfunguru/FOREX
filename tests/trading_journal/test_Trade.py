@@ -1,5 +1,5 @@
 import pytest
-import datetime
+import pdb
 
 from trading_journal.trade import Trade
 
@@ -37,7 +37,6 @@ def test_run_trade(pair, start, type, SL, TP, entry, outcome, clO_pickled):
             type=type,
             timeframe="D",
             clist=clO_pickled)
-
     td.run_trade()
     assert td.outcome == outcome
 
