@@ -4,7 +4,7 @@ import pdb
 import datetime as dt
 
 from utils import *
-from forex.params import counter_params
+from forex.params import counter_params, tradebot_params
 from forex.candlelist_utils import *
 from forex.pivot import PivotList
 from trading_journal.trade import Trade
@@ -208,7 +208,7 @@ def prepare_trade(tb_obj, type: str, SL: float, ic, harea_sel, delta, add_pips):
     startO = ic.time + delta
     if type == 'short':
         # entry price will be the low of IC
-        entry_p = getattr(ic, "low{0}".format(CONFIG.get('general', 'bit')))
+        entry_p = ic.l
         if add_pips is not None:
             SL = round(add_pips2price(tb_obj.pair,
                                       SL, add_pips), 4)
@@ -216,7 +216,7 @@ def prepare_trade(tb_obj, type: str, SL: float, ic, harea_sel, delta, add_pips):
                                                  entry_p, add_pips), 4)
     elif type == 'long':
         # entry price will be the high of IC
-        entry_p = getattr(ic, "high{0}".format(CONFIG.get('general', 'bit')))
+        entry_p = ic.h
         if add_pips is not None:
             entry_p = add_pips2price(tb_obj.pair,
                                      entry_p, add_pips)
@@ -233,7 +233,7 @@ def prepare_trade(tb_obj, type: str, SL: float, ic, harea_sel, delta, add_pips):
         entry=entry_p,
         SR=harea_sel.price,
         SL=SL,
-        RR=CONFIG.getfloat('trade_bot', 'RR'),
+        RR=tradebot_params.RR,
         strat='counter')
     return t
 
@@ -250,19 +250,14 @@ def adjust_SL(type: str, clObj, number: int=7)->float:
     Returns:
         adjusted SL
     '''
-
-    if type == 'short':
-        part = 'high{0}'.format(CONFIG.get('general', 'bit'))
-    elif type == 'long':
-        part = 'low{0}'.format(CONFIG.get('general', 'bit'))
     SL = None
     ix = 0
-    for c in reversed(clObj.data['candles']):
+    for c in reversed(clObj.candles):
         # go back 'number' candles
         if ix == number:
             break
         ix += 1
-        price = c[part]
+        price = c.c
         if SL is None:
             SL = price
             continue
@@ -272,7 +267,6 @@ def adjust_SL(type: str, clObj, number: int=7)->float:
         if type == 'long':
             if price < SL:
                 SL = price
-
     return SL
 
 def calculate_profit(trade)->float:

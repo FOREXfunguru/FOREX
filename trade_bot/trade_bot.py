@@ -86,7 +86,6 @@ class TradeBot(object):
                 else:
                     tend = None
             """
-            pdb.set_trace()
             tb_logger.info("Trade bot - analyzing candle: {0}".format(startO.isoformat()))
             subclO = clO.slice(initc_date, startO)
             sub_pvtlst = PivotList(clist=subclO)
@@ -136,9 +135,9 @@ class TradeBot(object):
             HAreaSel, sel_ix = SRlst.onArea(candle=c_candle)
             if HAreaSel is not None:
                 # guess the if trade is 'long' or 'short'
-                pdb.set_trace()
                 newCl = clO.slice(start=initc_date, end=c_candle.time)
                 type = get_trade_type(c_candle.time, newCl)
+                SL = adjust_SL(type, newCl)
                 prepare = False
                 if c_candle.indecision_c(ic_perc=gparams.ic_perc) is True:
                     prepare = True
