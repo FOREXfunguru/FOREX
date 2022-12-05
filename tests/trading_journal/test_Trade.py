@@ -9,7 +9,6 @@ def test_init_clist():
     '''
     td = Trade(
             start='2020-02-19T21:00:00',
-            end='2020-03-25T21:00:00',  
             entry=0.83585,
             SL=0.82467,
             TP=0.86032,
@@ -17,7 +16,7 @@ def test_init_clist():
             type='long',
             timeframe="D",
             init_clist=True)
-    assert len(td.clist.candles) == 26
+    assert len(td.clist.candles) == 4104
 
 @pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome", [
         ('AUD_USD', '2017-05-10 21:00:00', 'long', 0.73176, 0.75323, 0.73953, 'success'),
@@ -61,45 +60,19 @@ def test_run_trade_wexpire(pair, start, type, SL, TP, entry, entered, clO_pickle
     td.run_trade(expires=2)
     assert td.entered == entered
 
-@pytest.mark.parametrize("pair,start,type,SL,TP,entry,entered", [('EUR_GBP', '2020-04-21 17:00:00', 'long', 0.88209,
-                                                                  0.89279, 0.88636, False)])
-def test_run_trade_wexpire_4hrs(pair, start, type, SL, TP, entry, entered, clO_pickled):
-    '''This test checks the run_trade method with the 'expires' parameter'''
-    
-    td = Trade(
-            start=start,
-            entry=entry,
-            SL=SL,
-            TP=TP,
-            pair=pair,
-            type=type,
-            timeframe="H4",
-            strat="counter_b2",
-            clist=clO_pickled
-            )
+def test_run_trade_noclO():
+        '''Run run_trade without passing a pickled CandeList object'''       
+        td = Trade(
+            start='2017-12-11 22:00:00',
+            entry=0.75407,
+            SL=0.74790,
+            TP=0.77057,
+            pair='AUD_USD',
+            type='long',
+            timeframe="D",
+            init_clist=True)
+        td.run_trade()
 
-    td.run_trade(expires=2)
-    assert td.entered == entered
-
-@pytest.mark.parametrize("pair,start,type,SL,TP,entry,outcome", [('EUR_GBP', '2019-05-06 01:00:00', 'long', 0.84881,
-                                                                  0.85682, 0.85121, 'n.a.'),
-                                                                 ('EUR_GBP', '2020-03-25 13:00:00', 'long', 0.90494,
-                                                                  0.93197, 0.91553, 'n.a.')])
-def test_run_trade_4hrs(pair, start, type, SL, TP, entry, outcome, clO_pickled):
-    '''This test checks the run_trade method with the 'expires' parameter'''
-    td = Trade(
-            start=start,
-            entry=entry,
-            SL=SL,
-            TP=TP,
-            pair=pair,
-            type=type,
-            timeframe="H4",
-            strat="counter_b2",
-            clist=clO_pickled)
-
-    td.run_trade()
-    assert td.outcome == outcome
 
 def test_get_SLdiff(t_object):
 

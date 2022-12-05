@@ -6,7 +6,6 @@ import re
 import pdb
 from trading_journal.trade import Trade
 from openpyxl import load_workbook, Workbook
-from config import CONFIG
 
 # create logger
 tj_logger = logging.getLogger(__name__)
@@ -58,7 +57,7 @@ class TradeJournal(object):
 
         return trade_list
 
-    def win_rate(self, strats: str):
+    def win_rate(self, strats: str)-> tuple[int, int, float]:
         '''Calculate win rate and pips balance
         for this TradeJournal. If outcome attrb is not
         defined then it will invoke the run_trade method
@@ -68,9 +67,9 @@ class TradeJournal(object):
             strats : Comma-separated list of strategies to analyse: i.e. counter,counter_b1
 
         Returns:
-            int : number of successes
-            int : number of failures
-            pips : pips balance in this TradeList
+            number of successes
+            number of failures
+            balance of pips in this TradeList
         '''
 
         strat_l = strats.split(",")
@@ -80,8 +79,7 @@ class TradeJournal(object):
             args = {'pair': pair}
             for c in row.keys():
                 args[c] = row[c]
-            pdb.set_trace()
-            t = Trade(**args)
+            t = Trade(**args, init_clist=True)
             if t.strat not in strat_l:
                 continue
             if not hasattr(t, 'outcome') or math.isnan(t.outcome):

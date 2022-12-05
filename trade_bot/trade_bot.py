@@ -63,7 +63,6 @@ class TradeBot(object):
         endO = pd.datetime.strptime(self.end, '%Y-%m-%d %H:%M:%S')
 
         loop = 0
-        tlist = []
         tend = SRlst = None
         # calculate the start datetime for the CList that will be used
         # for calculating the S/R areas
@@ -75,6 +74,7 @@ class TradeBot(object):
         clO = conn.query(start=initc_date.isoformat(),
                          end=endO.isoformat())
 
+        tlist = []
         while startO <= endO:
             """
             if tend is not None:
@@ -152,7 +152,6 @@ class TradeBot(object):
                     prepare = False
 
                 if prepare is True:
-                    pdb.set_trace()
                     t = prepare_trade(
                         tb_obj=self,
                         type=type,
@@ -170,10 +169,7 @@ class TradeBot(object):
 
         tb_logger.info("Run done")
 
-        if len(tlist) == 0:
-            return None
-        else:
-            return tlist
+        return tlist
 
 class TradeDiscover(object):
     '''

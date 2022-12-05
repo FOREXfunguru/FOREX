@@ -89,6 +89,8 @@ class trade_params:
     granularity : str = 'H8'
     # num of candles from trade.start to calc ATR
     period_atr : int = 20
+    # number of candles to go back when init_clist=True
+    trade_period: int = 5000
 
 @dataclass
 class tradebot_params:

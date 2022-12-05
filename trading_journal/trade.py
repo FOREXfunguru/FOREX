@@ -58,10 +58,14 @@ class Trade(object):
     
     def _init_clist(self)->None:
         '''Init clist for this Trade'''
+        delta = periodToDelta(trade_params.trade_period, self.timeframe)
+        start = try_parsing_date(self.start)
+        nstart = start - delta
+
         conn = Connect(
             instrument=self.pair,
             granularity=self.timeframe)
-        clO = conn.query(self.start, self.end)
+        clO = conn.query(nstart.isoformat(), start.isoformat())
         self.clist = clO
 
     def get_trend_i(self)->datetime:
@@ -119,7 +123,17 @@ class Trade(object):
                     break
             cl = self.clist.fetch_by_time(d)
             if cl is None:
-                continue
+                conn = Connect(
+                    instrument=self.pair,
+                    granularity=self.timeframe)
+                clO = conn.query(start=d.isoformat(), end=d.isoformat())
+                if len(clO.candles)==1:
+                    cl = clO.candles[0]
+                elif len(clO.candles)>1:
+                    raise Exception("No valid number of candles in CandleList")
+                else:
+                    continue
+                
             if self.entered is False:
                 entry_time = entry.get_cross_time(candle=cl,
                                                   granularity=trade_params.granularity)
