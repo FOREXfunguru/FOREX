@@ -21,5 +21,6 @@ jobs:
           export PYTHONPATH=$PWD
           export TOKEN=${{ secrets.OANDA_TOKEN  }}
           echo $TOKEN
+          ls -alh
           pip install pytest && cd tests/forex/
           pytest -v candle
