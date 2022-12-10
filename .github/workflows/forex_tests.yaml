@@ -23,4 +23,4 @@ jobs:
           echo $TOKEN
           readlink -f tests/data/out/
           pip install pytest && cd tests/forex/
-          pytest -v candle/test_candlelist_utils.py
+          pytest -v candle/test_Candle.py
