@@ -18,4 +18,4 @@ jobs:
       - name: Test with pytest
         run: |
           pip install pytest && cd tests/forex/
-          ls -al
+          pytest -v candle/test_Candle.py

@@ -7,7 +7,6 @@ import pytest
 import pdb
 
 from forex.candle import Candle
-from api.oanda.connect import Connect
 
 @pytest.fixture
 def CandleO():
@@ -29,24 +28,9 @@ def test_check_candle_feats(CandleO):
     assert CandleO.colour == 'red'
     assert CandleO.perc_body == 29.67
 
-@pytest.mark.parametrize("pair,"
-                         "timeframe,"
-                         "time,"
-                         "is_it",
-                         [('AUD_USD', 'D', '2020-03-18T22:00:00', True),
-                          ('AUD_USD', 'D', '2019-07-31T22:00:00', False),
-                          ('AUD_USD', 'D', '2019-03-19T22:00:00', False),
-                          ('AUD_USD', 'D', '2020-01-22T22:00:00', True)])
-def test_indecision_c(pair, timeframe, time, is_it):
+
+def test_indecision_c(CandleO):
     '''Test function to check if a certain Candle has the
     typical indecission pattern'''
 
-    conn = Connect(instrument=pair,
-                   granularity=timeframe)
-
-    res = conn.query(start=time,
-                     count=1)
-
-    cObj = res.candles[0]
-    result = cObj.indecision_c()
-    assert is_it == result
+    assert False == CandleO.indecision_c()
