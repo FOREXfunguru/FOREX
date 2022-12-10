@@ -17,5 +17,6 @@ jobs:
           python -m pip install --upgrade pip
       - name: Test with pytest
         run: |
+          export PYTHONPATH=$PWD
           pip install pytest && cd tests/forex/
           pytest -v candle/test_Candle.py
