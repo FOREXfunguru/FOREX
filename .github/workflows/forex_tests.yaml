@@ -22,5 +22,5 @@ jobs:
           export TOKEN=${{ secrets.OANDA_TOKEN  }}
           echo $TOKEN
           readlink -f tests/data/out/
-          #pip install pytest && cd tests/forex/
-          #pytest -v candle
+          pip install pytest && cd tests/forex/
+          pytest -v candle/test_CandleList.py::test_pickle_dump
