@@ -24,3 +24,4 @@ jobs:
           readlink -f tests/data/out/
           pip install pytest && cd tests/forex/
           pytest -v candle/
+          pytest -v harea/
