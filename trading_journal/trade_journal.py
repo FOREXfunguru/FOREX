@@ -5,6 +5,7 @@ import math
 import re
 import pdb
 from trading_journal.trade import Trade
+from forex.params import tjournal_params
 from openpyxl import load_workbook, Workbook
 
 # create logger
@@ -100,22 +101,15 @@ class TradeJournal(object):
 
         return number_s, number_f, tot_pips
 
-    def write_tradelist(self, trade_list, sheet_name):
+    def write_tradelist(self, trade_list: list[Trade], sheet_name: str)->None:
+        '''Write the TradeList to the Excel spreadsheet
+        pointed by the trade_journal.
+
+        Arguments:
+            trade_list : List of Trade objects, Required
+            sheet_name : worksheet name
         '''
-        Write the TradeList to the Excel spreadsheet
-        pointed by the trade_journal
-
-        Parameters
-        ----------
-        trade_list : List of Trade objects, Required
-        sheet_name : worksheet name
-
-        Returns
-        -------
-        Nothing
-        '''
-        colnames = CONFIG.get("trade_journal", "colnames").split(",")
-
+        colnames = tjournal_params.colnames.split(",")
         data = []
         for t in trade_list:
             row = []
@@ -127,7 +121,7 @@ class TradeJournal(object):
                 else:
                     row.append("n.a.")
             data.append(row)
-
+                
         df = pd.DataFrame(data, columns=colnames)
 
         book = load_workbook(self.url)

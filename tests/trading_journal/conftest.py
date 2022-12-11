@@ -1,18 +1,19 @@
 import pytest
 import glob
 import os
+import pdb
 
 from trading_journal.trade import Trade
 from trading_journal.trade_journal import TradeJournal
-from forex.candle import CandleList
 from utils import DATA_DIR
 
 @pytest.fixture
 def clean_tmp():
     yield
     print("Cleanup files")
-    files = glob.glob(DATA_DIR+"/imgs/pivots/*")
-    for f in files:
+    files1 = glob.glob(DATA_DIR+"/out/*.png")
+    files2= glob.glob(DATA_DIR+"/out/*.xlsx")
+    for f in files1 + files2:
         os.remove(f)
 
 @pytest.fixture
@@ -43,7 +44,7 @@ def t_object_list(scope="session"):
         TP=0.75592,
         SL=0.74718,
         SR=0.74784,
-        pair="AUD/USD",
+        pair="AUD_USD",
         type="long",
         timeframe="H8",
         strat="counter_b1",
