@@ -22,9 +22,15 @@ jobs:
           export TOKEN=${{ secrets.OANDA_TOKEN  }}
           pip install pytest && cd tests/forex/
           pytest -s -v
-      - name: Test forex library with pytest
+      - name: Test api library with pytest
         run: |
           export PYTHONPATH=$PWD
           export TOKEN=${{ secrets.OANDA_TOKEN  }}
           pip install pytest && cd tests/api/
+          pytest -s -v
+      - name: Test trade_bot library with pytest
+        run: |
+          export PYTHONPATH=$PWD
+          export TOKEN=${{ secrets.OANDA_TOKEN  }}
+          pip install pytest && cd tests/trade_bot/
           pytest -s -v
