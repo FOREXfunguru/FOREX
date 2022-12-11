@@ -16,11 +16,15 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
-      - name: Test with pytest
+      - name: Test forex library with pytest
         run: |
           export PYTHONPATH=$PWD
           export TOKEN=${{ secrets.OANDA_TOKEN  }}
-          echo $TOKEN
-          readlink -f tests/data/out/
           pip install pytest && cd tests/forex/
+          pytest -s -v
+      - name: Test forex library with pytest
+        run: |
+          export PYTHONPATH=$PWD
+          export TOKEN=${{ secrets.OANDA_TOKEN  }}
+          pip install pytest && cd tests/api/
           pytest -s -v

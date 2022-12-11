@@ -42,7 +42,6 @@ def test_calc_rsi(clO_pickled):
 
     assert clO_pickled[15].rsi == 61.54
     assert clO_pickled[50].rsi == 48.59
-    assert 0
 
 def test_rsibounces(clO_pickled):
     log = logging.getLogger('Test for rsi_bounces function')
