@@ -1,0 +1,5 @@
+#pair timeframe upper-price-lower no_pivots tot_score
+EUR_GBP D 0.8375-0.835-0.8325 6.0 5098.9
+EUR_GBP D 0.8735-0.871-0.8685 6.0 3530.9
+EUR_GBP D 0.9095-0.907-0.9045 3.0 1872.3
+EUR_GBP D 0.9335-0.931-0.9285 3.0 3311.1

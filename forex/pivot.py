@@ -3,8 +3,7 @@ import datetime
 import matplotlib.pyplot as plt
 
 from utils import *
-from forex.params import pivots_params
-from forex.params import gparams
+from params import gparams, pivots_params
 
 from forex.segment import SegmentList, Segment
 from zigzag import *

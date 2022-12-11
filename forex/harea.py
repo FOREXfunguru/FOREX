@@ -2,8 +2,7 @@ import logging
 
 from datetime import timedelta,datetime
 from api.oanda.connect import Connect
-from forex.params import gparams
-from typing import List
+from params import gparams
 
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates

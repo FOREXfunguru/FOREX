@@ -13,7 +13,7 @@ import logging
 import pickle
 from utils import *
 
-from forex.params import clist_params
+from params import clist_params
 
 matplotlib.use('PS')
 

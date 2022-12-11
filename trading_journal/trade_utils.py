@@ -4,7 +4,7 @@ import pdb
 import datetime as dt
 
 from utils import *
-from forex.params import counter_params, tradebot_params
+from params import counter_params, tradebot_params
 from forex.candlelist_utils import *
 from forex.pivot import PivotList
 from trading_journal.trade import Trade

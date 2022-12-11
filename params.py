@@ -37,6 +37,32 @@ class counter_params:
     doPlot : bool = True
 
 @dataclass
+class tradebot_params:
+    # quantile used as threshold for selecting S/R
+    th : float = 0.70
+    # invoke 'calc_SR' each 'period' number of candles
+    period : int = 30
+    # number of candles to go back for calculating S/R price
+    # range. This is relevant for trade_bot's get_max_min function and it will
+    # also be relevant to decide how much to go back in time to detect SRs
+    period_range : int = 1500
+    # add this number of pips to max,min for price range to detect S/Rs
+    add_pips : int = 200
+    # Risk Ratio for trades
+    RR : float = 1.5
+    # if true, then a pickled representation of a
+    # list of tuples (datetime, HAreaList)
+    # will be generated. Default: False
+    store_SRlist : bool = True
+    # if true, then a pickled representation of a
+    # list of tuples (datetime, HAreaList)
+    # will be used and calc_SR will be skipped.
+    # Default: False
+    load_SRlist : bool = False
+    # if True, then the trade.run method will be invoked
+    run_trades : bool = False
+
+@dataclass
 class pivots_params:
     # Number of pips above/below SR to identify bounces                                                                                                          \
     hr_pips : int = 25
@@ -91,32 +117,6 @@ class trade_params:
     period_atr : int = 20
     # number of candles to go back when init_clist=True
     trade_period: int = 5000
-
-@dataclass
-class tradebot_params:
-    # quantile used as threshold for selecting S/R
-    th : float = 0.70
-    # invoke 'calc_SR' each 'period' number of candles
-    period : int = 30
-    # number of candles to go back for calculating S/R price
-    # range. This is relevant for trade_bot's get_max_min function and it will
-    # also be relevant to decide how much to go back in time to detect SRs
-    period_range : int = 1500
-    # add this number of pips to max,min for price range to detect S/Rs
-    add_pips : int = 200
-    # Risk Ratio for trades
-    RR : float = 1.5
-    # if true, then a pickled representation of a
-    # list of tuples (datetime, HAreaList)
-    # will be generated. Default: False
-    store_SRlist : bool = True
-    # if true, then a pickled representation of a
-    # list of tuples (datetime, HAreaList)
-    # will be used and calc_SR will be skipped.
-    # Default: False
-    load_SRlist : bool = False
-    # if True, then the trade.run method will be invoked
-    run_trades : bool = False
 
 @dataclass
 class itrend_params:

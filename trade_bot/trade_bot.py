@@ -6,7 +6,7 @@ import pandas as pd
 
 from api.oanda.connect import Connect
 from forex.candle import Candle
-from forex.params import tradebot_params, gparams
+from params import gparams, tradebot_params
 from utils import *
 from forex.pivot import PivotList
 from forex.candlelist_utils import *

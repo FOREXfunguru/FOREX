@@ -1,6 +1,6 @@
 from api.oanda.connect import Connect
 from forex.candle import CandleList
-from forex.params import pivots_params
+from params import pivots_params
 from forex.pivot import PivotList
 
 

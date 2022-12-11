@@ -7,7 +7,7 @@ import datetime
 from forex.pivot import PivotList
 from forex.harea import HArea
 from utils import *
-from forex.params import trade_params
+from params import trade_params
 from api.oanda.connect import Connect
 
 # create logger

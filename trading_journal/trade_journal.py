@@ -5,7 +5,7 @@ import math
 import re
 import pdb
 from trading_journal.trade import Trade
-from forex.params import tjournal_params
+from params import tjournal_params
 from openpyxl import load_workbook, Workbook
 
 # create logger

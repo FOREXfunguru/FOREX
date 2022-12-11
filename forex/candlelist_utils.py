@@ -1,4 +1,5 @@
-from forex.params import tradebot_params, clist_params, pivots_params
+from params import tradebot_params, clist_params, pivots_params
+
 from forex.harea import HArea, HAreaList
 from utils import *
 
