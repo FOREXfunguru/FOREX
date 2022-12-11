@@ -9,14 +9,6 @@ from forex.pivot import PivotList
 from utils import DATA_DIR
 
 @pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    files = glob.glob(DATA_DIR+"/out/*",recursive=True)
-    for f in files:
-        os.remove(f)
-
-@pytest.fixture
 def clO_pickled():
     return CandleList.pickle_load(DATA_DIR+"/clist_audusd_2010_2020.pckl")
 

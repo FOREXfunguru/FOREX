@@ -22,7 +22,7 @@ def test_pickle_dump(clO):
     log = logging.getLogger('Test for pickle_dump')
     log.debug('pickle_dump')
 
-    clO.pickle_dump(DATA_DIR+"/out/clist.pckl")
+    clO.pickle_dump(f"{DATA_DIR}/out/clist.pckl")
 
     assert os.path.exists(DATA_DIR+"/out/clist.pckl") == 1
 
