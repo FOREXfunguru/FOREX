@@ -25,3 +25,5 @@ jobs:
           pip install pytest && cd tests/forex/
           pytest -v candle/
           pytest -v harea/
+          pytest -v pivot/
+

@@ -470,7 +470,6 @@ class PivotList(object):
         '''
         p_logger.debug("Running calc_itrend")
         for p in reversed(self.pivots):
-            pdb.set_trace()
             adj_t = p.adjust_pivottime(clistO=self.clist)
             start = self.pivots[0].candle.time
             newclist = self.clist.slice(start= start,
