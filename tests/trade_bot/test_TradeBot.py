@@ -15,7 +15,7 @@ def test_run(tb_object, clean_tmp):
     Check 'run' function with a TradeBot that does not
     return any trade
     """
-    assert len(tb_object.run()) == 2
+    assert len(tb_object.run()) == 1
 
 def test_run1():
     """
@@ -29,4 +29,4 @@ def test_run1():
         end='2018-02-06 22:00:00')
     tl = tb.run()
 
-    assert len(tl) == 4
+    assert len(tl) == 3
