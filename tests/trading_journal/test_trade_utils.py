@@ -5,7 +5,6 @@ import datetime
 from trading_journal.trade_utils import *
 from trading_journal.trade import Trade
 from api.oanda.connect import Connect
-from forex.candle import CandleList
 
 @pytest.mark.parametrize("pair,"
                          "timeframe,"
@@ -166,6 +165,24 @@ def test_get_trade_type(start, end, type):
                      end=end.isoformat())
 
     assert type == get_trade_type(end, cl)
+
+def test_adjust_SL_short(clO_pickled):
+    """Test adjust_SL function with a short trade"""
+    start = datetime(2018, 9, 2, 21, 0)
+    end = datetime(2020, 9, 2, 21, 0)
+    subClO = clO_pickled.slice(start=start, end=end)
+    SL = adjust_SL('short', subClO)
+
+    assert SL==0.74138
+
+def test_adjust_SL_long(clO_pickled):
+    """Test adjust_SL function with a short trade"""
+    start = datetime(2019, 9, 28, 21, 0)
+    end = datetime(2020, 9, 28, 21, 0)
+    subClO = clO_pickled.slice(start=start, end=end)
+    SL = adjust_SL('long', subClO)
+
+    assert SL==0.70061
 
 """
 TOFIX
