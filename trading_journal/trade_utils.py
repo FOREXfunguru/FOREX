@@ -13,7 +13,7 @@ from trading_journal.trade import Trade
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
 
-def is_entry_onrsi(trade):
+def is_entry_onrsi(trade: Trade)->bool:
     '''Function to check if tObj.start is on RSI.
 
     Arguments:
@@ -29,7 +29,7 @@ def is_entry_onrsi(trade):
     else:
         return False
 
-def get_lasttime(trade):
+def get_lasttime(trade: Trade):
         '''
         Function to calculate the last time price has been above/below
         a certain HArea.
@@ -127,7 +127,6 @@ def calc_pips_c_trend(trade)->float:
         trade : Trade object
                 Used for the calculation
     '''
-    pdb.set_trace()
     sub_cl = trade.clist.slice(start=trade.get_trend_i(),
                                end =trade.start)
 
@@ -186,7 +185,7 @@ def calc_adr(trade)->float:
 
     return calc_atr(c_list)
 
-def prepare_trade(tb_obj, type: str, SL: float, ic, harea_sel, delta, add_pips):
+def prepare_trade(tb_obj, type: str, SL: float, ic, harea_sel, delta, add_pips)->Trade:
     '''Prepare a Trade object and check if it is taken.
 
     Arguments:
@@ -252,21 +251,23 @@ def adjust_SL(type: str, clObj, number: int=7)->float:
     '''
     SL = None
     ix = 0
+    if not clObj.candles:
+        raise Exception("No candles in CandleList. Can't calculate the SL")
     for c in reversed(clObj.candles):
         # go back 'number' candles
         if ix == number:
             break
         ix += 1
-        price = c.c
-        if SL is None:
-            SL = price
-            continue
         if type == 'short':
-            if price > SL:
-                SL = price
+            if SL is None:
+                SL = c.h
+            elif c.h > SL:
+                SL = c.h
         if type == 'long':
-            if price < SL:
-                SL = price
+            if SL is None:
+                SL = c.l
+            if c.l < SL:
+                SL = c.l
     return SL
 
 def calculate_profit(trade)->float:

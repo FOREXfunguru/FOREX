@@ -132,7 +132,7 @@ class CandleList(object):
         elif price_1st < price_last:
             return 'long'
 
-    def fetch_by_time(self, adatetime : datetime, period: int=0):
+    def fetch_by_time(self, adatetime : datetime, period: int=0)->Candle:
         '''Function to get a candle using its datetime
 
         Arguments:
@@ -340,7 +340,7 @@ class CandleList(object):
 
         return cl
 
-    def get_lasttime(self, price: float):
+    def get_lasttime(self, price: float)->datetime:
         '''Function to get the datetime for last time that price has been above/below a HArea
 
         Arguments:

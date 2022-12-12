@@ -46,8 +46,8 @@ class tradebot_params:
     # range. This is relevant for trade_bot's get_max_min function and it will
     # also be relevant to decide how much to go back in time to detect SRs
     period_range : int = 1500
-    # add this number of pips to max,min for price range to detect S/Rs
-    add_pips : int = 200
+    # add this number of pips to SL and entry
+    add_pips : int = 10
     # Risk Ratio for trades
     RR : float = 1.5
     # if true, then a pickled representation of a

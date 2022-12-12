@@ -31,12 +31,12 @@ class TradeBot(object):
         self.pair = pair
         self.timeframe = timeframe
 
-    def run(self, discard_sat=True):
+    def run(self, discard_sat: bool=True):
         '''This function will run the Bot from start to end
         one candle at a time.
 
         Arguments:
-            discard_sat: If this is set to True, then the Trade wil not
+            discard_sat: If True, then the Trade wil not
                          be taken if IC falls on a Saturday
 
         Returns:
