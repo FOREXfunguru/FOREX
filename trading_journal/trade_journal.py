@@ -112,6 +112,8 @@ class TradeJournal(object):
         colnames = tjournal_params.colnames.split(",")
         data = []
         for t in trade_list:
+            id = f"{t.pair} {t.start.strftime('%Y%m%d')}"
+            t.id = id
             row = []
             for key in colnames:
                 # some keys are not defined for some of the Trade
