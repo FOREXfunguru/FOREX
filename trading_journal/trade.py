@@ -32,7 +32,7 @@ class Trade(object):
         SR:  float, Support/Resistance area
         RR:  float, Risk Ratio
         pips:  Number of pips of profit/loss. This number will be negative if outcome was failure
-        clist: CandleList object"""
+        clist: CandleList object used to represent this trade"""
 
     def __init__(self, init_clist:bool=False, **kwargs)->None:
         allowed_keys = ['entered', 'start', 'end', 'pair', 'timeframe', 'outcome', 'entry', 'exit', 

@@ -24,12 +24,14 @@ class TradeBot(object):
         end: Datetime that this Bot will end operating. i.e. 20-03-2020 08:20:00s
         pair: Currency pair used in the trade. i.e. AUD_USD
         timeframe: Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4,H1
+        clist: CandleList object used to represent this trade
     '''
-    def __init__(self, start:datetime, end:datetime, pair:str, timeframe:str):
+    def __init__(self, start:datetime, end:datetime, pair:str, timeframe:str, clist: CandleList):
         self.start = start
         self.end = end
         self.pair = pair
         self.timeframe = timeframe
+        self.clist = clist
 
     def run(self, discard_sat: bool=True):
         '''This function will run the Bot from start to end
