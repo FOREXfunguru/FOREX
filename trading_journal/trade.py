@@ -39,7 +39,7 @@ class Trade(object):
         'entry_time', 'type', 'SL', 'TP', 'SR', 'RR', 'pips', 'clist', 'strat']
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         if init_clist and not hasattr(self, 'clist'):
-            self._init_clist()
+            self.init_clist()
         self.__dict__.update({'start' : try_parsing_date(self.__dict__['start'])})
         if hasattr(self, 'end'):
             self.__dict__.update({'end' : try_parsing_date(self.__dict__['end'])})
@@ -56,10 +56,12 @@ class Trade(object):
             diff = (self.entry - self.SL) * self.RR
             self.TP = round(self.entry + diff, 4)
     
-    def _init_clist(self)->None:
+    def init_clist(self)->None:
         '''Init clist for this Trade'''
         delta = periodToDelta(trade_params.trade_period, self.timeframe)
-        start = try_parsing_date(self.start)
+        start = self.start
+        if not isinstance(start, datetime):
+            start = try_parsing_date(start)
         nstart = start - delta
 
         conn = Connect(
