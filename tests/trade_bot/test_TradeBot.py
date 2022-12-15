@@ -30,3 +30,17 @@ def test_run1():
     tl = tb.run()
 
     assert len(tl) == 3
+
+def test_run_withclist(clO_pickled):
+    """
+    Test tradebot using a pickled CandleList
+    """
+    tb = TradeBot(
+        pair='AUD_USD',
+        timeframe='D',
+        start='2018-01-22 22:00:00',
+        end='2018-02-06 22:00:00',
+        clist=clO_pickled)
+    tl = tb.run()
+
+    assert len(tl) == 3
