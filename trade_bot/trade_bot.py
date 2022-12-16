@@ -5,7 +5,7 @@ from datetime import datetime
 import pandas as pd
 
 from api.oanda.connect import Connect
-from forex.candle import Candle
+from forex.candle import Candle, CandleList
 from params import gparams, tradebot_params
 from utils import *
 from forex.pivot import PivotList
@@ -20,16 +20,40 @@ class TradeBot(object):
     '''This class represents an automatic Trading bot.
 
     Class variables:
-        start: Datetime that this Bot will start operating. i.e. 20-03-2017 08:20:00s
-        end: Datetime that this Bot will end operating. i.e. 20-03-2020 08:20:00s
+        start: str with datetime that this Bot will start operating. i.e. 20-03-2017 08:20:00s
+        end: str with datetime that this Bot will end operating. i.e. 20-03-2020 08:20:00s
         pair: Currency pair used in the trade. i.e. AUD_USD
         timeframe: Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4,H1
+        clist: CandleList object used to represent this trade
     '''
-    def __init__(self, start:datetime, end:datetime, pair:str, timeframe:str):
-        self.start = start
-        self.end = end
+    def __init__(self, start:datetime, end:datetime, pair:str, timeframe:str, clist: CandleList=None):
+        self.start = try_parsing_date(start)
+        self.end = try_parsing_date(end)
         self.pair = pair
         self.timeframe = timeframe
+        self.clist = clist
+        # calculate the start datetime for the CList that will be used
+        # for calculating the S/R areas
+        delta_period = periodToDelta(tradebot_params.period_range,
+                                     self.timeframe)
+        initc_date = self.start-delta_period
+        self.initc_date = initc_date
+        if not clist:
+            self.init_clist()
+        else:
+            clO = self.clist.slice(start=initc_date,
+                                   end=self.end)
+            self.clist = clO
+    
+    def init_clist(self)->None:
+        '''Init clist for this TradeBot'''
+
+        conn = Connect(
+            instrument=self.pair,
+            granularity=self.timeframe)
+        clO = conn.query(self.initc_date.isoformat(), self.end.isoformat())
+        self.clist = clO
+        
 
     def run(self, discard_sat: bool=True):
         '''This function will run the Bot from start to end
@@ -44,8 +68,6 @@ class TradeBot(object):
             were found
         '''
         tb_logger.info("Running...")
-        conn = Connect(instrument=self.pair,
-                       granularity=self.timeframe)
 
         delta = nhours = None
         if self.timeframe == "D":
@@ -58,28 +80,17 @@ class TradeBot(object):
                 nhours = int(self.timeframe.replace('H', ''))
                 delta = timedelta(hours=int(nhours))
 
-        # convert to datetime the start and end for this TradeBot
-        startO = pd.datetime.strptime(self.start, '%Y-%m-%d %H:%M:%S')
-        endO = pd.datetime.strptime(self.end, '%Y-%m-%d %H:%M:%S')
-
+        startO = self.start
         loop = 0
         SRlst = None
-        # calculate the start datetime for the CList that will be used
-        # for calculating the S/R areas
-        delta_period = periodToDelta(tradebot_params.period_range,
-                                     self.timeframe)
-        initc_date = startO-delta_period
-        # Get now a CandleList from 'initc_date' to 'startO' which is the
-        # total time interval for this TradeBot
-        clO = conn.query(start=initc_date.isoformat(),
-                         end=endO.isoformat())
-
         tlist = []
-        while startO <= endO:
+        while startO <= self.end:
             tb_logger.info("Trade bot - analyzing candle: {0}".format(startO.isoformat()))
-            subclO = clO.slice(initc_date, startO)
+            # Get now a CandleList from 'initc_date' to 'self.start' which is the
+            # total time interval for this TradeBot
+            subclO = self.clist.slice(self.initc_date, startO)
             sub_pvtlst = PivotList(clist=subclO)
-            dt_str = startO.strftime("%d_%m_%Y_%H_%M")
+            dt_str = self.start.strftime("%d_%m_%Y_%H_%M")
             if loop == 0:
                 outfile_txt = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.txt"
                 outfile_png = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.png"
@@ -108,8 +119,11 @@ class TradeBot(object):
 
             #  Fetch candle for current datetime. this is the current candle that
             # is being checked
-            c_candle = conn.query(start=startO.isoformat(),
-                                  count=1).candles[0]
+            c_candle = self.clist.fetch_by_time(startO)
+            if c_candle is None:
+                startO = startO+delta
+                loop += 1
+                continue
 
             # c_candle.time is not equal to startO
             # when startO is non-working day, for example
@@ -125,7 +139,7 @@ class TradeBot(object):
             HAreaSel, sel_ix = SRlst.onArea(candle=c_candle)
             if HAreaSel is not None:
                 # guess the if trade is 'long' or 'short'
-                newCl = clO.slice(start=initc_date, end=c_candle.time)
+                newCl = self.clist.slice(start=self.initc_date, end=c_candle.time)
                 type = get_trade_type(c_candle.time, newCl)
                 SL = adjust_SL(type, newCl)
                 prepare = False

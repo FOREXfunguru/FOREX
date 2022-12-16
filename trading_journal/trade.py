@@ -32,11 +32,11 @@ class Trade(object):
         SR:  float, Support/Resistance area
         RR:  float, Risk Ratio
         pips:  Number of pips of profit/loss. This number will be negative if outcome was failure
-        clist: CandleList object"""
+        clist: CandleList object used to represent this trade"""
 
     def __init__(self, init_clist:bool=False, **kwargs)->None:
         allowed_keys = ['entered', 'start', 'end', 'pair', 'timeframe', 'outcome', 'entry', 'exit', 
-        'entry_time', 'type', 'SL', 'TP', 'SR', 'RR', 'pips', 'clist', 'strat']
+        'entry_time', 'type', 'SL', 'TP', 'SR', 'RR', 'pips', 'clist', 'strat', 'tot_SR', 'rank_selSR' ]
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         if init_clist and not hasattr(self, 'clist'):
             self.init_clist()
