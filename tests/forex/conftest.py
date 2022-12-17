@@ -1,6 +1,4 @@
 import pytest
-import os
-import glob
 import pdb
 
 from forex.candle import CandleList

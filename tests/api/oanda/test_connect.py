@@ -2,7 +2,6 @@ import pytest
 import logging
 import pdb
 import os
-import datetime
 
 from api.oanda.connect import Connect
 from utils import DATA_DIR

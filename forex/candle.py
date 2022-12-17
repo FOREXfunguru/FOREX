@@ -122,6 +122,15 @@ class CandleList(object):
     def __len__(self):
         return len(self.candles)
     
+    def __add__(self, ClO):
+
+        clist = self.candles + ClO.candles
+        clist = [x.__dict__ for x in clist]
+        newClO = CandleList(instrument=self.instrument,
+                            granularity=self.granularity,
+                            data=clist)
+        return newClO
+    
     def _guess_type(self)->str:
         if len(self.candles)==0:
             return None
@@ -399,3 +408,5 @@ class CandleList(object):
                 if price < min:
                     min = price
         return min
+
+    
