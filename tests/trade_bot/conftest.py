@@ -10,10 +10,9 @@ from utils import DATA_DIR
 def clean_tmp():
     yield
     print("Cleanup files")
-    files1 = glob.glob(DATA_DIR+"imgs/pivots/*")
-    files2 = glob.glob(DATA_DIR+"imgs/srareas/*")
-    files3 = glob.glob(DATA_DIR+"imgs/fitted_line/*")
-    files = files1 + files2 + files3
+    files1 = glob.glob(f"{DATA_DIR}/out/*.png")
+    files2 = glob.glob(f"{DATA_DIR}/out/*.txt")
+    files = files1 + files2
     for f in files:
         os.remove(f)
 

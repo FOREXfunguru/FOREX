@@ -17,7 +17,7 @@ def test_run(tb_object, clean_tmp):
     """
     assert len(tb_object.run()) == 1
 
-def test_run1():
+def test_run1(clean_tmp):
     """
     Test tradebot on a really easy to identify
     short trade on a tight time interval
@@ -31,7 +31,7 @@ def test_run1():
 
     assert len(tl) == 3
 
-def test_run_withclist(clO_pickled):
+def test_run_withclist(clO_pickled, clean_tmp):
     """
     Test tradebot using a pickled CandleList
     """
