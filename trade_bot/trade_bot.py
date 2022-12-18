@@ -90,7 +90,7 @@ class TradeBot(object):
             # total time interval for this TradeBot
             subclO = self.clist.slice(self.initc_date, startO)
             sub_pvtlst = PivotList(clist=subclO)
-            dt_str = self.start.strftime("%d_%m_%Y_%H_%M")
+            dt_str = startO.strftime("%d_%m_%Y_%H_%M")
             if loop == 0:
                 outfile_txt = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.txt"
                 outfile_png = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.png"

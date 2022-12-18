@@ -42,9 +42,9 @@ def test_onArea(hlist_factory):
     candle = {'complete': True,
               'volume': 8726, 
               'time': '2018-11-18T22:00:00',
-              'o': '0.68093',
+              'o': '0.68605',
               'h': '0.71258',
-              'l': '0.67776', 
+              'l': '0.68600', 
               'c': '0.70950'}
 
     c_candle = Candle(**candle)

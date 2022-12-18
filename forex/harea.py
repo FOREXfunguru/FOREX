@@ -3,6 +3,7 @@ import logging
 from datetime import timedelta,datetime
 from api.oanda.connect import Connect
 from params import gparams
+from forex.candle import Candle
 
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
@@ -47,7 +48,7 @@ class HArea(object):
         self.upper = round(price+(pips/divisor), 4)
         self.lower = round(price-(pips/divisor), 4)
 
-    def get_cross_time(self, candle, granularity='M30')->datetime:
+    def get_cross_time(self, candle: Candle, granularity='M30')->datetime:
         '''This function is used get the time that the candle
         crosses (go through) HArea
 
@@ -106,7 +107,7 @@ class HAreaList(object):
     def __init__(self, halist):
         self.halist = halist
 
-    def onArea(self, candle):
+    def onArea(self, candle: Candle):
         '''Function that will check which (if any) of the HArea objects
         in this HAreaList will overlap with 'candle'.
 
@@ -114,18 +115,24 @@ class HAreaList(object):
         an overlap
 
         Arguments:
-            candle: Candle object
+            candle: Candle that will be checked
 
         Returns:
             An HArea object overlapping with 'candle' and the ix
-            in self.halist for this HArea.
+            in self.halist for the HArea being crossed. This ix is expressed from the HArea 
+            with the lowest price to the highest price and starting from 0.
+            So if 'sel_ix'=2, then it will be the third HArea 
             None if there are no HArea objects overlapping'''
         onArea_hr = sel_ix = None
         ix = 0
+        seen = False
         for harea in self.halist:
             if harea.price <= float(candle.h) and harea.price >= float(candle.l):
+                if seen:
+                    raise Exception("More than one HArea crosses this candle")
                 onArea_hr = harea
                 sel_ix = ix
+                seen = True
             ix += 1
         return onArea_hr, sel_ix
 
