@@ -2,10 +2,9 @@ import logging
 import pdb
 import datetime
 from datetime import datetime
-import pandas as pd
 
 from api.oanda.connect import Connect
-from forex.candle import Candle, CandleList
+from forex.candle import CandleList
 from params import gparams, tradebot_params
 from utils import *
 from forex.pivot import PivotList
