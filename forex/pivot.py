@@ -16,14 +16,13 @@ class Pivot(object):
     """
     Class representing a single Pivot
 
-    Class variables
-    ---------------
-    type : Type of pivot. It can be 1 or -1
-    candle : Candle object ovrerlapping this pivot
-    pre : Segment object before this pivot
-    aft : Segment object after this pivot
-    score : Result of adding the number
-            of candles of the 'pre' and 'aft' segment (if defined). Optional
+    Class variables:
+        type : Type of pivot. It can be 1 or -1
+        candle : Candle object ovrerlapping this pivot
+        pre : Segment object before this pivot
+        aft : Segment object after this pivot
+        score : Result of adding the number
+                of candles of the 'pre' and 'aft' segment (if defined). Optional
     """
     def __init__(self, type: int, candle, pre, aft,
                  score: int=None):
@@ -322,14 +321,8 @@ class PivotList(object):
 
         return plist_o, segs
 
-    def fetch_by_time(self, d: datetime):
-        '''Function to fetch a Pivot object using a
-        datetime
-
-        Returns:
-            Pivot object
-            None if not Pivot found
-        '''
+    def fetch_by_time(self, d: datetime)->Pivot:
+        '''Function to fetch a Pivot object using a datetime'''
         p = None
         for p in self.pivots:
             if p.candle.time == d:
@@ -341,9 +334,6 @@ class PivotList(object):
 
         Arguments:
             type : 1 or -1
-
-        Returns:
-            PivotList of the desired type
         '''
 
         pl = [p for p in self.pivots if p.type == type]
@@ -483,12 +473,8 @@ class PivotList(object):
 
     def get_pl_bytime(self, adatetime):
         """Function that returns a new PivotList in which
-        the plist is >= 'adatetime'
+        the plist is >= 'adatetime'"""
 
-        Returns
-        -------
-        PivotList object
-        """
         p_logger.debug("Running get_pivots_lasttime")
         new_cl = self.clist.slice(start=adatetime)
         new_PLobj = PivotList(clist=new_cl)

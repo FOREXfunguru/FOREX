@@ -4,7 +4,20 @@ import datetime
 
 from trading_journal.trade_utils import *
 from trading_journal.trade import Trade
-from api.oanda.connect import Connect
+import numpy as np
+
+@pytest.fixture
+def halist_factory():
+    hlist = []
+    for p in np.arange(0.610, 0.80, 0.020):
+        area = HArea(price=p,
+                     pips=30,
+                     instrument='AUD_USD',
+                     granularity='D')
+        hlist.append(area)
+
+    halist = HAreaList(halist=hlist)
+    return halist
 
 @pytest.mark.parametrize("pair,"
                          "timeframe,"
@@ -152,37 +165,47 @@ def test_calc_trade_session(t_object):
 @pytest.mark.parametrize("start,"
                          "end,"
                          "type",
-                         [(datetime(2018, 4, 27, 22, 0, 0), datetime(2020, 4, 27, 21, 0, 0), 'long'),
-                          (datetime(2018, 3, 18, 21, 0, 0), datetime(2020, 3, 18, 21, 0, 0), 'short'),
-                          (datetime(2018, 2, 17, 21, 0, 0), datetime(2020, 2, 17, 21, 0, 0), 'long'),
-                          (datetime(2017, 8, 11, 21, 0, 0), datetime(2019, 8, 11, 21, 0, 0), 'short'),
-                          (datetime(2017, 1, 9, 21, 0, 0), datetime(2019, 1, 9, 21, 0, 0), 'short')])
-def test_get_trade_type(start, end, type):
-    conn = Connect(instrument='EUR_GBP',
-                   granularity='D')
+                         [(datetime(2018, 4, 27, 22, 0, 0), datetime(2020, 4, 27, 21, 0, 0), 'short'),
+                          (datetime(2018, 5, 18, 21, 0, 0), datetime(2020, 3, 18, 21, 0, 0), 'long'),
+                          (datetime(2018, 6, 17, 21, 0, 0), datetime(2020, 1, 17, 21, 0, 0), 'long'),
+                          (datetime(2018, 7, 11, 21, 0, 0), datetime(2019, 8, 11, 21, 0, 0), 'long'),
+                          (datetime(2018, 1, 9, 21, 0, 0), datetime(2019, 1, 9, 21, 0, 0), 'short')])
+def test_get_trade_type(start, end, type, clO_pickled):
+    new_cl = clO_pickled.slice(start=start,
+                               end=end)
 
-    cl = conn.query(start=start.isoformat(),
-                     end=end.isoformat())
+    assert type == get_trade_type(end, new_cl)
 
-    assert type == get_trade_type(end, cl)
-
-def test_adjust_SL_short(clO_pickled):
-    """Test adjust_SL function with a short trade"""
+def test_adjust_SL_candles_short(clO_pickled):
+    """Test adjust_SL_candles function with a short trade"""
     start = datetime(2018, 9, 2, 21, 0)
     end = datetime(2020, 9, 2, 21, 0)
     subClO = clO_pickled.slice(start=start, end=end)
-    SL = adjust_SL('short', subClO)
+    SL = adjust_SL_candles('short', subClO)
 
     assert SL==0.74138
 
-def test_adjust_SL_long(clO_pickled):
-    """Test adjust_SL function with a short trade"""
+def test_adjust_SL_candles_long(clO_pickled):
+    """Test adjust_SL_candles function with a short trade"""
     start = datetime(2019, 9, 28, 21, 0)
     end = datetime(2020, 9, 28, 21, 0)
     subClO = clO_pickled.slice(start=start, end=end)
-    SL = adjust_SL('long', subClO)
+    SL = adjust_SL_candles('long', subClO)
 
     assert SL==0.70061
+
+def test_adjust_SL_pips_short():
+    SL = adjust_SL_pips(0.75138, 'short', pair='AUD_USD')
+    assert 0.7614 == SL
+
+def test_adjust_SL_pips_long():
+    SL = adjust_SL_pips(0.75138, 'long', pair='AUD_USD')
+    assert 0.7414 == SL
+
+def test_adjust_SL_nextSR(halist_factory):
+    SL, TP = adjust_SL_nextSR(halist_factory, 2, 'short')
+    assert SL == 0.67
+    assert TP == 0.63
 
 """
 TOFIX

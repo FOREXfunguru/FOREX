@@ -4,6 +4,7 @@ import datetime
 import os
 import logging
 
+from params import tradebot_params
 from trade_bot.trade_bot import TradeBot
 
 # create logger
@@ -35,6 +36,22 @@ def test_run_withclist(clO_pickled, clean_tmp):
     """
     Test tradebot using a pickled CandleList
     """
+    tb = TradeBot(
+        pair='AUD_USD',
+        timeframe='D',
+        start='2018-01-22 22:00:00',
+        end='2018-02-06 22:00:00',
+        clist=clO_pickled)
+    tl = tb.run()
+
+    assert len(tl) == 3
+
+def test_run_withclist_nextSR(clO_pickled, clean_tmp):
+    """
+    Test tradebot using a pickled CandleList and tradebot_params.adj_SL = 'nextSR'
+    """
+    tradebot_params.adj_SL='nextSR'
+
     tb = TradeBot(
         pair='AUD_USD',
         timeframe='D',

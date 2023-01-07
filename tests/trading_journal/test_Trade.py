@@ -2,6 +2,7 @@ import pytest
 import pdb
 
 from trading_journal.trade import Trade
+from params import trade_params
 
 def test_init_clist():
     '''
@@ -18,13 +19,33 @@ def test_init_clist():
             init_clist=True)
     assert len(td.clist.candles) == 4104
 
-@pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome", [
-        ('AUD_USD', '2017-05-10 21:00:00', 'long', 0.73176, 0.75323, 0.73953, 'success'),
-        ('AUD_USD', '2017-06-08 21:00:00', 'short', 0.75715, 0.74594, 0.75255, 'failure')])
-def test_run_trade(pair, start, type, SL, TP, entry, outcome, clO_pickled):
+def test_run_single_trade(clO_pickled):
     '''
-    This test checks the progression of the Trade
-    and checks if the outcome attribute is correctly
+    This test checks the progression of the Trade and checks if several Trade attributes
+    are correctly defined
+    '''
+    td = Trade(
+            start='2017-05-10 21:00:00',
+            entry=0.73953,
+            SL=0.73176,
+            TP=0.75323,
+            pair='AUD_USD',
+            type='long',
+            timeframe="D",
+            clist=clO_pickled)
+    td.run_trade()
+    td.start == '2017-05-10 21:00:00'
+    td.entry_time == '2017-05-11T21:00:00'
+    td.outcome == 'success'
+    td.pips == 137.0
+    td.end == '2017-06-06 21:00:00'
+
+@pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome, pips", [
+        ('AUD_USD', '2017-05-10 21:00:00', 'long', 0.73176, 0.75323, 0.73953, 'success', 137.0),
+        ('AUD_USD', '2017-06-08 21:00:00', 'short', 0.75715, 0.74594, 0.75255, 'failure', -46)])
+def test_run_trade(pair, start, type, SL, TP, entry, outcome, pips, clO_pickled):
+    '''
+    This test checks the progression of the Trade and checks if the outcome attribute is correctly
     defined.
     '''
     td = Trade(
@@ -38,6 +59,7 @@ def test_run_trade(pair, start, type, SL, TP, entry, outcome, clO_pickled):
             clist=clO_pickled)
     td.run_trade()
     assert td.outcome == outcome
+    assert td.pips == pips
 
 @pytest.mark.parametrize("pair,start,type,SL,TP,entry,entered", [('AUD_USD', '2017-03-14 22:00:00', 'short', 0.87885,
                                                                   0.8487, 0.86677, False),

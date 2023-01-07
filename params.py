@@ -17,9 +17,7 @@ class gparams:
 @dataclass
 class tjournal_params:
     # Column names that will be written in the output worksheet
-    colnames : str = 'id,timeframe,start,strat,type,entry,session,TP,SL,SR,tot_SR,rank_selSR,entry_time,outcome,pips,SLdiff,lasttime,pivots,\
-                     pivots_lasttime,total_score,score_lasttime,score_pivot,score_pivot_lasttime,trend_i,entry_onrsi,\
-                     pips_c_trend,max_min_rsi'
+    colnames : str = 'id,timeframe,start,end,strat,type,entry,session,TP,SL,SR,tot_SR,rank_selSR,entry_time,outcome,pips,SLdiff,lasttime,pivots,pivots_lasttime,total_score,score_lasttime,score_pivot,score_pivot_lasttime,trend_i,entry_onrsi,pips_c_trend,max_min_rsi'
 
 @dataclass
 class counter_params:
@@ -50,17 +48,12 @@ class tradebot_params:
     add_pips : int = 10
     # Risk Ratio for trades
     RR : float = 1.5
-    # if true, then a pickled representation of a
-    # list of tuples (datetime, HAreaList)
-    # will be generated. Default: False
-    store_SRlist : bool = True
-    # if true, then a pickled representation of a
-    # list of tuples (datetime, HAreaList)
-    # will be used and calc_SR will be skipped.
-    # Default: False
-    load_SRlist : bool = False
-    # if True, then the trade.run method will be invoked
-    run_trades : bool = False
+    # adjust_SL type
+    adj_SL : str = 'candles'
+
+    def __post_init__(self):
+        if not self.adj_SL in ['candles', 'pips', 'nextSR']:
+            raise ValueError(f"{self.adj_SL} is not a valid for adj_SL")
 
 @dataclass
 class pivots_params:

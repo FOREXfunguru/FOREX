@@ -96,9 +96,16 @@ def test_slice_with_start_end(clO_pickled):
 def test_last_time(clO_pickled):
     log = logging.getLogger('Test for last_time function')
     log.debug('last_time')
+    subCl1 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2017, 1, 3, 22, 0))
+    subCl2 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2019, 7, 19, 22, 0))
+    subCl3 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2018, 1, 26, 22, 0))
 
-    lt = clO_pickled.get_lasttime(price=0.78608)
-    assert lt.isoformat() == '2018-02-19T22:00:00'
+    lt1 = subCl1.get_lasttime(price=0.71754, type='long')
+    lt2 = subCl2.get_lasttime(price=0.70621, type='short')
+    lt3 = subCl3.get_lasttime(price=0.80879, type='short')
+    assert lt1.isoformat() == '2016-02-28T22:00:00'
+    assert lt2.isoformat() == '2019-04-22T21:00:00'
+    assert lt3.isoformat() == '2015-01-19T22:00:00'
 
 def test_get_highest(clO_pickled):
     log = logging.getLogger('Test get_highest')

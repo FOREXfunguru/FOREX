@@ -4,6 +4,7 @@ import os
 import pytest
 
 from utils import DATA_DIR
+from forex.pivot import PivotList
 
 def test_get_score(pivotlist):
     """
@@ -71,9 +72,17 @@ def test_pivots_report(pivotlist, clean_tmp):
     outfile = f"{DATA_DIR}/out/{pivotlist.clist.instrument}.preport.txt"
     pivotlist.pivots_report(outfile=outfile)
 
-
-@pytest.mark.parametrize('itrend',
-                         [(datetime.datetime(2020, 10, 28, 21, 0))])
-def test_calc_itrend(itrend, pivotlist):
+def test_calc_itrend(clO_pickled):
     """Calc init of trend"""
-    assert itrend == pivotlist.calc_itrend().start()
+    
+    subCl1 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2020, 6, 10, 22, 0))
+    subCl2 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2020, 3, 19, 22, 0))
+    subCl3 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2017, 12, 8, 22, 0))
+
+    pl1 = PivotList(clist=subCl1)
+    pl2 = PivotList(clist=subCl2)
+    pl3 = PivotList(clist=subCl3)
+
+    assert pl1.calc_itrend().start() == datetime.datetime(2020, 3, 18, 21, 0)
+    assert pl2.calc_itrend().start() == datetime.datetime(2020, 2, 27, 22, 0)
+    assert pl3.calc_itrend().start() == datetime.datetime(2017, 9, 7, 21, 0)

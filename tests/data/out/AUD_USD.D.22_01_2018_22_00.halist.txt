@@ -1,5 +1,0 @@
-#pair timeframe upper-price-lower no_pivots tot_score
-AUD_USD D 0.6939-0.6914-0.6889 3.0 1681.5
-AUD_USD D 0.7719-0.7694-0.7669 6.0 3707.9
-AUD_USD D 0.8139-0.8114-0.8089 3.0 1868.1
-AUD_USD D 0.8679-0.8654-0.8629 3.0 2310.2

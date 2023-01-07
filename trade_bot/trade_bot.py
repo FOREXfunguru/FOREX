@@ -20,8 +20,8 @@ class TradeBot(object):
     '''This class represents an automatic Trading bot.
 
     Class variables:
-        start: str with datetime that this Bot will start operating. i.e. 20-03-2017 08:20:00s
-        end: str with datetime that this Bot will end operating. i.e. 20-03-2020 08:20:00s
+        start: datetime that this Bot will start operating. i.e. 20-03-2017 08:20:00s
+        end: datetime that this Bot will end operating. i.e. 20-03-2020 08:20:00s
         pair: Currency pair used in the trade. i.e. AUD_USD
         timeframe: Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4,H1
         clist: CandleList object used to represent this trade
@@ -51,10 +51,10 @@ class TradeBot(object):
         conn = Connect(
             instrument=self.pair,
             granularity=self.timeframe)
+
         clO = conn.query(self.initc_date.isoformat(), self.end.isoformat())
         self.clist = clO
         
-
     def run(self, discard_sat: bool=True):
         '''This function will run the Bot from start to end
         one candle at a time.
@@ -82,7 +82,7 @@ class TradeBot(object):
 
         startO = self.start
         loop = 0
-        SRlst = None
+        SRlst, TP = None, None
         tlist = []
         while startO <= self.end:
             tb_logger.info("Trade bot - analyzing candle: {0}".format(startO.isoformat()))
@@ -90,7 +90,7 @@ class TradeBot(object):
             # total time interval for this TradeBot
             subclO = self.clist.slice(self.initc_date, startO)
             sub_pvtlst = PivotList(clist=subclO)
-            dt_str = self.start.strftime("%d_%m_%Y_%H_%M")
+            dt_str = startO.strftime("%d_%m_%Y_%H_%M")
             if loop == 0:
                 outfile_txt = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.txt"
                 outfile_png = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.png"
@@ -141,7 +141,20 @@ class TradeBot(object):
                 # guess the if trade is 'long' or 'short'
                 newCl = self.clist.slice(start=self.initc_date, end=c_candle.time)
                 type = get_trade_type(c_candle.time, newCl)
-                SL = adjust_SL(type, newCl)
+                if tradebot_params.adj_SL == 'candles':
+                    SL = adjust_SL_candles(type, newCl)
+                elif tradebot_params.adj_SL == 'pips':
+                    if type == 'short':
+                        SL = adjust_SL_pips(c_candle.h, type, pair=self.pair)
+                    else:
+                        SL = adjust_SL_pips(c_candle.l, type, pair=self.pair)
+                else:
+                    SL, TP = adjust_SL_nextSR(SRlst, sel_ix, type)
+                    if not SL:
+                        if type == 'short':
+                            SL = adjust_SL_pips(c_candle.h, type, pair=self.pair)
+                        else:
+                            SL = adjust_SL_pips(c_candle.l, type, pair=self.pair)
                 prepare = False
                 if c_candle.indecision_c(ic_perc=gparams.ic_perc) is True:
                     prepare = True
@@ -160,6 +173,7 @@ class TradeBot(object):
                         tb_obj=self,
                         type=type,
                         SL=SL,
+                        TP=TP,
                         ic=c_candle,
                         harea_sel=HAreaSel,
                         delta=delta,
@@ -168,6 +182,9 @@ class TradeBot(object):
                     t.rank_selSR = sel_ix
                     t.SRlst = SRlst
                     tlist.append(t)
+                    res = validate_trade(t)
+                    if not res:
+                        raise Exception(f"Invalid TP, SL, entry configuration! for {t.start}. Type: {t.type}-{t.TP};{t.entry},{t.SL}")
             startO = startO+delta
             loop += 1
 

@@ -49,7 +49,7 @@ def add_pips2price(pair: str, price: float, pips: int)->float:
 
     Arguments:
         pair : Currency pair used in the trade. i.e. AUD_USD
-        price : This price
+        price : Price
         pips : Number of pips to increase
 
     Returns:

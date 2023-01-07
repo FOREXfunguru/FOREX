@@ -1,6 +1,5 @@
 from __future__ import division
 
-import math
 import logging
 import datetime
 
@@ -41,18 +40,16 @@ class Trade(object):
         if init_clist and not hasattr(self, 'clist'):
             self.init_clist()
         self.__dict__.update({'start' : try_parsing_date(self.__dict__['start'])})
-        if hasattr(self, 'end'):
+        if hasattr(self, 'end') and isinstance(self.end, datetime):
             self.__dict__.update({'end' : try_parsing_date(self.__dict__['end'])})
         self._validate_params()
+        self.SLdiff = self.get_SLdiff()
 
     def _validate_params(self):
         if not hasattr(self, 'TP') and not hasattr(self, 'RR'):
             raise Exception("Neither the RR not "
                             "the TP is defined. Please provide RR")
-        elif not hasattr(self, 'TP') and math.isnan(self.RR):
-            raise Exception("Neither the RR not "
-                            "the TP is defined. Please provide RR")
-        elif hasattr(self, 'RR') and not math.isnan(self.RR):
+        elif hasattr(self, 'RR') and not self.TP:
             diff = (self.entry - self.SL) * self.RR
             self.TP = round(self.entry + diff, 4)
     
@@ -125,56 +122,51 @@ class Trade(object):
                     break
             cl = self.clist.fetch_by_time(d)
             if cl is None:
-                conn = Connect(
-                    instrument=self.pair,
-                    granularity=self.timeframe)
-                clO = conn.query(start=d.isoformat(), end=d.isoformat())
-                if len(clO.candles)==1:
-                    cl = clO.candles[0]
-                elif len(clO.candles)>1:
-                    raise Exception("No valid number of candles in CandleList")
-                else:
+                try:
+                    conn = Connect(
+                        instrument=self.pair,
+                        granularity=self.timeframe)
+                    clO = conn.query(start=d.isoformat(), end=d.isoformat())
+                    if len(clO.candles)==1:
+                        cl = clO.candles[0]
+                    elif len(clO.candles)>1:
+                        raise Exception("No valid number of candles in CandleList")
+                except:
                     continue
-                
             if self.entered is False:
-                entry_time = entry.get_cross_time(candle=cl,
-                                                  granularity=trade_params.granularity)
-                if entry_time != 'n.a.':
+                if cl.l <= entry.price <= cl.h:
                     t_logger.info("Trade entered")
-                    self.entry_time = entry_time.isoformat()
                     self.entered = True
+                    try:
+                        entry_time = entry.get_cross_time(candle=cl,
+                                                          granularity=trade_params.granularity)
+                        self.entry_time = entry_time.isoformat()
+                    except:
+                        self.entry_time = cl.time.isoformat()
             if self.entered is True:
-                # will be n.a. if cl does not cross SL
-                failure_time = SL.get_cross_time(candle=cl,
-                                                 granularity=trade_params.granularity)
-                # sometimes there is a jump in the price and SL is not crossed
-                is_gap = False
-                if (self.type == "short" and cl.l > SL.price) or\
-                        (self.type == "long" and cl.h < SL.price):
-                    is_gap = True
-                    failure_time = d
-                if (failure_time is not None and failure_time != 'n.a.') or is_gap is True:
-                    self.outcome = 'failure'
-                    self.end = failure_time
+                # check if failure
+                if cl.l <= SL.price <= cl.h:
+                    t_logger.info("Sorry, SL was hit!")
                     self.exit = SL.price
+                    self.outcome = 'failure'
                     self.pips = float(calculate_pips(self.pair, abs(self.SL-self.entry)))*-1
-                    t_logger.info("S/L was hit")
+                    try:
+                        self.end = SL.get_cross_time(candle=cl,
+                                                     granularity=trade_params.granularity)
+                    except:
+                        self.end = cl.time
                     break
-                # will be n.a. if cl does not cross TP
-                success_time = TP.get_cross_time(candle=cl,
-                                                 granularity=trade_params.granularity)
-                # sometimes there is a jump in the price and TP is not crossed
-                is_gap = False
-                if (self.type == "short" and cl.h < TP.price) or\
-                        (self.type == "long" and cl.l > TP.price):
-                    is_gap = True
-                    success_time = d
-                if (success_time is not None and success_time !='n.a.') or is_gap is True:
+                # check if success
+                if cl.l <= TP.price <= cl.h:
+                    t_logger.info("Great, TP was hit!")
                     self.outcome = 'success'
-                    t_logger.info("T/P was hit")
-                    self.end = success_time
                     self.exit = TP.price
                     self.pips = float(calculate_pips(self.pair, abs(self.TP - self.entry)))
+                    try:
+                        self.end = TP.get_cross_time(candle=cl,
+                                                     granularity=trade_params.granularity)
+                    except:
+                        self.end = cl.time
                     break
         try:
             assert getattr(self, 'outcome')
@@ -182,7 +174,6 @@ class Trade(object):
             t_logger.warning("No outcome could be calculated")
             self.outcome = "n.a."
             self.pips = 0
-
         t_logger.info("Done run_trade")
 
     def get_SLdiff(self)->float:

@@ -137,9 +137,9 @@ class CandleList(object):
         price_1st = self.candles[0].c
         price_last = self.candles[-1].c
         if price_1st > price_last:
-            return 'short'
+            return 'short' # or downtrend
         elif price_1st < price_last:
-            return 'long'
+            return 'long' # or uptrend
 
     def fetch_by_time(self, adatetime : datetime, period: int=0)->Candle:
         '''Function to get a candle using its datetime
@@ -154,9 +154,7 @@ class CandleList(object):
         '''
 
         d=adatetime
-        delta = None
-        delta_period = None
-
+        delta, delta_period = None, None
         if self.granularity == "D":
             delta = timedelta(hours=24)
             delta_period = timedelta(hours=24*period)
@@ -349,28 +347,25 @@ class CandleList(object):
 
         return cl
 
-    def get_lasttime(self, price: float)->datetime:
-        '''Function to get the datetime for last time that price has been above/below a HArea
+    def get_lasttime(self, price: float, type: str)->datetime:
+        '''Function to get the datetime for last time that price has been above/below a price level
 
         Arguments:
             price: value to calculate the last time in this CandleList the price was above/below
+            trade type: either long/short
         '''
-        if self.type == "short":
-            position = 'above'
-        if self.type == "long":
-            position = 'below'
-
+       
         count = 0
         for c in reversed(self.candles):
             count += 1
             # Last time has to be at least forexparams.min candles before
             if count <= clist_params.min :
                 continue
-            if position == 'above':
-                if c.l > price:
-                    return c.time
-            elif position == 'below':
+            if type == 'long':
                 if c.h < price:
+                    return c.time
+            elif type == 'short':
+                if c.l > price:
                     return c.time
         
         return self.candles[0].time

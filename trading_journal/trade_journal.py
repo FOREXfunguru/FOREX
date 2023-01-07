@@ -7,6 +7,7 @@ import pdb
 from trading_journal.trade import Trade
 from params import tjournal_params
 from openpyxl import load_workbook, Workbook
+import openpyxl
 
 # create logger
 tj_logger = logging.getLogger(__name__)
@@ -19,7 +20,7 @@ class TradeJournal(object):
     Class variables:
         url: path to the .xlsx file with the trade journal
         worksheet: Name of the worksheet that will be used to create the object.
-                   i.e. trading_journal
+                   i.e. 'trading_journal'
     '''
     def __init__(self, url:str, worksheet:str):
         self.url = url
@@ -41,12 +42,8 @@ class TradeJournal(object):
             wb.create_sheet(worksheet)
             wb.save(str(self.url))
 
-    def fetch_trades(self):
-        '''Function to fetch a list of Trade objects.
-
-        Returns:
-            list with trades
-        '''
+    def fetch_trades(self)->list[Trade]:
+        '''Function to fetch a list of Trade objects'''
         trade_list, args = [], {}
         for index, row in self.df.iterrows():
             pair = re.split(r'\.| ', row['id'])[0]
@@ -125,11 +122,10 @@ class TradeJournal(object):
             data.append(row)
                 
         df = pd.DataFrame(data, columns=colnames)
-
         book = load_workbook(self.url)
-        writer = pd.ExcelWriter(self.url, engine='openpyxl')
-        writer.book = book
-        writer.sheets = dict((ws.title, ws) for ws in book.worksheets)
+
+        writer = pd.ExcelWriter(self.url, engine='openpyxl', mode='a', if_sheet_exists='overlay')
+        writer.workbook = openpyxl.load_workbook(self.url)
         tj_logger.info("Creating new worksheet with trades with name: {0}".
                        format(sheet_name))
         df.to_excel(writer, sheet_name)

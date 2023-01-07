@@ -3,7 +3,6 @@ from forex.candle import CandleList
 from params import pivots_params
 from forex.pivot import PivotList
 
-
 import pytest
 import datetime
 import pdb
