@@ -122,9 +122,8 @@ class TradeJournal(object):
             data.append(row)
                 
         df = pd.DataFrame(data, columns=colnames)
-        book = load_workbook(self.url)
 
-        writer = pd.ExcelWriter(self.url, engine='openpyxl', mode='a', if_sheet_exists='overlay')
+        writer = pd.ExcelWriter(self.url, engine='openpyxl', mode='a', if_sheet_exists='replace')
         writer.workbook = openpyxl.load_workbook(self.url)
         tj_logger.info("Creating new worksheet with trades with name: {0}".
                        format(sheet_name))
