@@ -29,7 +29,9 @@ def test_run1(clean_tmp):
         start='2018-01-22 22:00:00',
         end='2018-02-06 22:00:00')
     tl = tb.run()
-
+    
+    assert tl[0].tot_SR == 4
+    assert tl[0].rank_selSR == 2
     assert len(tl) == 3
 
 def test_run_withclist(clO_pickled, clean_tmp):
