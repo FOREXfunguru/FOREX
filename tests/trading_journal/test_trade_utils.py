@@ -94,6 +94,35 @@ def test_get_lasttime(start, type, SR, SL, TP, entry, lasttime, clO_pickled):
 
     assert get_lasttime(t)  == lasttime
 
+@pytest.mark.parametrize("start,"
+                         "type,"
+                         "SR,"
+                         "SL,"
+                         "TP,"
+                         "entry,"
+                         "lasttime",
+                         [('2017-12-10 22:00:00', 'long', 0.74986, 0.74720, 0.76521, 0.75319,
+                           datetime(2017, 6, 1, 21, 0)),
+                          ('2017-03-21 22:00:00', 'short', 0.77103, 0.77876, 0.73896, 0.76717,
+                           datetime(2016, 4, 19, 21, 0))])
+def test_get_lasttime_with_pad(start, type, SR, SL, TP, entry, lasttime, clO_pickled):
+    """Check function get_lasttime"""
+    t = Trade(
+        id='test',
+        start=start,
+        pair='EUR_AUD',
+        timeframe='D',
+        type=type,
+        SR=SR,
+        SL=SL,
+        TP=TP,
+        entry=entry,
+        strat='counter_b1',
+        init=True,
+        clist=clO_pickled)
+
+    assert get_lasttime(t, pad=30)  == lasttime
+
 @pytest.mark.parametrize("pair,"
                          "timeframe,"
                          "id,"

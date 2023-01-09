@@ -129,7 +129,7 @@ class HAreaList(object):
         for harea in self.halist:
             if harea.price <= float(candle.h) and harea.price >= float(candle.l):
                 if seen:
-                    raise Exception("More than one HArea crosses this candle")
+                    logging.warn("More than one HArea crosses this candle")
                 onArea_hr = harea
                 sel_ix = ix
                 seen = True

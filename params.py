@@ -23,16 +23,6 @@ class tjournal_params:
 class counter_params:
     # number of candles from start to calculate max,min RSI
     rsi_period : int = 20
-    # Comma-separated list of strategies used for applying the Counter pattern
-    strats : str = 'counter'
-    # number of candles that the counter trade will have
-    period : int = 4000
-    # Bool. run merge_pre's function from Pivot class
-    runmerge_pre : bool = True
-    # Bool. run merge_aft's function from Pivot class
-    runmerge_aft : bool = True
-    # Generate *.png files
-    doPlot : bool = True
 
 @dataclass
 class tradebot_params:
@@ -68,28 +58,13 @@ class pivots_params:
     diff_th : int = 50
     # Boolean, if true then produce png files for in_area pivots and rsi_bounces
     plot : bool = True
-    # last pivot should be considered
-    last_pivot : bool = False
     # Bool. run merge_pre's function from Pivot class
     runmerge_pre : bool = True
     # Bool. run merge_aft's function from Pivot class
     runmerge_aft : bool = True
 
 @dataclass
-class harea_params:
-    # Minimum number of candles from start to be required
-    min : int = 5
-    # Width of S/R area also to identify last_time
-    hr_pips : int = 100
-
-@dataclass
 class clist_params:
-    # This is relevant for 'calc_rsi'. Number of candles before this CandleList start
-    # for which close price data will be fetched. The larger the number of candles
-    # the more accurate the ewm calculation will be, as the exponential moving average
-    # calculated for each of the windows (of size=rsi_period) will be directly affected
-    # by the previous windows in the series
-    period : int = 4000
     #  Number of candles used for calculating the RSI
     rsi_period : int = 14
     # SR detection
@@ -110,14 +85,5 @@ class trade_params:
     period_atr : int = 20
     # number of candles to go back when init_clist=True
     trade_period: int = 5000
-
-@dataclass
-class itrend_params:
-    # Value used by ZigZag to identify pivots for getting the start
-    # of the trend. The lower the
-    # value the higher the sensitivity.
-    th_bounces : float = 0.02
-    # These are the merge_pre parameters
-    n_candles : int = 12
-    diff_th : int = 50
-
+    # number of pips to add/substract to SR to calculate lasttime
+    pad: int = 30

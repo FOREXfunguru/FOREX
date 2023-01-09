@@ -11,6 +11,11 @@ def clO_pickled():
     return CandleList.pickle_load(DATA_DIR+"/clist_audusd_2010_2020.pckl")
 
 @pytest.fixture
+def clOH8_pickled():
+    """Return a H8 pickled CandleList"""
+    return CandleList.pickle_load(DATA_DIR+"/clist.AUDUSD.H8.2021.pckl")
+
+@pytest.fixture
 def seg_pickled():
     return Segment.pickle_load(DATA_DIR+"/seg_audusd.pckl")
 
@@ -26,7 +31,6 @@ def seglist_pickled():
 def pivotlist(clO_pickled):
     """Obtain a PivotList object"""
     return PivotList(clist=clO_pickled)
-
 
 
 

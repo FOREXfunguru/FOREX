@@ -28,15 +28,26 @@ def is_entry_onrsi(trade: Trade)->bool:
     else:
         return False
 
-def get_lasttime(trade: Trade):
+def get_lasttime(trade: Trade, pad: int=0):
         '''Function to calculate the last time price has been above/below
         a certain HArea.
 
         Arguments:
             trade : Trade object used for the calculation
+            pad : Add/substract this number of pips to trade.SR 
         '''
+        new_SR = trade.SR
+        if pad > 0:
+            if trade.type == 'long':
+                new_SR = substract_pips2price(trade.clist.instrument,
+                                              trade.SR,
+                                              pad)
+            elif trade.type == 'short':
+                new_SR = add_pips2price(trade.clist.instrument,
+                                        trade.SR,
+                                        pad)
         newcl = trade.clist.slice(start=trade.clist.candles[0].time, end=trade.start)
-        return newcl.get_lasttime(trade.SR, type=trade.type)
+        return newcl.get_lasttime(new_SR, type=trade.type)
 
 def get_max_min_rsi(trade)->float:
     """Function to calculate the max or min RSI for CandleList slice

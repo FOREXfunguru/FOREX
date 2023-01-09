@@ -118,6 +118,7 @@ class Trade(object):
             count += 1
             if expires is not None:
                 if count > expires and self.entered is False:
+                    t_logger.warning("Trade entry expired!")
                     self.outcome = 'n.a.'
                     break
             cl = self.clist.fetch_by_time(d)
@@ -171,10 +172,9 @@ class Trade(object):
                     except:
                         self.end = cl.time
                     break
-        try:
-            assert getattr(self, 'outcome')
-        except:
-            t_logger.warning("No outcome could be calculated")
+        if self.outcome != 'failure' and self.outcome != 'success' and self.entered:
+            if count>=trade_params.numperiods:
+                t_logger.warning("No outcome could be calculated in the trade_params.numperiods interval")
             self.outcome = "n.a."
             self.pips = 0
         t_logger.info("Done run_trade")
