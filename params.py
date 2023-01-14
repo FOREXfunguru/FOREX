@@ -40,6 +40,8 @@ class tradebot_params:
     RR : float = 1.5
     # adjust_SL type
     adj_SL : str = 'candles'
+    # adjust_SL_pips number of pips
+    adj_SL_pips : int = 100
 
     def __post_init__(self):
         if not self.adj_SL in ['candles', 'pips', 'nextSR']:

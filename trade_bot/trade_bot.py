@@ -31,18 +31,8 @@ class TradeBot(object):
         self.pair = pair
         self.timeframe = timeframe
         self.clist = clist
-        # calculate the start datetime for the CList that will be used
-        # for calculating the S/R areas
-        delta_period = periodToDelta(tradebot_params.period_range,
-                                     self.timeframe)
-        initc_date = self.start-delta_period
-        self.initc_date = initc_date
         if not clist:
             self.init_clist()
-        else:
-            clO = self.clist.slice(start=initc_date,
-                                   end=self.end)
-            self.clist = clO
     
     def init_clist(self)->None:
         '''Init clist for this TradeBot'''
@@ -50,8 +40,12 @@ class TradeBot(object):
         conn = Connect(
             instrument=self.pair,
             granularity=self.timeframe)
+        
+        delta_period = periodToDelta(tradebot_params.period_range,
+                                         self.timeframe)
+        initc_date = self.start-delta_period
 
-        clO = conn.query(self.initc_date.isoformat(), self.end.isoformat())
+        clO = conn.query(initc_date.isoformat(), self.end.isoformat())
         self.clist = clO
         
     def run(self, discard_sat: bool=True):
@@ -87,7 +81,10 @@ class TradeBot(object):
             tb_logger.info("Trade bot - analyzing candle: {0}".format(startO.isoformat()))
             # Get now a CandleList from 'initc_date' to 'self.start' which is the
             # total time interval for this TradeBot
-            subclO = self.clist.slice(self.initc_date, startO)
+            delta_period = periodToDelta(tradebot_params.period_range,
+                                         self.timeframe)
+            initc_date = startO-delta_period
+            subclO = self.clist.slice(initc_date, startO)
             sub_pvtlst = PivotList(clist=subclO)
             dt_str = startO.strftime("%d_%m_%Y_%H_%M")
             if loop == 0:
@@ -97,7 +94,7 @@ class TradeBot(object):
                 f = open(outfile_txt, 'w')
                 res = SRlst.print()
                 # print SR report to file
-                f.write(res)
+                f.write(res+"\n")
                 f.close()
                 tb_logger.info("Identified HAreaList for time {0}:".format(startO.isoformat()))
                 tb_logger.info("{0}".format(res))
@@ -138,7 +135,7 @@ class TradeBot(object):
             HAreaSel, sel_ix = SRlst.onArea(candle=c_candle)
             if HAreaSel is not None:
                 # guess the if trade is 'long' or 'short'
-                newCl = self.clist.slice(start=self.initc_date, end=c_candle.time)
+                newCl = self.clist.slice(start=initc_date, end=c_candle.time)
                 type = get_trade_type(c_candle.time, newCl)
                 if tradebot_params.adj_SL == 'candles':
                     SL = adjust_SL_candles(type, newCl)
@@ -151,9 +148,9 @@ class TradeBot(object):
                     SL, TP = adjust_SL_nextSR(SRlst, sel_ix, type)
                     if not SL:
                         if type == 'short':
-                            SL = adjust_SL_pips(c_candle.h, type, pair=self.pair)
+                            SL = adjust_SL_pips(c_candle.h, type, pair=self.pair, no_pips=tradebot_params.adj_SL_pips)
                         else:
-                            SL = adjust_SL_pips(c_candle.l, type, pair=self.pair)
+                            SL = adjust_SL_pips(c_candle.l, type, pair=self.pair, no_pips=tradebot_params.adj_SL_pips)
                 prepare = False
                 if c_candle.indecision_c(ic_perc=gparams.ic_perc) is True:
                     prepare = True
