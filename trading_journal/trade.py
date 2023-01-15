@@ -121,6 +121,11 @@ class Trade(object):
                     t_logger.warning("Trade entry expired!")
                     self.outcome = 'n.a.'
                     break
+            dtnow = datetime.now()
+            if d > dtnow:
+                self.outcome = 'n.a.'
+                t_logger.info("Run trade in the future. Skipping...")
+                break
             cl = self.clist.fetch_by_time(d)
             if cl is None:
                 try:

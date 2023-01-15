@@ -29,7 +29,7 @@ class tradebot_params:
     # quantile used as threshold for selecting S/R
     th : float = 0.70
     # invoke 'calc_SR' each 'period' number of candles
-    period : int = 30
+    period : int = 60
     # number of candles to go back for calculating S/R price
     # range. This is relevant for trade_bot's get_max_min function and it will
     # also be relevant to decide how much to go back in time to detect SRs
