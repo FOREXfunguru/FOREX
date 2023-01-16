@@ -269,13 +269,13 @@ def adjust_SL_nextSR(SRlst: HAreaList, sel_ix: int, type: str)->tuple[float, flo
     TP, SL = None, None
     try:
         if type == 'long':
-            TP = SRlst.halist[sel_ix+1].price
             SL = SRlst.halist[sel_ix-1].price
+            TP = SRlst.halist[sel_ix+1].price
             if sel_ix-1 < 0:
                 SL = None
         else:
-            SL = SRlst.halist[sel_ix+1].price
             TP = SRlst.halist[sel_ix-1].price
+            SL = SRlst.halist[sel_ix+1].price
             if sel_ix-1 < 0:
                 TP = None
     except:
