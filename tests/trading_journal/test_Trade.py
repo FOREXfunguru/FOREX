@@ -2,6 +2,7 @@ import pytest
 import pdb
 
 from trading_journal.trade import Trade
+from params import trade_params
 
 def test_init_clist():
     '''
@@ -95,6 +96,19 @@ def test_run_trade_noclO():
             init_clist=True)
         td.run_trade()
 
+def test_run_trade_exitearly(clO_pickled):
+     '''Run a trade using trade_params.strat==exit_early'''
+     trade_params.no_candles=13
+     td = Trade(
+        start="2018-06-21 22:00:00",
+        entry=0.73873,
+        SL=0.72948,
+        TP=0.75621,
+        pair='AUD_USD',
+        type='long',
+        timeframe="D",
+        clist=clO_pickled)
+     td.run_trade(expires=2)
 
 def test_get_SLdiff(t_object):
 

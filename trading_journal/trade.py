@@ -79,6 +79,18 @@ class Trade(object):
 
         return candle.time
 
+    def _adjust_tp(self):
+        '''Adjust TP when trade_params.strat==exit early'''
+        tp_pips = float(calculate_pips(self.pair, self.TP))
+        entry_pips = float(calculate_pips(self.pair, self.entry))
+        diff = abs(tp_pips-entry_pips)
+        tp_pips = trade_params.reduce_perc*diff/100
+        if self.type=='long':
+            new_tp = add_pips2price(self.pair, self.entry, tp_pips)
+        else:
+            new_tp = substract_pips2price(self.pair, self.entry, tp_pips)
+        return new_tp
+
     def run_trade(self, expires: int=2)->None:
         '''Run the trade until conclusion from a start date.
 
@@ -153,6 +165,12 @@ class Trade(object):
                     except:
                         self.entry_time = cl.time.isoformat()
             if self.entered is True:
+                if trade_params.strat=='exit early' and count>=trade_params.no_candles:
+                    pdb.set_trace()
+                    new_tp = self._adjust_tp()
+                    self.TP = new_tp
+                    TP.price = new_tp
+                    pass
                 # check if failure
                 if cl.l <= SL.price <= cl.h:
                     t_logger.info("Sorry, SL was hit!")
