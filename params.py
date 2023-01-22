@@ -89,6 +89,9 @@ class trade_params:
     trade_period: int = 5000
     # number of pips to add/substract to SR to calculate lasttime
     pad: int = 30
-    ## trade management
-    strat: str = "exit early"
+    ## trade management 
+    strat: str = "exit early" # if 'exit early' then close the trade if price is in profit and 
+                              # trade as been active for more than trade_params.no_candles.
+                              # if 'standard' then wait to check if trade finishes up to trade_params.numperiods
     no_candles: int = 100
+    reduce_perc: int = 50 # reduce the diff between TP and entry to this 'reduce_perc' %
