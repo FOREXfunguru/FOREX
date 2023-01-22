@@ -89,3 +89,6 @@ class trade_params:
     trade_period: int = 5000
     # number of pips to add/substract to SR to calculate lasttime
     pad: int = 30
+    ## trade management
+    strat: str = "exit early"
+    no_candles: int = 100

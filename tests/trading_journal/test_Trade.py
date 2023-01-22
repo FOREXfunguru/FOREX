@@ -2,7 +2,6 @@ import pytest
 import pdb
 
 from trading_journal.trade import Trade
-from params import trade_params
 
 def test_init_clist():
     '''

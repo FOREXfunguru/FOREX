@@ -152,11 +152,11 @@ class TradeBot(object):
                         else:
                             SL = adjust_SL_pips(c_candle.l, type, pair=self.pair, no_pips=tradebot_params.adj_SL_pips)
                 prepare = False
-                if c_candle.indecision_c(ic_perc=gparams.ic_perc) is True:
+                if c_candle.indecision_c(ic_perc=gparams.ic_perc) is True and len(SRlst.halist)>=3:
                     prepare = True
-                elif type == 'short' and c_candle.colour == 'red':
+                elif type == 'short' and c_candle.colour == 'red' and len(SRlst.halist)>=3:
                     prepare = True
-                elif type == 'long' and c_candle.colour == 'green':
+                elif type == 'long' and c_candle.colour == 'green' and len(SRlst.halist)>=3:
                     prepare = True
 
                 # discard if IC falls on a Saturday

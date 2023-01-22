@@ -3,7 +3,7 @@ import datetime
 
 from forex.candlelist_utils import *
 from utils import DATA_DIR
-from params import tradebot_params, pivots_params
+from params import pivots_params
 from forex.pivot import PivotList
 
 def test_calc_SR(pivotlist, clean_tmp):
