@@ -34,3 +34,8 @@ def test_indecision_c(CandleO):
     typical indecission pattern'''
 
     assert False == CandleO.indecision_c()
+
+def test_height(CandleO):
+
+    assert 48.2 == CandleO.height(pair="AUD_USD")
+    

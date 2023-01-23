@@ -72,6 +72,10 @@ class Candle(object):
         else:
             return False
     
+    def height(self, pair):
+        """Function to calculate the number of pips between self.h and self.l"""
+        return abs(float(calculate_pips(pair, self.l-self.h)))
+    
     def __repr__(self):
         return "Candle"
 
