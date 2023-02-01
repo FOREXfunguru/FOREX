@@ -21,7 +21,7 @@ def try_parsing_date(text):
             return datetime.strptime(text, fmt)
         except ValueError:
             pass
-    raise ValueError('no valid date format found')
+    raise ValueError(f"no valid date format found: {text}")
 
 def calculate_pips(pair: str, price: float)->float:
     '''Function to calculate the number of pips

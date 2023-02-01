@@ -61,7 +61,6 @@ class TradeBot(object):
             were found
         '''
         tb_logger.info("Running...")
-
         delta = nhours = None
         if self.timeframe == "D":
             nhours = 24

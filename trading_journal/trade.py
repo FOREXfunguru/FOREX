@@ -165,7 +165,7 @@ class Trade(object):
                     except:
                         self.entry_time = cl.time.isoformat()
             if self.entered is True:
-                if trade_params.strat=='exit early' and count>=trade_params.no_candles and not hasattr(self, 'reduced_TP'):
+                if trade_params.strat=='exit_early' and count>=trade_params.no_candles and not hasattr(self, 'reduced_TP'):
                     new_tp = self._adjust_tp()
                     self.TP = new_tp
                     TP.price = new_tp
@@ -185,10 +185,10 @@ class Trade(object):
                 # check if success
                 if cl.l <= TP.price <= cl.h:
                     t_logger.info("Great, TP was hit!")
-                    if hasattr(self, 'reduced_TP'):
-                        self.outcome = 'exit_early'
-                    else:
-                        self.outcome = 'success'
+                    #if hasattr(self, 'reduced_TP'):
+                    #    self.outcome = 'exit_early'
+                    #else:
+                    self.outcome = 'success'
                     self.exit = TP.price
                     self.pips = float(calculate_pips(self.pair, abs(self.TP - self.entry)))
                     try:
