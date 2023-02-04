@@ -86,10 +86,6 @@ class TradeBot(object):
             subclO = self.clist.slice(initc_date, startO)
             sub_pvtlst = PivotList(clist=subclO)
             dt_str = startO.strftime("%d_%m_%Y_%H_%M")
-            if startO == datetime(2010,5,1,22,0,0):
-                loop=0 
-                pdb.set_trace()
-                print("h")
             if loop == 0:
                 outfile_txt = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.txt"
                 outfile_png = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.png"
