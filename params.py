@@ -43,7 +43,7 @@ class tradebot_params:
     # adjust_SL_pips number of pips
     adj_SL_pips : int = 100
     # do not consider trades with an ic with height>than 'max_height' pips
-    max_height : float = 150
+    max_height : int = 150
 
     def __post_init__(self):
         if not self.adj_SL in ['candles', 'pips', 'nextSR']:

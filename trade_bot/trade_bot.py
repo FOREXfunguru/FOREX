@@ -116,9 +116,25 @@ class TradeBot(object):
             # is being checked
             c_candle = self.clist.fetch_by_time(startO)
             if c_candle is None:
-                startO = startO+delta
-                loop += 1
-                continue
+                try:
+                    conn = Connect(
+                        instrument=self.pair,
+                        granularity=self.timeframe)
+                    ftime = startO-delta
+                    clO = conn.query(start=ftime.isoformat(), count=1)
+                    if len(clO.candles)==1:
+                        c_candle = clO.candles[0]
+                    elif len(clO.candles)>1:
+                        raise Exception("No valid number of candles in CandleList")
+                    elif len(clO.candles) == 0:
+                        # market closed
+                        startO = startO+delta
+                        loop += 1
+                        continue
+                except:
+                    startO = startO+delta
+                    loop += 1
+                    continue
 
             # c_candle.time is not equal to startO
             # when startO is non-working day, for example
@@ -129,7 +145,7 @@ class TradeBot(object):
                                " Skipping...")
                 startO = startO + delta
                 continue
-
+            
             #check if there is any HArea overlapping with c_candle
             HAreaSel, sel_ix = SRlst.onArea(candle=c_candle)
             if HAreaSel is not None:
