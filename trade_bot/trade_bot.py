@@ -31,7 +31,7 @@ class TradeBot(object):
         self.pair = pair
         self.timeframe = timeframe
         self.clist = clist
-        if not clist:
+        if not clist or clist.candles[-1].time<self.end:
             self.init_clist()
     
     def init_clist(self)->None:
@@ -40,9 +40,10 @@ class TradeBot(object):
         conn = Connect(
             instrument=self.pair,
             granularity=self.timeframe)
-        
+        if tradebot_params.period_range>4899:
+            tradebot_params.period_range=4899
         delta_period = periodToDelta(tradebot_params.period_range,
-                                         self.timeframe)
+                                    self.timeframe)
         initc_date = self.start-delta_period
 
         clO = conn.query(initc_date.isoformat(), self.end.isoformat())
@@ -116,25 +117,9 @@ class TradeBot(object):
             # is being checked
             c_candle = self.clist.fetch_by_time(startO)
             if c_candle is None:
-                try:
-                    conn = Connect(
-                        instrument=self.pair,
-                        granularity=self.timeframe)
-                    ftime = startO-delta
-                    clO = conn.query(start=ftime.isoformat(), count=1)
-                    if len(clO.candles)==1:
-                        c_candle = clO.candles[0]
-                    elif len(clO.candles)>1:
-                        raise Exception("No valid number of candles in CandleList")
-                    elif len(clO.candles) == 0:
-                        # market closed
-                        startO = startO+delta
-                        loop += 1
-                        continue
-                except:
-                    startO = startO+delta
-                    loop += 1
-                    continue
+                startO = startO+delta
+                loop += 1
+                continue
 
             # c_candle.time is not equal to startO
             # when startO is non-working day, for example

@@ -10,7 +10,7 @@ class gparams:
     debug : bool = True
     # candle's body percentage below which the candle will be considered
     # indecision candle
-    ic_perc : int = 15
+    ic_perc : int = 20
     # size of images
     size = (20, 10)
 
