@@ -63,3 +63,19 @@ def test_run_withclist_nextSR(clO_pickled, clean_tmp):
     tl = tb.run()
 
     assert len(tl) == 3
+
+def test_run_withclist_future(clO_pickled, clean_tmp):
+    """
+    Test tradebot using a pickled CandleList and using an end TradeBot time 
+    post clO_pickled end time
+    """
+
+    tb = TradeBot(
+        pair='AUD_USD',
+        timeframe='D',
+        start='2020-11-15 22:00:00',
+        end='2020-11-23 22:00:00',
+        clist=clO_pickled)
+    tl = tb.run()
+
+    assert len(tl) == 0
