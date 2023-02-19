@@ -44,7 +44,7 @@ class TradeJournal(object):
             wb.create_sheet(worksheet)
             wb.save(str(self.url))
 
-    def fetch_trades(self)->list[Trade]:
+    def fetch_trades(self)->List[Trade]:
         '''Function to fetch a list of Trade objects'''
         trade_list, args = [], {}
         for index, row in self.df.iterrows():
