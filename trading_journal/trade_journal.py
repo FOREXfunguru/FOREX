@@ -6,7 +6,9 @@ import re
 import pdb
 from trading_journal.trade import Trade
 from params import tjournal_params
-from openpyxl import load_workbook, Workbook
+from openpyxl import Workbook
+from typing import Tuple, List
+
 import openpyxl
 
 # create logger
@@ -55,7 +57,7 @@ class TradeJournal(object):
 
         return trade_list
 
-    def win_rate(self, strats: str)-> tuple[int, int, float]:
+    def win_rate(self, strats: str)-> Tuple[int, int, float]:
         '''Calculate win rate and pips balance
         for this TradeJournal. If outcome attrb is not
         defined then it will invoke the run_trade method
@@ -98,7 +100,7 @@ class TradeJournal(object):
 
         return number_s, number_f, tot_pips
 
-    def write_tradelist(self, trade_list: list[Trade], sheet_name: str)->None:
+    def write_tradelist(self, trade_list: List[Trade], sheet_name: str)->None:
         '''Write the TradeList to the Excel spreadsheet
         pointed by the trade_journal.
 

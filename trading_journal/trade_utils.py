@@ -9,6 +9,7 @@ from forex.candlelist_utils import *
 from forex.pivot import PivotList
 from forex.candle import CandleList
 from trading_journal.trade import Trade
+from typing import Tuple
 
 # create logger
 t_logger = logging.getLogger(__name__)
@@ -264,7 +265,7 @@ def adjust_SL_pips(price: float, type: str, pair: str, no_pips: int=100)->float:
         
     return SL
 
-def adjust_SL_nextSR(SRlst: HAreaList, sel_ix: int, type: str)->tuple[float, float]:
+def adjust_SL_nextSR(SRlst: HAreaList, sel_ix: int, type: str)->Tuple[float, float]:
     '''Function to calculate the TP and SL prices to the next SR areas'''
     TP, SL = None, None
     try:
