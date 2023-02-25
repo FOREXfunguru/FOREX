@@ -171,9 +171,10 @@ class CandleList(object):
             sel_c = None
             for c in self.candles:
                 end = c.time+delta
-                if d >= c.time and d < end:
-                    sel_c = c
-            return sel_c
+                diff = abs(c.time-d)
+                one_hour = timedelta(hours=1)
+                if d == c.time and d < end or diff==one_hour:
+                    return c
         elif period > 0:
             start = d-delta_period
             end = d+delta_period

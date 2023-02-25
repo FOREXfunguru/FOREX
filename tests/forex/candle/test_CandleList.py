@@ -67,13 +67,43 @@ def test_get_length_pips(clO_pickled):
 
     assert clO_pickled.get_length_pips() == 2493
 
-def test_fetch_by_time(clO_pickled):
+def test_fetch_by_time_s_c(clO_pickled):
+    """Fetch datetime in DST time with correct query time"""
 
     adatetime = datetime.datetime(2019, 5, 7, 22, 0)
     c = clO_pickled.fetch_by_time(adatetime)
 
     assert c.o == 0.70118
     assert c.h == 0.70270
+
+def test_fetch_by_time_s_i(clO_pickled):
+    """Fetch datetime in DST time with incorrect query time"""
+
+    adatetime = datetime.datetime(2019, 5, 7, 21, 0)
+    c = clO_pickled.fetch_by_time(adatetime)
+
+    assert c.o == 0.70118
+    assert c.h == 0.70270
+
+def test_fetch_by_time_w_c(clO_pickled):
+    """Fetch datetime in non DST time with correct query time"""
+
+    adatetime = datetime.datetime(2019, 12, 4, 21, 0)
+    c = clO_pickled.fetch_by_time(adatetime)
+
+    assert c.o == 0.68487
+    assert c.h == 0.68546
+    assert c.time == datetime.datetime(2019, 12, 4, 22, 0)
+
+def test_fetch_by_time_w_i(clO_pickled):
+    """Fetch datetime in non DST time with incorrect query time"""
+
+    adatetime = datetime.datetime(2019, 12, 4, 22, 0)
+    c = clO_pickled.fetch_by_time(adatetime)
+
+    assert c.o == 0.68487
+    assert c.h == 0.68546
+    assert c.time == datetime.datetime(2019, 12, 4, 22, 0)
 
 def test_slice_with_start(clO_pickled):
 
