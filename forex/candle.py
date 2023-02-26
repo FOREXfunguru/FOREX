@@ -136,10 +136,12 @@ class CandleList(object):
         return newClO
     
     def _guess_type(self)->str:
-        if len(self.candles)==0:
+        if len(self.data.keys())==0:
             return None
-        price_1st = self.candles[0].c
-        price_last = self.candles[-1].c
+        first_key, first_c = next(iter(self.data.items()))
+        last_key, last_c = self.data.copy().popitem()
+        price_1st = first_c['c']
+        price_last = last_c['c']
         if price_1st > price_last:
             return 'short' # or downtrend
         elif price_1st < price_last:
