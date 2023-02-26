@@ -63,6 +63,22 @@ class Connect(object):
             return wrapper
         return real_decorator
 
+    def _process_data(self, data:dict, strip:bool=True)->dict[CandleList]:
+        """Process candle data
+        
+        Args:
+            data: data returned by API
+            strip: If True then remove 'complete' and 'volume' fields
+        """
+        keys_to_remove = ['complete', 'volume', 'time']
+        ddata = dict()
+        for candle in data['candles']:
+            atime = re.sub(r'\.\d+Z$','', candle['time'])
+            if strip:
+                candle = {key: value for key, value in candle.items() if key not in keys_to_remove}
+            ddata[atime] = candle['mid']
+        return ddata
+
     @retry()
     def query(self, start : datetime, end : datetime = None, count : int = None)-> List[Dict]:
         """Function to query Oanda's REST API
@@ -97,24 +113,15 @@ class Connect(object):
                                 params=params,
                                 headers={"content-type": f"{apiparams.content_type}",
                                          "Authorization": f"Bearer {os.environ.get('TOKEN')}"})
+            pdb.set_trace()
             if resp.status_code != 200:
                 raise Exception(resp.status_code)
             else:
                 data = json.loads(resp.content.decode("utf-8"))
-                newdata = [flatdict.FlatDict(c, delimiter='.') for c in data['candles']]
-                newdata1 = []
-                for candle in newdata:
-                    atime = re.sub(r'\.\d+Z$','', candle['time'])
-                    candle['time']=atime
-                    newdata1.append(candle)
-                for mydict in newdata1:
-                    mydict['h'] = mydict.pop('mid.h')
-                    mydict['l'] = mydict.pop('mid.l')
-                    mydict['o'] = mydict.pop('mid.o')
-                    mydict['c'] = mydict.pop('mid.c')
+                cdict = self._process_data(data)
                 cl = CandleList(instrument=self.instrument,
                                 granularity=self.granularity,
-                                data=newdata1)
+                                data=cdict)
                 return cl
         except Exception as err:
             # Something went wrong.
@@ -125,7 +132,6 @@ class Connect(object):
     def validate_datetime(self, datestr : str, granularity: str)->datetime:
         """Function to parse a string datetime to return
          a datetime object and to validate the datetime.
-
         Args:
             datestr : String representing a date
             granularity : Timeframe

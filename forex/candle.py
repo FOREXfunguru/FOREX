@@ -91,16 +91,16 @@ class CandleList(object):
     Class variables:
         instrument: i.e. 'AUD_USD'
         granularity: i.e. 'D'
-        candles: List of Candle objects
+        candles: dict of Candle objects
         type: Type of this CandleList. Possible values are 'long'/'short'"""
 
-    def __init__(self, instrument: str, granularity: str, data: list):
+    def __init__(self, instrument: str, granularity: str, data: dict):
         """Constructor
 
         Arguments:
-            data: list of Dictionaries, each dict containing data for a Candle
+            data: Dict with candle data
         """
-        self.candles = [Candle(**d) for d in data]
+        self.data = data
         self.instrument = instrument
         self.granularity = granularity
         self._type = self._guess_type()
