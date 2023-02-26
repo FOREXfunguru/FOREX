@@ -124,7 +124,7 @@ class CandleList(object):
         return self.candles[key]
     
     def __len__(self):
-        return len(self.candles)
+        return len(self.data)
     
     def __add__(self, ClO):
 

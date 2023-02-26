@@ -113,7 +113,6 @@ class Connect(object):
                                 params=params,
                                 headers={"content-type": f"{apiparams.content_type}",
                                          "Authorization": f"Bearer {os.environ.get('TOKEN')}"})
-            pdb.set_trace()
             if resp.status_code != 200:
                 raise Exception(resp.status_code)
             else:
