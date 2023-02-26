@@ -15,7 +15,8 @@ def test_candlelist_inst(clO):
     log = logging.getLogger('Test CandleList instantiation')
     log.debug('CandleList instantation')
     assert clO.type == 'short'
-    assert clO[0].colour == 'red'
+    assert float(clO['2018-11-19T22:00:00']['o'])== 0.70123
+    assert float(clO['2018-11-19T22:00:00']['c'])== 0.72000
     assert len(clO) == 2
 
 def test_pickle_dump(clO):
@@ -29,7 +30,6 @@ def test_pickle_dump(clO):
 def test_pickle_load(clean_tmp):
     log = logging.getLogger('Test for pickle_load')
     log.debug('pickle_load')
-
     loadedCL = CandleList.pickle_load(DATA_DIR+"/out/clist.pckl")
     assert loadedCL.instrument == 'AUD_USD'
     assert len(loadedCL) == 2
@@ -40,8 +40,8 @@ def test_calc_rsi(clO_pickled):
 
     clO_pickled.calc_rsi()
 
-    assert clO_pickled[15].rsi == 61.54
-    assert clO_pickled[50].rsi == 48.59
+    assert clO_pickled['2010-12-02T22:00:00']['rsi'] == 61.54
+    assert clO_pickled['2011-01-11T22:00:00']['rsi'] == 48.59
 
 def test_rsibounces(clO_pickled):
     log = logging.getLogger('Test for rsi_bounces function')

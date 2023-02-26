@@ -121,7 +121,7 @@ class CandleList(object):
             raise StopIteration
     
     def __getitem__(self, key):
-        return self.candles[key]
+        return self.data[key]
     
     def __len__(self):
         return len(self.data)
@@ -192,7 +192,7 @@ class CandleList(object):
         '''Calculate the RSI for a certain candle list.'''
         cl_logger.debug("Running calc_rsi")
 
-        series = [c.c for c in self.candles]
+        series = [float(record_dict['c']) for record_dict in self.data.values()]
 
         df = pd.DataFrame({'close': series})
         chg = df['close'].diff(1)
@@ -207,12 +207,13 @@ class CandleList(object):
         rs = abs(avg_gain / avg_loss)
         rsi = 100 - (100 / (1 + rs))
 
-        rsi4cl = rsi[-len(self.candles):]
+        rsi4cl = rsi[-len(self):]
         # set rsi attribute in each candle of the CandleList
-        ix = 0
-        for c, v in zip(self.candles, rsi4cl):
-            self.candles[ix].rsi = round(v, 2)
-            ix += 1
+        for i, record_dict in enumerate(self.data.values()):
+            record_dict['rsi'] = round(rsi4cl[i], 2)
+            dtime = list(self.data.keys())[i]
+            self.data[dtime] = record_dict
+        
         cl_logger.debug("Done calc_rsi")
 
     def pickle_dump(self, outfile: str)->str:
