@@ -101,7 +101,6 @@ def test_fetch_by_time_weekend(clO_pickled):
 
     assert c == None
 
-
 def test_fetch_by_time_w_i(clO_pickled):
     """Fetch datetime in non DST time with incorrect query time"""
 
@@ -137,30 +136,26 @@ def test_slice_with_start_end(clO_pickled):
 def test_last_time(clO_pickled):
     log = logging.getLogger('Test for last_time function')
     log.debug('last_time')
-    subCl1 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2017, 1, 3, 22, 0))
-    subCl2 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2019, 7, 19, 22, 0))
-    subCl3 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2018, 1, 26, 22, 0))
+    subCl1 = clO_pickled.slice(start=datetime.datetime(2010, 11, 16, 22, 0, 0), end=datetime.datetime(2017, 1, 3, 22, 0))
+    subCl2 = clO_pickled.slice(start=datetime.datetime(2010, 11, 16, 22, 0, 0), end=datetime.datetime(2019, 7, 19, 22, 0))
+    subCl3 = clO_pickled.slice(start=datetime.datetime(2010, 11, 16, 22, 0, 0), end=datetime.datetime(2018, 1, 26, 22, 0))
 
     lt1 = subCl1.get_lasttime(price=0.71754, type='long')
     lt2 = subCl2.get_lasttime(price=0.70621, type='short')
     lt3 = subCl3.get_lasttime(price=0.80879, type='short')
-    assert lt1.isoformat() == '2016-02-28T22:00:00'
-    assert lt2.isoformat() == '2019-04-22T21:00:00'
-    assert lt3.isoformat() == '2015-01-19T22:00:00'
+    assert lt1 == '2016-02-28T22:00:00'
+    assert lt2 == '2019-04-22T21:00:00'
+    assert lt3 == '2015-01-19T22:00:00'
 
 def test_get_highest(clO_pickled):
     log = logging.getLogger('Test get_highest')
     log.debug('get_highest')
-
-    clO_pickled.get_highest()
 
     assert clO_pickled.get_highest() == 1.10307
 
 def test_get_lowest(clO_pickled):
     log = logging.getLogger('Test get_lowest')
     log.debug('get_lowest')
-
-    clO_pickled.get_lowest()
 
     assert clO_pickled.get_lowest() == 0.57444
 

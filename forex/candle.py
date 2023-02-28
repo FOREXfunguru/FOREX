@@ -395,19 +395,19 @@ class CandleList(object):
         '''
        
         count = 0
-        for c in reversed(self.candles):
+        for dt in list(reversed(self.data.keys())):
             count += 1
             # Last time has to be at least forexparams.min candles before
             if count <= clist_params.min :
                 continue
             if type == 'long':
-                if c.h < price:
-                    return c.time
+                if float(self.data[dt]['h']) < price:
+                    return dt
             elif type == 'short':
-                if c.l > price:
-                    return c.time
+                if float(self.data[dt]['l']) > price:
+                    return dt
         
-        return self.candles[0].time
+        return list(self.data.keys())[0]
 
     def get_highest(self)->float:
         '''Function to calculate the highest
@@ -418,12 +418,12 @@ class CandleList(object):
         '''
 
         max = 0.0
-        for cl in self.candles:
-            price = cl.c
+        for dt in self.data:
+            price = float(self.data[dt]['c'])
             if price > max:
                 max = price
 
-        return max
+        return float(max)
 
     def get_lowest(self)->float:
         '''Function to calculate the lowest
@@ -434,13 +434,13 @@ class CandleList(object):
         '''
 
         min = None
-        for cl in self.candles:
-            price = cl.c
+        for dt in self.data:
+            price = self.data[dt]['c']
             if min is None:
                 min = price
             else:
                 if price < min:
                     min = price
-        return min
+        return float(min)
 
     
