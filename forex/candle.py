@@ -121,7 +121,29 @@ class CandleList(object):
             raise StopIteration
     
     def __getitem__(self, key):
-        return self.data[key]
+        if key.isoformat() in self.data:
+            return self.data[key.isoformat()]
+        else:
+            one_hour = timedelta(hours=1)
+            if key.hour%2 == 0:
+                key = key-one_hour
+            else:
+                key = key+one_hour
+            if key.isoformat() in self.data:
+                return self.data[key.isoformat()]
+    
+    def __index__(self, key):
+        if key.isoformat() in self.data:
+            return list(self.data).index(key.isoformat())
+        else:
+            one_hour = timedelta(hours=1)
+            if key.hour%2 == 0:
+                key = key-one_hour
+            else:
+                key = key+one_hour
+            if key.isoformat() in self.data:
+                return list(self.data).index(key.isoformat())
+        return list(self.data).index(key.isoformat())
     
     def __len__(self):
         return len(self.data)
@@ -305,8 +327,8 @@ class CandleList(object):
     def get_length_pips(self)->int:
         '''Function to calculate the length of CandleList in number of pips'''
 
-        start_cl = self.candles[0]
-        end_cl = self.candles[-1]
+        start_cl = self.data[list(self.data.keys())[0]]
+        end_cl = self.data[list(self.data.keys())[-1]]
 
         (first, second) = self.instrument.split("_")
         round_number = None
@@ -315,14 +337,14 @@ class CandleList(object):
         else:
             round_number = 4
 
-        start_price = round(float(start_cl.c), round_number)
-        end_price = round(float(end_cl.c), round_number)
+        start_price = round(float(start_cl['c']), round_number)
+        end_price = round(float(end_cl['c']), round_number)
 
         diff = (start_price-end_price)*10**round_number
 
         return abs(int(round(diff, 0)))
 
-    def slice(self, start : datetime = None, end : datetime = None):
+    def slice(self, start : datetime, end : datetime = None):
         '''Function to slice self on a date interval. It will return the sliced CandleList.
 
         Arguments:
@@ -339,19 +361,28 @@ class CandleList(object):
         Exception
             If start > end
         '''
-        sliced_clist = []
-        if start is not None and end is None:
-            sliced_clist = [c.__dict__ for c in self.candles if c.time >= start]
-        elif start is not None and end is not None:
-            if start > end:
-                raise Exception("Start is greater than end. Can't slice this CandleList")
-            sliced_clist = [c.__dict__ for c in self.candles if c.time >= start and c.time <= end]
-        elif start is None and end is not None:
-            sliced_clist = [c.__dict__ for c in self.candles if c.time <= end ]
+        if self.granularity == "D":
+            delta = timedelta(hours=24)
+        else:
+            fgran = self.granularity.replace('H', '')
+            delta = timedelta(hours=int(fgran))
+       
+        while not self.__getitem__(start):
+            start = start+delta
+        start_idx = self.__index__(start)
+        if end:
+            while not self.__getitem__(end):
+                end = end+delta
+            end_idx = self.__index__(end)+1
+        else:
+            end_idx = len(self.data)
+
+        dict_items = list(self.data.items())
+        sliced_items = dict_items[start_idx:end_idx]
 
         cl = CandleList(instrument=self.instrument,
                         granularity=self.granularity,
-                        data=sliced_clist)
+                        data=dict(sliced_items))
 
         return cl
 
