@@ -121,16 +121,19 @@ class CandleList(object):
             raise StopIteration
     
     def __getitem__(self, key):
-        if key.isoformat() in self.data:
-            return self.data[key.isoformat()]
-        else:
-            one_hour = timedelta(hours=1)
-            if key.hour%2 == 0:
-                key = key-one_hour
-            else:
-                key = key+one_hour
+        if isinstance(key, datetime):
             if key.isoformat() in self.data:
                 return self.data[key.isoformat()]
+            else:
+                one_hour = timedelta(hours=1)
+                if key.hour%2 == 0:
+                    key = key-one_hour
+                else:
+                    key = key+one_hour
+                if key.isoformat() in self.data:
+                    return self.data[key.isoformat()]
+        else:
+            return self.data[key]
     
     def __index__(self, key):
         if key.isoformat() in self.data:
@@ -149,13 +152,8 @@ class CandleList(object):
         return len(self.data)
     
     def __add__(self, ClO):
-
-        clist = self.candles + ClO.candles
-        clist = [x.__dict__ for x in clist]
-        newClO = CandleList(instrument=self.instrument,
-                            granularity=self.granularity,
-                            data=clist)
-        return newClO
+        self.data.update(ClO.data)
+        return self
     
     def _guess_type(self)->str:
         if len(self.data.keys())==0:

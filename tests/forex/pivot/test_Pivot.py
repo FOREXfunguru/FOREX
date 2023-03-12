@@ -29,8 +29,8 @@ def test_pre_aft_start(pivot):
     correct start Datetimes
     '''
 
-    assert datetime.datetime(2011, 1, 19, 22, 0) == pivot.pre.start()
-    assert datetime.datetime(2011, 2, 27, 22, 0) == pivot.aft.start()
+    assert '2011-01-19T22:00:00' == pivot.pre.start()
+    assert '2011-02-27T22:00:00' == pivot.aft.start()
 
 @pytest.mark.parametrize("ix,"
                          "date_pre,"
@@ -43,14 +43,14 @@ def test_merge_pre(pivotlist, ix, date_pre, date_post):
     '''
     pivot = pivotlist.pivots[ix]
     # Check pivot.pre.start() before running 'merge_pre'
-    assert date_pre == pivot.pre.start()
+    assert date_pre.isoformat() == pivot.pre.start()
 
     pivot.merge_pre(slist=pivotlist.slist,
                     n_candles=pivots_params.n_candles,
                     diff_th=pivots_params.diff_th)
 
     # Check pivot.pre.start() after running 'merge_pre'
-    assert date_post == pivot.pre.start()
+    assert date_post.isoformat() == pivot.pre.start()
 
 @pytest.mark.parametrize("ix,"
                          "date_pre,"
@@ -63,8 +63,8 @@ def test_merge_aft(pivotlist, ix, date_pre, date_post):
     '''
     pivot = pivotlist.pivots[ix]
     # Check pivot.aft.end() before running 'merge_aft'
+    pdb.set_trace()
     assert date_pre == pivot.aft.end()
-
     pivot.merge_aft(slist=pivotlist.slist,
                     n_candles=pivots_params.n_candles,
                     diff_th=pivots_params.diff_th)

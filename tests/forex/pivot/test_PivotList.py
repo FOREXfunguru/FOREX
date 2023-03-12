@@ -5,6 +5,7 @@ import pytest
 
 from utils import DATA_DIR
 from forex.pivot import PivotList
+from utils import try_parsing_date
 
 def test_get_score(pivotlist):
     """
@@ -74,15 +75,15 @@ def test_pivots_report(pivotlist, clean_tmp):
 
 def test_calc_itrend(clO_pickled):
     """Calc init of trend"""
-    
-    subCl1 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2020, 6, 10, 22, 0))
-    subCl2 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2020, 3, 19, 22, 0))
-    subCl3 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2017, 12, 8, 22, 0))
+    start_dt = try_parsing_date(list(clO_pickled.data.keys())[0])
+    subCl1 = clO_pickled.slice(start=start_dt, end=datetime.datetime(2020, 6, 10, 22, 0))
+    subCl2 = clO_pickled.slice(start=start_dt, end=datetime.datetime(2020, 3, 19, 22, 0))
+    subCl3 = clO_pickled.slice(start=start_dt, end=datetime.datetime(2017, 12, 8, 22, 0))
 
     pl1 = PivotList(clist=subCl1)
     pl2 = PivotList(clist=subCl2)
     pl3 = PivotList(clist=subCl3)
 
-    assert pl1.calc_itrend().start() == datetime.datetime(2020, 3, 18, 21, 0)
-    assert pl2.calc_itrend().start() == datetime.datetime(2020, 2, 27, 22, 0)
-    assert pl3.calc_itrend().start() == datetime.datetime(2017, 9, 7, 21, 0)
+    assert pl1.calc_itrend().start() == '2020-05-05T21:00:00'
+    assert pl2.calc_itrend().start() == '2020-02-27T22:00:00'
+    assert pl3.calc_itrend().start() == '2017-09-07T21:00:00'

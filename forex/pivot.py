@@ -5,6 +5,7 @@ import matplotlib.pyplot as plt
 from utils import *
 from params import gparams, pivots_params
 
+from forex.candle import Candle
 from forex.segment import SegmentList, Segment
 from zigzag import *
 
@@ -51,7 +52,7 @@ class Pivot(object):
         while extension_needed is True:
             # reduce start of self.pre by one candle in order to retrieve the previous segment
             # by its end
-            start_dt = self.pre.start() - periodToDelta(1, self.candle.granularity)
+            start_dt =  try_parsing_date(self.pre.start()) - periodToDelta(1, self.candle.granularity)
 
             s = slist.fetch_by_end(start_dt)
             if s is None:
@@ -109,7 +110,12 @@ class Pivot(object):
 
             # fetch next segment
             s = slist.fetch_by_start(start_dt)
+            print(start_dt)
+            if start_dt == datetime(2020,8, 28, 21,0,0):
+                pdb.set_trace()
+                print("h")
             if s is None:
+                pdb.set_trace()
                 # This is not necessarily an error, it could be that there is not the required Segment in slist
                 # because it is out of the time period
                 p_logger.info("No Segment could be retrieved for pivot falling in time {0} by using s.fetch_by_"
@@ -178,12 +184,14 @@ class Pivot(object):
         Returns:
             New adjusted datetime
         """
-        clist = clistO[:-1] # reduce index by 1 so start candle+1 is not included
+        dict_items = list(clistO.data.items())
+        clist = dict_items[:-1] # reduce index by 1 so start candle+1 is not included
         new_pc = pre_colour = None
         it = True
         ix = -1
         while it is True:
-            cObj = clist[ix]
+            clist[ix][1]['time'] = clist[ix][0]
+            cObj = Candle(**clist[ix][1])
             if cObj.colour == "undefined":
                 it = False
                 new_pc = cObj
@@ -259,13 +267,9 @@ class PivotList(object):
             List with Pivot objects
             List with Segment objects
         """
-        x = []
-        values = []
-        for i in range(len(self.clist.candles)):
-            x.append(i)
-            values.append(self.clist.candles[i].c)
-
-        yarr = np.array(values)
+        c_values = [float(self.clist[dt]['c']) for dt in self.clist.data.keys()]
+       
+        yarr = np.array(c_values)
         pivots = peak_valley_pivots(yarr, th_bounces,
                                     th_bounces*-1)
         modes = pivots_to_modes(pivots)
@@ -288,11 +292,16 @@ class PivotList(object):
                     submode = [modes[start_ix+1]]
                 #checking if all elements in submode are the same:
                 assert len(np.unique(submode).tolist()) == 1, "more than one type in modes"
+                dict_items = list(self.clist.data.items())
+                sliced_items = list(dict_items[start_ix:end_ix])
                 s = Segment(type=submode[0],
-                            clist=self.clist.candles[start_ix:end_ix],
+                            clist=sliced_items,
                             instrument=self.clist.instrument)
                 # create Pivot object
-                cl = self.clist.candles[start_ix]
+                dt = list(self.clist.data.keys())[start_ix]
+                cl_d = self.clist[dt]
+                cl_d['time'] = dt
+                cl = Candle(**cl_d)
                 # add granularity to object
                 cl.granularity = self.clist.granularity
                 pobj = Pivot(type=pre_i,
@@ -308,9 +317,11 @@ class PivotList(object):
                 pre_s = s
                 pre_i = i
             ix += 1
-
         # add last Pivot
-        cl = self.clist.candles[start_ix]
+        dt = list(self.clist.data.keys())[start_ix]
+        cl_d = self.clist[dt]
+        cl_d['time'] = dt
+        cl = Candle(**cl_d)
         cl.granularity = self.clist.granularity
         l_pivot = Pivot(type=pre_i,
                         candle=cl,
@@ -404,7 +415,8 @@ class PivotList(object):
             if self.pivots[-1].candle.time == p.candle.time and last_pivot is True:
                 adj_t = p.adjust_pivottime(clistO=self.clist)
                 # get new CandleList with new adjusted time for the end
-                newclist = self.clist.slice(start=self.clist[0].time,
+                start_dt = try_parsing_date(list(self.clist.data.keys())[0])
+                newclist = self.clist.slice(start=start_dt,
                                             end=adj_t)
                 newpl = PivotList(clist=newclist)
                 newp = newpl._get_pivotlist(pivots_params.th_bounces)[0][-1]
@@ -493,10 +505,10 @@ class PivotList(object):
         p_logger.debug("Running plot_pivots")
 
         prices, rsi, datetimes = ([] for i in range(3))
-        for c in self.clist.candles:
-            prices.append(c.c)
-            rsi.append(c.rsi)
-            datetimes.append(c.time)
+        for dt, c in self.clist.data.items():
+            prices.append(c['c'])
+            rsi.append(c['rsi'])
+            datetimes.append(try_parsing_date(dt))
 
         # plotting the rsi values
         fig_rsi = plt.figure(figsize=gparams.size)
@@ -514,11 +526,11 @@ class PivotList(object):
             ix = datetimes.index(dt)
             # prepare the plot for 'pre' segment
             if p.pre is not None:
-                ix_pre_s = datetimes.index(p.pre.start())
+                ix_pre_s = datetimes.index(try_parsing_date(p.pre.start()))
                 plt.scatter(datetimes[ix_pre_s], prices[ix_pre_s], s=200, c='green', marker='v')
             # prepare the plot for 'aft' segment
             if p.aft is not None:
-                ix_aft_e = datetimes.index(p.aft.end())
+                ix_aft_e = datetimes.index(try_parsing_date(p.aft.end()))
                 plt.scatter(datetimes[ix_aft_e], prices[ix_aft_e], s=200, c='red', marker='v')
             # plot
             plt.scatter(datetimes[ix], prices[ix], s=50)

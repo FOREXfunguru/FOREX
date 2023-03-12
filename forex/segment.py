@@ -1,7 +1,10 @@
-from utils import *
 import matplotlib
 import datetime
 import pickle
+import pdb
+
+from forex.candle import Candle
+from utils import *
 
 matplotlib.use('PS')
 
@@ -84,7 +87,7 @@ class Segment(object):
         of this segment. The candle part considered is
         controlled by gparams.part
         '''
-        diff = abs(self.clist[-1].c - self.clist[0].c)
+        diff = abs(float(self.clist[-1][1]['c'])- float(self.clist[0][1]['c']))
         diff_pips = float(calculate_pips(self.instrument, diff))
         if diff_pips ==0:
             diff_pips = 1.0 
@@ -108,13 +111,13 @@ class Segment(object):
 
     def start(self)->datetime:
         '''Function that returns the start of this Segment'''
-        return self.clist[0].time
+        return try_parsing_date(self.clist[0][0])
 
     def end(self)->datetime:
-        '''Function that returns the end of this Segment'''
-        return self.clist[-1].time
+        '''Function that returns the end of this Segment'''        
+        return try_parsing_date(self.clist[-1][0])
 
-    def get_lowest(self):
+    def get_lowest(self)->Candle:
         '''Function to get the candle with the lowest price in self.clist
 
         Returns:
@@ -123,14 +126,17 @@ class Segment(object):
         sel_c = price = None
         for c in self.clist:
             if price is None:
-                price = c.l
+                price = float(c[1]['l'])
                 sel_c = c
-            elif c.l < price:
-                price = c.l
+            elif float(c[1]['l']) < price:
+                price = float(c[1]['l'])
                 sel_c = c
-        return sel_c
+        c_dict= sel_c[1]
+        c_dict['time'] = sel_c[0]
+        cl = Candle(**c_dict)
+        return cl
 
-    def get_highest(self):
+    def get_highest(self)->Candle:
         '''Function to get the candle with the highest price in self.clist
 
         Returns:
@@ -139,12 +145,15 @@ class Segment(object):
         price = sel_c = None
         for c in self.clist:
             if price is None:
-                price = c.h
+                price = float(c[1]['h'])
                 sel_c = c
-            elif c.h > price:
-                price = c.h
+            elif float(c[1]['h']) > price:
+                price = float(c[1]['h'])
                 sel_c = c
-        return sel_c
+        c_dict= sel_c[1]
+        c_dict['time'] = sel_c[0]
+        cl = Candle(**c_dict)
+        return cl
 
     def __repr__(self):
         return "Segment"
@@ -233,7 +242,7 @@ class SegmentList(object):
             float representing the diff in pips. It will be positive
             when it is a downtrend and negative otherwise
         '''
-        diff = self.slist[0].clist[0].c - self.slist[-1].clist[-1].c
+        diff = float(self.slist[0].clist[0][1]['c']) - float(self.slist[-1].clist[-1][1]['c'])
         diff_pips = float(calculate_pips(self.instrument, diff))
 
         if diff_pips == 0:
@@ -253,14 +262,12 @@ class SegmentList(object):
     def start(self)->datetime:
         '''Get the start datetime for this SegmentList
         This start will be the time of the first candle in SegmentList'''
-        
-        return self.slist[0].clist[0].time
+        return try_parsing_date(self.slist[0].clist[0][0])
 
     def end(self)->datetime:
         '''Get the end datetime for this SegmentList
         This start will be the time of the first candle in SegmentList'''
-
-        return self.slist[-1].clist[-1].time
+        return try_parsing_date(self.slist[-1].clist[-1][0])
 
     def fetch_by_start(self, dt: datetime, max_diff: int=3600):
         '''Function to get a certain Segment by
@@ -277,7 +284,8 @@ class SegmentList(object):
             Segment object. None if not found
         '''
         for s in self.slist:
-            if s.start() == dt or s.start() > dt or abs(s.start()-dt) <= datetime.timedelta(0, max_diff):
+            dt_st = s.start()
+            if s.start() == dt or dt_st > dt or abs(dt_st-dt) <= timedelta(0, max_diff):
                 return s
 
         return None
@@ -297,7 +305,8 @@ class SegmentList(object):
             Segment object. None if not found'''
 
         for s in reversed(self.slist):
-            if s.end() == dt or s.end() < dt or s.end()-dt <= datetime.timedelta(0, max_diff):
+            dt_end =  s.end()
+            if dt_end == dt or dt_end < dt or dt_end-dt <= timedelta(0, max_diff):
                 return s
 
     def __repr__(self):

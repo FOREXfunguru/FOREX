@@ -162,9 +162,8 @@ def test_get_lowest(clO_pickled):
 def test_add_two_clists(clO, clO1):
     log = logging.getLogger('Test get_lowest')
     log.debug('get_lowest')
-
     newClO = clO + clO1
-    assert len(newClO.candles) == 4
+    assert len(newClO.data.keys()) == 4
 
 
 
