@@ -4,9 +4,9 @@ from datetime import timedelta,datetime
 from api.oanda.connect import Connect
 from params import gparams
 from forex.candle import Candle
+from utils import try_parsing_date
 
 import matplotlib.pyplot as plt
-import matplotlib.dates as mdates
 import pdb
 
 # create logger
@@ -79,10 +79,10 @@ class HArea(object):
                              end=cend.isoformat())
 
             seen = False
-            for c in res:
-                if c.l <= self.price <= c.h:
+            for dt, cl_d in res.data.items():
+                if float(cl_d['l']) <= self.price <= float(cl_d['h']):
                     seen = True
-                    return c.time
+                    return try_parsing_date(dt)
 
             if seen is False:
                 return 'n.a.'
@@ -163,12 +163,9 @@ class HAreaList(object):
             outfile : Output file
         """
         prices, datetimes = ([] for i in range(2))
-        for c in clO.candles:
-            prices.append(c.c)
-            datetimes.append(c.time)
-
-        # massage datetimes so they can be plotted in X-axis
-        x = [mdates.date2num(i) for i in datetimes]
+        for dt, cldict in clO.data.items():
+            prices.append(float(cldict['c']))
+            datetimes.append(dt)
 
         # plotting the prices for part
         fig = plt.figure(figsize=gparams.size)

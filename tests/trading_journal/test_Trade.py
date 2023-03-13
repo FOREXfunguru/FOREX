@@ -17,7 +17,7 @@ def test_init_clist():
             type='long',
             timeframe="D",
             init_clist=True)
-    assert len(td.clist.candles) == 4104
+    assert len(td.clist) == 4104
 
 def test_run_single_trade(clO_pickled):
     '''

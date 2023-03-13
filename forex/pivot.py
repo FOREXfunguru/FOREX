@@ -52,7 +52,7 @@ class Pivot(object):
         while extension_needed is True:
             # reduce start of self.pre by one candle in order to retrieve the previous segment
             # by its end
-            start_dt =  try_parsing_date(self.pre.start()) - periodToDelta(1, self.candle.granularity)
+            start_dt =  self.pre.start() - periodToDelta(1, self.candle.granularity)
 
             s = slist.fetch_by_end(start_dt)
             if s is None:
@@ -110,12 +110,7 @@ class Pivot(object):
 
             # fetch next segment
             s = slist.fetch_by_start(start_dt)
-            print(start_dt)
-            if start_dt == datetime(2020,8, 28, 21,0,0):
-                pdb.set_trace()
-                print("h")
             if s is None:
-                pdb.set_trace()
                 # This is not necessarily an error, it could be that there is not the required Segment in slist
                 # because it is out of the time period
                 p_logger.info("No Segment could be retrieved for pivot falling in time {0} by using s.fetch_by_"
@@ -520,17 +515,16 @@ class PivotList(object):
         fig = plt.figure(figsize=gparams.size)
         ax = plt.axes()
         ax.plot(datetimes, prices, color="black")
-
         for p in self.pivots:
             dt = p.candle.time
             ix = datetimes.index(dt)
             # prepare the plot for 'pre' segment
             if p.pre is not None:
-                ix_pre_s = datetimes.index(try_parsing_date(p.pre.start()))
+                ix_pre_s = datetimes.index(p.pre.start())
                 plt.scatter(datetimes[ix_pre_s], prices[ix_pre_s], s=200, c='green', marker='v')
             # prepare the plot for 'aft' segment
             if p.aft is not None:
-                ix_aft_e = datetimes.index(try_parsing_date(p.aft.end()))
+                ix_aft_e = datetimes.index(p.aft.end())
                 plt.scatter(datetimes[ix_aft_e], prices[ix_aft_e], s=200, c='red', marker='v')
             # plot
             plt.scatter(datetimes[ix], prices[ix], s=50)

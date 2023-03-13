@@ -101,16 +101,10 @@ def calc_SR(pvLO, outfile: str):
         halist.append(resist)
 
     halistObj = HAreaList(halist=halist)
-
-    # Plot the HAreaList
-    dt_str = pvLO.clist.candles[-1].time.strftime("%d_%m_%Y_%H_%M")
-    print(dt_str)
-
     if pivots_params.plot is True:
         halistObj.plot(clO= pvLO.clist, outfile=outfile)
 
     cl_logger.info("Run done")
-
     return halistObj
 
 def calc_atr(clO)->float:
@@ -124,8 +118,8 @@ def calc_atr(clO)->float:
              Used for calculation
     '''
     length, tot_diff_in_pips  = 0,0
-    for c in clO.candles:
-        diff = abs(c.h-c.l)
+    for dt, cl_dict in clO.data.items():
+        diff = abs(float(cl_dict['h'])-float(cl_dict['l']))
         tot_diff_in_pips = tot_diff_in_pips + float(calculate_pips(clO.instrument, diff))
         length += 1
     return round(tot_diff_in_pips/length, 3)

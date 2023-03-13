@@ -84,6 +84,6 @@ def test_calc_itrend(clO_pickled):
     pl2 = PivotList(clist=subCl2)
     pl3 = PivotList(clist=subCl3)
 
-    assert pl1.calc_itrend().start() == '2020-05-05T21:00:00'
-    assert pl2.calc_itrend().start() == '2020-02-27T22:00:00'
-    assert pl3.calc_itrend().start() == '2017-09-07T21:00:00'
+    assert pl1.calc_itrend().start() == datetime.datetime(2020, 3, 18, 21, 0, 0)
+    assert pl2.calc_itrend().start() == datetime.datetime(2020, 2, 27, 22, 0, 0)
+    assert pl3.calc_itrend().start() == datetime.datetime(2017, 9, 7, 21, 0)

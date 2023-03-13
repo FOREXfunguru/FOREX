@@ -112,13 +112,6 @@ class CandleList(object):
     def __iter__(self):
         self.pos = 0
         return self
- 
-    def __next__(self):
-        if(self.pos < len(self.candles)):
-            self.pos += 1
-            return self.candles[self.pos - 1]
-        else:
-            raise StopIteration
     
     def __getitem__(self, key):
         if isinstance(key, datetime):
