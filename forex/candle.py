@@ -160,47 +160,6 @@ class CandleList(object):
         elif price_1st < price_last:
             return 'long' # or uptrend
 
-    def fetch_by_time(self, adatetime : datetime, period: int=0)->Candle:
-        '''Function to get a candle using its datetime
-
-        Arguments:
-            adatetime: datetime object for candle that wants
-                       to be fetched
-            period: Number of candles above/below 'adatetime' that will be fetched
-
-        Returns:
-            Candle object
-        '''
-
-        d=adatetime
-        delta, delta_period = None, None
-        if self.granularity == "D":
-            delta = timedelta(hours=24)
-            delta_period = timedelta(hours=24*period)
-        else:
-            fgran = self.granularity.replace('H', '')
-            delta = timedelta(hours=int(fgran))
-            delta_period = timedelta(hours=int(fgran)*period)
-
-        if period == 0:
-            sel_c = None
-            for c in self.candles:
-                end = c.time+delta
-                diff = abs(c.time-d)
-                one_hour = timedelta(hours=1)
-                if d == c.time and d < end or diff==one_hour:
-                    return c
-        elif period > 0:
-            start = d-delta_period
-            end = d+delta_period
-            sel_c = []
-            for c in self.candles:
-                if c.time >= start and c.time <= end:
-                    sel_c.append(c)
-            if len(sel_c) == 0: raise Exception("No candle was selected"
-                                                " for range: {0}-{1}".format(start, end))
-            return sel_c
-
     def calc_rsi(self):
         '''Calculate the RSI for a certain candle list.'''
         cl_logger.debug("Running calc_rsi")
@@ -393,12 +352,12 @@ class CandleList(object):
                 continue
             if type == 'long':
                 if float(self.data[dt]['h']) < price:
-                    return dt
+                    return try_parsing_date(dt)
             elif type == 'short':
                 if float(self.data[dt]['l']) > price:
-                    return dt
+                    return try_parsing_date(dt)
         
-        return list(self.data.keys())[0]
+        return try_parsing_date(list(self.data.keys())[0])
 
     def get_highest(self)->float:
         '''Function to calculate the highest

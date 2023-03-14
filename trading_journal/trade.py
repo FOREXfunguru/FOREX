@@ -8,6 +8,7 @@ from forex.harea import HArea
 from utils import *
 from params import trade_params
 from api.oanda.connect import Connect
+from forex.candle import Candle
 
 # create logger
 t_logger = logging.getLogger(__name__)
@@ -138,23 +139,24 @@ class Trade(object):
                 self.outcome = 'n.a.'
                 t_logger.info("Run trade in the future. Skipping...")
                 break
-            pdb.set_trace()
-            cl = self.clist.fetch_by_time(d)
-            if cl is None:
+            cl_d = self.clist[d]
+            if cl_d is None:
                 try:
                     conn = Connect(
                         instrument=self.pair,
                         granularity=self.timeframe)
                     clO = conn.query(start=d.isoformat(), end=d.isoformat())
-                    if len(clO.candles)==1:
-                        cl = clO.candles[0]
-                    elif len(clO.candles)>1:
+                    if len(clO)==1:
+                        cl_d = list(clO.data.values())[0]
+                    elif len(clO)>1:
                         raise Exception("No valid number of candles in CandleList")
-                    elif len(clO.candles) == 0:
+                    elif len(clO) == 0:
                         # market closed
                         continue
                 except:
                     continue
+            cl_d['time'] = d
+            cl = Candle(**cl_d)
             if self.entered is False:
                 if cl.l <= entry.price <= cl.h:
                     t_logger.info("Trade entered")

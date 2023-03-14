@@ -4,7 +4,7 @@ import datetime
 from datetime import datetime
 
 from api.oanda.connect import Connect
-from forex.candle import CandleList
+from forex.candle import CandleList, Candle
 from params import gparams, tradebot_params
 from utils import *
 from forex.pivot import PivotList
@@ -31,7 +31,9 @@ class TradeBot(object):
         self.pair = pair
         self.timeframe = timeframe
         self.clist = clist
-        if not clist or clist.candles[-1].time<self.end:
+        if clist:
+            cend = try_parsing_date(list(clist.data.keys())[-1])
+        if not clist or cend<self.end:
             self.init_clist()
     
     def init_clist(self)->None:
@@ -115,12 +117,13 @@ class TradeBot(object):
 
             #  Fetch candle for current datetime. this is the current candle that
             # is being checked
-            c_candle = self.clist.fetch_by_time(startO)
-            if c_candle is None:
+            c_d = self.clist[startO]
+            if c_d is None:
                 startO = startO+delta
                 loop += 1
                 continue
-
+            
+            c_candle = Candle(**c_d)
             # c_candle.time is not equal to startO
             # when startO is non-working day, for example
             delta1hr = timedelta(hours=1)

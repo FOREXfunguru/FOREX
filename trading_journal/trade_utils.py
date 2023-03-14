@@ -24,12 +24,12 @@ def is_entry_onrsi(trade: Trade)->bool:
     Returns:
         True if tObj.start is on RSI (i.e. RSI>=70 or RSI<=30)
     '''
-    if trade.clist.candles[-1].rsi >= 70 or trade.clist.candles[-1].rsi <= 30:
+    if list(trade.clist.data.items())[-1][1]['rsi'] >= 70 or list(trade.clist.data.items())[-1][1]['rsi'] <= 30:
         return True
     else:
         return False
 
-def get_lasttime(trade: Trade, pad: int=0):
+def get_lasttime(trade: Trade, pad: int=0)->datetime:
         '''Function to calculate the last time price has been above/below
         a certain HArea.
 
@@ -47,7 +47,8 @@ def get_lasttime(trade: Trade, pad: int=0):
                 new_SR = add_pips2price(trade.clist.instrument,
                                         trade.SR,
                                         pad)
-        newcl = trade.clist.slice(start=trade.clist.candles[0].time, end=trade.start)
+        start_dt = try_parsing_date(list(trade.clist.data.keys())[0])
+        newcl = trade.clist.slice(start=start_dt, end=trade.start)
         return newcl.get_lasttime(new_SR, type=trade.type)
 
 def get_max_min_rsi(trade)->float:
@@ -59,10 +60,9 @@ def get_max_min_rsi(trade)->float:
         in the candlelist
     """
     t_logger.debug("Running set_max_min_rsi")
-
     ix = counter_params.rsi_period
-    sub_clist = trade.clist.candles[-ix:]
-    rsi_list = [x.rsi for x in sub_clist]
+    sub_clist = list(trade.clist.data.items())[-ix:]
+    rsi_list = [x[1]['rsi'] for x in sub_clist]
     first = None
     for x in reversed(rsi_list):
         if first is None:
@@ -137,7 +137,7 @@ def calc_pips_c_trend(trade: Trade)->float:
 
     return round(pips_c_trend, 1)
 
-def get_trade_type(dt, clObj: CandleList)->str:
+def get_trade_type(dt: datetime, clObj: CandleList)->str:
     """Function to get the type of a Trade (short/long).
 
     Arguments:
@@ -148,11 +148,11 @@ def get_trade_type(dt, clObj: CandleList)->str:
     Returns:
         type (short/long)
     """
-    if dt != clObj.candles[-1].time:
-        dt = clObj.candles[-1].time
+    ldt = try_parsing_date(list(clObj.data.keys())[-1])
+    if dt != ldt:
+        dt = ldt
 
     PL= PivotList(clObj)
-
     # now, get the Pivot matching the datetime for the IC+1 candle
     if PL.pivots[-1].candle.time != dt:
         raise Exception("Last pivot time does not match the passed datetime")
@@ -298,24 +298,24 @@ def adjust_SL_candles(type: str, clObj: CandleList, number: int=7)->float:
         adjusted SL
     '''
     SL, ix = None, 0
-    if not clObj.candles:
+    if len(clObj)==0:
         raise Exception("No candles in CandleList. Can't calculate the SL")
-    for c in reversed(clObj.candles):
+    for dt, cl_d in reversed(clObj.data.items()):
         # go back 'number' candles
         if ix == number:
             break
         ix += 1
         if type == 'short':
             if SL is None:
-                SL = c.h
-            elif c.h > SL:
-                SL = c.h
+                SL = cl_d['h']
+            elif cl_d['h'] > SL:
+                SL = cl_d['h']
         if type == 'long':
             if SL is None:
-                SL = c.l
-            if c.l < SL:
-                SL = c.l
-    return SL
+                SL = cl_d['l']
+            if cl_d['l'] < SL:
+                SL = cl_d['l']
+    return float(SL)
 
 def calculate_profit(trade: Trade)->float:
     '''Function to calculate the profit of a certain

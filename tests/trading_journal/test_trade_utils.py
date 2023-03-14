@@ -189,7 +189,7 @@ def test_calc_pips_c_trend(pair, id, timeframe, start, type, SR, SL, TP, entry, 
 def test_calc_trade_session(t_object):
 
     t_object.run_trade()
-    assert calc_trade_session(t_object) == 'nosession'
+    assert calc_trade_session(t_object) == 'european,namerican'
 
 @pytest.mark.parametrize("start,"
                          "end,"
