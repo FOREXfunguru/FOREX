@@ -143,9 +143,9 @@ def test_last_time(clO_pickled):
     lt1 = subCl1.get_lasttime(price=0.71754, type='long')
     lt2 = subCl2.get_lasttime(price=0.70621, type='short')
     lt3 = subCl3.get_lasttime(price=0.80879, type='short')
-    assert lt1 == '2016-02-28T22:00:00'
-    assert lt2 == '2019-04-22T21:00:00'
-    assert lt3 == '2015-01-19T22:00:00'
+    assert lt1 == datetime.datetime(2016, 2, 28, 22, 0)
+    assert lt2 == datetime.datetime(2019, 4, 22, 21, 0)
+    assert lt3 == datetime.datetime(2015, 1, 19, 22, 0)
 
 def test_get_highest(clO_pickled):
     log = logging.getLogger('Test get_highest')
