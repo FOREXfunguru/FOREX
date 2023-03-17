@@ -13,7 +13,7 @@ from trading_journal.trade_utils import *
 
 # create logger
 tb_logger = logging.getLogger(__name__)
-tb_logger.setLevel(logging.DEBUG)
+tb_logger.setLevel(logging.WARNING)
 
 class TradeBot(object):
     '''This class represents an automatic Trading bot.
