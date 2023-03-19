@@ -85,7 +85,7 @@ class HArea(object):
                     return c.time
 
             if seen is False:
-                return 'n.a.'
+                return candle.time
         else:
             return 'n.a.'
 
