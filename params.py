@@ -80,7 +80,7 @@ class clist_params:
 class trade_params:
     # When using run method, how many pips above/below the HArea will considered
     # to check if it hits the entry,SL or TP
-    hr_pips : int = 15
+    hr_pips : int = 1
     # number of candles from start of trade to run the trade and assess the outcome
     numperiods : int = 300
     # granularity for HArea.get_cross_time

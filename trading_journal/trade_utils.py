@@ -151,7 +151,8 @@ def get_trade_type(dt, clObj: CandleList)->str:
     if dt != clObj.candles[-1].time:
         dt = clObj.candles[-1].time
 
-    PL= PivotList(clObj)
+    # increate sensitivity for pivot detection
+    PL= PivotList(clObj, th_bounces=0.01)
 
     # now, get the Pivot matching the datetime for the IC+1 candle
     if PL.pivots[-1].candle.time != dt:

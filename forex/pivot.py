@@ -218,14 +218,17 @@ class PivotList(object):
         pivots: List with Pivot objects
         slist: SegmentList object"""
 
-    def __init__(self, clist, pivots = None, slist = None)->None:
+    def __init__(self, clist, pivots = None, slist = None, th_bounces: float = None)->None:
         self.clist = clist
         if pivots is not None:
             assert slist is not None, "Error!. SegmentList needs to be provided"
             self.slist = slist
             self.pivots = pivots
         else:
-            po_l, segs = self._get_pivotlist(pivots_params.th_bounces)
+            if th_bounces:
+                po_l, segs = self._get_pivotlist(th_bounces)
+            else:
+                po_l, segs = self._get_pivotlist(pivots_params.th_bounces)
             self.pivots = po_l
             self.slist = SegmentList(slist=segs,
                                      instrument=clist.instrument)
