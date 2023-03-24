@@ -151,8 +151,10 @@ class Trade(object):
                         raise Exception("No valid number of candles in CandleList")
                     elif len(clO.candles) == 0:
                         # market closed
+                        count -= 1
                         continue
                 except:
+                    count -= 1
                     continue
             if self.entered is False:
                 if cl.l <= entry.price <= cl.h:
