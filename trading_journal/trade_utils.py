@@ -4,7 +4,7 @@ import pdb
 import datetime as dt
 
 from utils import *
-from params import counter_params, tradebot_params
+from params import counter_params, tradebot_params, trade_params
 from forex.candlelist_utils import *
 from forex.pivot import PivotList
 from forex.candle import CandleList
@@ -152,7 +152,7 @@ def get_trade_type(dt, clObj: CandleList)->str:
         dt = clObj.candles[-1].time
 
     # increate sensitivity for pivot detection
-    PL= PivotList(clObj, th_bounces=0.01)
+    PL= PivotList(clObj, th_bounces=trade_params.th_bounces)
 
     # now, get the Pivot matching the datetime for the IC+1 candle
     if PL.pivots[-1].candle.time != dt:

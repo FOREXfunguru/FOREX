@@ -97,3 +97,4 @@ class trade_params:
                               # if 'standard' then wait to check if trade finishes up to trade_params.numperiods
     no_candles: int = 150
     reduce_perc: int = 50 # reduce the diff between TP and entry to this 'reduce_perc' %
+    th_bounces: int = 0.02 # pivot sensitivity for 'get_trade_type'
