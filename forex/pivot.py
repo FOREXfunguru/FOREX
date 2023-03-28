@@ -262,12 +262,7 @@ class PivotList(object):
             List with Pivot objects
             List with Segment objects
         """
-        x = []
-        values = []
-        for i in range(len(self.clist.candles)):
-            x.append(i)
-            values.append(self.clist.candles[i].c)
-
+        values = [cl.c for cl in self.clist.candles]
         yarr = np.array(values)
         pivots = peak_valley_pivots(yarr, th_bounces,
                                     th_bounces*-1)
