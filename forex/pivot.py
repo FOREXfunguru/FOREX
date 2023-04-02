@@ -4,9 +4,9 @@ import matplotlib.pyplot as plt
 
 from utils import *
 from params import gparams, pivots_params
-
 from forex.segment import SegmentList, Segment
 from zigzag import *
+from statistics import mean
 
 # create logger
 p_logger = logging.getLogger(__name__)
@@ -340,10 +340,7 @@ class PivotList(object):
         '''Function to calculate the score after adding the score
         for each individual pivot'''
 
-        tot_score = 0
-        for p in self.pivots:
-            tot_score += p.score
-
+        tot_score = sum(p.score for p in self.pivots)
         return round(tot_score, 1)
 
     def get_avg_score(self)->float:
@@ -352,11 +349,7 @@ class PivotList(object):
         This calculation is done by dividing the
         total score by the number of pivots
         '''
-        tot_score = 0
-        for p in self.pivots:
-            tot_score += p.score
-
-        avg = tot_score/len(self.pivots)
+        avg = mean(p.score for p in self.pivots)
         return round(avg, 1)
 
     def inarea_pivots(self, price: float, last_pivot: bool=True):
