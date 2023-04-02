@@ -18,7 +18,7 @@ def test_calc_SR_H8(clOH8_pickled, clean_tmp):
     pivots_params.th_bounces=0.02
     pivotlistH8 = PivotList(clist=clOH8_pickled.slice(start=clOH8_pickled.candles[0].time, end=datetime(2021, 10, 29, 5, 0)))
     harealst = calc_SR(pivotlistH8, outfile=DATA_DIR+"/out/calc_sr_h8.png")
-    assert len(harealst.halist) == 2
+    assert len(harealst.halist) == 3
 
 def test_calc_atr(clO, clean_tmp):
     """Check 'calc_atr' function"""

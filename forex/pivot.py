@@ -311,10 +311,8 @@ class PivotList(object):
 
     def fetch_by_time(self, d: datetime)->Pivot:
         '''Function to fetch a Pivot object using a datetime'''
-        p = None
-        for p in self.pivots:
-            if p.candle.time == d:
-                return p
+        p = next((p for p in self.pivots if p.candle.time == d), None)
+        return p
 
     def fetch_by_type(self, type: int):
         '''Function to get all pivots from a certain type

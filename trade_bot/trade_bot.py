@@ -89,6 +89,7 @@ class TradeBot(object):
             sub_pvtlst = PivotList(clist=subclO)
             dt_str = startO.strftime("%d_%m_%Y_%H_%M")
             if loop == 0:
+                pdb.set_trace()
                 outfile_txt = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.txt"
                 outfile_png = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.png"
                 SRlst = calc_SR(sub_pvtlst, outfile=outfile_png)

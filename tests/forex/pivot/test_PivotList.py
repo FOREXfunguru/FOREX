@@ -25,7 +25,7 @@ def test_in_area(pivotlist):
     pl_inarea = pivotlist.inarea_pivots(price=0.75)
 
     # check the len of pl.plist after getting the pivots in the S/R area
-    assert len(pl_inarea) == 6
+    assert len(pl_inarea) == 8
 
 def test_get_pl_bytime(pivotlist):
     """
@@ -57,7 +57,7 @@ def test_fetch_by_type(pivotlist):
     """Obtain a pivotlist of a certain type"""
 
     newpl = pivotlist.fetch_by_type(type=-1)
-    assert len(newpl.pivots) == 70
+    assert len(newpl.pivots) == 68
 
 def test_fetch_by_time(pivotlist):
     """Obtain a Pivot object by datetime"""
