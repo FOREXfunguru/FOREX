@@ -86,3 +86,10 @@ def test_calc_itrend(clO_pickled):
     assert pl1.calc_itrend().start() == datetime.datetime(2020, 3, 18, 21, 0)
     assert pl2.calc_itrend().start() == datetime.datetime(2020, 2, 27, 22, 0)
     assert pl3.calc_itrend().start() == datetime.datetime(2017, 9, 7, 21, 0)
+
+def test_slice(clO_pickled):
+    """Test function for slice"""
+
+    pl = PivotList(clist=clO_pickled)
+
+    assert 0 

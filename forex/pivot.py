@@ -233,6 +233,7 @@ class PivotList(object):
             self.pivots = po_l
             self.slist = SegmentList(slist=segs,
                                      instrument=clist.instrument)
+        self.times = [p.candle.time for p in self.pivots]
     
     def __iter__(self):
         self.pos = 0
@@ -448,6 +449,24 @@ class PivotList(object):
             return newp.pre
 
         p_logger.debug("Done clac_itrend")
+    
+    def slice(self, start : datetime, end : datetime):
+        '''Function to slice self on a date interval. It will return the sliced CandleList.
+
+        Arguments:
+            start: Slice the PivotList from this start datetime. It will create a new PivotList starting
+                   from this datetime.
+            end: End datetime for the PivotList.
+
+        Returns:
+            PivotList object
+
+        Raises
+        ------
+        Exception
+            If start > end
+        '''
+
 
     def get_pl_bytime(self, adatetime):
         """Function that returns a new PivotList in which
