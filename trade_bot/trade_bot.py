@@ -1,6 +1,7 @@
 import logging
 import pdb
 import datetime
+
 from datetime import datetime
 
 from api.oanda.connect import Connect

@@ -228,6 +228,7 @@ class PivotList(object):
             if th_bounces:
                 po_l, segs = self._get_pivotlist(th_bounces)
             else:
+                
                 po_l, segs = self._get_pivotlist(pivots_params.th_bounces)
             self.pivots = po_l
             self.slist = SegmentList(slist=segs,
@@ -262,8 +263,7 @@ class PivotList(object):
             List with Pivot objects
             List with Segment objects
         """
-        values = [cl.c for cl in self.clist.candles]
-        yarr = np.array(values)
+        yarr = np.array([cl.c for cl in self.clist.candles])
         pivots = peak_valley_pivots(yarr, th_bounces,
                                     th_bounces*-1)
         modes = pivots_to_modes(pivots)
@@ -271,52 +271,42 @@ class PivotList(object):
         segs = [] # this list will hold the Segment objects
         plist_o = [] # this list will hold the Pivot objects
         pre_s = None # Variable that will hold pre Segments
-        start_ix = end_ix = pre_i = None
-        ix = 0
-        for i in pivots:
-            if (i == 1 or i == -1) and start_ix is None:
-                # First pivot
-                start_ix = ix
-                pre_i = i
-            elif (i == 1 or i == -1) and start_ix is not None:
-                end_ix=ix
-                if pivots[start_ix+1] == 0:
-                    submode = modes[start_ix+1:end_ix]
-                else:
-                    submode = [modes[start_ix+1]]
-                #checking if all elements in submode are the same:
-                assert len(np.unique(submode).tolist()) == 1, "more than one type in modes"
-                s = Segment(type=submode[0],
-                            clist=self.clist.candles[start_ix:end_ix],
-                            instrument=self.clist.instrument)
-                # create Pivot object
-                cl = self.clist.candles[start_ix]
-                # add granularity to object
-                cl.granularity = self.clist.granularity
-                pobj = Pivot(type=pre_i,
-                             candle=cl,
-                             pre=pre_s, 
-                             aft=s)
-                pobj.score = pobj.calc_score()
-                # Append it to list
-                plist_o.append(pobj)
-                # Append it to segs
-                segs.append(s)
-                start_ix = ix
-                pre_s = s
-                pre_i = i
-            ix += 1
-
+        ixs = list(np.where(np.logical_or(pivots == 1, pivots == -1))[0])
+        tuples_lst = [(ixs[i], ixs[i+1]) for i in range(len(ixs)-1)]
+        for pair in tuples_lst:
+            if pivots[pair[0]+1] == 0:
+                submode = modes[pair[0]+1:pair[1]]
+            else:
+                submode = [modes[pair[0]+1]]
+            #checking if all elements in submode are the same:
+            assert len(np.unique(submode).tolist()) == 1, "more than one type in modes"
+            s = Segment(type=submode[0],
+                        clist=self.clist.candles[pair[0]:pair[1]],
+                        instrument=self.clist.instrument)
+            # create Pivot object
+            cl = self.clist.candles[pair[0]]
+            # add granularity to object
+            cl.granularity = self.clist.granularity
+            pobj = Pivot(type=submode[0],
+                         candle=cl,
+                         pre=pre_s, 
+                         aft=s)
+            pobj.score = pobj.calc_score()
+            # Append it to list
+            plist_o.append(pobj)
+            # Append it to segs
+            segs.append(s)
+            pre_s = s
+        
         # add last Pivot
-        cl = self.clist.candles[start_ix]
+        cl = self.clist.candles[ixs[-1]]
         cl.granularity = self.clist.granularity
-        l_pivot = Pivot(type=pre_i,
+        l_pivot = Pivot(type=modes[ixs[-1]],
                         candle=cl,
                         pre=pre_s,
                         aft=None)
         l_pivot.score = l_pivot.calc_score()
         plist_o.append(l_pivot)
-
         return plist_o, segs
 
     def fetch_by_time(self, d: datetime)->Pivot:
@@ -325,7 +315,6 @@ class PivotList(object):
         for p in self.pivots:
             if p.candle.time == d:
                 return p
-        return None
 
     def fetch_by_type(self, type: int):
         '''Function to get all pivots from a certain type
