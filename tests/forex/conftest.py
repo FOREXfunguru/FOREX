@@ -30,7 +30,6 @@ def seglist_pickled():
 @pytest.fixture
 def pivotlist(clO_pickled):
     """Obtain a PivotList object"""
-    pdb.set_trace()
     return PivotList(clist=clO_pickled)
 
 

@@ -89,7 +89,7 @@ def test_calc_itrend(clO_pickled):
 
 def test_slice(clO_pickled):
     """Test function for slice"""
-
     pl = PivotList(clist=clO_pickled)
-
-    assert 0 
+    subpvl = pl.slice(start=datetime.datetime(2011, 5, 22, 21, 0), end=datetime.datetime(2011, 12, 18, 22, 0))
+    assert subpvl.clist[0].time == datetime.datetime(2011, 5, 22, 21, 0)
+    assert subpvl.pivots[-1].candle.time == datetime.datetime(2011, 12, 18, 22, 0)

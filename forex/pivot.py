@@ -466,7 +466,13 @@ class PivotList(object):
         Exception
             If start > end
         '''
-
+        if start > end:
+            raise Exception("Start is greater than end. Can't slice this PivotList")
+        subpvt = self.pivots[self.times.index(start):self.times.index(end)+1]
+        seglst = self.slist.slist[self.times.index(start):self.times.index(end)+1]
+        clist = self.clist.slice(start=start, end=end)
+        newpvlst = PivotList(clist=clist, pivots=subpvt, slist=seglst)
+        return newpvlst
 
     def get_pl_bytime(self, adatetime):
         """Function that returns a new PivotList in which
