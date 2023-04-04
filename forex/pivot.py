@@ -382,8 +382,8 @@ class PivotList(object):
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
             if self.pivots[-1].candle.time == p.candle.time and last_pivot is True:
                 adj_t = p.adjust_pivottime(clistO=self.clist)
-                pdb.set_trace()
-                newpl = self.slice(start=self.clist[0].time, end=adj_t)
+                newclist = self.clist.slice(start=self.clist[0].time, end=adj_t)
+                newpl = PivotList(clist=newclist)
                 newp = newpl._get_pivotlist(pivots_params.th_bounces)[0][-1]
                 if pivots_params.runmerge_pre is True and newp.pre is not None:
                     newp.merge_pre(slist=self.slist,
