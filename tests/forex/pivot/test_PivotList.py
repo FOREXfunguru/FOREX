@@ -27,14 +27,6 @@ def test_in_area(pivotlist):
     # check the len of pl.plist after getting the pivots in the S/R area
     assert len(pl_inarea) == 8
 
-def test_get_pl_bytime(pivotlist):
-    """
-    Test 'get_pl_bytime"
-    """
-    dt = datetime.datetime(2019, 7, 1, 21, 0)
-    newpl = pivotlist.get_pl_bytime(adatetime=dt)
-    assert len(newpl) == 25
-
 def test_plot_pivots(pivotlist,clean_tmp):
     """
     Test plot_pivots
@@ -86,10 +78,3 @@ def test_calc_itrend(clO_pickled):
     assert pl1.calc_itrend().start() == datetime.datetime(2020, 3, 18, 21, 0)
     assert pl2.calc_itrend().start() == datetime.datetime(2020, 2, 27, 22, 0)
     assert pl3.calc_itrend().start() == datetime.datetime(2017, 9, 7, 21, 0)
-
-def test_slice(clO_pickled):
-    """Test function for slice"""
-    pl = PivotList(clist=clO_pickled)
-    subpvl = pl.slice(start=datetime.datetime(2011, 5, 22, 21, 0), end=datetime.datetime(2011, 12, 18, 22, 0))
-    assert subpvl.clist[0].time == datetime.datetime(2011, 5, 22, 21, 0)
-    assert subpvl.pivots[-1].candle.time == datetime.datetime(2011, 12, 18, 22, 0)

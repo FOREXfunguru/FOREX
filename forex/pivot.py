@@ -1,6 +1,7 @@
 import logging
 import datetime
 import matplotlib.pyplot as plt
+import pdb
 
 from utils import *
 from params import gparams, pivots_params
@@ -233,7 +234,6 @@ class PivotList(object):
             self.pivots = po_l
             self.slist = SegmentList(slist=segs,
                                      instrument=clist.instrument)
-        self.times = [p.candle.time for p in self.pivots]
     
     def __iter__(self):
         self.pos = 0
@@ -382,10 +382,8 @@ class PivotList(object):
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
             if self.pivots[-1].candle.time == p.candle.time and last_pivot is True:
                 adj_t = p.adjust_pivottime(clistO=self.clist)
-                # get new CandleList with new adjusted time for the end
-                newclist = self.clist.slice(start=self.clist[0].time,
-                                            end=adj_t)
-                newpl = PivotList(clist=newclist)
+                pdb.set_trace()
+                newpl = self.slice(start=self.clist[0].time, end=adj_t)
                 newp = newpl._get_pivotlist(pivots_params.th_bounces)[0][-1]
                 if pivots_params.runmerge_pre is True and newp.pre is not None:
                     newp.merge_pre(slist=self.slist,
@@ -449,42 +447,6 @@ class PivotList(object):
             return newp.pre
 
         p_logger.debug("Done clac_itrend")
-    
-    def slice(self, start : datetime, end : datetime):
-        '''Function to slice self on a date interval. It will return the sliced CandleList.
-
-        Arguments:
-            start: Slice the PivotList from this start datetime. It will create a new PivotList starting
-                   from this datetime.
-            end: End datetime for the PivotList.
-
-        Returns:
-            PivotList object
-
-        Raises
-        ------
-        Exception
-            If start > end
-        '''
-        if start > end:
-            raise Exception("Start is greater than end. Can't slice this PivotList")
-        subpvt = self.pivots[self.times.index(start):self.times.index(end)+1]
-        seglst = self.slist.slist[self.times.index(start):self.times.index(end)+1]
-        clist = self.clist.slice(start=start, end=end)
-        newpvlst = PivotList(clist=clist, pivots=subpvt, slist=seglst)
-        return newpvlst
-
-    def get_pl_bytime(self, adatetime):
-        """Function that returns a new PivotList in which
-        the plist is >= 'adatetime'"""
-
-        p_logger.debug("Running get_pivots_lasttime")
-        new_cl = self.clist.slice(start=adatetime)
-        new_PLobj = PivotList(clist=new_cl)
-
-        p_logger.debug("Done set_pivots_lasttime")
-
-        return new_PLobj
 
     def plot_pivots(self, outfile_prices: str, outfile_rsi: str):
         '''Function to plot all pivots that are in the area
