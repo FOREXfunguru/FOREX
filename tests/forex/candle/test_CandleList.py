@@ -96,14 +96,12 @@ def test_fetch_by_time_q3(clO_pickled):
     assert c.time == datetime.datetime(2019, 12, 4, 22, 0)
 
 def test_fetch_by_time_q4(clO_pickled):
-    """Fetch datetime in non DST time with incorrect query time"""
+    """Fetch datetime with weekend query time"""
 
-    adatetime = datetime.datetime(2019, 12, 4, 22, 0)
+    adatetime = datetime.datetime(2019, 5, 4, 22, 0)
     c = clO_pickled.fetch_by_time(adatetime)
 
-    assert c.o == 0.68487
-    assert c.h == 0.68546
-    assert c.time == datetime.datetime(2019, 12, 4, 22, 0)
+    assert c is None
 
 def test_slice_with_start(clO_pickled):
 

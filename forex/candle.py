@@ -166,7 +166,8 @@ class CandleList(object):
                 fdt = dtm1
         else:
             fdt = adatetime.isoformat()
-        return self.candles[self.times.index(fdt)]
+        if fdt:
+            return self.candles[self.times.index(fdt)]
         
     def calc_rsi(self):
         '''Calculate the RSI for a certain candle list.'''
