@@ -108,10 +108,10 @@ def test_slice_with_start_end(clO_pickled):
     startdatetime = datetime.datetime(2019, 5, 7, 21, 0)
     endatetime = datetime.datetime(2019, 7, 1, 21, 0)
 
-    new_cl = clO_pickled.slice(start=startdatetime,
-                               end=endatetime)
+    clO_pickled.slice(start=startdatetime,
+                      end=endatetime)
 
-    assert len(new_cl) == 40
+    assert len(clO_pickled) == 40
 
 def test_last_time(clO_pickled):
     log = logging.getLogger('Test for last_time function')

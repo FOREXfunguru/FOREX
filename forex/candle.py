@@ -290,24 +290,34 @@ class CandleList(object):
 
         return abs(int(round(diff, 0)))
 
-    def slice(self, start : datetime, end : datetime):
-        '''Function to slice self on a date interval. It will return the sliced CandleList.
+    def slice(self, start : datetime, end : datetime)->None:
+        '''Function to slice self on a date interval. It will modify inplace the CandleList.
 
         Arguments:
             start: Slice the CandleList from this start datetime.
             end:  This CandleList will have this 'end' datetime.
-
-        Returns:
-            CandleList object
 
         Raises
         ------
         Exception
             If start > end
         '''
-        pdb.set_trace()
-        self.c
-        pass
+        if self.granularity == "D":
+            delta = timedelta(hours=24)
+        else:
+            fgran = self.granularity.replace('H', '')
+            delta = timedelta(hours=int(fgran))
+       
+        while not self.__getitem__(start):
+            start = start+delta
+        while not self.__getitem__(end):
+            end = end+delta
+        start_ix = self.times.index(start.isoformat())
+        end_ix = self.times.index(end.isoformat())
+
+        self.candles = self.candles[start_ix:end_ix+1]
+        self.times = self.times[start_ix:end_ix+1]
+        self._type = self._guess_type()
 
     def get_lasttime(self, price: float, type: str)->datetime:
         '''Function to get the datetime for last time that price has been above/below a price level
