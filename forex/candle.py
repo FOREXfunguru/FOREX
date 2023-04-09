@@ -121,8 +121,19 @@ class CandleList(object):
         else:
             raise StopIteration
     
-    def __getitem__(self, key):
-        return self.candles[key]
+    def __getitem__(self, adatetime)->Candle:
+        fdt = None
+        if adatetime.isoformat() not in self.times:
+            dtp1 = (adatetime + timedelta(hours=1)).isoformat()
+            dtm1 = (adatetime - timedelta(hours=1)).isoformat()
+            if dtp1 in self.times:
+                fdt = dtp1
+            elif dtm1 in self.times:
+                fdt = dtm1
+        else:
+            fdt = adatetime.isoformat()
+        if fdt:
+            return self.candles[self.times.index(fdt)]
     
     def __len__(self):
         return len(self.candles)
@@ -145,29 +156,6 @@ class CandleList(object):
             return 'short' # or downtrend
         elif price_1st < price_last:
             return 'long' # or uptrend
-
-    def fetch_by_time(self, adatetime : datetime)->Candle:
-        '''Function to get a candle using its datetime
-
-        Arguments:
-            adatetime: datetime object for candle that wants
-                       to be fetched
-
-        Returns:
-            Candle object
-        '''
-        fdt = None
-        if adatetime.isoformat() not in self.times:
-            dtp1 = (adatetime + timedelta(hours=1)).isoformat()
-            dtm1 = (adatetime - timedelta(hours=1)).isoformat()
-            if dtp1 in self.times:
-                fdt = dtp1
-            elif dtm1 in self.times:
-                fdt = dtm1
-        else:
-            fdt = adatetime.isoformat()
-        if fdt:
-            return self.candles[self.times.index(fdt)]
         
     def calc_rsi(self):
         '''Calculate the RSI for a certain candle list.'''
@@ -317,21 +305,9 @@ class CandleList(object):
         Exception
             If start > end
         '''
-        sliced_clist = []
-        if start is not None and end is None:
-            sliced_clist = [c.__dict__ for c in self.candles if c.time >= start]
-        elif start is not None and end is not None:
-            if start > end:
-                raise Exception("Start is greater than end. Can't slice this CandleList")
-            sliced_clist = [c.__dict__ for c in self.candles if c.time >= start and c.time <= end]
-        elif start is None and end is not None:
-            sliced_clist = [c.__dict__ for c in self.candles if c.time <= end ]
-
-        cl = CandleList(instrument=self.instrument,
-                        granularity=self.granularity,
-                        data=sliced_clist)
-
-        return cl
+        pdb.set_trace()
+        self.c
+        pass
 
     def get_lasttime(self, price: float, type: str)->datetime:
         '''Function to get the datetime for last time that price has been above/below a price level

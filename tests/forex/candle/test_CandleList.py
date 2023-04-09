@@ -68,38 +68,38 @@ def test_get_length_pips(clO_pickled):
     assert clO_pickled.get_length_pips() == 2493
 
 def test_fetch_by_time_q1(clO_pickled):
-    """Fetch datetime in DST time query time 1"""
+    """Test __getitem__ with query time 1"""
 
     adatetime = datetime.datetime(2019, 5, 7, 22, 0)
-    c = clO_pickled.fetch_by_time(adatetime)
+    c = clO_pickled[adatetime]
 
     assert c.o == 0.70118
     assert c.h == 0.70270
 
 def test_fetch_by_time_q2(clO_pickled):
-    """Fetch datetime in DST time with query time 2"""
+    """Test __getitem__ with query time 2"""
 
     adatetime = datetime.datetime(2019, 5, 7, 21, 0)
-    c = clO_pickled.fetch_by_time(adatetime)
+    c = clO_pickled[adatetime]
 
     assert c.o == 0.70118
     assert c.h == 0.70270
 
 def test_fetch_by_time_q3(clO_pickled):
-    """Fetch datetime in non DST time with query time 3"""
+    """Test __getitem__ with query time 3"""
 
     adatetime = datetime.datetime(2019, 12, 4, 21, 0)
-    c = clO_pickled.fetch_by_time(adatetime)
+    c = clO_pickled[adatetime]
 
     assert c.o == 0.68487
     assert c.h == 0.68546
     assert c.time == datetime.datetime(2019, 12, 4, 22, 0)
 
 def test_fetch_by_time_q4(clO_pickled):
-    """Fetch datetime with weekend query time"""
+    """Test __getitem__ with weekend query time"""
 
     adatetime = datetime.datetime(2019, 5, 4, 22, 0)
-    c = clO_pickled.fetch_by_time(adatetime)
+    c = clO_pickled[adatetime]
 
     assert c is None
 
