@@ -15,7 +15,7 @@ def test_candlelist_inst(clO):
     log = logging.getLogger('Test CandleList instantiation')
     log.debug('CandleList instantation')
     assert clO.type == 'short'
-    assert clO[0].colour == 'red'
+    assert clO.candles[0].colour == 'red'
     assert len(clO) == 2
 
 def test_pickle_dump(clO):
@@ -40,8 +40,8 @@ def test_calc_rsi(clO_pickled):
 
     clO_pickled.calc_rsi()
 
-    assert clO_pickled[15].rsi == 61.54
-    assert clO_pickled[50].rsi == 48.59
+    assert clO_pickled.candles[15].rsi == 61.54
+    assert clO_pickled.candles[50].rsi == 48.59
 
 def test_rsibounces(clO_pickled):
     log = logging.getLogger('Test for rsi_bounces function')
