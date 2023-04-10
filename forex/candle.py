@@ -10,6 +10,7 @@ import matplotlib
 import datetime
 import logging
 import pickle
+import pdb
 from utils import *
 
 from params import clist_params
@@ -93,7 +94,7 @@ class CandleList(object):
         candles: List of Candle objects
         type: Type of this CandleList. Possible values are 'long'/'short'"""
 
-    def __init__(self, instrument: str, granularity: str, data: list):
+    def __init__(self, instrument: str, granularity: str, data: list= None, candles= None):
         """Constructor
 
         Arguments:
@@ -101,11 +102,15 @@ class CandleList(object):
         
         self.times will be a list of datetime objects
         """
-        self.candles = [Candle(**d) for d in data]
+        if candles:
+            self.candles = candles
+            self.times = [c.time for c in candles]
+        elif data:
+            self.candles = [Candle(**d) for d in data]
+            self.times = [try_parsing_date(d['time']) if isinstance(d['time'], str) else d['time'] for d in data]
         self.instrument = instrument
         self.granularity = granularity
         self._type = self._guess_type()
-        self.times = [try_parsing_date(d['time']) for d in data]
 
     @property
     def type(self):
@@ -122,20 +127,35 @@ class CandleList(object):
         else:
             raise StopIteration
     
-    def __getitem__(self, adatetime)->Candle:
+    def __getitem__(self, adatetime: datetime)->Candle:
         fdt = None
-        pdb.set_trace()
-        if adatetime.isoformat() not in self.times:
-            dtp1 = (adatetime + timedelta(hours=1)).isoformat()
-            dtm1 = (adatetime - timedelta(hours=1)).isoformat()
+        if adatetime not in self.times:
+            dtp1 = (adatetime + timedelta(hours=1))
+            dtm1 = (adatetime - timedelta(hours=1))
             if dtp1 in self.times:
                 fdt = dtp1
             elif dtm1 in self.times:
                 fdt = dtm1
         else:
-            fdt = adatetime.isoformat()
+            fdt = adatetime
         if fdt:
             return self.candles[self.times.index(fdt)]
+    
+    def __index__(self, adatetime: datetime)->int:
+        fdt = None
+        if adatetime not in self.times:
+            dtp1 = (adatetime + timedelta(hours=1))
+            dtm1 = (adatetime - timedelta(hours=1))
+            if dtp1 in self.times:
+                fdt = dtp1
+            elif dtm1 in self.times:
+                fdt = dtm1
+        else:
+            fdt = adatetime
+        if fdt:
+            return self.times.index(fdt)
+        else:
+            raise ValueError(f"{adatetime} not in self.times")
     
     def __len__(self):
         return len(self.candles)
@@ -292,7 +312,7 @@ class CandleList(object):
 
         return abs(int(round(diff, 0)))
 
-    def slice(self, start : datetime, end : datetime)->None:
+    def slice(self, start : datetime, end : datetime, inplace: bool=False)->'CandleList':
         '''Function to slice self on a date interval. It will modify inplace the CandleList.
 
         Arguments:
@@ -309,17 +329,23 @@ class CandleList(object):
         else:
             fgran = self.granularity.replace('H', '')
             delta = timedelta(hours=int(fgran))
-       
         while not self.__getitem__(start):
             start = start+delta
         while not self.__getitem__(end):
             end = end+delta
-        start_ix = self.times.index(start.isoformat())
-        end_ix = self.times.index(end.isoformat())
+        start_ix = self.__index__(start)
+        end_ix = self.__index__(end)
+        if inplace:
+            cl = CandleList(instrument=self.instrument,
+                            granularity=self.granularity,
+                            candles=self.candles[start_ix:end_ix+1])
+            return cl
+        else:
+            self.candles = self.candles[start_ix:end_ix+1]
+            self.times = self.times[start_ix:end_ix+1]
+            self._type = self._guess_type()
+            return self
 
-        self.candles = self.candles[start_ix:end_ix+1]
-        self.times = self.times[start_ix:end_ix+1]
-        self._type = self._guess_type()
 
     def get_lasttime(self, price: float, type: str)->datetime:
         '''Function to get the datetime for last time that price has been above/below a price level
