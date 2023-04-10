@@ -138,7 +138,7 @@ class Trade(object):
                 self.outcome = 'n.a.'
                 t_logger.info("Run trade in the future. Skipping...")
                 break
-            cl = self.clist.fetch_by_time(d)
+            cl = self.clist[d]
             if cl is None:
                 try:
                     conn = Connect(

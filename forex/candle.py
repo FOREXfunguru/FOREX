@@ -3,7 +3,6 @@
 @author: Ernesto Lowy
 @email: ernestolowy@gmail.com
 '''
-from utils import *
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 import pandas as pd
@@ -99,12 +98,14 @@ class CandleList(object):
 
         Arguments:
             data: list of Dictionaries, each dict containing data for a Candle
+        
+        self.times will be a list of datetime objects
         """
         self.candles = [Candle(**d) for d in data]
         self.instrument = instrument
         self.granularity = granularity
         self._type = self._guess_type()
-        self.times = [d['time'] for d in data]
+        self.times = [try_parsing_date(d['time']) for d in data]
 
     @property
     def type(self):
@@ -123,6 +124,7 @@ class CandleList(object):
     
     def __getitem__(self, adatetime)->Candle:
         fdt = None
+        pdb.set_trace()
         if adatetime.isoformat() not in self.times:
             dtp1 = (adatetime + timedelta(hours=1)).isoformat()
             dtm1 = (adatetime - timedelta(hours=1)).isoformat()

@@ -116,7 +116,7 @@ class TradeBot(object):
 
             #  Fetch candle for current datetime. this is the current candle that
             # is being checked
-            c_candle = self.clist.fetch_by_time(startO)
+            c_candle = self.clist[startO]
             if c_candle is None:
                 startO = startO+delta
                 loop += 1
