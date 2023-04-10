@@ -109,16 +109,17 @@ def test_slice_with_start_end(clO_pickled):
     endatetime = datetime.datetime(2019, 7, 1, 21, 0)
 
     clO_pickled.slice(start=startdatetime,
-                      end=endatetime)
+                      end=endatetime,
+                      inplace=True)
 
     assert len(clO_pickled) == 40
 
 def test_last_time(clO_pickled):
     log = logging.getLogger('Test for last_time function')
     log.debug('last_time')
-    subCl1 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2017, 1, 3, 22, 0), inplace=True)
-    subCl2 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2019, 7, 19, 22, 0), inplace=True)
-    subCl3 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2018, 1, 26, 22, 0), inplace=True)
+    subCl1 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2017, 1, 3, 22, 0))
+    subCl2 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2019, 7, 19, 22, 0))
+    subCl3 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2018, 1, 26, 22, 0))
 
     lt1 = subCl1.get_lasttime(price=0.71754, type='long')
     lt2 = subCl2.get_lasttime(price=0.70621, type='short')

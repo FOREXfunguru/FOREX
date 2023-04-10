@@ -179,7 +179,7 @@ class Pivot(object):
         Returns:
             New adjusted datetime
         """
-        clist = clistO[:-1] # reduce index by 1 so start candle+1 is not included
+        clist = clistO.candles[:-1] # reduce index by 1 so start candle+1 is not included
         new_pc = pre_colour = None
         it = True
         ix = -1
@@ -382,7 +382,7 @@ class PivotList(object):
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
             if self.pivots[-1].candle.time == p.candle.time and last_pivot is True:
                 adj_t = p.adjust_pivottime(clistO=self.clist)
-                newclist = self.clist.slice(start=self.clist[0].time, end=adj_t)
+                newclist = self.clist.slice(start=self.clist.candles[0].time, end=adj_t)
                 newpl = PivotList(clist=newclist)
                 newp = newpl._get_pivotlist(pivots_params.th_bounces)[0][-1]
                 if pivots_params.runmerge_pre is True and newp.pre is not None:

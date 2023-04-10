@@ -128,6 +128,8 @@ class CandleList(object):
             raise StopIteration
     
     def __getitem__(self, adatetime: datetime)->Candle:
+        if not isinstance(adatetime, datetime):
+            raise ValueError("A datetime object is needed!")
         fdt = None
         if adatetime not in self.times:
             dtp1 = (adatetime + timedelta(hours=1))
@@ -335,7 +337,7 @@ class CandleList(object):
             end = end+delta
         start_ix = self.__index__(start)
         end_ix = self.__index__(end)
-        if inplace:
+        if not inplace:
             cl = CandleList(instrument=self.instrument,
                             granularity=self.granularity,
                             candles=self.candles[start_ix:end_ix+1])
