@@ -108,6 +108,9 @@ class CandleList(object):
         elif data:
             self.candles = [Candle(**d) for d in data]
             self.times = [try_parsing_date(d['time']) if isinstance(d['time'], str) else d['time'] for d in data]
+        else:
+            self.candles = []
+            self.times = []
         self.instrument = instrument
         self.granularity = granularity
         self._type = self._guess_type()

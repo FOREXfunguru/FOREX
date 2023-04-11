@@ -63,6 +63,24 @@ class Connect(object):
             return wrapper
         return real_decorator
 
+    def _process_data(self, data:list[flatdict.FlatDict], strip:bool=True):
+        """Process candle data
+        
+        Args:
+            data: data returned by API
+            strip: If True then remove 'complete' and 'volume' fields
+        """
+        keys_to_remove = ['complete', 'volume', 'time']
+        cldict = list()
+        for candle in data:
+            atime = re.sub(r'\.\d+Z$','', candle['time'])
+            if strip:
+                candle = {key: value for key, value in candle.items() if key not in keys_to_remove}
+            candle['time'] = atime
+            newc = {key.replace('mid.', ''): value for key, value in candle.items()}
+            cldict.append(newc)
+        return cldict
+
     @retry()
     def query(self, start : datetime, end : datetime = None, count : int = None)-> List[Dict]:
         """Function to query Oanda's REST API
@@ -102,16 +120,7 @@ class Connect(object):
             else:
                 data = json.loads(resp.content.decode("utf-8"))
                 newdata = [flatdict.FlatDict(c, delimiter='.') for c in data['candles']]
-                newdata1 = []
-                for candle in newdata:
-                    atime = re.sub(r'\.\d+Z$','', candle['time'])
-                    candle['time']=atime
-                    newdata1.append(candle)
-                for mydict in newdata1:
-                    mydict['h'] = mydict.pop('mid.h')
-                    mydict['l'] = mydict.pop('mid.l')
-                    mydict['o'] = mydict.pop('mid.o')
-                    mydict['c'] = mydict.pop('mid.c')
+                newdata1 = self._process_data(data=newdata)
                 cl = CandleList(instrument=self.instrument,
                                 granularity=self.granularity,
                                 data=newdata1)
