@@ -75,6 +75,10 @@ class clist_params:
     i_pips : int = 30
     # Minimum number of candles from start to be required
     min : int = 5
+    # Number of times * increment_price to be used by calc_diff
+    # The lower times, the more clustered the retained HAreas will be
+    times : int = 3
+
 
 @dataclass
 class trade_params:
