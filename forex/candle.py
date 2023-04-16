@@ -3,7 +3,6 @@
 @author: Ernesto Lowy
 @email: ernestolowy@gmail.com
 '''
-from utils import *
 from pandas.plotting import register_matplotlib_converters
 register_matplotlib_converters()
 import pandas as pd
@@ -11,6 +10,7 @@ import matplotlib
 import datetime
 import logging
 import pickle
+import pdb
 from utils import *
 
 from params import clist_params
@@ -94,13 +94,23 @@ class CandleList(object):
         candles: List of Candle objects
         type: Type of this CandleList. Possible values are 'long'/'short'"""
 
-    def __init__(self, instrument: str, granularity: str, data: list):
+    def __init__(self, instrument: str, granularity: str, data: list= None, candles= None):
         """Constructor
 
         Arguments:
             data: list of Dictionaries, each dict containing data for a Candle
+        
+        self.times will be a list of datetime objects
         """
-        self.candles = [Candle(**d) for d in data]
+        if candles:
+            self.candles = candles
+            self.times = [c.time for c in candles]
+        elif data:
+            self.candles = [Candle(**d) for d in data]
+            self.times = [try_parsing_date(d['time']) if isinstance(d['time'], str) else d['time'] for d in data]
+        else:
+            self.candles = []
+            self.times = []
         self.instrument = instrument
         self.granularity = granularity
         self._type = self._guess_type()
@@ -120,8 +130,37 @@ class CandleList(object):
         else:
             raise StopIteration
     
-    def __getitem__(self, key):
-        return self.candles[key]
+    def __getitem__(self, adatetime: datetime)->Candle:
+        if not isinstance(adatetime, datetime):
+            raise ValueError("A datetime object is needed!")
+        fdt = None
+        if adatetime not in self.times:
+            dtp1 = (adatetime + timedelta(hours=1))
+            dtm1 = (adatetime - timedelta(hours=1))
+            if dtp1 in self.times:
+                fdt = dtp1
+            elif dtm1 in self.times:
+                fdt = dtm1
+        else:
+            fdt = adatetime
+        if fdt:
+            return self.candles[self.times.index(fdt)]
+    
+    def __index__(self, adatetime: datetime)->int:
+        fdt = None
+        if adatetime not in self.times:
+            dtp1 = (adatetime + timedelta(hours=1))
+            dtm1 = (adatetime - timedelta(hours=1))
+            if dtp1 in self.times:
+                fdt = dtp1
+            elif dtm1 in self.times:
+                fdt = dtm1
+        else:
+            fdt = adatetime
+        if fdt:
+            return self.times.index(fdt)
+        else:
+            raise ValueError(f"{adatetime} not in self.times")
     
     def __len__(self):
         return len(self.candles)
@@ -144,48 +183,7 @@ class CandleList(object):
             return 'short' # or downtrend
         elif price_1st < price_last:
             return 'long' # or uptrend
-
-    def fetch_by_time(self, adatetime : datetime, period: int=0)->Candle:
-        '''Function to get a candle using its datetime
-
-        Arguments:
-            adatetime: datetime object for candle that wants
-                       to be fetched
-            period: Number of candles above/below 'adatetime' that will be fetched
-
-        Returns:
-            Candle object
-        '''
-
-        d=adatetime
-        delta, delta_period = None, None
-        if self.granularity == "D":
-            delta = timedelta(hours=24)
-            delta_period = timedelta(hours=24*period)
-        else:
-            fgran = self.granularity.replace('H', '')
-            delta = timedelta(hours=int(fgran))
-            delta_period = timedelta(hours=int(fgran)*period)
-
-        if period == 0:
-            sel_c = None
-            for c in self.candles:
-                end = c.time+delta
-                diff = abs(c.time-d)
-                one_hour = timedelta(hours=1)
-                if d == c.time and d < end or diff==one_hour:
-                    return c
-        elif period > 0:
-            start = d-delta_period
-            end = d+delta_period
-            sel_c = []
-            for c in self.candles:
-                if c.time >= start and c.time <= end:
-                    sel_c.append(c)
-            if len(sel_c) == 0: raise Exception("No candle was selected"
-                                                " for range: {0}-{1}".format(start, end))
-            return sel_c
-
+        
     def calc_rsi(self):
         '''Calculate the RSI for a certain candle list.'''
         cl_logger.debug("Running calc_rsi")
@@ -319,38 +317,40 @@ class CandleList(object):
 
         return abs(int(round(diff, 0)))
 
-    def slice(self, start : datetime = None, end : datetime = None):
-        '''Function to slice self on a date interval. It will return the sliced CandleList.
+    def slice(self, start : datetime, end : datetime, inplace: bool=False)->'CandleList':
+        '''Function to slice self on a date interval. It will modify inplace the CandleList.
 
         Arguments:
-            start: Slice the CandleList from this start datetime. It will create a new CandleList starting
-                   from this datetime. If 'end' is not defined, then it will slice the CandleList from 'start'
-                   to the end of the CandleList.
-            end: If 'start' is not defined, then it will slice from beginning of CandleList to 'end'.
-
-        Returns:
-            CandleList object
+            start: Slice the CandleList from this start datetime.
+            end:  This CandleList will have this 'end' datetime.
 
         Raises
         ------
         Exception
             If start > end
         '''
-        sliced_clist = []
-        if start is not None and end is None:
-            sliced_clist = [c.__dict__ for c in self.candles if c.time >= start]
-        elif start is not None and end is not None:
-            if start > end:
-                raise Exception("Start is greater than end. Can't slice this CandleList")
-            sliced_clist = [c.__dict__ for c in self.candles if c.time >= start and c.time <= end]
-        elif start is None and end is not None:
-            sliced_clist = [c.__dict__ for c in self.candles if c.time <= end ]
+        if self.granularity == "D":
+            delta = timedelta(hours=24)
+        else:
+            fgran = self.granularity.replace('H', '')
+            delta = timedelta(hours=int(fgran))
+        while not self.__getitem__(start):
+            start = start+delta
+        while not self.__getitem__(end):
+            end = end+delta
+        start_ix = self.__index__(start)
+        end_ix = self.__index__(end)
+        if not inplace:
+            cl = CandleList(instrument=self.instrument,
+                            granularity=self.granularity,
+                            candles=self.candles[start_ix:end_ix+1])
+            return cl
+        else:
+            self.candles = self.candles[start_ix:end_ix+1]
+            self.times = self.times[start_ix:end_ix+1]
+            self._type = self._guess_type()
+            return self
 
-        cl = CandleList(instrument=self.instrument,
-                        granularity=self.granularity,
-                        data=sliced_clist)
-
-        return cl
 
     def get_lasttime(self, price: float, type: str)->datetime:
         '''Function to get the datetime for last time that price has been above/below a price level

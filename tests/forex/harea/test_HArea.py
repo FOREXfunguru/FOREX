@@ -17,6 +17,6 @@ def test_get_cross_time(clO_pickled, clist_ix, price, dt):
                    instrument='AUD_USD',
                    granularity='D')
 
-    cross_time = resist.get_cross_time(candle=clO_pickled[clist_ix], granularity='H8')
+    cross_time = resist.get_cross_time(candle=clO_pickled.candles[clist_ix], granularity='H8')
 
     assert cross_time == dt

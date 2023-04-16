@@ -1,10 +1,10 @@
 from params import tradebot_params, clist_params, pivots_params
-
 from forex.harea import HArea, HAreaList
 from utils import *
 
 import logging
 import pandas as pd
+import pdb
 
 # create logger
 cl_logger = logging.getLogger(__name__)
@@ -74,12 +74,11 @@ def calc_SR(pvLO, outfile: str):
     bounce_th = dfgt1.bounces.quantile(tradebot_params.th)
     score_th = dfgt2.tot_score.quantile(tradebot_params.th)
 
-    print("Selected number of pivot threshold: {0}".format(bounce_th))
-    print("Selected tot score threshold: {0}".format(round(score_th,1)))
+    print(f"Selected number of pivot threshold: {round(bounce_th, 3)}")
+    print(f"Selected tot score threshold: {round(score_th, 1)}")
 
     # selecting records over threshold
     dfsel = df.loc[(df['bounces'] > bounce_th) | (df['tot_score'] > score_th)]
-
     # repeat until no overlap between prices
     ret = calc_diff(dfsel, increment_price)
     dfsel = ret[0]
@@ -152,7 +151,7 @@ def calc_diff(df_loc, increment_price: float):
             prev_ix = index
         else:
             diff = round(float(row['price']) - prev_price, 4)
-            if diff < 3 * increment_price:
+            if diff < clist_params.times * increment_price:
                 tog_seen = True
                 if row['bounces'] <= prev_row['bounces'] and row['tot_score'] < prev_row['tot_score']:
                     # remove current row

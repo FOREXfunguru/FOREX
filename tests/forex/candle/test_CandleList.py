@@ -15,7 +15,7 @@ def test_candlelist_inst(clO):
     log = logging.getLogger('Test CandleList instantiation')
     log.debug('CandleList instantation')
     assert clO.type == 'short'
-    assert clO[0].colour == 'red'
+    assert clO.candles[0].colour == 'red'
     assert len(clO) == 2
 
 def test_pickle_dump(clO):
@@ -40,8 +40,8 @@ def test_calc_rsi(clO_pickled):
 
     clO_pickled.calc_rsi()
 
-    assert clO_pickled[15].rsi == 61.54
-    assert clO_pickled[50].rsi == 48.59
+    assert clO_pickled.candles[15].rsi == 61.54
+    assert clO_pickled.candles[50].rsi == 48.59
 
 def test_rsibounces(clO_pickled):
     log = logging.getLogger('Test for rsi_bounces function')
@@ -67,61 +67,52 @@ def test_get_length_pips(clO_pickled):
 
     assert clO_pickled.get_length_pips() == 2493
 
-def test_fetch_by_time_s_c(clO_pickled):
-    """Fetch datetime in DST time with correct query time"""
+def test_fetch_by_time_q1(clO_pickled):
+    """Test __getitem__ with query time 1"""
 
     adatetime = datetime.datetime(2019, 5, 7, 22, 0)
-    c = clO_pickled.fetch_by_time(adatetime)
+    c = clO_pickled[adatetime]
 
     assert c.o == 0.70118
     assert c.h == 0.70270
 
-def test_fetch_by_time_s_i(clO_pickled):
-    """Fetch datetime in DST time with incorrect query time"""
+def test_fetch_by_time_q2(clO_pickled):
+    """Test __getitem__ with query time 2"""
 
     adatetime = datetime.datetime(2019, 5, 7, 21, 0)
-    c = clO_pickled.fetch_by_time(adatetime)
+    c = clO_pickled[adatetime]
 
     assert c.o == 0.70118
     assert c.h == 0.70270
 
-def test_fetch_by_time_w_c(clO_pickled):
-    """Fetch datetime in non DST time with correct query time"""
+def test_fetch_by_time_q3(clO_pickled):
+    """Test __getitem__ with query time 3"""
 
     adatetime = datetime.datetime(2019, 12, 4, 21, 0)
-    c = clO_pickled.fetch_by_time(adatetime)
+    c = clO_pickled[adatetime]
 
     assert c.o == 0.68487
     assert c.h == 0.68546
     assert c.time == datetime.datetime(2019, 12, 4, 22, 0)
 
-def test_fetch_by_time_w_i(clO_pickled):
-    """Fetch datetime in non DST time with incorrect query time"""
+def test_fetch_by_time_q4(clO_pickled):
+    """Test __getitem__ with weekend query time"""
 
-    adatetime = datetime.datetime(2019, 12, 4, 22, 0)
-    c = clO_pickled.fetch_by_time(adatetime)
+    adatetime = datetime.datetime(2019, 5, 4, 22, 0)
+    c = clO_pickled[adatetime]
 
-    assert c.o == 0.68487
-    assert c.h == 0.68546
-    assert c.time == datetime.datetime(2019, 12, 4, 22, 0)
-
-def test_slice_with_start(clO_pickled):
-
-    adatetime = datetime.datetime(2019, 5, 7, 21, 0)
-
-    new_cl = clO_pickled.slice(start = adatetime)
-
-    assert len(new_cl) == 401
+    assert c is None
 
 def test_slice_with_start_end(clO_pickled):
 
     startdatetime = datetime.datetime(2019, 5, 7, 21, 0)
     endatetime = datetime.datetime(2019, 7, 1, 21, 0)
 
-    new_cl = clO_pickled.slice(start=startdatetime,
-                               end=endatetime)
+    clO_pickled.slice(start=startdatetime,
+                      end=endatetime,
+                      inplace=True)
 
-    assert len(new_cl) == 40
+    assert len(clO_pickled) == 40
 
 def test_last_time(clO_pickled):
     log = logging.getLogger('Test for last_time function')

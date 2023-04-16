@@ -2,6 +2,7 @@ import pytest
 import logging
 import pdb
 import os
+from datetime import datetime
 
 from api.oanda.connect import Connect
 from utils import DATA_DIR
@@ -30,6 +31,7 @@ def test_query_s_e(conn_o):
     assert clO.instrument == 'AUD_USD'
     assert clO.granularity == 'D'
     assert len(clO) == 3
+    assert isinstance(clO.times[0], datetime)
 
 def test_query_c(conn_o):
     log = logging.getLogger('test_query_c')

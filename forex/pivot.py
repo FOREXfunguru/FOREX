@@ -1,12 +1,13 @@
 import logging
 import datetime
 import matplotlib.pyplot as plt
+import pdb
 
 from utils import *
 from params import gparams, pivots_params
-
 from forex.segment import SegmentList, Segment
 from zigzag import *
+from statistics import mean
 
 # create logger
 p_logger = logging.getLogger(__name__)
@@ -178,7 +179,7 @@ class Pivot(object):
         Returns:
             New adjusted datetime
         """
-        clist = clistO[:-1] # reduce index by 1 so start candle+1 is not included
+        clist = clistO.candles[:-1] # reduce index by 1 so start candle+1 is not included
         new_pc = pre_colour = None
         it = True
         ix = -1
@@ -228,6 +229,7 @@ class PivotList(object):
             if th_bounces:
                 po_l, segs = self._get_pivotlist(th_bounces)
             else:
+                
                 po_l, segs = self._get_pivotlist(pivots_params.th_bounces)
             self.pivots = po_l
             self.slist = SegmentList(slist=segs,
@@ -262,13 +264,7 @@ class PivotList(object):
             List with Pivot objects
             List with Segment objects
         """
-        x = []
-        values = []
-        for i in range(len(self.clist.candles)):
-            x.append(i)
-            values.append(self.clist.candles[i].c)
-
-        yarr = np.array(values)
+        yarr = np.array([cl.c for cl in self.clist.candles])
         pivots = peak_valley_pivots(yarr, th_bounces,
                                     th_bounces*-1)
         modes = pivots_to_modes(pivots)
@@ -276,61 +272,48 @@ class PivotList(object):
         segs = [] # this list will hold the Segment objects
         plist_o = [] # this list will hold the Pivot objects
         pre_s = None # Variable that will hold pre Segments
-        start_ix = end_ix = pre_i = None
-        ix = 0
-        for i in pivots:
-            if (i == 1 or i == -1) and start_ix is None:
-                # First pivot
-                start_ix = ix
-                pre_i = i
-            elif (i == 1 or i == -1) and start_ix is not None:
-                end_ix=ix
-                if pivots[start_ix+1] == 0:
-                    submode = modes[start_ix+1:end_ix]
-                else:
-                    submode = [modes[start_ix+1]]
-                #checking if all elements in submode are the same:
-                assert len(np.unique(submode).tolist()) == 1, "more than one type in modes"
-                s = Segment(type=submode[0],
-                            clist=self.clist.candles[start_ix:end_ix],
-                            instrument=self.clist.instrument)
-                # create Pivot object
-                cl = self.clist.candles[start_ix]
-                # add granularity to object
-                cl.granularity = self.clist.granularity
-                pobj = Pivot(type=pre_i,
-                             candle=cl,
-                             pre=pre_s, 
-                             aft=s)
-                pobj.score = pobj.calc_score()
-                # Append it to list
-                plist_o.append(pobj)
-                # Append it to segs
-                segs.append(s)
-                start_ix = ix
-                pre_s = s
-                pre_i = i
-            ix += 1
-
+        ixs = list(np.where(np.logical_or(pivots == 1, pivots == -1))[0])
+        tuples_lst = [(ixs[i], ixs[i+1]) for i in range(len(ixs)-1)]
+        for pair in tuples_lst:
+            if pivots[pair[0]+1] == 0:
+                submode = modes[pair[0]+1:pair[1]]
+            else:
+                submode = [modes[pair[0]+1]]
+            #checking if all elements in submode are the same:
+            assert len(np.unique(submode).tolist()) == 1, "more than one type in modes"
+            s = Segment(type=submode[0],
+                        clist=self.clist.candles[pair[0]:pair[1]],
+                        instrument=self.clist.instrument)
+            # create Pivot object
+            cl = self.clist.candles[pair[0]]
+            # add granularity to object
+            cl.granularity = self.clist.granularity
+            pobj = Pivot(type=submode[0],
+                         candle=cl,
+                         pre=pre_s, 
+                         aft=s)
+            pobj.score = pobj.calc_score()
+            # Append it to list
+            plist_o.append(pobj)
+            # Append it to segs
+            segs.append(s)
+            pre_s = s
+        
         # add last Pivot
-        cl = self.clist.candles[start_ix]
+        cl = self.clist.candles[ixs[-1]]
         cl.granularity = self.clist.granularity
-        l_pivot = Pivot(type=pre_i,
+        l_pivot = Pivot(type=modes[ixs[-1]],
                         candle=cl,
                         pre=pre_s,
                         aft=None)
         l_pivot.score = l_pivot.calc_score()
         plist_o.append(l_pivot)
-
         return plist_o, segs
 
     def fetch_by_time(self, d: datetime)->Pivot:
         '''Function to fetch a Pivot object using a datetime'''
-        p = None
-        for p in self.pivots:
-            if p.candle.time == d:
-                return p
-        return None
+        p = next((p for p in self.pivots if p.candle.time == d), None)
+        return p
 
     def fetch_by_type(self, type: int):
         '''Function to get all pivots from a certain type
@@ -358,10 +341,7 @@ class PivotList(object):
         '''Function to calculate the score after adding the score
         for each individual pivot'''
 
-        tot_score = 0
-        for p in self.pivots:
-            tot_score += p.score
-
+        tot_score = sum(p.score for p in self.pivots)
         return round(tot_score, 1)
 
     def get_avg_score(self)->float:
@@ -370,11 +350,7 @@ class PivotList(object):
         This calculation is done by dividing the
         total score by the number of pivots
         '''
-        tot_score = 0
-        for p in self.pivots:
-            tot_score += p.score
-
-        avg = tot_score/len(self.pivots)
+        avg = mean(p.score for p in self.pivots)
         return round(avg, 1)
 
     def inarea_pivots(self, price: float, last_pivot: bool=True):
@@ -406,9 +382,7 @@ class PivotList(object):
             # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
             if self.pivots[-1].candle.time == p.candle.time and last_pivot is True:
                 adj_t = p.adjust_pivottime(clistO=self.clist)
-                # get new CandleList with new adjusted time for the end
-                newclist = self.clist.slice(start=self.clist[0].time,
-                                            end=adj_t)
+                newclist = self.clist.slice(start=self.clist.candles[0].time, end=adj_t)
                 newpl = PivotList(clist=newclist)
                 newp = newpl._get_pivotlist(pivots_params.th_bounces)[0][-1]
                 if pivots_params.runmerge_pre is True and newp.pre is not None:
@@ -473,18 +447,6 @@ class PivotList(object):
             return newp.pre
 
         p_logger.debug("Done clac_itrend")
-
-    def get_pl_bytime(self, adatetime):
-        """Function that returns a new PivotList in which
-        the plist is >= 'adatetime'"""
-
-        p_logger.debug("Running get_pivots_lasttime")
-        new_cl = self.clist.slice(start=adatetime)
-        new_PLobj = PivotList(clist=new_cl)
-
-        p_logger.debug("Done set_pivots_lasttime")
-
-        return new_PLobj
 
     def plot_pivots(self, outfile_prices: str, outfile_rsi: str):
         '''Function to plot all pivots that are in the area
