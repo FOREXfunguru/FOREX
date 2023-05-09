@@ -334,6 +334,7 @@ class CandleList(object):
         else:
             fgran = self.granularity.replace('H', '')
             delta = timedelta(hours=int(fgran))
+
         while not self.__getitem__(start):
             start = start+delta
         while not self.__getitem__(end):

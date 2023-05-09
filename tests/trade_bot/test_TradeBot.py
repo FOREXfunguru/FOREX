@@ -1,27 +1,22 @@
-import pdb
-import pytest
-import datetime
-import os
 import logging
+import os
 
-from params import tradebot_params, pivots_params, clist_params
+from params import tradebot_params, pivots_params
 from trade_bot.trade_bot import TradeBot
+from utils import DATA_DIR
 
 # create logger
 tb_logger = logging.getLogger(__name__)
 tb_logger.setLevel(logging.DEBUG)
 
-def test_run(tb_object, clean_tmp):
-    """
-    Check 'run' function with a TradeBot that does not
-    return any trade
-    """
-    assert len(tb_object.run()) == 1
+def test_scan(tb_object, clean_tmp):
+    """Check the 'scan' function"""
+    outfile = tb_object.scan(prefix=f"{DATA_DIR}/out/test_scan")
+    assert os.path.isfile(outfile)
 
-def test_run1(clean_tmp):
+def test_scan1(clean_tmp):
     """
-    Test tradebot on a really easy to identify
-    short trade on a tight time interval
+    Test the scan() function with a certain TradeBot interval
     """
     pivots_params.th_bounces = 0.05
     tb = TradeBot(
@@ -29,15 +24,12 @@ def test_run1(clean_tmp):
         timeframe='D',
         start='2016-01-05 22:00:00',
         end='2016-02-11 22:00:00')
-    tl = tb.run()
-    
-    assert tl[0].tot_SR == 8
-    assert tl[0].rank_selSR == 0
-    assert len(tl) == 4
+    outfile = tb.scan(prefix=f"{DATA_DIR}/out/test_scan")
+    assert os.path.isfile(outfile)
 
-def test_run_withclist(clO_pickled, clean_tmp):
+def test_scan_withclist(clO_pickled, clean_tmp):
     """
-    Test tradebot using a pickled CandleList
+    Test the scan() method using a pickled CandleList
     """
     pivots_params.th_bounces = 0.05
     tb = TradeBot(
@@ -46,9 +38,21 @@ def test_run_withclist(clO_pickled, clean_tmp):
         start='2016-01-05 22:00:00',
         end='2016-02-11 22:00:00',
         clist=clO_pickled)
-    tl = tb.run()
+    outfile = tb.scan(prefix=f"{DATA_DIR}/out/test_scan")
+    assert os.path.isfile(outfile)
 
-    assert len(tl) == 4
+def test_prepare_trades(clO_pickled, clean_tmp):
+    """
+    Test the prepare_trades() method with a pickled list
+    of preTrade objects
+    """
+    tb = TradeBot(
+        pair='AUD_USD',
+        timeframe='D',
+        start='2016-01-05 22:00:00',
+        end='2016-02-11 22:00:00',
+        clist=clO_pickled)
+    tb.prepare_trades(pretrades=f"{DATA_DIR}/test_scan.pckl")
 
 def test_run_withclist_nextSR(clO_pickled, clean_tmp):
     """

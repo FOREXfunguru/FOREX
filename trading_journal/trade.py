@@ -33,15 +33,17 @@ class Trade(object):
         pips:  Number of pips of profit/loss. This number will be negative if outcome was failure
         clist: CandleList object used to represent this trade"""
 
-    def __init__(self, init_clist:bool=False, **kwargs)->None:
-        allowed_keys = ['entered', 'start', 'end', 'pair', 'timeframe', 'outcome', 'entry', 'exit', 
-        'entry_time', 'type', 'SL', 'TP', 'SR', 'RR', 'pips', 'clist', 'strat', 'tot_SR', 'rank_selSR' ]
+    def __init__(self, init_clist: bool = False, **kwargs) -> None:
+        allowed_keys = ['entered', 'start', 'end', 'pair', 'timeframe',
+                        'outcome', 'entry', 'exit', 'entry_time', 'type',
+                        'SL', 'TP', 'SR', 'RR', 'pips', 'clist', 'strat',
+                        'tot_SR', 'rank_selSR']
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         if init_clist and not hasattr(self, 'clist'):
             self.init_clist()
-        self.__dict__.update({'start' : try_parsing_date(self.__dict__['start'])})
+        self.__dict__.update({'start': try_parsing_date(self.__dict__['start'])})
         if hasattr(self, 'end') and isinstance(self.end, datetime):
-            self.__dict__.update({'end' : try_parsing_date(self.__dict__['end'])})
+            self.__dict__.update({'end': try_parsing_date(self.__dict__['end'])})
         self._validate_params()
         self.SLdiff = self.get_SLdiff()
 
@@ -53,7 +55,7 @@ class Trade(object):
             diff = (self.entry - self.SL) * self.RR
             self.TP = round(self.entry + diff, 4)
     
-    def init_clist(self)->None:
+    def init_clist(self) -> None:
         '''Init clist for this Trade'''
         delta = periodToDelta(trade_params.trade_period, self.timeframe)
         start = self.start
@@ -91,7 +93,7 @@ class Trade(object):
             new_tp = substract_pips2price(self.pair, self.entry, tp_pips)
         return new_tp
 
-    def run_trade(self, expires: int=2)->None:
+    def run_trade(self, expires: int = 2) -> None:
         '''Run the trade until conclusion from a start date.
 
         Arguments:
@@ -119,11 +121,14 @@ class Trade(object):
         else:
             period = int(self.timeframe.replace('H', ''))
 
-        # generate a range of dates starting at self.start and ending trade_params.numperiods later in order to assess the outcome
+        # generate a range of dates starting at self.start and ending
+        # trade_params.numperiods later in order to assess the outcome
         # of trade and also the entry time
         self.start = datetime.strptime(str(self.start), '%Y-%m-%d %H:%M:%S')
-        # date_list will contain a list with datetimes that will be used for running self
-        date_list = [self.start + timedelta(hours=x*period) for x in range(0, trade_params.numperiods)]
+        # date_list will contain a list with datetimes that will be used for 
+        # running self
+        date_list = [self.start + timedelta(hours=x*period) for x in range(0,
+                                                                            trade_params.numperiods)]
         count = 0
         self.entered = False
         for d in date_list:
@@ -145,9 +150,9 @@ class Trade(object):
                         instrument=self.pair,
                         granularity=self.timeframe)
                     clO = conn.query(start=d.isoformat(), end=d.isoformat())
-                    if len(clO.candles)==1:
+                    if len(clO.candles) == 1:
                         cl = clO.candles[0]
-                    elif len(clO.candles)>1:
+                    elif len(clO.candles) > 1:
                         raise Exception("No valid number of candles in CandleList")
                     elif len(clO.candles) == 0:
                         # market closed
@@ -167,7 +172,7 @@ class Trade(object):
                     except:
                         self.entry_time = cl.time.isoformat()
             if self.entered is True:
-                if trade_params.strat=='exit_early' and count>=trade_params.no_candles and not hasattr(self, 'reduced_TP'):
+                if trade_params.strat == 'exit_early' and count >= trade_params.no_candles and not hasattr(self, 'reduced_TP'):
                     new_tp = self._adjust_tp()
                     self.TP = new_tp
                     TP.price = new_tp
@@ -227,7 +232,3 @@ class Trade(object):
 
     def __repr__(self):
         return self.__str__()
-
-class cTrade(Trade):
-    """This is subclass representing a Trade having a start and currently ongoing."""
-    pass

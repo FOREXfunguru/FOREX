@@ -1,6 +1,7 @@
 import pytest
 import glob
 import os
+import pdb
 
 from trading_journal.trade import Trade
 from trading_journal.trade_journal import TradeJournal
@@ -11,6 +12,7 @@ from utils import DATA_DIR
 def clean_tmp():
     yield
     print("Cleanup files")
+    pdb.ste_trace()
     files1 = glob.glob(DATA_DIR+"/imgs/pivots/*")
     files2 = glob.glob(DATA_DIR+"/imgs/halist/*")
     files3 = glob.glob(DATA_DIR+"/imgs/srareas/*")

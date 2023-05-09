@@ -3,7 +3,6 @@ import numpy as np
 import logging
 import math
 import re
-import pdb
 from trading_journal.trade import Trade
 from params import tjournal_params
 from openpyxl import Workbook
@@ -15,6 +14,7 @@ import openpyxl
 tj_logger = logging.getLogger(__name__)
 tj_logger.setLevel(logging.INFO)
 
+
 class TradeJournal(object):
     '''
     Constructor
@@ -24,14 +24,16 @@ class TradeJournal(object):
         worksheet: Name of the worksheet that will be used to create the object.
                    i.e. 'trading_journal'
     '''
-    def __init__(self, url:str, worksheet:str):
+    def __init__(self, url: str, worksheet: str):
         self.url = url
         self.worksheet = worksheet
 
-        #read-in the 'trading_journal' worksheet from a .xlsx file into a pandas dataframe
+        # read-in the 'trading_journal' worksheet from a .xlsx file into a
+        # pandas dataframe
         try:
             xls_file = pd.ExcelFile(url)
-            df = xls_file.parse(worksheet, converters={'start': str, 'end': str, 'trend_i': str})
+            df = xls_file.parse(worksheet, converters={'start': str,
+                                                       'end': str, 'trend_i': str})
             if df.empty is True:
                 raise Exception("No trades fetched for url:{0} and worksheet:{1}".format(self.url, self.worksheet))
             # replace n.a. string by NaN
@@ -44,7 +46,7 @@ class TradeJournal(object):
             wb.create_sheet(worksheet)
             wb.save(str(self.url))
 
-    def fetch_trades(self)->List[Trade]:
+    def fetch_trades(self) -> List[Trade]:
         '''Function to fetch a list of Trade objects'''
         trade_list, args = [], {}
         for index, row in self.df.iterrows():
@@ -57,14 +59,15 @@ class TradeJournal(object):
 
         return trade_list
 
-    def win_rate(self, strats: str)-> Tuple[int, int, float]:
+    def win_rate(self, strats: str) -> Tuple[int, int, float]:
         '''Calculate win rate and pips balance
         for this TradeJournal. If outcome attrb is not
         defined then it will invoke the run_trade method
         on each particular trade
 
         Arguments:
-            strats : Comma-separated list of strategies to analyse: i.e. counter,counter_b1
+            strats : Comma-separated list of strategies to analyse: 
+                     i.e. counter,counter_b1
 
         Returns:
             number of successes
@@ -95,7 +98,8 @@ class TradeJournal(object):
         perc_losses = round(number_f*100/tot_trades, 2)
         print("Tot number of trades: {0}\n-------------".format(tot_trades))
         print("Win trades: {0}; Loss trades: {1}".format(number_s, number_f))
-        print("% win trades: {0}; % loss trades: {1}".format(perc_wins, perc_losses))
+        print("% win trades: {0}; % loss trades: {1}".format(perc_wins,
+                                                             perc_losses))
         print("Pips balance: {0}".format(tot_pips))
 
         return number_s, number_f, tot_pips
@@ -125,7 +129,8 @@ class TradeJournal(object):
                 
         df = pd.DataFrame(data, columns=colnames)
 
-        writer = pd.ExcelWriter(self.url, engine='openpyxl', mode='a', if_sheet_exists='replace')
+        writer = pd.ExcelWriter(self.url, engine='openpyxl', mode='a',
+                                if_sheet_exists='replace')
         writer.workbook = openpyxl.load_workbook(self.url)
         tj_logger.info("Creating new worksheet with trades with name: {0}".
                        format(sheet_name))

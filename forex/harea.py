@@ -1,34 +1,35 @@
 import logging
 
-from datetime import timedelta,datetime
+from datetime import timedelta, datetime
 from api.oanda.connect import Connect
 from params import gparams
 from forex.candle import Candle
 
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
-import pdb
 
 # create logger
 h_logger = logging.getLogger(__name__)
 h_logger.setLevel(logging.INFO)
 
+
 class HArea(object):
     '''Class to represent a horizontal area in the chart.
 
     Class variables:
-        price: Price in the chart used as the middle point that will be extended on both sides a certain
-               number of pips
+        price: Price in the chart used as the middle point that will be
+               extended on both sides a certain number of pips
         instrument: Instrument for this CandleList (i.e. AUD_USD or EUR_USD etc...)
         granularity: Granularity for this CandleList (i.e. D, H12, H8 etc...)
         pips: Number of pips above/below self.price to calculate self.upper and self.lower
         upper: Upper limit price of area
         lower: Lower limit price of area
         no_pivots: Number of pivots bouncing on self
-        tot_score: Total score, which is the sum of scores of all pivots on this HArea
+        tot_score: Total score, which is the sum of scores of all pivots on
+                   this HArea
     '''
-    def __init__(self, price: float, instrument: str, granularity: str, pips: int, no_pivots: int=None,
-                 tot_score: int=None):
+    def __init__(self, price: float, instrument: str, granularity: str, pips: int, no_pivots: int = None,
+                 tot_score: int = None):
 
         (first, second) = instrument.split("_")
         self.instrument = instrument
@@ -48,7 +49,7 @@ class HArea(object):
         self.upper = round(price+(pips/divisor), 4)
         self.lower = round(price-(pips/divisor), 4)
 
-    def get_cross_time(self, candle: Candle, granularity='M30')->datetime:
+    def get_cross_time(self, candle: Candle, granularity='M30') -> datetime:
         '''This function is used get the time that the candle
         crosses (go through) HArea
 
@@ -98,6 +99,7 @@ class HArea(object):
             out_str += "%s:%s " % (attr, value)
         return out_str
 
+
 class HAreaList(object):
     '''Class that represents a list of HArea objects.
 
@@ -136,7 +138,7 @@ class HAreaList(object):
             ix += 1
         return onArea_hr, sel_ix
 
-    def print(self)->str:
+    def print(self) -> str:
         '''Function to print out basic information on each of the
         HArea objects in the HAreaList
 
@@ -154,7 +156,7 @@ class HAreaList(object):
                                                           harea.tot_score)
         return res.rstrip("\n")
 
-    def plot(self, clO, outfile: str)->None:
+    def plot(self, clO, outfile: str) -> None:
         """Plot this HAreaList
 
         Args:

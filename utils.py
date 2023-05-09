@@ -1,12 +1,12 @@
-import datetime
 import re
 import os
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # location of directory used to store all data used by Unit Tests
 DATA_DIR = ROOT_DIR+"/tests/data"
+
 
 def try_parsing_date(text):
     '''Function to parse a string that can be formatted in
@@ -22,7 +22,8 @@ def try_parsing_date(text):
             pass
     raise ValueError(f"no valid date format found: {text}")
 
-def calculate_pips(pair: str, price: float)->float:
+
+def calculate_pips(pair: str, price: float) -> float:
     '''Function to calculate the number of pips
     for a given price
 
@@ -42,7 +43,8 @@ def calculate_pips(pair: str, price: float)->float:
 
     return '%.1f' % pips
 
-def add_pips2price(pair: str, price: float, pips: int)->float:
+
+def add_pips2price(pair: str, price: float, pips: int) -> float:
     '''Function that gets a price value and adds
     a certain number of pips to the price.
 
@@ -69,7 +71,8 @@ def add_pips2price(pair: str, price: float, pips: int)->float:
 
     return iprice
 
-def substract_pips2price(pair:str, price:float, pips:int)->float:
+
+def substract_pips2price(pair:  str, price: float, pips: int) -> float:
     '''Function that gets a price value and substracts
     a certain number of pips to the price
 
@@ -107,12 +110,12 @@ def periodToDelta(ncandles: int, timeframe: str):
     Returns:
         datetime timedelta object
     '''
-    patt=re.compile("(\d)D")
+    patt = re.compile("(\d)D")
 
     delta = None
     if patt.match(timeframe):
         raise Exception("{0} is not valid. Oanda rest service does not take it".format(timeframe))
-    elif timeframe=='D':
+    elif timeframe == 'D':
         delta = timedelta(hours=24 * ncandles)
     else:
         fgran = timeframe.replace('H', '')
