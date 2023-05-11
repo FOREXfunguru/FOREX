@@ -1,18 +1,21 @@
 import logging
-import pdb
-import datetime
 import pickle
 import re
 
-from datetime import datetime
+from datetime import datetime, timedelta
+from typing import List
 from api.oanda.connect import Connect
 from forex.candle import CandleList, Candle
+from forex.harea import HAreaList
 from params import gparams, tradebot_params
-from utils import *
 from forex.pivot import PivotList
-from forex.candlelist_utils import *
-from trading_journal.trade_utils import *
+from forex.candlelist_utils import calc_SR
+from trading_journal.trade import Trade
+from trading_journal.trade_utils import prepare_trade, adjust_SL_candles, \
+                                        adjust_SL_pips, adjust_SL_nextSR, \
+                                        get_trade_type
 from dataclasses import dataclass
+from utils import try_parsing_date, periodToDelta
 
 # create logger
 tb_logger = logging.getLogger(__name__)
@@ -45,6 +48,8 @@ class TradeBot(object):
         self.pair = pair
         self.timeframe = timeframe
         self.clist = clist
+        self.delta_period = periodToDelta(tradebot_params.period_range,
+                                          self.timeframe)
         if self.timeframe == "D":
             self.delta = timedelta(hours=24)
         else:
@@ -58,22 +63,20 @@ class TradeBot(object):
             self.init_clist()
     
     def init_clist(self) -> None:
-        '''Init clist for this TradeBot'''
+        """Init clist for this TradeBot"""
 
         conn = Connect(
             instrument=self.pair,
             granularity=self.timeframe)
         if tradebot_params.period_range > 4899:
             tradebot_params.period_range = 4899
-        delta_period = periodToDelta(tradebot_params.period_range,
-                                     self.timeframe)
-        initc_date = self.start-delta_period
+        initc_date = self.start-self.delta_period
 
         clO = conn.query(initc_date.isoformat(), self.end.isoformat())
         self.clist = clO
         
     def scan(self, prefix: str = 'pretrades', discard_sat: bool = True) -> str:
-        '''This function will scan for candles on S/R areas.
+        """This function will scan for candles on S/R areas.
         These candles will be written to a .csv file
 
         Arguments:
@@ -83,7 +86,7 @@ class TradeBot(object):
 
         Returns:
             Path to file containing a list of preTrade objects
-        '''
+        """
         tb_logger.info("Running...")
 
         pretrades = []
@@ -94,9 +97,7 @@ class TradeBot(object):
                            .format(startO.isoformat()))
             # Get now a CandleList from 'initc_date' to 'self.start'
             #  which is the total time interval for this TradeBot
-            delta_period = periodToDelta(tradebot_params.period_range,
-                                         self.timeframe)
-            initc_date = startO-delta_period
+            initc_date = startO-self.delta_period
             subclO = self.clist.slice(initc_date, startO)
             sub_pvtlst = PivotList(clist=subclO)
             dt_str = startO.strftime("%d_%m_%Y_%H_%M")
@@ -124,9 +125,11 @@ class TradeBot(object):
             # c_candle.time is not equal to startO
             # when startO is non-working day, for example
             delta1hr = timedelta(hours=1)
-            if (c_candle.time != startO) and (abs(c_candle.time-startO) > delta1hr):
+            if (c_candle.time != startO) and \
+                    (abs(c_candle.time-startO) > delta1hr):
                 loop += 1
-                tb_logger.info(f"Analysed dt {startO} is not the same than APIs returned dt {c_candle.time}."
+                tb_logger.info(f"Analysed dt {startO} is not the same than "
+                               f"APIs returned dt {c_candle.time}."
                                " Skipping...")
                 startO = startO + self.delta
                 continue
@@ -139,7 +142,9 @@ class TradeBot(object):
                 type = get_trade_type(c_candle.time, newCl)
 
                 prepare = False
-                if c_candle.indecision_c(ic_perc=gparams.ic_perc) is True and len(SRlst.halist) >= 3 and c_candle.height(pair=self.pair) < tradebot_params.max_height:
+                if c_candle.indecision_c(ic_perc=gparams.ic_perc) is True and \
+                        len(SRlst.halist) >= 3 and c_candle.height(pair=self.pair) \
+                        < tradebot_params.max_height:
                     prepare = True
                 elif type == 'short' and c_candle.colour == 'red' and len(SRlst.halist) >= 3 and c_candle.height(pair=self.pair) < tradebot_params.max_height:
                     prepare = True
@@ -166,27 +171,37 @@ class TradeBot(object):
                 return f"{prefix}.pckl"
 
         tb_logger.info("Run done")
-    
-    def prepare_trades(self, pretrades: str):
-        '''This function unpickles the preTrade objects 
+ 
+    def prepare_trades(self, pretrades: str) -> List[Trade]:
+        """This function unpickles the preTrade objects
         identified by self.scan() and will create a list of Trade objects
 
         Arguments:
             pretrades: Pickled file with a list of preTrade objects
-        '''
-        delta_period = periodToDelta(tradebot_params.period_range,
-                                     self.timeframe)
+        """
+        TP = None
+        tlist = []
         with open(pretrades, 'rb') as f:
             pret_lst = pickle.load(f)
             for pret in pret_lst:
-                pdb.set_trace()
-                initc_date = pret.candle.time-delta_period
+                initc_date = pret.candle.time-self.delta_period
                 newCl = self.clist.slice(start=initc_date,
                                          end=pret.candle.time)
                 if tradebot_params.adj_SL == 'candles':
                     SL = adjust_SL_candles(pret.type, newCl)
-                    print("h")
-                TP = None
+                elif tradebot_params.adj_SL == 'pips':
+                    SL = adjust_SL_pips(pret.candle,
+                                        pret.type,
+                                        pair=self.pair)
+                else:
+                    SL, TP = adjust_SL_nextSR(pret.SRlst,
+                                              pret.sel_ix,
+                                              pret.type)
+                    if not SL:
+                        SL = adjust_SL_pips(pret.candle,
+                                            pret.type,
+                                            pair=self.pair,
+                                            no_pips=tradebot_params.adj_SL_pips)
                 t = prepare_trade(
                         tb_obj=self,
                         start=pret.candle.time+self.delta,
@@ -196,21 +211,5 @@ class TradeBot(object):
                         TP=TP,
                         harea_sel=pret.SRlst.halist[pret.sel_ix],
                         add_pips=tradebot_params.add_pips)
-                """
-                elif tradebot_params.adj_SL == 'pips':
-                    if type == 'short':
-                        SL = adjust_SL_pips(c_candle.h, type, pair=self.pair)
-                    else:
-                        SL = adjust_SL_pips(c_candle.l, type, pair=self.pair)
-                else:
-                    SL, TP = adjust_SL_nextSR(SRlst, sel_ix, type)
-                    if not SL:
-                        if type == 'short':
-                            SL = adjust_SL_pips(c_candle.h, type, pair=self.pair, no_pips=tradebot_params.adj_SL_pips)
-                        else:
-                            SL = adjust_SL_pips(c_candle.l, type, pair=self.pair, no_pips=tradebot_params.adj_SL_pips)
-                """
- 
-            pass
-        
-
+                tlist.append(t)
+        return tlist

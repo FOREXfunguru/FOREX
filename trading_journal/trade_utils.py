@@ -1,13 +1,12 @@
 # Collection of utilities used by the Trade object
 import logging
-import pdb
 import datetime
 
-from utils import *
+from utils import substract_pips2price, add_pips2price
 from params import counter_params, tradebot_params, trade_params
-from forex.candlelist_utils import *
 from forex.pivot import PivotList
 from forex.candle import CandleList, Candle
+from forex.harea import HAreaList
 from trading_journal.trade import Trade
 from typing import Tuple
 
@@ -55,7 +54,8 @@ def get_lasttime(trade: Trade, pad: int = 0):
 
 def get_max_min_rsi(trade) -> float:
     """Function to calculate the max or min RSI for CandleList slice
-    going from trade.start-CONFIG.getint('counter', rsi_period') to trade.start.
+    going from trade.start-CONFIG.getint('counter', rsi_period')
+    to trade.start.
 
     Returns:
         The max (if short trade) or min (long trade) rsi value
@@ -216,9 +216,7 @@ def prepare_trade(tb_obj, start: datetime, type: str, SL: float, ic: Candle,
         SR=harea_sel.price,
         SL=SL,
         TP=TP,
-        RR=tradebot_params.RR,
-        strat='counter')
-    pdb.set_trace()
+        RR=tradebot_params.RR)
     return t
 
 
@@ -231,13 +229,13 @@ def validate_trade(t: Trade) -> bool:
     return False
 
 
-def adjust_SL_pips(price: float, type: str, pair: str, 
+def adjust_SL_pips(candle: Candle, type: str, pair: str,
                    no_pips: int = 100) -> float:
     """Function to adjust the SL price
     to the most recent highest high/lowest low.
 
     Arguments:
-        price : SL that will be adjusted
+        candle : Candle object for which SL will be adjusted
         type : Trade type ('long'/ 'short').
         pair: Pair
         no_pips: Number of pips to add the S/L value.
@@ -246,15 +244,19 @@ def adjust_SL_pips(price: float, type: str, pair: str,
         adjusted SL
     """
     if type == 'long':
+        price = candle.l
         SL = substract_pips2price(pair, price, no_pips)
     else:
+        price = candle.h
         SL = add_pips2price(pair, price, no_pips)
-        
+
     return SL
 
 
-def adjust_SL_nextSR(SRlst: HAreaList, sel_ix: int, type: str) -> Tuple[float, float]:
-    '''Function to calculate the TP and SL prices to the next SR areas'''
+def adjust_SL_nextSR(SRlst: HAreaList,
+                     sel_ix: int,
+                     type: str) -> Tuple[float, float]:
+    """Function to calculate the TP and SL prices to the next SR areas"""
     TP, SL = None, None
     try:
         if type == 'long':
@@ -274,7 +276,7 @@ def adjust_SL_nextSR(SRlst: HAreaList, sel_ix: int, type: str) -> Tuple[float, f
 
 
 def adjust_SL_candles(type: str, clObj: CandleList, number: int = 7) -> float:
-    '''Function to adjust the SL price
+    """Function to adjust the SL price
     to the most recent highest high/lowest low.
 
     Arguments:
@@ -285,7 +287,7 @@ def adjust_SL_candles(type: str, clObj: CandleList, number: int = 7) -> float:
 
     Returns:
         adjusted SL
-    '''
+    """
     SL, ix = None, 0
     if not clObj.candles:
         raise Exception("No candles in CandleList. Can't calculate the SL")

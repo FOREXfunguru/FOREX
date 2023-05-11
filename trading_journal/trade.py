@@ -1,17 +1,19 @@
 from __future__ import division
 
 import logging
-import datetime
 
+from datetime import datetime, timedelta
 from forex.pivot import PivotList
 from forex.harea import HArea
-from utils import *
+from utils import calculate_pips, add_pips2price, try_parsing_date, \
+    substract_pips2price, periodToDelta
 from params import trade_params
 from api.oanda.connect import Connect
 
 # create logger
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
+
 
 class Trade(object):
     """This is the parent class represents a single row from the TradeJournal class.
@@ -56,7 +58,7 @@ class Trade(object):
             self.TP = round(self.entry + diff, 4)
     
     def init_clist(self) -> None:
-        '''Init clist for this Trade'''
+        """Init clist for this Trade"""
         delta = periodToDelta(trade_params.trade_period, self.timeframe)
         start = self.start
         if not isinstance(start, datetime):
@@ -69,8 +71,8 @@ class Trade(object):
         clO = conn.query(nstart.isoformat(), start.isoformat())
         self.clist = clO
 
-    def get_trend_i(self)->datetime:
-        '''Function to calculate the start of the trend'''
+    def get_trend_i(self) -> datetime:
+        """Function to calculate the start of the trend"""
         pvLst = PivotList(self.clist)
         merged_s = pvLst.calc_itrend()
 
@@ -82,24 +84,24 @@ class Trade(object):
         return candle.time
 
     def _adjust_tp(self):
-        '''Adjust TP when trade_params.strat==exit early'''
+        """Adjust TP when trade_params.strat==exit early"""
         tp_pips = float(calculate_pips(self.pair, self.TP))
         entry_pips = float(calculate_pips(self.pair, self.entry))
         diff = abs(tp_pips-entry_pips)
         tp_pips = trade_params.reduce_perc*diff/100
-        if self.type=='long':
+        if self.type == 'long':
             new_tp = add_pips2price(self.pair, self.entry, tp_pips)
         else:
             new_tp = substract_pips2price(self.pair, self.entry, tp_pips)
         return new_tp
 
     def run_trade(self, expires: int = 2) -> None:
-        '''Run the trade until conclusion from a start date.
+        """Run the trade until conclusion from a start date.
 
         Arguments:
             expires : Number of candles after start datetime to check
                       for entry
-        '''
+        """
         t_logger.info(f"Run run_trade with id: {self.pair}:{self.start}")
 
         entry = HArea(price=self.entry,
@@ -204,16 +206,18 @@ class Trade(object):
                     except:
                         self.end = cl.time
                     break
-        if self.outcome != 'failure' and self.outcome != 'success' and self.outcome != 'exit_early' and self.entered:
-            if count>=trade_params.numperiods:
-                t_logger.warning("No outcome could be calculated in the trade_params.numperiods interval")
+        if self.outcome != 'failure' and self.outcome != 'success' \
+                and self.outcome != 'exit_early' and self.entered:
+            if count >= trade_params.numperiods:
+                t_logger.warning("No outcome could be calculated in the "
+                                 "trade_params.numperiods interval")
             self.outcome = "n.a."
             self.pips = 0
         t_logger.info("Done run_trade")
 
-    def get_SLdiff(self)->float:
-        """Function to calculate the difference in number of pips between the entry and
-        the SL prices.
+    def get_SLdiff(self) -> float:
+        """Function to calculate the difference in number of pips between the 
+        entry and the SL prices.
 
         Returns:
             number of pips

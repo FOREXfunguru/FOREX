@@ -101,11 +101,11 @@ class HArea(object):
 
 
 class HAreaList(object):
-    '''Class that represents a list of HArea objects.
+    """Class that represents a list of HArea objects.
 
     Class variables:
         halist : List of HArea objects
-    '''
+    """
     def __init__(self, halist):
         self.halist = halist
 
