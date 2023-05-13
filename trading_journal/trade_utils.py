@@ -173,14 +173,14 @@ def get_trade_type(dt, clObj: CandleList) -> str:
         raise Exception("Could not guess the file type")
 
 
-def prepare_trade(tb_obj, start: datetime, type: str, SL: float, ic: Candle, 
+def prepare_trade(tb_obj, start: datetime, type: str, SL: float, ic: Candle,
                   harea_sel, add_pips: int = None, TP: float = None) -> Trade:
     """Prepare a Trade object and check if it is taken.
 
     Arguments:
         tb_obj : TradeBot object
         start : Start datetime for the trade
-        type : Type of trade. 'short' or 'long'
+        type : Type of trade. ['short','long']
         SL : Adjusted (by '__get_trade_type') SL price
         ic: Indecission candle
         harea_sel : HArea of this trade

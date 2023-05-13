@@ -211,5 +211,7 @@ class TradeBot(object):
                         TP=TP,
                         harea_sel=pret.SRlst.halist[pret.sel_ix],
                         add_pips=tradebot_params.add_pips)
+                t.tot_SR = len(pret.SRlst.halist)
+                t.rank_selSR = pret.sel_ix
                 tlist.append(t)
         return tlist

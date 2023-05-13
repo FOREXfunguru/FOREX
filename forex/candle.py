@@ -132,7 +132,7 @@ class CandleList(object):
         else:
             raise StopIteration
     
-    def __getitem__(self, adatetime: datetime)->Candle:
+    def __getitem__(self, adatetime: datetime) -> Candle:
         if not isinstance(adatetime, datetime):
             raise ValueError("A datetime object is needed!")
         fdt = None
@@ -231,21 +231,21 @@ class CandleList(object):
 
     @classmethod
     def pickle_load(self, infile: str):
-        '''Function to pickle this particular CandleList
+        """Function to pickle this particular CandleList
         
         Arguments:
             infile: Path used to load in pickled data
             
         Returns:
             inclO: CandleList object    
-        '''
+        """
         pickle_in = open(infile, "rb")
         inclO = pickle.load(pickle_in)
 
         return inclO
 
     def calc_rsi_bounces(self) -> dict:
-        '''Calculate the number of times that the
+        """Calculate the number of times that the
         price has been in overbought (>70) or
         oversold (<30) regions
 
@@ -258,14 +258,15 @@ class CandleList(object):
             is formed by the number of candles that the price
             has been in overbought/oversold each of the times
             sorted from older to newer
-        '''
+        """
         adj = False
         num_times, length = 0, 0
         lengths = []
 
         for c in self.candles:
             if c.rsi is None:
-                raise Exception("RSI values are not defined for this Candlelist, "
+                raise Exception("RSI values are not defined for this "
+                                "Candlelist, "
                                 "run calc_rsi first")
             if self.type is None:
                 raise Exception("type is not defined for this Candlelist")
@@ -278,7 +279,8 @@ class CandleList(object):
                 elif c.rsi > 70 and adj is True:
                     length += 1
                 elif c.rsi < 70:
-                    if adj is True: lengths.append(length)
+                    if adj is True:
+                        lengths.append(length)
                     adj = False
             elif self.type == 'long':
                 if c.rsi < 30 and adj is False:
@@ -295,8 +297,8 @@ class CandleList(object):
         if adj is True and length > 0:
             lengths.append(length)
 
-        if num_times != len(lengths): raise Exception("Number of times" \
-                                                      "and lengths do not" \
+        if num_times != len(lengths): raise Exception("Number of times"
+                                                      "and lengths do not"
                                                       "match")
         return {'number': num_times,
                 'lengths': lengths}
@@ -321,8 +323,10 @@ class CandleList(object):
 
         return abs(int(round(diff, 0)))
 
-    def slice(self, start: datetime, end: datetime, inplace: bool = False) -> 'CandleList':
-        """Function to slice self on a date interval. It will modify inplace the CandleList.
+    def slice(self, start: datetime, end: datetime,
+              inplace: bool = False) -> 'CandleList':
+        """Function to slice self on a date interval. It will modify inplace 
+        the CandleList.
 
         Arguments:
             start: Slice the CandleList from this start datetime.
@@ -357,10 +361,12 @@ class CandleList(object):
             return self
 
     def get_lasttime(self, price: float, type: str) -> datetime:
-        """Function to get the datetime for last time that price has been above/below a price level
+        """Function to get the datetime for last time that price has been
+          above/below a price level
 
         Arguments:
-            price: value to calculate the last time in this CandleList the price was above/below
+            price: value to calculate the last time in this CandleList the
+                   price was above/below
             trade type: either long/short
         """
        
@@ -395,12 +401,12 @@ class CandleList(object):
         return max
 
     def get_lowest(self) -> float:
-        '''Function to calculate the lowest
+        """Function to calculate the lowest
         price in this CandeList
 
         Returns:
             lowest price
-        '''
+        """
         min = None
         for cl in self.candles:
             price = cl.c
@@ -410,5 +416,3 @@ class CandleList(object):
                 if price < min:
                     min = price
         return min
-
-    

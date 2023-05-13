@@ -1,6 +1,7 @@
 from __future__ import division
 
 import logging
+import pdb
 
 from datetime import datetime, timedelta
 from forex.pivot import PivotList
@@ -16,10 +17,12 @@ t_logger.setLevel(logging.INFO)
 
 
 class Trade(object):
-    """This is the parent class represents a single row from the TradeJournal class.
+    """This is the parent class represents a single row from the TradeJournal
+       class.
 
     Class variables:
-        entered: False if trade not taken (price did not cross self.entry). True otherwise
+        entered: False if trade not taken (price did not cross self.entry). 
+                 True otherwise
         start: Time/date when the trade was taken. i.e. 20-03-2017 08:20:00s
         pair: Currency pair used in the trade. i.e. AUD_USD
         timeframe: Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
@@ -126,14 +129,15 @@ class Trade(object):
         # generate a range of dates starting at self.start and ending
         # trade_params.numperiods later in order to assess the outcome
         # of trade and also the entry time
-        self.start = datetime.strptime(str(self.start), '%Y-%m-%d %H:%M:%S')
-        # date_list will contain a list with datetimes that will be used for 
+        # date_list will contain a list with datetimes that will be used for
         # running self
         date_list = [self.start + timedelta(hours=x*period) for x in range(0,
-                                                                            trade_params.numperiods)]
+                                                                            trade_params.interval)]
         count = 0
         self.entered = False
         for d in date_list:
+            if d.weekday() == 5:
+                continue
             count += 1
             if expires is not None:
                 if count > expires and self.entered is False:
@@ -155,8 +159,9 @@ class Trade(object):
                     if len(clO.candles) == 1:
                         cl = clO.candles[0]
                     elif len(clO.candles) > 1:
-                        raise Exception("No valid number of candles in CandleList")
-                    elif len(clO.candles) == 0:
+                        raise Exception("No valid number of candles in "
+                                        "CandleList")
+                    else:
                         # market closed
                         count -= 1
                         continue
@@ -174,7 +179,9 @@ class Trade(object):
                     except:
                         self.entry_time = cl.time.isoformat()
             if self.entered is True:
-                if trade_params.strat == 'exit_early' and count >= trade_params.no_candles and not hasattr(self, 'reduced_TP'):
+                if trade_params.strat == 'exit_early' and \
+                    count >= trade_params.no_candles and \
+                        not hasattr(self, 'reduced_TP'):
                     new_tp = self._adjust_tp()
                     self.TP = new_tp
                     TP.price = new_tp
@@ -184,7 +191,8 @@ class Trade(object):
                     t_logger.info("Sorry, SL was hit!")
                     self.exit = SL.price
                     self.outcome = 'failure'
-                    self.pips = float(calculate_pips(self.pair, abs(self.SL-self.entry)))*-1
+                    self.pips = float(calculate_pips(self.pair, 
+                                                     abs(self.SL-self.entry)))*-1
                     try:
                         self.end = SL.get_cross_time(candle=cl,
                                                      granularity=trade_params.granularity)
@@ -194,25 +202,34 @@ class Trade(object):
                 # check if success
                 if cl.l <= TP.price <= cl.h:
                     t_logger.info("Great, TP was hit!")
-                    #if hasattr(self, 'reduced_TP'):
+                    # if hasattr(self, 'reduced_TP'):
                     #    self.outcome = 'exit_early'
-                    #else:
                     self.outcome = 'success'
                     self.exit = TP.price
-                    self.pips = float(calculate_pips(self.pair, abs(self.TP - self.entry)))
+                    self.pips = float(calculate_pips(self.pair,
+                                                     abs(self.TP - self.entry)))
                     try:
                         self.end = TP.get_cross_time(candle=cl,
                                                      granularity=trade_params.granularity)
                     except:
                         self.end = cl.time
                     break
+                if count >= trade_params.numperiods:
+                    t_logger.warning("No outcome could be calculated in the "
+                                     "trade_params.numperiods interval")
+                    self.outcome = "n.a."
+                    break
         if self.outcome != 'failure' and self.outcome != 'success' \
                 and self.outcome != 'exit_early' and self.entered:
-            if count >= trade_params.numperiods:
-                t_logger.warning("No outcome could be calculated in the "
-                                 "trade_params.numperiods interval")
             self.outcome = "n.a."
-            self.pips = 0
+            # pips are calculated using the Candle close price
+            if (cl.c - self.entry) < 0:
+                sign = -1 if self.type == 'long' else 1
+            else:
+                sign = 1 if self.type == 'long' else -1
+            self.pips = float(calculate_pips(self.pair,
+                                             abs(cl.c - self.entry))) * sign
+            self.end = cl.time
         t_logger.info("Done run_trade")
 
     def get_SLdiff(self) -> float:
@@ -230,7 +247,8 @@ class Trade(object):
     def __str__(self):
         sb = []
         for key in self.__dict__:
-            sb.append("{key}='{value}'".format(key=key, value=self.__dict__[key]))
+            sb.append("{key}='{value}'".format(key=key,
+                                               value=self.__dict__[key]))
 
         return ', '.join(sb)
 
