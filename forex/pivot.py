@@ -1,7 +1,6 @@
 import logging
 import datetime
 import matplotlib.pyplot as plt
-import pdb
 
 from utils import *
 from params import gparams, pivots_params
@@ -13,6 +12,7 @@ from statistics import mean
 p_logger = logging.getLogger(__name__)
 p_logger.setLevel(logging.INFO)
 
+
 class Pivot(object):
     """
     Class representing a single Pivot
@@ -23,17 +23,17 @@ class Pivot(object):
         pre : Segment object before this pivot
         aft : Segment object after this pivot
         score : Result of adding the number
-                of candles of the 'pre' and 'aft' segment (if defined). Optional
+                of candles of the 'pre' and 'aft' segment (if defined)
     """
     def __init__(self, type: int, candle, pre, aft,
-                 score: int=None):
+                 score: int = None):
         self.type = type
         self.candle = candle
         self.pre = pre
         self.aft = aft
         self.score = score
 
-    def merge_pre(self, slist, n_candles: int, diff_th: int)->None:
+    def merge_pre(self, slist, n_candles: int, diff_th: int) -> None:
         """Function to merge 'pre' Segment. It will merge self.pre with previous segment
         if self.pre and previous segment are of the same type (1 or -1) or count of
         previous segment is less than pivots_params.n_candles
@@ -88,7 +88,7 @@ class Pivot(object):
         p_logger.debug("self.pre start after-merge: {0}".format(self.pre.start()))
         p_logger.debug("Done merge_pre")
 
-    def merge_aft(self, slist, n_candles: int, diff_th: int)->None:
+    def merge_aft(self, slist, n_candles: int, diff_th: int) -> None:
         """Function to merge 'aft' Segment. It will merge self.aft with next segment
         if self.aft and next segment are of the same type (1 or -1) or count of
         next segment is less than 'n_candles'
@@ -137,7 +137,7 @@ class Pivot(object):
         p_logger.debug("self.aft end after-merge: {0}".format(self.aft.end()))
         p_logger.debug("Done merge_aft")
 
-    def calc_score(self, type='diff')->float:
+    def calc_score(self, type='diff') -> float:
         """
         Function to calculate the score for this Pivot
         The score will be the result of adding the 'diff'
@@ -166,7 +166,7 @@ class Pivot(object):
         else:
             score_aft = 0.0
 
-        return round(score_pre+score_aft,2)
+        return round(score_pre+score_aft, 2)
 
     def adjust_pivottime(self, clistO):
         """Function to adjust the pivot time
@@ -210,6 +210,7 @@ class Pivot(object):
             out_str += "%s:%s " % (attr, value)
         return out_str
 
+
 class PivotList(object):
     """Class that represents a list of Pivots as identified
     by the Zigzag indicator.
@@ -219,7 +220,7 @@ class PivotList(object):
         pivots: List with Pivot objects
         slist: SegmentList object"""
 
-    def __init__(self, clist, pivots = None, slist = None, th_bounces: float = None)->None:
+    def __init__(self, clist, pivots=None, slist=None, th_bounces:float= None) -> None:
         self.clist = clist
         if pivots is not None:
             assert slist is not None, "Error!. SegmentList needs to be provided"
@@ -253,8 +254,8 @@ class PivotList(object):
         return len(self.pivots)
 
     def _get_pivotlist(self, th_bounces: float):
-        """Function to obtain a pivotlist object containing pivots identified using the
-        Zigzag indicator.
+        """Function to obtain a pivotlist object containing pivots identified 
+        using the Zigzag indicator.
 
         Arguments:
             th_bounces: Value used by ZigZag to identify pivots. The lower the
@@ -269,8 +270,8 @@ class PivotList(object):
                                     th_bounces*-1)
         modes = pivots_to_modes(pivots)
 
-        segs = [] # this list will hold the Segment objects
-        plist_o = [] # this list will hold the Pivot objects
+        segs = []  # this list will hold the Segment objects
+        plist_o = []  # this list will hold the Pivot objects
         pre_s = None # Variable that will hold pre Segments
         ixs = list(np.where(np.logical_or(pivots == 1, pivots == -1))[0])
         tuples_lst = [(ixs[i], ixs[i+1]) for i in range(len(ixs)-1)]
@@ -328,8 +329,9 @@ class PivotList(object):
                          clist=self.clist,
                          slist=self.slist)
 
-    def print_pivots_dates(self)->list:
-        '''Function to generate a list with the datetimes of the different Pivots in PivotList'''
+    def print_pivots_dates(self) -> list:
+        '''Function to generate a list with the datetimes of the different
+          Pivots in PivotList'''
 
         datelist = []
         for p in self.pivots:
@@ -337,14 +339,14 @@ class PivotList(object):
 
         return datelist
 
-    def get_score(self)->float:
+    def get_score(self) -> float:
         '''Function to calculate the score after adding the score
         for each individual pivot'''
 
         tot_score = sum(p.score for p in self.pivots)
         return round(tot_score, 1)
 
-    def get_avg_score(self)->float:
+    def get_avg_score(self) -> float:
         '''Function to calculate the avg score
         for all pivots in this PivotList.
         This calculation is done by dividing the
@@ -427,9 +429,9 @@ class PivotList(object):
                          slist=self.slist)
 
     def calc_itrend(self):
-        '''Function to calculate the datetime for the start of this CandleList, assuming that this
-        CandleList is trending. This function will calculate the start of the trend by using the self.get_pivots
-        function
+        '''Function to calculate the datetime for the start of this CandleList,
+        assuming that this CandleList is trending. This function will calculate
+          the start of the trend by using the self.get_pivots function
 
         Returns:
             Merged Segment object containing the trend_i
@@ -492,7 +494,7 @@ class PivotList(object):
 
         p_logger.debug("plot_pivots Done")
 
-    def pivots_report(self, outfile: str)->str:
+    def pivots_report(self, outfile: str) -> str:
         """Function to generate a report of the pivots in the PivotList
 
         Arguments:

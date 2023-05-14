@@ -5,6 +5,7 @@ import pickle
 
 matplotlib.use('PS')
 
+
 class Segment(object):
     """Class containing a Segment object identified linking the pivots in a the PivotList
 
@@ -24,7 +25,7 @@ class Segment(object):
     def diff(self):
         return self._diff
     
-    def pickle_dump(self, outfile: str)->str:
+    def pickle_dump(self, outfile: str) -> str:
         '''Function to pickle this particular Segment
         
         Arguments:
@@ -34,7 +35,7 @@ class Segment(object):
             path to file with pickled data
         '''
         
-        pickle_out = open(outfile,"wb")
+        pickle_out = open(outfile, "wb")
         pickle.dump(self, pickle_out)
         pickle_out.close()
 
@@ -50,12 +51,12 @@ class Segment(object):
         Returns:
             inseg: Segment object    
         '''
-        pickle_in = open(infile,"rb")
+        pickle_in = open(infile, "rb")
         inseg = pickle.load(pickle_in)
 
         return inseg
 
-    def prepend(self, s)->None:
+    def prepend(self, s) -> None:
         '''Function to prepend s to self. The merge will be done by
         concatenating s.clist to self.clist and increasing self.count to
         self.count+s.count
@@ -67,7 +68,7 @@ class Segment(object):
         self.clist = s.clist+self.clist
         self._diff = self._calc_diff()
 
-    def append(self, s)->None:
+    def append(self, s) -> None:
         '''Function to append s to self. The merge will be done by
         concatenating self.clist to self.clist and increasing self.count to
         self.count+s.count
@@ -78,7 +79,7 @@ class Segment(object):
         self.clist = self.clist+s.clist
         self._diff = self._calc_diff()
 
-    def _calc_diff(self)->float:
+    def _calc_diff(self) -> float:
         '''Private function to calculate the absolute difference in
         number of pips between the first and the last candles
         of this segment. The candle part considered is
@@ -100,17 +101,16 @@ class Segment(object):
         Returns:
             True if is short
         '''
-
         if self.count < min_n_candles and self.diff < diff_in_pips:
             return True
         else:
             return False
 
-    def start(self)->datetime:
+    def start(self) -> datetime:
         '''Function that returns the start of this Segment'''
         return self.clist[0].time
 
-    def end(self)->datetime:
+    def end(self) -> datetime:
         '''Function that returns the end of this Segment'''
         return self.clist[-1].time
 
@@ -155,6 +155,7 @@ class Segment(object):
             out_str += "%s:%s " % (attr, value)
         return out_str
 
+
 class SegmentList(object):
     '''Class that represents a list of segments
 
@@ -180,7 +181,7 @@ class SegmentList(object):
         return self
  
     def __next__(self):
-        if(self.pos < len(self.slist)):
+        if (self.pos < len(self.slist)):
             self.pos += 1
             return self.slist[self.pos - 1]
         else:
@@ -192,7 +193,7 @@ class SegmentList(object):
     def __len__(self):
         return len(self.slist)
     
-    def pickle_dump(self, outfile: str)->str:
+    def pickle_dump(self, outfile: str) -> str:
         '''Function to pickle this particular SegmentList
         
         Arguments:
@@ -202,7 +203,7 @@ class SegmentList(object):
             path to file with pickled data
         '''
         
-        pickle_out = open(outfile,"wb")
+        pickle_out = open(outfile, "wb")
         pickle.dump(self, pickle_out)
         pickle_out.close()
 
@@ -218,12 +219,12 @@ class SegmentList(object):
         Returns:
             inseg: Segment object    
         '''
-        pickle_in = open(infile,"rb")
+        pickle_in = open(infile, "rb")
         inseglst = pickle.load(pickle_in)
 
         return inseglst
 
-    def calc_diff(self)->float:
+    def calc_diff(self) -> float:
         '''Function to calculate the difference in terms
         of number of pips between the 1st candle in
         the 1st segment and the last candle in the
@@ -241,28 +242,26 @@ class SegmentList(object):
 
         self._diff = diff_pips
 
-    def length_cl(self)->int:
-        '''Get length in terms of number of candles representing the sum of candles in each Segment
-        of the SegmentList'''
+    def length_cl(self) -> int:
+        '''Get length in terms of number of candles representing the sum 
+        of candles in each Segment of the SegmentList'''
 
-        length=0
+        length = 0
         for s in self.slist:
             length = length+len(s.clist)
         return length
 
-    def start(self)->datetime:
+    def start(self) -> datetime:
         '''Get the start datetime for this SegmentList
         This start will be the time of the first candle in SegmentList'''
-        
         return self.slist[0].clist[0].time
 
     def end(self)->datetime:
         '''Get the end datetime for this SegmentList
         This start will be the time of the first candle in SegmentList'''
-
         return self.slist[-1].clist[-1].time
 
-    def fetch_by_start(self, dt: datetime, max_diff: int=3600):
+    def fetch_by_start(self, dt: datetime, max_diff: int = 3600):
         '''Function to get a certain Segment by
         the start Datetime
 
@@ -282,7 +281,7 @@ class SegmentList(object):
 
         return None
 
-    def fetch_by_end(self, dt: datetime, max_diff: int=3600):
+    def fetch_by_end(self, dt: datetime, max_diff: int = 3600):
         '''Function to get a certain Segment by
         the end Datetime
 

@@ -1,11 +1,13 @@
 import pytest
 import glob
 import os
+import pdb
 
 from trading_journal.trade import Trade
 from trading_journal.trade_journal import TradeJournal
 from forex.candle import CandleList
 from utils import DATA_DIR
+
 
 @pytest.fixture
 def clean_tmp():
@@ -17,9 +19,10 @@ def clean_tmp():
     files4 = glob.glob(DATA_DIR+"/out/*.pckl")
     files5 = glob.glob(DATA_DIR+"/out/*.png")
 
-    files = files1 + files2 + files3 + files4 +files5
+    files = files1 + files2 + files3 + files4 + files5
     for f in files:
         os.remove(f)
+
 
 @pytest.fixture
 def clO_pickled():
@@ -27,6 +30,7 @@ def clO_pickled():
     clO.calc_rsi()
 
     return clO
+
 
 @pytest.fixture
 def t_object(clO_pickled):
@@ -45,6 +49,7 @@ def t_object(clO_pickled):
         clist=clO_pickled)
     return td
 
+
 @pytest.fixture
 def t_object_list(scope="session"):
     '''Returns a list of Trade objects'''
@@ -62,6 +67,7 @@ def t_object_list(scope="session"):
         strat="counter_b1",
         id="AUD_USD 10APR2017H8")
     return [td]
+
 
 @pytest.fixture
 def tjO(scope="session"):

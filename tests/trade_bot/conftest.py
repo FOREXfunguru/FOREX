@@ -1,10 +1,10 @@
 import pytest
 import glob
 import os
-import pdb
 
 from trade_bot.trade_bot import TradeBot
 from utils import DATA_DIR
+
 
 @pytest.fixture
 def clean_tmp():
@@ -12,9 +12,11 @@ def clean_tmp():
     print("Cleanup files")
     files1 = glob.glob(f"{DATA_DIR}/out/*.png")
     files2 = glob.glob(f"{DATA_DIR}/out/*.txt")
-    files = files1 + files2
+    files3 = glob.glob(f"{DATA_DIR}/out/*.pckl")
+    files = files1 + files2 + files3
     for f in files:
         os.remove(f)
+
 
 @pytest.fixture
 def tb_object():

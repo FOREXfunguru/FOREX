@@ -1,12 +1,12 @@
-import datetime
 import re
 import os
-from datetime import datetime,timedelta
+from datetime import datetime, timedelta
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 
 # location of directory used to store all data used by Unit Tests
 DATA_DIR = ROOT_DIR+"/tests/data"
+
 
 def try_parsing_date(text):
     '''Function to parse a string that can be formatted in
@@ -22,7 +22,8 @@ def try_parsing_date(text):
             pass
     raise ValueError(f"no valid date format found: {text}")
 
-def calculate_pips(pair: str, price: float)->float:
+
+def calculate_pips(pair: str, price: float) -> float:
     '''Function to calculate the number of pips
     for a given price
 
@@ -42,7 +43,8 @@ def calculate_pips(pair: str, price: float)->float:
 
     return '%.1f' % pips
 
-def add_pips2price(pair: str, price: float, pips: int)->float:
+
+def add_pips2price(pair: str, price: float, pips: int) -> float:
     '''Function that gets a price value and adds
     a certain number of pips to the price.
 
@@ -69,7 +71,8 @@ def add_pips2price(pair: str, price: float, pips: int)->float:
 
     return iprice
 
-def substract_pips2price(pair:str, price:float, pips:int)->float:
+
+def substract_pips2price(pair:  str, price: float, pips: int) -> float:
     '''Function that gets a price value and substracts
     a certain number of pips to the price
 
@@ -96,23 +99,26 @@ def substract_pips2price(pair:str, price:float, pips:int)->float:
 
     return dprice
 
+
 def periodToDelta(ncandles: int, timeframe: str):
-    '''Function that receives an int representing a number of candles using the 'ncandles' param
+    """Function that receives an int representing a number of candles using the 'ncandles' param
     and returns a datetime timedelta object
 
     Arguments:
         ncandles: Number of candles for which the timedelta will be retrieved
-        timeframe: Timeframe used for getting the delta object. Possible values are: 2D,D,H12,H10,H8,H4
+        timeframe: Timeframe used for getting the delta object. Possible
+                   values are:
+                   2D,D,H12,H10,H8,H4
 
     Returns:
         datetime timedelta object
-    '''
-    patt=re.compile("(\d)D")
+    """
+    patt = re.compile("(\d)D")
 
     delta = None
     if patt.match(timeframe):
         raise Exception("{0} is not valid. Oanda rest service does not take it".format(timeframe))
-    elif timeframe=='D':
+    elif timeframe == 'D':
         delta = timedelta(hours=24 * ncandles)
     else:
         fgran = timeframe.replace('H', '')
@@ -120,8 +126,9 @@ def periodToDelta(ncandles: int, timeframe: str):
 
     return delta
 
-def get_ixfromdatetimes_list(datetimes_list, d)->int:
-    '''Function to get the index of the element that is closest
+
+def get_ixfromdatetimes_list(datetimes_list, d) -> int:
+    """Function to get the index of the element that is closest
     to the passed datetime
 
     Arguments:
@@ -131,30 +138,32 @@ def get_ixfromdatetimes_list(datetimes_list, d)->int:
 
     Returns:
         index of the closest datetime to d
-    '''
+    """
 
-    sel_ix=None
-    diff=None
-    ix=0
+    sel_ix = None
+    diff = None
+    ix = 0
     for ad in datetimes_list:
         if diff is None:
-            diff=abs(ad-d)
-            sel_ix=ix
+            diff = abs(ad-d)
+            sel_ix = ix
         else:
-            if abs(ad-d)<diff:
-                sel_ix=ix
-                diff=abs(ad-d)
-        ix+=1
+            if abs(ad-d) < diff:
+                sel_ix = ix
+                diff = abs(ad-d)
+        ix += 1
 
     return sel_ix
+
 
 def pairwise(iterable):
     "s -> (s0, s1), (s2, s3), (s4, s5), ..."
     a = iter(iterable)
     return zip(a, a)
 
+
 def correct_timeframe(settings, timeframe):
-    '''This utility function is used for correcting
+    """This utility function is used for correcting
     all the pips-related settings depending
     on the selected timeframe
 
@@ -164,7 +173,7 @@ def correct_timeframe(settings, timeframe):
 
     Returns:
         settings : ConfigParser object timeframe corrected
-    '''
+    """
     timeframe = int(timeframe.replace('H', ''))
     ratio = round(timeframe/24, 2)
 

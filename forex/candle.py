@@ -3,17 +3,15 @@
 @author: Ernesto Lowy
 @email: ernestolowy@gmail.com
 '''
-from pandas.plotting import register_matplotlib_converters
-register_matplotlib_converters()
 import pandas as pd
 import matplotlib
 import datetime
 import logging
 import pickle
-import pdb
 from utils import *
-
 from params import clist_params
+from pandas.plotting import register_matplotlib_converters
+register_matplotlib_converters()
 
 matplotlib.use('PS')
 
@@ -23,29 +21,30 @@ logging.basicConfig(level=logging.INFO)
 cl_logger = logging.getLogger(__name__)
 cl_logger.setLevel(logging.INFO)
 
+
 class Candle(object):
     """Class representing a particular Candle"""
-    def __init__(self, **kwargs)->None:
-        allowed_keys = ['complete', 'volume', 'time', 'o','h','c','l'] # allowed arbitrary argsa
+    def __init__(self, **kwargs) -> None:
+        allowed_keys = ['complete', 'volume', 'time', 'o', 'h', 'c', 'l']  # allowed arbitrary argsa
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
         numeric = ['o', 'h', 'c', 'l']
         self.__dict__.update((k, float(v)) for k,v in self.__dict__.items() if k in numeric)
         if isinstance(self.__dict__['time'], str):
-            self.__dict__.update({'time': datetime.strptime(self.__dict__['time'], '%Y-%m-%dT%H:%M:%S') })
+            self.__dict__.update({'time': datetime.strptime(self.__dict__['time'], '%Y-%m-%dT%H:%M:%S')})
         self._colour = self._set_colour()
         self._perc_body = self._calc_perc_body()
 
     @property
-    def colour(self)->str:
+    def colour(self) -> str:
         """Candle's body colour"""
         return self._colour
-    
+  
     @property
-    def perc_body(self)->float:
+    def perc_body(self) -> float:
         """Candle's body percentage"""
         return self._perc_body
 
-    def _set_colour(self)->str:
+    def _set_colour(self) -> str:
         if self.o < self.c:
             return "green"
         elif self.o > self.c:
@@ -53,14 +52,14 @@ class Candle(object):
         else:
             return "undefined"
     
-    def _calc_perc_body(self)->float:
+    def _calc_perc_body(self) -> float:
         height = self.h - self.l
-        if height ==0: 
+        if height == 0:
             return 0
-        body = abs(self.o- self.c)
+        body = abs(self.o - self.c)
         return round((body * 100) / height, 2)
 
-    def indecision_c(self, ic_perc: int=10)->bool:
+    def indecision_c(self, ic_perc: int = 10) -> bool:
         """Function to check if 'self' is an indecision candle.
 
         Args:
@@ -85,6 +84,7 @@ class Candle(object):
             out_str += "%s:%s " % (attr, value)
         return out_str
 
+
 class CandleList(object):
     """Class containing a list of Candles.
 
@@ -94,7 +94,8 @@ class CandleList(object):
         candles: List of Candle objects
         type: Type of this CandleList. Possible values are 'long'/'short'"""
 
-    def __init__(self, instrument: str, granularity: str, data: list= None, candles= None):
+    def __init__(self, instrument: str, granularity: str, data: list = None,
+                 candles=None):
         """Constructor
 
         Arguments:
@@ -107,7 +108,8 @@ class CandleList(object):
             self.times = [c.time for c in candles]
         elif data:
             self.candles = [Candle(**d) for d in data]
-            self.times = [try_parsing_date(d['time']) if isinstance(d['time'], str) else d['time'] for d in data]
+            self.times = [try_parsing_date(d['time']) if isinstance(d['time'],
+                                                                     str) else d['time'] for d in data]
         else:
             self.candles = []
             self.times = []
@@ -130,7 +132,7 @@ class CandleList(object):
         else:
             raise StopIteration
     
-    def __getitem__(self, adatetime: datetime)->Candle:
+    def __getitem__(self, adatetime: datetime) -> Candle:
         if not isinstance(adatetime, datetime):
             raise ValueError("A datetime object is needed!")
         fdt = None
@@ -146,7 +148,7 @@ class CandleList(object):
         if fdt:
             return self.candles[self.times.index(fdt)]
     
-    def __index__(self, adatetime: datetime)->int:
+    def __index__(self, adatetime: datetime) -> int:
         fdt = None
         if adatetime not in self.times:
             dtp1 = (adatetime + timedelta(hours=1))
@@ -174,15 +176,15 @@ class CandleList(object):
                             data=clist)
         return newClO
     
-    def _guess_type(self)->str:
-        if len(self.candles)==0:
+    def _guess_type(self) -> str:
+        if len(self.candles) == 0:
             return None
         price_1st = self.candles[0].c
         price_last = self.candles[-1].c
         if price_1st > price_last:
-            return 'short' # or downtrend
+            return 'short'  # or downtrend
         elif price_1st < price_last:
-            return 'long' # or uptrend
+            return 'long'  # or uptrend
         
     def calc_rsi(self):
         '''Calculate the RSI for a certain candle list.'''
@@ -211,17 +213,17 @@ class CandleList(object):
             ix += 1
         cl_logger.debug("Done calc_rsi")
 
-    def pickle_dump(self, outfile: str)->str:
-        '''Function to pickle this particular CandleList
+    def pickle_dump(self, outfile: str) -> str:
+        """Function to pickle this particular CandleList
         
         Arguments:
             outfile: Path used to pickle
             
         Returns:
             path to file with pickled data
-        '''
+        """
         
-        pickle_out = open(outfile,"wb")
+        pickle_out = open(outfile, "wb")
         pickle.dump(self, pickle_out)
         pickle_out.close()
 
@@ -229,21 +231,21 @@ class CandleList(object):
 
     @classmethod
     def pickle_load(self, infile: str):
-        '''Function to pickle this particular CandleList
+        """Function to pickle this particular CandleList
         
         Arguments:
             infile: Path used to load in pickled data
             
         Returns:
             inclO: CandleList object    
-        '''
-        pickle_in = open(infile,"rb")
+        """
+        pickle_in = open(infile, "rb")
         inclO = pickle.load(pickle_in)
 
         return inclO
 
-    def calc_rsi_bounces(self)->dict:
-        '''Calculate the number of times that the
+    def calc_rsi_bounces(self) -> dict:
+        """Calculate the number of times that the
         price has been in overbought (>70) or
         oversold (<30) regions
 
@@ -256,14 +258,15 @@ class CandleList(object):
             is formed by the number of candles that the price
             has been in overbought/oversold each of the times
             sorted from older to newer
-        '''
+        """
         adj = False
         num_times, length = 0, 0
         lengths = []
 
         for c in self.candles:
             if c.rsi is None:
-                raise Exception("RSI values are not defined for this Candlelist, "
+                raise Exception("RSI values are not defined for this "
+                                "Candlelist, "
                                 "run calc_rsi first")
             if self.type is None:
                 raise Exception("type is not defined for this Candlelist")
@@ -276,28 +279,31 @@ class CandleList(object):
                 elif c.rsi > 70 and adj is True:
                     length += 1
                 elif c.rsi < 70:
-                    if adj is True: lengths.append(length)
+                    if adj is True:
+                        lengths.append(length)
                     adj = False
             elif self.type == 'long':
-                if c.rsi<30 and adj is False:
+                if c.rsi < 30 and adj is False:
                     num_times += 1
                     length = 1
-                    adj=True
+                    adj = True
                 elif c.rsi < 30 and adj is True:
                     length += 1
                 elif c.rsi > 30:
-                    if adj is True: lengths.append(length)
+                    if adj is True: 
+                        lengths.append(length)
                     adj = False
 
-        if adj is True and length>0: lengths.append(length)
+        if adj is True and length > 0:
+            lengths.append(length)
 
-        if num_times != len(lengths): raise Exception("Number of times" \
-                                                      "and lengths do not" \
+        if num_times != len(lengths): raise Exception("Number of times"
+                                                      "and lengths do not"
                                                       "match")
-        return { 'number' : num_times,
-                 'lengths' : lengths}
+        return {'number': num_times,
+                'lengths': lengths}
 
-    def get_length_pips(self)->int:
+    def get_length_pips(self) -> int:
         '''Function to calculate the length of CandleList in number of pips'''
 
         start_cl = self.candles[0]
@@ -317,8 +323,10 @@ class CandleList(object):
 
         return abs(int(round(diff, 0)))
 
-    def slice(self, start : datetime, end : datetime, inplace: bool=False)->'CandleList':
-        '''Function to slice self on a date interval. It will modify inplace the CandleList.
+    def slice(self, start: datetime, end: datetime,
+              inplace: bool = False) -> 'CandleList':
+        """Function to slice self on a date interval. It will modify inplace 
+        the CandleList.
 
         Arguments:
             start: Slice the CandleList from this start datetime.
@@ -328,12 +336,13 @@ class CandleList(object):
         ------
         Exception
             If start > end
-        '''
+        """
         if self.granularity == "D":
             delta = timedelta(hours=24)
         else:
             fgran = self.granularity.replace('H', '')
             delta = timedelta(hours=int(fgran))
+
         while not self.__getitem__(start):
             start = start+delta
         while not self.__getitem__(end):
@@ -351,20 +360,21 @@ class CandleList(object):
             self._type = self._guess_type()
             return self
 
-
-    def get_lasttime(self, price: float, type: str)->datetime:
-        '''Function to get the datetime for last time that price has been above/below a price level
+    def get_lasttime(self, price: float, type: str) -> datetime:
+        """Function to get the datetime for last time that price has been
+          above/below a price level
 
         Arguments:
-            price: value to calculate the last time in this CandleList the price was above/below
+            price: value to calculate the last time in this CandleList the
+                   price was above/below
             trade type: either long/short
-        '''
+        """
        
         count = 0
         for c in reversed(self.candles):
             count += 1
             # Last time has to be at least forexparams.min candles before
-            if count <= clist_params.min :
+            if count <= clist_params.min:
                 continue
             if type == 'long':
                 if c.h < price:
@@ -375,14 +385,13 @@ class CandleList(object):
         
         return self.candles[0].time
 
-    def get_highest(self)->float:
-        '''Function to calculate the highest
+    def get_highest(self) -> float:
+        """Function to calculate the highest
         price in this CandleList
 
         Returns:
             highest price
-        '''
-
+        """
         max = 0.0
         for cl in self.candles:
             price = cl.c
@@ -391,14 +400,13 @@ class CandleList(object):
 
         return max
 
-    def get_lowest(self)->float:
-        '''Function to calculate the lowest
+    def get_lowest(self) -> float:
+        """Function to calculate the lowest
         price in this CandeList
 
         Returns:
             lowest price
-        '''
-
+        """
         min = None
         for cl in self.candles:
             price = cl.c
@@ -408,5 +416,3 @@ class CandleList(object):
                 if price < min:
                     min = price
         return min
-
-    
