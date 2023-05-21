@@ -109,13 +109,16 @@ def test_run_trade_noclO():
 
 
 @pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome, pips", [
-        ('AUD_USD', '2018-06-21 22:00:00', 'long', 0.72948, 0.75621, 0.73873, 'failure', -92.5),
-        ('AUD_USD', '2018-06-26 22:00:00', 'short', 0.75349, 0.72509, 0.73929, 'success', 142)])
-def test_run_trade_exitearly(pair, start, type, SL, TP, entry, outcome, pips, clO_pickled):
-   '''Run a trade using trade_params.strat==exit_early'''
-   trade_params.no_candles = 13
-   trade_params.reduce_perc = 25
-   td = Trade(
+        ('AUD_USD', '2018-06-21 22:00:00', 'long', 0.72948, 0.75621, 0.73873, 
+         'failure', -92.5),
+        ('AUD_USD', '2018-06-26 22:00:00', 'short', 0.75349, 0.72509, 0.73929,
+         'success', 142)])
+def test_run_trade_exitearly(pair, start, type, SL, TP, entry, outcome, pips,
+                             clO_pickled):
+    '''Run a trade using trade_params.strat==exit_early'''
+    trade_params.no_candles = 13
+    trade_params.reduce_perc = 25
+    td = Trade(
               start=start,
               entry=entry,
               SL=SL,
@@ -124,9 +127,9 @@ def test_run_trade_exitearly(pair, start, type, SL, TP, entry, outcome, pips, cl
               type=type,
               timeframe="D",
               clist=clO_pickled)
-   td.run_trade(expires=2)
-   assert td.outcome == outcome
-   assert td.pips == pips
+    td.run_trade(expires=2)
+    assert td.outcome == outcome
+    assert td.pips == pips
 
 
 @pytest.mark.parametrize("pair,start,type,SL,TP,entry, outcome, pips", [
