@@ -49,7 +49,7 @@ def test_scan_withclist(clO_pickled, clean_tmp):
 def test_scan_withclist_future(clO_pickled, clean_tmp):
     """
     Test tradebot using a pickled CandleList and using an end TradeBot time
-    post clO_pickled end time. This scan() invokation will not return any 
+    post clO_pickled end time. This scan() invokation will not return any
     preTrade
     """
 
