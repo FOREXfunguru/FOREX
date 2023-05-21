@@ -25,8 +25,10 @@ class Trade(object):
                  True otherwise
         start: Time/date when the trade was taken. i.e. 20-03-2017 08:20:00s
         pair: Currency pair used in the trade. i.e. AUD_USD
-        timeframe: Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4
-        outcome: Outcome of the trade. Possible values are: success, failure, breakeven
+        timeframe: Timeframe used for the trade. Possible values are: D,H12,
+                                                 H10,H8,H4
+        outcome: Outcome of the trade. Possible values are: success, failure,
+                                                            breakeven
         entry: entry price
         exit: exit price
         entry_time: Datetime for price reaching the entry price
@@ -35,7 +37,8 @@ class Trade(object):
         TP:  float, Take profit price. If not defined then it will calculated by using the RR
         SR:  float, Support/Resistance area
         RR:  float, Risk Ratio
-        pips:  Number of pips of profit/loss. This number will be negative if outcome was failure
+        pips:  Number of pips of profit/loss. This number will be negative if
+               outcome was failure
         clist: CandleList object used to represent this trade"""
 
     def __init__(self, init_clist: bool = False, **kwargs) -> None:
@@ -43,12 +46,15 @@ class Trade(object):
                         'outcome', 'entry', 'exit', 'entry_time', 'type',
                         'SL', 'TP', 'SR', 'RR', 'pips', 'clist', 'strat',
                         'tot_SR', 'rank_selSR']
-        self.__dict__.update((k, v) for k, v in kwargs.items() if k in allowed_keys)
+        self.__dict__.update((k, v) for k, v in kwargs.items() 
+                             if k in allowed_keys)
         if init_clist and not hasattr(self, 'clist'):
             self.init_clist()
-        self.__dict__.update({'start': try_parsing_date(self.__dict__['start'])})
+        self.__dict__.update({'start':
+                              try_parsing_date(self.__dict__['start'])})
         if hasattr(self, 'end') and isinstance(self.end, datetime):
-            self.__dict__.update({'end': try_parsing_date(self.__dict__['end'])})
+            self.__dict__.update({'end':
+                                  try_parsing_date(self.__dict__['end'])})
         self._validate_params()
         self.SLdiff = self.get_SLdiff()
 
@@ -165,7 +171,7 @@ class Trade(object):
                         # market closed
                         count -= 1
                         continue
-                except:
+                except BaseException:
                     count -= 1
                     continue
             if self.entered is False:
@@ -176,7 +182,7 @@ class Trade(object):
                         entry_time = entry.get_cross_time(candle=cl,
                                                           granularity=trade_params.granularity)
                         self.entry_time = entry_time.isoformat()
-                    except:
+                    except BaseException:
                         self.entry_time = cl.time.isoformat()
             if self.entered is True:
                 if trade_params.strat == 'exit_early' and \
@@ -196,7 +202,7 @@ class Trade(object):
                     try:
                         self.end = SL.get_cross_time(candle=cl,
                                                      granularity=trade_params.granularity)
-                    except:
+                    except BaseException:
                         self.end = cl.time
                     break
                 # check if success
@@ -211,7 +217,7 @@ class Trade(object):
                     try:
                         self.end = TP.get_cross_time(candle=cl,
                                                      granularity=trade_params.granularity)
-                    except:
+                    except BaseException:
                         self.end = cl.time
                     break
                 if count >= trade_params.numperiods:

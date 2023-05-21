@@ -1,6 +1,7 @@
 import logging
 import pickle
 import re
+import pdb
 
 from datetime import datetime, timedelta
 from typing import List
@@ -58,8 +59,9 @@ class TradeBot(object):
             if m1:
                 nhours = int(self.timeframe.replace('H', ''))
                 self.delta = timedelta(hours=nhours)
-
         if not clist or clist.candles[-1].time < self.end:
+            logging.warning(f"Tradebot end:{self.end} is greater than "
+                            f"clist end: {clist.candles[-1].time}")
             self.init_clist()
     
     def init_clist(self) -> None:
