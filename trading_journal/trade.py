@@ -239,7 +239,7 @@ class Trade(object):
         t_logger.info("Done run_trade")
 
     def get_SLdiff(self) -> float:
-        """Function to calculate the difference in number of pips between the 
+        """Function to calculate the difference in number of pips between the
         entry and the SL prices.
 
         Returns:
