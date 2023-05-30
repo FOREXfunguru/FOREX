@@ -67,7 +67,7 @@ class pivots_params:
     diff_th: int = 50
     # Boolean, if true then produce png files for in_area pivots and
     # rsi_bounces
-    plot: bool = True
+    plot: bool = False
     # Bool. run merge_pre's function from Pivot class
     runmerge_pre: bool = True
     # Bool. run merge_aft's function from Pivot class
