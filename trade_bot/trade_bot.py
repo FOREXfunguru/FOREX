@@ -24,7 +24,8 @@ tb_logger.setLevel(logging.INFO)
 
 @dataclass
 class preTrade:
-    """Container for a Candle falling on a HArea, which can potentially become a trade"""
+    """Container for a Candle falling on a HArea, which can potentially become
+    a trade"""
     sel_ix: int
     SRlst: HAreaList
     candle: Candle
@@ -38,7 +39,8 @@ class TradeBot(object):
         start: datetime that this Bot will start operating. i.e. 20-03-2017 08:20:00s
         end: datetime that this Bot will end operating. i.e. 20-03-2020 08:20:00s
         pair: Currency pair used in the trade. i.e. AUD_USD
-        timeframe: Timeframe used for the trade. Possible values are: D,H12,H10,H8,H4,H1
+        timeframe: Timeframe used for the trade. Possible values are:
+                   D,H12,H10,H8,H4,H1
         clist: CandleList object used to represent this trade
     '''
     def __init__(self, start: datetime, end: datetime, pair: str,
@@ -117,8 +119,8 @@ class TradeBot(object):
                 else:
                     SRlst = calc_SR(sub_pvtlst)
                     res = SRlst.print()
-                tb_logger.info("Identified HAreaList for time {0}:".format(startO.isoformat()))
-                tb_logger.info("{0}".format(res))
+                tb_logger.info(f"Identified HAreaList for time:{startO.isoformat()}")
+                tb_logger.info(f"{res}")
                 loop = 0
 
             # Fetch candle for current datetime. this is the current candle 
@@ -140,7 +142,7 @@ class TradeBot(object):
                                " Skipping...")
                 startO = startO + self.delta
                 continue
-            
+         
             # check if there is any HArea overlapping with c_candle
             HAreaSel, sel_ix = SRlst.onArea(candle=c_candle)
             if HAreaSel is not None:
@@ -172,7 +174,7 @@ class TradeBot(object):
 
             startO = startO+self.delta
             loop += 1
-  
+
         if pretrades:
             with open(f"{prefix}.pckl", 'wb') as f:
                 pickle.dump(pretrades, f)

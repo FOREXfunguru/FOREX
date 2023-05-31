@@ -52,17 +52,20 @@ class Pivot(object):
 
         extension_needed = True
         while extension_needed is True:
-            # reduce start of self.pre by one candle in order to retrieve the previous segment
-            # by its end
-            start_dt = self.pre.start() - periodToDelta(1, self.candle.granularity)
+            # reduce start of self.pre by one candle in order to retrieve
+            # the previous segment by its end
+            start_dt = self.pre.start() - periodToDelta(1,
+                                                        self.candle.granularity)
 
             s = slist.fetch_by_end(start_dt)
             if s is None:
-                # This is not necessarily an error, it could be that there is not the required Segment in slist
-                # because it is out of the time period
-                p_logger.info("No Segment could be retrieved for pivot falling in time {0} "
-                              "by using s.fetch_by_end and date: {1} in function 'merge_pre'".format(self.candle.time,
-                                                                                                     start_dt))
+                # This is not necessarily an error, it could be that there is
+                # not the required Segment in slist because it is out of the
+                # time period
+                p_logger.debug("No Segment could be retrieved for pivot "
+                               f"falling in time {self.candle.time} "
+                               f"by using s.fetch_by_end and date: {start_dt} "
+                               "in function 'merge_pre'")
                 extension_needed = False
                 continue
             if self.pre.type == s.type:
@@ -83,17 +86,17 @@ class Pivot(object):
                     p_logger.debug("Skipping merge because of %_diff")
                     extension_needed = False
             else:
-                # exit the while loop, as type of previous (s) and self.pre are different
-                # and s.count is greater than n_candles
+                # exit the while loop, as type of previous (s) and self.pre 
+                # are different and s.count is greater than n_candles
                 extension_needed = False
 
-        p_logger.debug("self.pre start after-merge: {0}".format(self.pre.start()))
+        p_logger.debug(f"self.pre start after-merge: {self.pre.start()}")
         p_logger.debug("Done merge_pre")
 
     def merge_aft(self, slist, n_candles: int, diff_th: int) -> None:
-        """Function to merge 'aft' Segment. It will merge self.aft with next segment
-        if self.aft and next segment are of the same type (1 or -1) or count of
-        next segment is less than 'n_candles'
+        """Function to merge 'aft' Segment. It will merge self.aft with
+        next segment if self.aft and next segment are of the same type
+        (1 or -1) or count of next segment is less than 'n_candles'
 
         Arguments:
             slist : SegmentList object
@@ -102,8 +105,8 @@ class Pivot(object):
             diff_th : % of diff in pips threshold
         """
         p_logger.debug("Running merge_aft")
-        p_logger.debug("Analysis of pivot {0}".format(self.candle.time))
-        p_logger.debug("self.aft end before the merge: {0}".format(self.aft.end()))
+        p_logger.debug(f"Analysis of pivot {self.candle.time}")
+        p_logger.debug(f"self.aft end before the merge: {self.aft.end()}")
 
         extension_needed = True
         while extension_needed is True:
@@ -117,9 +120,9 @@ class Pivot(object):
                 # This is not necessarily an error, it could be that there is
                 # not the required Segment in slist
                 # because it is out of the time period
-                p_logger.info(f"No Segment could be retrieved for pivot falling in" 
-                              f"time {self.candle.time} by using s.fetch_by_"
-                              f"start and date: {start_dt} in function 'merge_aft'")
+                p_logger.debug("No Segment could be retrieved for pivot falling in" 
+                               f"time {self.candle.time} by using s.fetch_by_"
+                               f"start and date: {start_dt} in function 'merge_aft'")
                 extension_needed = False
                 continue
             if self.aft.type == s.type:
@@ -291,7 +294,7 @@ class PivotList(object):
 
         segs = []  # this list will hold the Segment objects
         plist_o = []  # this list will hold the Pivot objects
-        pre_s = None # Variable that will hold pre Segments
+        pre_s = None  # Variable that will hold pre Segments
         ixs = list(np.where(np.logical_or(pivots == 1, pivots == -1))[0])
         tuples_lst = [(ixs[i], ixs[i+1]) for i in range(len(ixs)-1)]
         for pair in tuples_lst:
@@ -403,7 +406,8 @@ class PivotList(object):
         for p in self.pivots:
             # always consider the last pivot in bounces.plist as in_area as
             # this part of the entry setup
-            if self.pivots[-1].candle.time == p.candle.time and last_pivot is True:
+            if self.pivots[-1].candle.time == p.candle.time and \
+                last_pivot is True:
                 adj_t = p.adjust_pivottime(clistO=self.clist)
                 newclist = self.clist.slice(start=self.clist.candles[0].time,
                                             end=adj_t)
@@ -436,11 +440,13 @@ class PivotList(object):
                                 p_seen = True
                         if p_seen is False:
                             p_logger.debug(f"Pivot {p.candle.time} identified in area")
-                            if pivots_params.runmerge_pre is True and p.pre is not None:
+                            if pivots_params.runmerge_pre is True and \
+                                    p.pre is not None:
                                 p.merge_pre(slist=self.slist,
                                             n_candles=pivots_params.n_candles,
                                             diff_th=pivots_params.diff_th)
-                            if pivots_params.runmerge_aft is True and p.aft is not None:
+                            if pivots_params.runmerge_aft is True and \
+                                    p.aft is not None:
                                 p.merge_aft(slist=self.slist,
                                             n_candles=pivots_params.n_candles,
                                             diff_th=pivots_params.diff_th)
@@ -462,7 +468,7 @@ class PivotList(object):
         for p in reversed(self.pivots):
             adj_t = p.adjust_pivottime(clistO=self.clist)
             start = self.pivots[0].candle.time
-            newclist = self.clist.slice(start= start,
+            newclist = self.clist.slice(start=start,
                                         end=adj_t)
             newp = PivotList(clist=newclist).pivots[-1]
             newp.merge_pre(slist=self.slist,
@@ -504,11 +510,13 @@ class PivotList(object):
             # prepare the plot for 'pre' segment
             if p.pre is not None:
                 ix_pre_s = datetimes.index(p.pre.start())
-                plt.scatter(datetimes[ix_pre_s], prices[ix_pre_s], s=200, c='green', marker='v')
+                plt.scatter(datetimes[ix_pre_s], prices[ix_pre_s],
+                            s=200, c='green', marker='v')
             # prepare the plot for 'aft' segment
             if p.aft is not None:
                 ix_aft_e = datetimes.index(p.aft.end())
-                plt.scatter(datetimes[ix_aft_e], prices[ix_aft_e], s=200, c='red', marker='v')
+                plt.scatter(datetimes[ix_aft_e], prices[ix_aft_e],
+                            s=200, c='red', marker='v')
             # plot
             plt.scatter(datetimes[ix], prices[ix], s=50)
 
@@ -531,11 +539,14 @@ class PivotList(object):
         f.write("#pre.start|p.candle['time']|p.aft.end\n")
         for p in self.pivots:
             if p.pre is None and p.aft is not None:
-                f.write("{0}|{1}|{2}\n".format("n.a.", p.candle.time, p.aft.end()))
+                f.write("{0}|{1}|{2}\n".format("n.a.",
+                                               p.candle.time, p.aft.end()))
             elif p.pre is not None and p.aft is not None:
-                f.write("{0}|{1}|{2}\n".format(p.pre.start(), p.candle.time, p.aft.end()))
+                f.write("{0}|{1}|{2}\n".format(p.pre.start(),
+                                               p.candle.time, p.aft.end()))
             elif p.pre is not None and p.aft is None:
-                f.write("{0}|{1}|{2}\n".format(p.pre.start(), p.candle.time, "n.a."))
+                f.write("{0}|{1}|{2}\n".format(p.pre.start(),
+                                               p.candle.time, "n.a."))
         f.close
 
         return outfile
