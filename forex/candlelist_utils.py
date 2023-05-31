@@ -4,13 +4,13 @@ from utils import *
 
 import logging
 import pandas as pd
-import pdb
 
 # create logger
 cl_logger = logging.getLogger(__name__)
 cl_logger.setLevel(logging.INFO)
 
-def calc_SR(pvLO, outfile: str):
+
+def calc_SR(pvLO, outfile: str = None):
     """Function to calculate S/R lines.
 
     Args:
@@ -102,17 +102,16 @@ def calc_SR(pvLO, outfile: str):
     halistObj = HAreaList(halist=halist)
 
     # Plot the HAreaList
-    dt_str = pvLO.clist.candles[-1].time.strftime("%d_%m_%Y_%H_%M")
-    print(dt_str)
-
-    if pivots_params.plot is True:
-        halistObj.plot(clO= pvLO.clist, outfile=outfile)
+    if outfile:
+        halistObj.plot(clO=pvLO.clist,
+                       outfile=outfile)
 
     cl_logger.info("Run done")
 
     return halistObj
 
-def calc_atr(clO)->float:
+
+def calc_atr(clO) -> float:
     '''Function to calculate the ATR (average timeframe rate)
     This is the average candle variation in pips for the desired
     timeframe. The variation is measured as the abs diff
@@ -122,12 +121,13 @@ def calc_atr(clO)->float:
         clO: CandleList object
              Used for calculation
     '''
-    length, tot_diff_in_pips  = 0,0
+    length, tot_diff_in_pips = 0, 0
     for c in clO.candles:
         diff = abs(c.h-c.l)
         tot_diff_in_pips = tot_diff_in_pips + float(calculate_pips(clO.instrument, diff))
         length += 1
     return round(tot_diff_in_pips/length, 3)
+
 
 def calc_diff(df_loc, increment_price: float):
     '''Function to select the best S/R for areas that

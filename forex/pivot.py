@@ -2,7 +2,7 @@ import logging
 import datetime
 import matplotlib.pyplot as plt
 
-from utils import *
+from utils import periodToDelta, substract_pips2price, add_pips2price
 from params import gparams, pivots_params
 from forex.segment import SegmentList, Segment
 from zigzag import *
@@ -20,8 +20,10 @@ class Pivot(object):
     Class variables:
         type : Type of pivot. It can be 1 or -1
         candle : Candle object ovrerlapping this pivot
-        pre : Segment object before this pivot
-        aft : Segment object after this pivot
+        pre : Segment object before this pivot. When type=-1, pre.type will
+              be 1. When type=1, pre.type will be -1
+        aft : Segment object after this pivot. When type=-1, aft.type will
+              be -1. When type=1, aft.type will be 1
         score : Result of adding the number
                 of candles of the 'pre' and 'aft' segment (if defined)
     """
@@ -68,8 +70,8 @@ class Pivot(object):
                 p_logger.debug("Merge because of same Segment type")
                 self.pre.prepend(s)
             elif self.pre.type != s.type and len(s.clist) < n_candles:
-                # merge if types of previous segment and self.pre are different but
-                # len(s.clist) is less than n_candles
+                # merge if types of previous segment and self.pre are
+                # different but len(s.clist) is less than n_candles
                 # calculate the % that s.diff is with respect to self.pre.diff
                 perc_diff = s.diff*100/self.pre.diff
                 # do not merge if perc_diff that s represents with respect
@@ -106,15 +108,18 @@ class Pivot(object):
         extension_needed = True
         while extension_needed is True:
             # increase end of self.aft by one candle
-            start_dt = self.aft.end()+periodToDelta(1, self.candle.granularity)
+            start_dt = self.aft.end()+periodToDelta(1,
+                                                    self.candle.granularity)
 
             # fetch next segment
             s = slist.fetch_by_start(start_dt)
             if s is None:
-                # This is not necessarily an error, it could be that there is not the required Segment in slist
+                # This is not necessarily an error, it could be that there is
+                # not the required Segment in slist
                 # because it is out of the time period
-                p_logger.info("No Segment could be retrieved for pivot falling in time {0} by using s.fetch_by_"
-                              "start and date: {1} in function 'merge_aft'. ".format(self.candle.time, start_dt))
+                p_logger.info(f"No Segment could be retrieved for pivot falling in" 
+                              f"time {self.candle.time} by using s.fetch_by_"
+                              f"start and date: {start_dt} in function 'merge_aft'")
                 extension_needed = False
                 continue
             if self.aft.type == s.type:
@@ -179,8 +184,9 @@ class Pivot(object):
         Returns:
             New adjusted datetime
         """
-        clist = clistO.candles[:-1] # reduce index by 1 so start candle+1 is not included
-        new_pc = pre_colour = None
+        clist = clistO.candles # reduce index by 1 so start candle+1
+                               # is not included
+        new_pc, pre_colour = None, None
         it = True
         ix = -1
         while it is True:
@@ -190,15 +196,28 @@ class Pivot(object):
                 new_pc = cObj
                 continue
             if pre_colour is None:
+                if cObj.colour == 'green' and self.type == -1:
+                    new_pc = cObj
+                    it = False
+                elif cObj.colour == 'red' and self.type == 1:
+                    new_pc = cObj
+                    it = False
                 pre_colour = cObj.colour
                 ix -= 1
-            elif cObj.colour == pre_colour:
-                ix -= 1
-                continue
-            else:
-                # change in candle colour
-                new_pc = cObj
-                it = False
+            elif self.type == -1:
+                if cObj.colour == 'red' and cObj.colour == pre_colour:
+                    ix -= 1
+                    continue
+                else:
+                    new_pc = cObj
+                    it = False
+            elif self.type == 1:
+                if cObj.colour == 'green' and cObj.colour == pre_colour:
+                    ix -= 1
+                    continue
+                else:
+                    new_pc = cObj
+                    it = False
         return new_pc.time
 
     def __repr__(self):
@@ -220,7 +239,8 @@ class PivotList(object):
         pivots: List with Pivot objects
         slist: SegmentList object"""
 
-    def __init__(self, clist, pivots=None, slist=None, th_bounces:float= None) -> None:
+    def __init__(self, clist, pivots=None, slist=None,
+                 th_bounces: float = None) -> None:
         self.clist = clist
         if pivots is not None:
             assert slist is not None, "Error!. SegmentList needs to be provided"
@@ -230,31 +250,30 @@ class PivotList(object):
             if th_bounces:
                 po_l, segs = self._get_pivotlist(th_bounces)
             else:
-                
                 po_l, segs = self._get_pivotlist(pivots_params.th_bounces)
             self.pivots = po_l
             self.slist = SegmentList(slist=segs,
                                      instrument=clist.instrument)
-    
+
     def __iter__(self):
         self.pos = 0
         return self
-    
+
     def __next__(self):
-        if(self.pos < len(self.pivots)):
+        if (self.pos < len(self.pivots)):
             self.pos += 1
             return self.pivots[self.pos - 1]
         else:
             raise StopIteration
-    
+ 
     def __getitem__(self, key):
         return self.pivots[key]
-    
+ 
     def __len__(self):
         return len(self.pivots)
 
     def _get_pivotlist(self, th_bounces: float):
-        """Function to obtain a pivotlist object containing pivots identified 
+        """Function to obtain a pivotlist object containing pivots identified
         using the Zigzag indicator.
 
         Arguments:
@@ -311,13 +330,13 @@ class PivotList(object):
         plist_o.append(l_pivot)
         return plist_o, segs
 
-    def fetch_by_time(self, d: datetime)->Pivot:
+    def fetch_by_time(self, d: datetime) -> Pivot:
         '''Function to fetch a Pivot object using a datetime'''
         p = next((p for p in self.pivots if p.candle.time == d), None)
         return p
 
-    def fetch_by_type(self, type: int):
-        '''Function to get all pivots from a certain type
+    def fetch_by_type(self, type: int) -> 'PivotList':
+        '''Function to get all pivots from a certain type.
 
         Arguments:
             type : 1 or -1
@@ -355,7 +374,7 @@ class PivotList(object):
         avg = mean(p.score for p in self.pivots)
         return round(avg, 1)
 
-    def inarea_pivots(self, price: float, last_pivot: bool=True):
+    def inarea_pivots(self, price: float, last_pivot: bool = True):
         '''
         Function to identify the candles for which price is in the area defined
         by SR+HRpips and SR-HRpips
@@ -377,14 +396,17 @@ class PivotList(object):
                                price,
                                pivots_params.hr_pips)
 
-        p_logger.debug("SR U-limit: {0}; L-limit: {1}".format(round(upper, 4), round(lower, 4)))
+        p_logger.debug("SR U-limit: {0}; L-limit: {1}".format(round(upper, 4),
+                                                              round(lower, 4)))
 
         pl = []
         for p in self.pivots:
-            # always consider the last pivot in bounces.plist as in_area as this part of the entry setup
+            # always consider the last pivot in bounces.plist as in_area as
+            # this part of the entry setup
             if self.pivots[-1].candle.time == p.candle.time and last_pivot is True:
                 adj_t = p.adjust_pivottime(clistO=self.clist)
-                newclist = self.clist.slice(start=self.clist.candles[0].time, end=adj_t)
+                newclist = self.clist.slice(start=self.clist.candles[0].time,
+                                            end=adj_t)
                 newpl = PivotList(clist=newclist)
                 newp = newpl._get_pivotlist(pivots_params.th_bounces)[0][-1]
                 if pivots_params.runmerge_pre is True and newp.pre is not None:
@@ -404,7 +426,7 @@ class PivotList(object):
                     part_list.append('l')
 
                 for part in part_list:
-                    price = getattr(p.candle,part)
+                    price = getattr(p.candle, part)
                     # only consider pivots in the area
                     if price >= lower and price <= upper:
                         # check if this pivot already exists in pl
@@ -413,7 +435,7 @@ class PivotList(object):
                             if op.candle.time == p.candle.time:
                                 p_seen = True
                         if p_seen is False:
-                            p_logger.debug("Pivot {0} identified in area".format(p.candle.time))
+                            p_logger.debug(f"Pivot {p.candle.time} identified in area")
                             if pivots_params.runmerge_pre is True and p.pre is not None:
                                 p.merge_pre(slist=self.slist,
                                             n_candles=pivots_params.n_candles,

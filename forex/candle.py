@@ -296,16 +296,17 @@ class CandleList(object):
                 elif c.rsi < 30 and adj is True:
                     length += 1
                 elif c.rsi > 30:
-                    if adj is True: 
+                    if adj is True:
                         lengths.append(length)
                     adj = False
 
         if adj is True and length > 0:
             lengths.append(length)
 
-        if num_times != len(lengths): raise Exception("Number of times"
-                                                      "and lengths do not"
-                                                      "match")
+        if num_times != len(lengths):
+            raise Exception("Number of times"
+                            "and lengths do not"
+                            "match")
         return {'number': num_times,
                 'lengths': lengths}
 

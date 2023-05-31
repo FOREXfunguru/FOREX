@@ -1,14 +1,13 @@
 import logging
 import pickle
 import re
-import pdb
 
 from datetime import datetime, timedelta
 from typing import List
 from api.oanda.connect import Connect
 from forex.candle import CandleList, Candle
 from forex.harea import HAreaList
-from params import gparams, tradebot_params
+from params import gparams, tradebot_params, pivots_params
 from forex.pivot import PivotList
 from forex.candlelist_utils import calc_SR
 from trading_journal.trade import Trade
@@ -20,7 +19,7 @@ from utils import try_parsing_date, periodToDelta
 
 # create logger
 tb_logger = logging.getLogger(__name__)
-tb_logger.setLevel(logging.DEBUG)
+tb_logger.setLevel(logging.INFO)
 
 
 @dataclass
@@ -98,23 +97,26 @@ class TradeBot(object):
         startO = self.start
         loop = 0
         while startO <= self.end:
-            tb_logger.info("Trade bot - analyzing candle: {0}"
-                           .format(startO.isoformat()))
+            tb_logger.debug(f"Trade bot - analyzing candle: {startO.isoformat()}")
             # Get now a CandleList from 'initc_date' to 'self.start'
             #  which is the total time interval for this TradeBot
             initc_date = startO-self.delta_period
-            subclO = self.clist.slice(initc_date, startO)
-            sub_pvtlst = PivotList(clist=subclO)
-            dt_str = startO.strftime("%d_%m_%Y_%H_%M")
             if loop == 0 or loop >= tradebot_params.period:
-                outfile_txt = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.txt"
-                outfile_png = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.png"
-                SRlst = calc_SR(sub_pvtlst, outfile=outfile_png)
-                f = open(outfile_txt, 'w')
-                res = SRlst.print()
-                # print SR report to file
-                f.write(res+"\n")
-                f.close()
+                subclO = self.clist.slice(initc_date, startO)
+                sub_pvtlst = PivotList(clist=subclO)
+                if pivots_params.plot is True:
+                    dt_str = startO.strftime("%d_%m_%Y_%H_%M")
+                    outfile_png = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.png"
+                    # print SR report to file
+                    outfile_txt = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.txt"
+                    SRlst = calc_SR(sub_pvtlst, outfile=outfile_png)
+                    res = SRlst.print()
+                    f = open(outfile_txt, 'w')
+                    f.write(res+"\n")
+                    f.close()
+                else:
+                    SRlst = calc_SR(sub_pvtlst)
+                    res = SRlst.print()
                 tb_logger.info("Identified HAreaList for time {0}:".format(startO.isoformat()))
                 tb_logger.info("{0}".format(res))
                 loop = 0
@@ -170,6 +172,7 @@ class TradeBot(object):
 
             startO = startO+self.delta
             loop += 1
+  
         if pretrades:
             with open(f"{prefix}.pckl", 'wb') as f:
                 pickle.dump(pretrades, f)
