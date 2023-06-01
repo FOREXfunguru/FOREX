@@ -1,16 +1,16 @@
 from params import tradebot_params, clist_params, pivots_params
 from forex.harea import HArea, HAreaList
-from utils import *
+from utils import add_pips2price, substract_pips2price, calculate_pips
 
 import logging
 import pandas as pd
-import pdb
 
 # create logger
 cl_logger = logging.getLogger(__name__)
 cl_logger.setLevel(logging.INFO)
 
-def calc_SR(pvLO, outfile: str):
+
+def calc_SR(pvLO, outfile: str = None):
     """Function to calculate S/R lines.
 
     Args:
@@ -21,12 +21,15 @@ def calc_SR(pvLO, outfile: str):
     Returns:
         HAreaList object
     """
-    ## now calculate the price range for calculating the S/R , add a number of pips to max,min to be sure that we
-    # also detect the extreme pivots
-    ul = add_pips2price(pvLO.clist.instrument, pvLO.clist.get_highest(), tradebot_params.add_pips)
-    ll = substract_pips2price(pvLO.clist.instrument, pvLO.clist.get_lowest(), tradebot_params.add_pips)
+    # now calculate the price range for calculating the S/R , add a
+    # number of pips to max,min to be sure that we also detect the
+    # extreme pivots
+    ul = add_pips2price(pvLO.clist.instrument, pvLO.clist.get_highest(),
+                        tradebot_params.add_pips)
+    ll = substract_pips2price(pvLO.clist.instrument, pvLO.clist.get_lowest(),
+                              tradebot_params.add_pips)
 
-    cl_logger.debug("Running calc_SR for estimated range: {0}-{1}".format(ll, ul))
+    cl_logger.debug(f"Running calc_SR for estimated range: {ll}-{ul}")
 
     prices, bounces, score_per_bounce, tot_score = ([] for i in range(4))
 
@@ -65,7 +68,7 @@ def calc_SR(pvLO, outfile: str):
 
     df = pd.DataFrame(data=data)
 
-    ### establishing bounces threshold as the args.th quantile
+    # Establishing bounces threshold as the args.th quantile
     # selecting only rows with at least one pivot and tot_score>0,
     # so threshold selection considers only these rows
     # and selection is not biased when range of prices is wide
@@ -102,17 +105,16 @@ def calc_SR(pvLO, outfile: str):
     halistObj = HAreaList(halist=halist)
 
     # Plot the HAreaList
-    dt_str = pvLO.clist.candles[-1].time.strftime("%d_%m_%Y_%H_%M")
-    print(dt_str)
-
-    if pivots_params.plot is True:
-        halistObj.plot(clO= pvLO.clist, outfile=outfile)
+    if outfile:
+        halistObj.plot(clO=pvLO.clist,
+                       outfile=outfile)
 
     cl_logger.info("Run done")
 
     return halistObj
 
-def calc_atr(clO)->float:
+
+def calc_atr(clO) -> float:
     '''Function to calculate the ATR (average timeframe rate)
     This is the average candle variation in pips for the desired
     timeframe. The variation is measured as the abs diff
@@ -122,12 +124,14 @@ def calc_atr(clO)->float:
         clO: CandleList object
              Used for calculation
     '''
-    length, tot_diff_in_pips  = 0,0
+    length, tot_diff_in_pips = 0, 0
     for c in clO.candles:
         diff = abs(c.h-c.l)
-        tot_diff_in_pips = tot_diff_in_pips + float(calculate_pips(clO.instrument, diff))
+        tot_diff_in_pips = tot_diff_in_pips + \
+            float(calculate_pips(clO.instrument, diff))
         length += 1
     return round(tot_diff_in_pips/length, 3)
+
 
 def calc_diff(df_loc, increment_price: float):
     '''Function to select the best S/R for areas that
@@ -153,25 +157,30 @@ def calc_diff(df_loc, increment_price: float):
             diff = round(float(row['price']) - prev_price, 4)
             if diff < clist_params.times * increment_price:
                 tog_seen = True
-                if row['bounces'] <= prev_row['bounces'] and row['tot_score'] < prev_row['tot_score']:
+                if row['bounces'] <= prev_row['bounces'] and \
+                        row['tot_score'] < prev_row['tot_score']:
                     # remove current row
                     df_loc.drop(index, inplace=True)
-                elif row['bounces'] >= prev_row['bounces'] and row['tot_score'] > prev_row['tot_score']:
+                elif row['bounces'] >= prev_row['bounces'] and \
+                        row['tot_score'] > prev_row['tot_score']:
                     # remove previous row
                     df_loc.drop(prev_ix, inplace=True)
                     prev_price = float(row['price'])
                     prev_row = row
                     prev_ix = index
-                elif row['bounces'] <= prev_row['bounces'] and row['tot_score'] > prev_row['tot_score']:
+                elif row['bounces'] <= prev_row['bounces'] and \
+                        row['tot_score'] > prev_row['tot_score']:
                     # remove previous row as scores in current takes precedence
                     df_loc.drop(prev_ix, inplace=True)
                     prev_price = float(row['price'])
                     prev_row = row
                     prev_ix = index
-                elif row['bounces'] >= prev_row['bounces'] and row['tot_score'] < prev_row['tot_score']:
+                elif row['bounces'] >= prev_row['bounces'] and \
+                        row['tot_score'] < prev_row['tot_score']:
                     # remove current row as scores in current takes precedence
                     df_loc.drop(index, inplace=True)
-                elif row['bounces'] == prev_row['bounces'] and row['tot_score'] == prev_row['tot_score']:
+                elif row['bounces'] == prev_row['bounces'] and \
+                        row['tot_score'] == prev_row['tot_score']:
                     # exactly same quality for row and prev_row
                     # remove current arbitrarily
                     df_loc.drop(index, inplace=True)

@@ -57,6 +57,7 @@ class Trade(object):
                                   try_parsing_date(self.__dict__['end'])})
         self._validate_params()
         self.SLdiff = self.get_SLdiff()
+        self.entered = False
 
     def _validate_params(self):
         if not hasattr(self, 'TP') and not hasattr(self, 'RR'):

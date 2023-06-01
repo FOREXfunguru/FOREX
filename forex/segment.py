@@ -1,4 +1,4 @@
-from utils import *
+from utils import calculate_pips
 import matplotlib
 import datetime
 import pickle
@@ -7,15 +7,17 @@ matplotlib.use('PS')
 
 
 class Segment(object):
-    """Class containing a Segment object identified linking the pivots in a the PivotList
+    """Class containing a Segment object identified linking the pivots in the
+    PivotList
 
     Class variables
     ---------------
-    type : 1 or -1
+    type : 1 or -1. 1 when the segment goes upwards and -1 downwards
     clist : List of dictionaries, in which each of the dicts is a candle
-    instrument : Pair"""
+    instrument : Pair
+    """
 
-    def __init__(self, type: int, clist: list, instrument: str):
+    def __init__(self, type: int, clist: list[dict], instrument: str):
         self.type = type
         self.clist = clist
         self.instrument = instrument
@@ -53,6 +55,7 @@ class Segment(object):
         '''
         pickle_in = open(infile, "rb")
         inseg = pickle.load(pickle_in)
+        pickle_in.close()
 
         return inseg
 
@@ -87,16 +90,19 @@ class Segment(object):
         '''
         diff = abs(self.clist[-1].c - self.clist[0].c)
         diff_pips = float(calculate_pips(self.instrument, diff))
-        if diff_pips ==0:
-            diff_pips = 1.0 
+        if diff_pips == 0:
+            diff_pips = 1.0
         return diff_pips
 
-    def is_short(self, min_n_candles: int, diff_in_pips: int)->bool:
-        '''Function to check if segment is short (self.diff < pip_th or self.count < candle_th)
+    def is_short(self, min_n_candles: int, diff_in_pips: int) -> bool:
+        '''Function to check if segment is short (self.diff < pip_th or
+        self.count < candle_th)
 
         Arguments:
-            min_n_candles: Minimum number of candles for this segment to be considered short
-            diff_in_pips: Minimum number of pips for this segment to be considered short
+            min_n_candles: Minimum number of candles for this segment to be
+                           considered short
+            diff_in_pips: Minimum number of pips for this segment to be
+                          considered short
 
         Returns:
             True if is short
@@ -221,6 +227,7 @@ class SegmentList(object):
         '''
         pickle_in = open(infile, "rb")
         inseglst = pickle.load(pickle_in)
+        pickle_in.close()
 
         return inseglst
 

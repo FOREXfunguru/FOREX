@@ -1,7 +1,7 @@
 # Collection of utilities used by the Trade object
 import logging
-import datetime
 
+from datetime import datetime
 from utils import substract_pips2price, add_pips2price
 from params import counter_params, tradebot_params, trade_params
 from forex.pivot import PivotList
@@ -48,7 +48,8 @@ def get_lasttime(trade: Trade, pad: int = 0):
             new_SR = add_pips2price(trade.clist.instrument,
                                     trade.SR,
                                     pad)
-    newcl = trade.clist.slice(start=trade.clist.candles[0].time, end=trade.start)
+    newcl = trade.clist.slice(start=trade.clist.candles[0].time, 
+                              end=trade.start)
     return newcl.get_lasttime(new_SR, type=trade.type)
 
 
@@ -96,16 +97,16 @@ def calc_trade_session(trade) -> str:
     """
     if not hasattr(trade, 'entry_time'):
         return "n.a."
-    dtime = dt.datetime.strptime(trade.entry_time, '%Y-%m-%dT%H:%M:%S')
+    dtime = datetime.datetime.strptime(trade.entry_time, '%Y-%m-%dT%H:%M:%S')
     # define the different sessions time boundaries
-    a_u2 = dt.time(int(7), int(0), int(0))
-    a_l2 = dt.time(int(0), int(0), int(0))
-    a_u1 = dt.time(int(23), int(59), int(59))
-    a_l1 = dt.time(int(23), int(0), int(0))
-    e_u = dt.time(int(15), int(0), int(0))
-    e_l = dt.time(int(7), int(0), int(0))
-    na_u = dt.time(int(19), int(0), int(0))
-    na_l = dt.time(int(12), int(0), int(0))
+    a_u2 = datetime.time(int(7), int(0), int(0))
+    a_l2 = datetime.time(int(0), int(0), int(0))
+    a_u1 = datetime.time(int(23), int(59), int(59))
+    a_l1 = datetime.time(int(23), int(0), int(0))
+    e_u = datetime.time(int(15), int(0), int(0))
+    e_l = datetime.time(int(7), int(0), int(0))
+    na_u = datetime.time(int(19), int(0), int(0))
+    na_l = datetime.time(int(12), int(0), int(0))
 
     sessions = []
     session_seen = False
@@ -269,7 +270,7 @@ def adjust_SL_nextSR(SRlst: HAreaList,
             SL = SRlst.halist[sel_ix+1].price
             if sel_ix-1 < 0:
                 TP = None
-    except:
+    except Exception:
         t_logger.warning(f"sel_ix error: {sel_ix}. Trying with adjust_SL_pips")
 
     return SL, TP
