@@ -67,7 +67,7 @@ class TradeBot(object):
                 logging.warning(f"Tradebot end:{self.end} is greater than "
                                 f"clist end: {clist.candles[-1].time}")
                 self.init_clist()
-    
+
     def init_clist(self) -> None:
         """Init clist for this TradeBot"""
 
@@ -80,7 +80,7 @@ class TradeBot(object):
 
         clO = conn.query(initc_date.isoformat(), self.end.isoformat())
         self.clist = clO
-        
+ 
     def scan(self, prefix: str = 'pretrades', discard_sat: bool = True) -> str:
         """This function will scan for candles on S/R areas.
         These candles will be written to a .csv file
@@ -123,7 +123,7 @@ class TradeBot(object):
                 tb_logger.info(f"{res}")
                 loop = 0
 
-            # Fetch candle for current datetime. this is the current candle 
+            # Fetch candle for current datetime. this is the current candle
             # that is being checked
             c_candle = self.clist[startO]
             if c_candle is None:
