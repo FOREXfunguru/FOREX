@@ -7,6 +7,7 @@ import pandas as pd
 import matplotlib
 import logging
 import pickle
+import pdb
 from datetime import timedelta, datetime
 from utils import try_parsing_date, calculate_pips
 from params import clist_params
@@ -24,17 +25,20 @@ cl_logger.setLevel(logging.INFO)
 
 class Candle(object):
     """Class representing a particular Candle"""
-    def __init__(self, **kwargs) -> None:
-        allowed_keys = ['complete', 'volume',
-                        'time', 'o', 'h', 'c', 'l']  # allowed arbitrary argsa
-        self.__dict__.update((k, v) for k, v in kwargs.items() if k in
-                             allowed_keys)
-        numeric = ['o', 'h', 'c', 'l']
-        self.__dict__.update((k, float(v)) for k, v in
-                             self.__dict__.items() if k in numeric)
-        if isinstance(self.__dict__['time'], str):
-            self.__dict__.update({'time': datetime.strptime(self.__dict__['time'],
-                                                            '%Y-%m-%dT%H:%M:%S')})
+    __slots__ = ["complete", "volume", "time", "o", "h", "c", 
+                 "l", "_colour", "_perc_body"]
+
+    def __init__(self, time: str, o: float, h: float,
+                 c: float, l: float) -> None:
+        self.o = float(o)
+        self.h = float(h)
+        self.c = float(c)
+        self.l = float(l)
+        self.time = time
+        
+        if isinstance(self.time, str):
+            self.time = datetime.strptime(self.time,
+                                          '%Y-%m-%dT%H:%M:%S')
         self._colour = self._set_colour()
         self._perc_body = self._calc_perc_body()
 
