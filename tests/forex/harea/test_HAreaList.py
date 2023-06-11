@@ -10,6 +10,7 @@ import logging
 instrument = 'AUD_USD'
 granularity = 'D'
 
+
 @pytest.fixture
 def hlist_factory():
     log = logging.getLogger('Test for hlist_factory for '

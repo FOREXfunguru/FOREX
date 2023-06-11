@@ -45,7 +45,8 @@ class TradeBot(object):
                    D,H12,H10,H8,H4,H1
         clist: CandleList object used to represent this trade
     '''
-    __slots__ = ['start', 'end', 'pair', 'timeframe', 'clist']
+    __slots__ = ['start', 'end', 'pair', 'timeframe', 'clist', 
+                 'delta_period', 'delta']
 
     def __init__(self, start: datetime, end: datetime, pair: str,
                  timeframe: str, clist: CandleList = None):
@@ -191,7 +192,7 @@ class TradeBot(object):
                 return f"{prefix}.pckl"
 
         tb_logger.info("Run done")
- 
+
     def prepare_trades(self, pretrades: str) -> List[Trade]:
         """This function unpickles the preTrade objects
         identified by self.scan() and will create a list of Trade objects

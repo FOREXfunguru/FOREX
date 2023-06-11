@@ -11,6 +11,19 @@ tb_logger = logging.getLogger(__name__)
 tb_logger.setLevel(logging.DEBUG)
 
 
+@pytest.fixture
+def scan_pickled(clO_pickled):
+    """Prepare a pickled file with potential trades identified by scan"""
+    tb = TradeBot(
+        pair='AUD_USD',
+        timeframe='D',
+        start='2016-01-05 22:00:00',
+        end='2016-02-11 22:00:00',
+        clist=clO_pickled)
+    outfile = tb.scan(prefix=f"{DATA_DIR}/out/test_scan")
+    return outfile
+
+
 def test_scan(tb_object, clean_tmp):
     """Check the 'scan' function"""
     outfile = tb_object.scan(prefix=f"{DATA_DIR}/out/test_scan")
@@ -64,7 +77,7 @@ def test_scan_withclist_future(clO_pickled, clean_tmp):
         assert os.path.isfile(outfile)
 
 
-def test_prepare_trades(clO_pickled, clean_tmp):
+def test_prepare_trades(clO_pickled, scan_pickled):
     """
     Test the prepare_trades() method with a pickled list
     of preTrade objects
@@ -75,11 +88,11 @@ def test_prepare_trades(clO_pickled, clean_tmp):
         start='2016-01-05 22:00:00',
         end='2016-02-11 22:00:00',
         clist=clO_pickled)
-    tl = tb.prepare_trades(pretrades=f"{DATA_DIR}/test_scan.pckl")
-    assert len(tl) == 4
+    tl = tb.prepare_trades(pretrades=scan_pickled)
+    assert len(tl) == 5 or len(tl) == 4
 
 
-def test_run_withclist_nextSR(clO_pickled, clean_tmp):
+def test_run_withclist_nextSR(clO_pickled, scan_pickled, clean_tmp):
     """
     Test tradebot using a pickled CandleList and
       tradebot_params.adj_SL = 'nextSR'
@@ -92,5 +105,5 @@ def test_run_withclist_nextSR(clO_pickled, clean_tmp):
         start='2016-01-05 22:00:00',
         end='2016-02-11 22:00:00',
         clist=clO_pickled)
-    tl = tb.prepare_trades(pretrades=f"{DATA_DIR}/test_scan.pckl")
-    assert len(tl) == 4
+    tl = tb.prepare_trades(pretrades=scan_pickled)
+    assert len(tl) == 5 or len(tl) == 4

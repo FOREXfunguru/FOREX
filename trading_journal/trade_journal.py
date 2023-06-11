@@ -24,7 +24,7 @@ class TradeJournal(object):
         worksheet: Name of the worksheet that will be used to create 
                    the object. i.e. 'trading_journal'
     '''
-    __slots__ = ['url', 'worksheet']
+    __slots__ = ['url', 'worksheet', 'df']
 
     def __init__(self, url: str, worksheet: str):
         self.url = url
