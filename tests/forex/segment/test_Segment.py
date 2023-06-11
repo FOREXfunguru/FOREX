@@ -10,11 +10,13 @@ def test_end(seg_pickled):
 
 
 def test_get_lowest(seg_pickled):
-    assert datetime.datetime(2011, 3, 15, 21, 0) == seg_pickled.get_lowest().time
+    assert datetime.datetime(2011, 3, 15, 21, 0) == \
+     seg_pickled.get_lowest().time
 
 
 def test_get_highest(seg_pickled):
-    assert datetime.datetime(2011, 2, 28, 22, 0) == seg_pickled.get_highest().time
+    assert datetime.datetime(2011, 2, 28, 22, 0) == \
+        seg_pickled.get_highest().time
 
 
 def test_append(seg_pickled, seg_pickledB):

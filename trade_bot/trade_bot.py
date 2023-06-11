@@ -36,13 +36,17 @@ class TradeBot(object):
     '''This class represents an automatic Trading bot.
 
     Class variables:
-        start: datetime that this Bot will start operating. i.e. 20-03-2017 08:20:00s
-        end: datetime that this Bot will end operating. i.e. 20-03-2020 08:20:00s
+        start: datetime that this Bot will start operating.
+               i.e. 20-03-2017 08:20:00s
+        end: datetime that this Bot will end operating.
+             i.e. 20-03-2020 08:20:00s
         pair: Currency pair used in the trade. i.e. AUD_USD
         timeframe: Timeframe used for the trade. Possible values are:
                    D,H12,H10,H8,H4,H1
         clist: CandleList object used to represent this trade
     '''
+    __slots__ = ['start', 'end', 'pair', 'timeframe', 'clist']
+
     def __init__(self, start: datetime, end: datetime, pair: str,
                  timeframe: str, clist: CandleList = None):
         self.start = try_parsing_date(start)
@@ -80,7 +84,7 @@ class TradeBot(object):
 
         clO = conn.query(initc_date.isoformat(), self.end.isoformat())
         self.clist = clO
- 
+
     def scan(self, prefix: str = 'pretrades', discard_sat: bool = True) -> str:
         """This function will scan for candles on S/R areas.
         These candles will be written to a .csv file
@@ -155,9 +159,15 @@ class TradeBot(object):
                         len(SRlst.halist) >= 3 and c_candle.height(pair=self.pair) \
                         < tradebot_params.max_height:
                     prepare = True
-                elif type == 'short' and c_candle.colour == 'red' and len(SRlst.halist) >= 3 and c_candle.height(pair=self.pair) < tradebot_params.max_height:
+                elif type == 'short' and c_candle.colour == 'red' and \
+                        len(SRlst.halist) >= 3 and \
+                        c_candle.height(pair=self.pair) < \
+                        tradebot_params.max_height:
                     prepare = True
-                elif type == 'long' and c_candle.colour == 'green' and len(SRlst.halist) >= 3 and c_candle.height(pair=self.pair) < tradebot_params.max_height:
+                elif type == 'long' and c_candle.colour == 'green' and \
+                        len(SRlst.halist) >= 3 and \
+                        c_candle.height(pair=self.pair) < \
+                        tradebot_params.max_height:
                     prepare = True
 
                 # discard if IC falls on a Saturday

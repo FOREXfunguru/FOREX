@@ -4,10 +4,8 @@ from forex.candle import Candle
 from utils import DATA_DIR
 
 import pytest
-import os
 import numpy as np
 import logging
-import pdb
 
 instrument = 'AUD_USD'
 granularity = 'D'
@@ -27,6 +25,7 @@ def hlist_factory():
         hlist.append(area)
     return hlist
 
+
 def test_HAreaList_inst(hlist_factory):
     log = logging.getLogger('Instantiate a HAreaList')
     log.debug('HAreaList')
@@ -34,24 +33,26 @@ def test_HAreaList_inst(hlist_factory):
     halist = HAreaList(halist=hlist_factory)
     assert len(halist.halist) == 3
 
+
 def test_onArea(hlist_factory):
     log = logging.getLogger('Test for test_onArea function')
     log.debug('test_onArea')
 
     halist = HAreaList(halist=hlist_factory)
-    candle = {'complete': True,
-              'volume': 8726, 
+    candle = {
               'time': '2018-11-18T22:00:00',
               'o': '0.68605',
               'h': '0.71258',
-              'l': '0.68600', 
-              'c': '0.70950'}
+              'l': '0.68600',
+              'c': '0.70950'
+              }
 
     c_candle = Candle(**candle)
     (hrsel, ix) = halist.onArea(candle=c_candle)
 
     assert hrsel.price == 0.70
     assert ix == 2
+
 
 def test_print(hlist_factory):
     '''Test 'print' function'''
@@ -61,6 +62,7 @@ def test_print(hlist_factory):
 
     res = halist.print()
     print(res)
+
 
 def test_plot(hlist_factory, clO_pickled, clean_tmp):
     '''Test 'plot' function'''

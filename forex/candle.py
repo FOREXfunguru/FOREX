@@ -10,7 +10,8 @@ import pickle
 from datetime import timedelta, datetime
 from utils import try_parsing_date, calculate_pips
 from params import clist_params
-from pandas.plotting import register_matplotlib_converters
+from pandas.plotting import register_matplotlib_converters 
+
 register_matplotlib_converters()
 
 matplotlib.use('PS')
@@ -35,7 +36,7 @@ class Candle(object):
         self.c = float(c)
         self.l = float(l)
         self.time = time
-        
+
         if isinstance(self.time, str):
             self.time = datetime.strptime(self.time,
                                           '%Y-%m-%dT%H:%M:%S')
@@ -104,7 +105,7 @@ class CandleList(object):
         type: Type of this CandleList. Possible values are 'long'/'short'"""
 
     __slots__ = ["instrument", "granularity", "data", "candles", 
-                 "_type", "times"]
+                 "_type", "times", "pos"]
 
     def __init__(self, instrument: str, granularity: str, data: list = None,
                  candles=None):
