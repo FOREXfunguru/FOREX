@@ -7,7 +7,6 @@ import pandas as pd
 import matplotlib
 import logging
 import pickle
-import pdb
 from datetime import timedelta, datetime
 from utils import try_parsing_date, calculate_pips
 from params import clist_params
@@ -25,8 +24,9 @@ cl_logger.setLevel(logging.INFO)
 
 class Candle(object):
     """Class representing a particular Candle"""
-    __slots__ = ["complete", "volume", "time", "o", "h", "c", 
-                 "l", "_colour", "_perc_body"]
+    __slots__ = ["complete", "volume", "time", "o", "h", "c",
+                 "l", "_colour", "_perc_body", "granularity",
+                 "rsi"]
 
     def __init__(self, time: str, o: float, h: float,
                  c: float, l: float) -> None:
@@ -103,6 +103,9 @@ class CandleList(object):
         candles: List of Candle objects
         type: Type of this CandleList. Possible values are 'long'/'short'"""
 
+    __slots__ = ["instrument", "granularity", "data", "candles", 
+                 "_type", "times"]
+
     def __init__(self, instrument: str, granularity: str, data: list = None,
                  candles=None):
         """Constructor
@@ -177,12 +180,10 @@ class CandleList(object):
         return len(self.candles)
 
     def __add__(self, ClO):
-
         clist = self.candles + ClO.candles
-        clist = [x.__dict__ for x in clist]
         newClO = CandleList(instrument=self.instrument,
                             granularity=self.granularity,
-                            data=clist)
+                            candles=clist)
         return newClO
 
     def _guess_type(self) -> str:

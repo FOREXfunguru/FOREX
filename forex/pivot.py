@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from utils import periodToDelta, substract_pips2price, add_pips2price
 from params import gparams, pivots_params
 from forex.segment import SegmentList, Segment
-from zigzag import *
+from zigzag import peak_valley_pivots, pivots_to_modes
 from statistics import mean
 
 # create logger
@@ -36,9 +36,10 @@ class Pivot(object):
         self.score = score
 
     def merge_pre(self, slist, n_candles: int, diff_th: int) -> None:
-        """Function to merge 'pre' Segment. It will merge self.pre with previous segment
-        if self.pre and previous segment are of the same type (1 or -1) or count of
-        previous segment is less than pivots_params.n_candles
+        """Function to merge 'pre' Segment. It will merge self.pre with
+        previous segment if self.pre and previous segment are of the same
+        type (1 or -1) or count of previous segment is less than
+        pivots_params.n_candles
 
         Arguments:
             slist : SegmentList object
@@ -47,15 +48,15 @@ class Pivot(object):
             diff_th : % of diff in pips threshold
         """
         p_logger.debug("Running merge_pre")
-        p_logger.debug("Analysis of pivot {0}".format(self.candle.time))
-        p_logger.debug("self.pre start pre-merge: {0}".format(self.pre.start()))
+        p_logger.debug(f"Analysis of pivot {self.candle.time}")
+        p_logger.debug(f"self.pre start pre-merge: {self.pre.start()}")
 
         extension_needed = True
         while extension_needed is True:
             # reduce start of self.pre by one candle in order to retrieve
             # the previous segment by its end
-            start_dt = self.pre.start() - periodToDelta(1,
-                                                        self.candle.granularity)
+            start_dt = self.pre.start() \
+                - periodToDelta(1, self.candle.granularity)
 
             s = slist.fetch_by_end(start_dt)
             if s is None:
@@ -120,9 +121,10 @@ class Pivot(object):
                 # This is not necessarily an error, it could be that there is
                 # not the required Segment in slist
                 # because it is out of the time period
-                p_logger.debug("No Segment could be retrieved for pivot falling in" 
-                               f"time {self.candle.time} by using s.fetch_by_"
-                               f"start and date: {start_dt} in function 'merge_aft'")
+                p_logger.debug("No Segment could be retrieved for pivot"
+                               f"falling in time {self.candle.time} by "
+                               f"using s.fetch_by_start and date: {start_dt} "
+                               "in function 'merge_aft'")
                 extension_needed = False
                 continue
             if self.aft.type == s.type:
@@ -187,8 +189,9 @@ class Pivot(object):
         Returns:
             New adjusted datetime
         """
-        clist = clistO.candles # reduce index by 1 so start candle+1
-                               # is not included
+        # reduce index by 1 so start candle+1
+        # is not included
+        clist = clistO.candles
         new_pc, pre_colour = None, None
         it = True
         ix = -1
@@ -246,7 +249,8 @@ class PivotList(object):
                  th_bounces: float = None) -> None:
         self.clist = clist
         if pivots is not None:
-            assert slist is not None, "Error!. SegmentList needs to be provided"
+            assert slist is not None, "Error!. SegmentList needs to "
+            "be provided"
             self.slist = slist
             self.pivots = pivots
         else:
@@ -302,7 +306,7 @@ class PivotList(object):
                 submode = modes[pair[0]+1:pair[1]]
             else:
                 submode = [modes[pair[0]+1]]
-            #checking if all elements in submode are the same:
+            # checking if all elements in submode are the same:
             assert len(np.unique(submode).tolist()) == 1, "more than one type in modes"
             s = Segment(type=submode[0],
                         clist=self.clist.candles[pair[0]:pair[1]],
@@ -313,7 +317,7 @@ class PivotList(object):
             cl.granularity = self.clist.granularity
             pobj = Pivot(type=submode[0],
                          candle=cl,
-                         pre=pre_s, 
+                         pre=pre_s,
                          aft=s)
             pobj.score = pobj.calc_score()
             # Append it to list
@@ -385,8 +389,8 @@ class PivotList(object):
         Arguments:
             pivots: PivotList object
             SR: price of the S/R area
-            last_pivot: If True, then the last pivot will be considered as it is part
-                        of the setup. Default: True
+            last_pivot: If True, then the last pivot will be considered as
+                        it is part of the setup.
 
         Returns:
             PivotList with the pivots that are in the area centered at 'price'
