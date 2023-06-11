@@ -3,6 +3,7 @@ import logging
 
 from forex.candle import CandleList
 
+
 @pytest.fixture
 def clO():
     log = logging.getLogger('cl_object')

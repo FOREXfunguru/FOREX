@@ -1,6 +1,7 @@
 import logging
 import datetime
 import matplotlib.pyplot as plt
+import numpy as np
 
 from utils import periodToDelta, substract_pips2price, add_pips2price
 from params import gparams, pivots_params
@@ -27,8 +28,9 @@ class Pivot(object):
         score : Result of adding the number
                 of candles of the 'pre' and 'aft' segment (if defined)
     """
-    def __init__(self, type: int, candle, pre, aft,
-                 score: int = None):
+    __slots__ = ["type", "candle", "pre", "aft", "score"]
+
+    def __init__(self, type: int, candle, pre, aft, score: int = None):
         self.type = type
         self.candle = candle
         self.pre = pre
@@ -245,6 +247,9 @@ class PivotList(object):
         pivots: List with Pivot objects
         slist: SegmentList object"""
 
+    __slots__ = ["clist", "pivots", "slist",
+                 "th_bounces"]
+
     def __init__(self, clist, pivots=None, slist=None,
                  th_bounces: float = None) -> None:
         self.clist = clist
@@ -272,10 +277,10 @@ class PivotList(object):
             return self.pivots[self.pos - 1]
         else:
             raise StopIteration
- 
+
     def __getitem__(self, key):
         return self.pivots[key]
- 
+
     def __len__(self):
         return len(self.pivots)
 
@@ -410,8 +415,8 @@ class PivotList(object):
         for p in self.pivots:
             # always consider the last pivot in bounces.plist as in_area as
             # this part of the entry setup
-            if self.pivots[-1].candle.time == p.candle.time and \
-                last_pivot is True:
+            if self.pivots[-1].candle.time == p.candle.time \
+                 and last_pivot is True:
                 adj_t = p.adjust_pivottime(clistO=self.clist)
                 newclist = self.clist.slice(start=self.clist.candles[0].time,
                                             end=adj_t)
