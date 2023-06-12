@@ -21,9 +21,11 @@ class TradeJournal(object):
 
     Class variables:
         url: path to the .xlsx file with the trade journal
-        worksheet: Name of the worksheet that will be used to create the object.
-                   i.e. 'trading_journal'
+        worksheet: Name of the worksheet that will be used to create 
+                   the object. i.e. 'trading_journal'
     '''
+    __slots__ = ['url', 'worksheet', 'df']
+
     def __init__(self, url: str, worksheet: str):
         self.url = url
         self.worksheet = worksheet
@@ -66,7 +68,7 @@ class TradeJournal(object):
         on each particular trade
 
         Arguments:
-            strats : Comma-separated list of strategies to analyse: 
+            strats : Comma-separated list of strategies to analyse:
                      i.e. counter,counter_b1
 
         Returns:
@@ -104,7 +106,8 @@ class TradeJournal(object):
 
         return number_s, number_f, tot_pips
 
-    def write_tradelist(self, trade_list: List[Trade], sheet_name: str)->None:
+    def write_tradelist(self, trade_list: List[Trade],
+                        sheet_name: str) -> None:
         '''Write the TradeList to the Excel spreadsheet
         pointed by the trade_journal.
 

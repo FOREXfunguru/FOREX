@@ -10,7 +10,8 @@ import pickle
 from datetime import timedelta, datetime
 from utils import try_parsing_date, calculate_pips
 from params import clist_params
-from pandas.plotting import register_matplotlib_converters
+from pandas.plotting import register_matplotlib_converters 
+
 register_matplotlib_converters()
 
 matplotlib.use('PS')
@@ -24,17 +25,21 @@ cl_logger.setLevel(logging.INFO)
 
 class Candle(object):
     """Class representing a particular Candle"""
-    def __init__(self, **kwargs) -> None:
-        allowed_keys = ['complete', 'volume',
-                        'time', 'o', 'h', 'c', 'l']  # allowed arbitrary argsa
-        self.__dict__.update((k, v) for k, v in kwargs.items() if k in
-                             allowed_keys)
-        numeric = ['o', 'h', 'c', 'l']
-        self.__dict__.update((k, float(v)) for k, v in
-                             self.__dict__.items() if k in numeric)
-        if isinstance(self.__dict__['time'], str):
-            self.__dict__.update({'time': datetime.strptime(self.__dict__['time'],
-                                                            '%Y-%m-%dT%H:%M:%S')})
+    __slots__ = ["complete", "volume", "time", "o", "h", "c",
+                 "l", "_colour", "_perc_body", "granularity",
+                 "rsi"]
+
+    def __init__(self, time: str, o: float, h: float,
+                 c: float, l: float) -> None:
+        self.o = float(o)
+        self.h = float(h)
+        self.c = float(c)
+        self.l = float(l)
+        self.time = time
+
+        if isinstance(self.time, str):
+            self.time = datetime.strptime(self.time,
+                                          '%Y-%m-%dT%H:%M:%S')
         self._colour = self._set_colour()
         self._perc_body = self._calc_perc_body()
 
@@ -98,6 +103,9 @@ class CandleList(object):
         granularity: i.e. 'D'
         candles: List of Candle objects
         type: Type of this CandleList. Possible values are 'long'/'short'"""
+
+    __slots__ = ["instrument", "granularity", "data", "candles", 
+                 "_type", "times", "pos"]
 
     def __init__(self, instrument: str, granularity: str, data: list = None,
                  candles=None):
@@ -173,12 +181,10 @@ class CandleList(object):
         return len(self.candles)
 
     def __add__(self, ClO):
-
         clist = self.candles + ClO.candles
-        clist = [x.__dict__ for x in clist]
         newClO = CandleList(instrument=self.instrument,
                             granularity=self.granularity,
-                            data=clist)
+                            candles=clist)
         return newClO
 
     def _guess_type(self) -> str:

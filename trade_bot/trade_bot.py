@@ -36,13 +36,18 @@ class TradeBot(object):
     '''This class represents an automatic Trading bot.
 
     Class variables:
-        start: datetime that this Bot will start operating. i.e. 20-03-2017 08:20:00s
-        end: datetime that this Bot will end operating. i.e. 20-03-2020 08:20:00s
+        start: datetime that this Bot will start operating.
+               i.e. 20-03-2017 08:20:00s
+        end: datetime that this Bot will end operating.
+             i.e. 20-03-2020 08:20:00s
         pair: Currency pair used in the trade. i.e. AUD_USD
         timeframe: Timeframe used for the trade. Possible values are:
                    D,H12,H10,H8,H4,H1
         clist: CandleList object used to represent this trade
     '''
+    __slots__ = ['start', 'end', 'pair', 'timeframe', 'clist', 
+                 'delta_period', 'delta']
+
     def __init__(self, start: datetime, end: datetime, pair: str,
                  timeframe: str, clist: CandleList = None):
         self.start = try_parsing_date(start)
@@ -67,7 +72,7 @@ class TradeBot(object):
                 logging.warning(f"Tradebot end:{self.end} is greater than "
                                 f"clist end: {clist.candles[-1].time}")
                 self.init_clist()
-    
+
     def init_clist(self) -> None:
         """Init clist for this TradeBot"""
 
@@ -80,7 +85,7 @@ class TradeBot(object):
 
         clO = conn.query(initc_date.isoformat(), self.end.isoformat())
         self.clist = clO
-        
+
     def scan(self, prefix: str = 'pretrades', discard_sat: bool = True) -> str:
         """This function will scan for candles on S/R areas.
         These candles will be written to a .csv file
@@ -123,7 +128,7 @@ class TradeBot(object):
                 tb_logger.info(f"{res}")
                 loop = 0
 
-            # Fetch candle for current datetime. this is the current candle 
+            # Fetch candle for current datetime. this is the current candle
             # that is being checked
             c_candle = self.clist[startO]
             if c_candle is None:
@@ -155,9 +160,15 @@ class TradeBot(object):
                         len(SRlst.halist) >= 3 and c_candle.height(pair=self.pair) \
                         < tradebot_params.max_height:
                     prepare = True
-                elif type == 'short' and c_candle.colour == 'red' and len(SRlst.halist) >= 3 and c_candle.height(pair=self.pair) < tradebot_params.max_height:
+                elif type == 'short' and c_candle.colour == 'red' and \
+                        len(SRlst.halist) >= 3 and \
+                        c_candle.height(pair=self.pair) < \
+                        tradebot_params.max_height:
                     prepare = True
-                elif type == 'long' and c_candle.colour == 'green' and len(SRlst.halist) >= 3 and c_candle.height(pair=self.pair) < tradebot_params.max_height:
+                elif type == 'long' and c_candle.colour == 'green' and \
+                        len(SRlst.halist) >= 3 and \
+                        c_candle.height(pair=self.pair) < \
+                        tradebot_params.max_height:
                     prepare = True
 
                 # discard if IC falls on a Saturday
@@ -181,7 +192,7 @@ class TradeBot(object):
                 return f"{prefix}.pckl"
 
         tb_logger.info("Run done")
- 
+
     def prepare_trades(self, pretrades: str) -> List[Trade]:
         """This function unpickles the preTrade objects
         identified by self.scan() and will create a list of Trade objects

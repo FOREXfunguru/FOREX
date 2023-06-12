@@ -17,6 +17,8 @@ class Segment(object):
     instrument : Pair
     """
 
+    __slots__ = ['type', 'clist', 'instrument', '_diff']
+
     def __init__(self, type: int, clist: list[dict], instrument: str):
         self.type = type
         self.clist = clist
@@ -26,17 +28,17 @@ class Segment(object):
     @property
     def diff(self):
         return self._diff
-    
+
     def pickle_dump(self, outfile: str) -> str:
         '''Function to pickle this particular Segment
-        
+
         Arguments:
             outfile: Path used to pickle
-            
+
         Returns:
             path to file with pickled data
         '''
-        
+
         pickle_out = open(outfile, "wb")
         pickle.dump(self, pickle_out)
         pickle_out.close()
@@ -46,12 +48,12 @@ class Segment(object):
     @classmethod
     def pickle_load(self, infile: str):
         '''Function to pickle this particular Segment
-        
+
         Arguments:
             infile: Path used to load in pickled data
-            
+
         Returns:
-            inseg: Segment object    
+            inseg: Segment object
         '''
         pickle_in = open(infile, "rb")
         inseg = pickle.load(pickle_in)
@@ -77,7 +79,7 @@ class Segment(object):
         self.count+s.count
 
         Arguments:
-            s : Segment object to be merged        
+            s : Segment object to be merged  
         '''
         self.clist = self.clist+s.clist
         self._diff = self._calc_diff()
@@ -172,43 +174,44 @@ class SegmentList(object):
     diff : Diff in pips between first candle in first Segment
            and last candle in the last Segment
     '''
+    __slots__ = ['slist', 'instrument', '_diff']
 
     def __init__(self, slist: list, instrument: str):
         self.slist = slist
         self.instrument = instrument
         self._diff = self.calc_diff()
-    
+
     @property
     def diff(self):
         return self._diff
-    
+
     def __iter__(self):
         self.pos = 0
         return self
- 
+
     def __next__(self):
         if (self.pos < len(self.slist)):
             self.pos += 1
             return self.slist[self.pos - 1]
         else:
             raise StopIteration
-    
+
     def __getitem__(self, key):
         return self.slist[key]
-    
+
     def __len__(self):
         return len(self.slist)
-    
+
     def pickle_dump(self, outfile: str) -> str:
         '''Function to pickle this particular SegmentList
-        
+
         Arguments:
             outfile: Path used to pickle
-            
+
         Returns:
             path to file with pickled data
         '''
-        
+
         pickle_out = open(outfile, "wb")
         pickle.dump(self, pickle_out)
         pickle_out.close()
@@ -218,12 +221,12 @@ class SegmentList(object):
     @classmethod
     def pickle_load(self, infile: str):
         '''Function to pickle this particular SegmentList
-        
+
         Arguments:
             infile: Path used to load in pickled data
-            
+
         Returns:
-            inseg: Segment object    
+            inseg: Segment object
         '''
         pickle_in = open(infile, "rb")
         inseglst = pickle.load(pickle_in)
@@ -250,7 +253,7 @@ class SegmentList(object):
         self._diff = diff_pips
 
     def length_cl(self) -> int:
-        '''Get length in terms of number of candles representing the sum 
+        '''Get length in terms of number of candles representing the sum
         of candles in each Segment of the SegmentList'''
 
         length = 0
@@ -263,7 +266,7 @@ class SegmentList(object):
         This start will be the time of the first candle in SegmentList'''
         return self.slist[0].clist[0].time
 
-    def end(self)->datetime:
+    def end(self) -> datetime:
         '''Get the end datetime for this SegmentList
         This start will be the time of the first candle in SegmentList'''
         return self.slist[-1].clist[-1].time
@@ -275,15 +278,17 @@ class SegmentList(object):
         Arguments:
             dt: Start of segment datetime used
                 for fetching the Segment
-            max_diff : Max discrepancy in number of seconds for the difference dt-s.start()
-                       Default: 3600 secs (i.e. 1hr). This is relevant when analysing
-                       with granularity = H1 or lower.
+            max_diff : Max discrepancy in number of seconds for the difference
+                       dt-s.start()
+                       Default: 3600 secs (i.e. 1hr). This is relevant when
+                       analysing with granularity = H1 or lower.
 
         Returns:
             Segment object. None if not found
         '''
         for s in self.slist:
-            if s.start() == dt or s.start() > dt or abs(s.start()-dt) <= datetime.timedelta(0, max_diff):
+            if s.start() == dt or s.start() > dt or \
+                 abs(s.start()-dt) <= datetime.timedelta(0, max_diff):
                 return s
 
         return None
@@ -295,15 +300,17 @@ class SegmentList(object):
         Arguments:
             dt: End of segment datetime used
                 for fetching the Segment
-            max_diff : Max discrepancy in number of seconds for the difference dt-s.end()
-                       Default: 3600 secs (i.e. 1hr). This is relevant when analysing
-                       with granularity = H1 or lower.
+            max_diff : Max discrepancy in number of seconds for the difference
+                       dt-s.end()
+                       Default: 3600 secs (i.e. 1hr). This is relevant when
+                                analysing with granularity = H1 or lower.
 
         Returns:
             Segment object. None if not found'''
 
         for s in reversed(self.slist):
-            if s.end() == dt or s.end() < dt or s.end()-dt <= datetime.timedelta(0, max_diff):
+            if s.end() == dt or s.end() < dt or \
+                 s.end()-dt <= datetime.timedelta(0, max_diff):
                 return s
 
     def __repr__(self):

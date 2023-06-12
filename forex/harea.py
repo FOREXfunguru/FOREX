@@ -19,16 +19,22 @@ class HArea(object):
     Class variables:
         price: Price in the chart used as the middle point that will be
                extended on both sides a certain number of pips
-        instrument: Instrument for this CandleList (i.e. AUD_USD or EUR_USD etc...)
+        instrument: Instrument for this CandleList 
+                    (i.e. AUD_USD or EUR_USD etc...)
         granularity: Granularity for this CandleList (i.e. D, H12, H8 etc...)
-        pips: Number of pips above/below self.price to calculate self.upper and self.lower
+        pips: Number of pips above/below self.price to calculate self.upper
+              and self.lower
         upper: Upper limit price of area
         lower: Lower limit price of area
         no_pivots: Number of pivots bouncing on self
         tot_score: Total score, which is the sum of scores of all pivots on
                    this HArea
     '''
-    def __init__(self, price: float, instrument: str, granularity: str, pips: int, no_pivots: int = None,
+    __slots__ = ["price", "instrument", "granularity", "pips",
+                 "no_pivots", "tot_score", 'upper', 'lower']
+
+    def __init__(self, price: float, instrument: str,
+                 granularity: str, pips: int, no_pivots: int = None,
                  tot_score: int = None):
 
         (first, second) = instrument.split("_")
@@ -106,6 +112,8 @@ class HAreaList(object):
     Class variables:
         halist : List of HArea objects
     """
+    __slots__ = ["halist"]
+
     def __init__(self, halist):
         self.halist = halist
 
@@ -121,15 +129,17 @@ class HAreaList(object):
 
         Returns:
             An HArea object overlapping with 'candle' and the ix
-            in self.halist for the HArea being crossed. This ix is expressed from the HArea 
-            with the lowest price to the highest price and starting from 0.
-            So if 'sel_ix'=2, then it will be the third HArea 
+            in self.halist for the HArea being crossed. This ix is expressed
+            from the HArea with the lowest price to the highest price and
+            starting from 0.
+            So if 'sel_ix'=2, then it will be the third HArea
             None if there are no HArea objects overlapping'''
         onArea_hr = sel_ix = None
         ix = 0
         seen = False
         for harea in self.halist:
-            if harea.price <= float(candle.h) and harea.price >= float(candle.l):
+            if harea.price <= float(candle.h) and \
+                 harea.price >= float(candle.l):
                 if seen:
                     logging.warn("More than one HArea crosses this candle")
                 onArea_hr = harea
@@ -145,7 +155,7 @@ class HAreaList(object):
         Returns:
             String with stringified HArea objects
         '''
-        res ="#pair timeframe upper-price-lower no_pivots tot_score\n"
+        res = "#pair timeframe upper-price-lower no_pivots tot_score\n"
         for harea in self.halist:
             res += "{0} {1} {2}-{3}-{4} {5} {6}\n".format(harea.instrument,
                                                           harea.granularity,

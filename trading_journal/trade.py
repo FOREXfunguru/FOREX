@@ -1,7 +1,6 @@
 from __future__ import division
 
 import logging
-import pdb
 
 from datetime import datetime, timedelta
 from forex.pivot import PivotList
@@ -34,19 +33,19 @@ class Trade(object):
         entry_time: Datetime for price reaching the entry price
         type: What is the type of the trade (long,short)
         SL:  float, Stop/Loss price
-        TP:  float, Take profit price. If not defined then it will calculated by using the RR
+        TP:  float, Take profit price. If not defined then it will calculated
+             by using the RR
         SR:  float, Support/Resistance area
         RR:  float, Risk Ratio
         pips:  Number of pips of profit/loss. This number will be negative if
                outcome was failure
         clist: CandleList object used to represent this trade"""
-
     def __init__(self, init_clist: bool = False, **kwargs) -> None:
         allowed_keys = ['entered', 'start', 'end', 'pair', 'timeframe',
                         'outcome', 'entry', 'exit', 'entry_time', 'type',
                         'SL', 'TP', 'SR', 'RR', 'pips', 'clist', 'strat',
                         'tot_SR', 'rank_selSR']
-        self.__dict__.update((k, v) for k, v in kwargs.items() 
+        self.__dict__.update((k, v) for k, v in kwargs.items()
                              if k in allowed_keys)
         if init_clist and not hasattr(self, 'clist'):
             self.init_clist()
@@ -66,7 +65,7 @@ class Trade(object):
         elif hasattr(self, 'RR') and not self.TP:
             diff = (self.entry - self.SL) * self.RR
             self.TP = round(self.entry + diff, 4)
-    
+
     def init_clist(self) -> None:
         """Init clist for this Trade"""
         delta = periodToDelta(trade_params.trade_period, self.timeframe)
@@ -138,8 +137,8 @@ class Trade(object):
         # of trade and also the entry time
         # date_list will contain a list with datetimes that will be used for
         # running self
-        date_list = [self.start + timedelta(hours=x*period) for x in range(0,
-                                                                            trade_params.interval)]
+        date_list = [self.start + timedelta(hours=x*period)
+                     for x in range(0, trade_params.interval)]
         count = 0
         self.entered = False
         for d in date_list:
@@ -198,7 +197,7 @@ class Trade(object):
                     t_logger.info("Sorry, SL was hit!")
                     self.exit = SL.price
                     self.outcome = 'failure'
-                    self.pips = float(calculate_pips(self.pair, 
+                    self.pips = float(calculate_pips(self.pair,
                                                      abs(self.SL-self.entry)))*-1
                     try:
                         self.end = SL.get_cross_time(candle=cl,

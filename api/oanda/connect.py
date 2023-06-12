@@ -19,11 +19,11 @@ import argparse
 from api.params import Params as apiparams
 from typing import Dict, List
 from forex.candle import CandleList
-import time
 
 # create logger
 o_logger = logging.getLogger(__name__)
 o_logger.setLevel(logging.INFO)
+
 
 class Connect(object):
     """Class representing a connection to the Oanda's REST API.
@@ -44,7 +44,7 @@ class Connect(object):
     def granularity(self)->str:
         return self._granularity
 
-    def retry(cooloff: int=5, exc_type=None):
+    def retry(cooloff: int = 5, exc_type=None):
         """Decorator for retrying connection and prevent TimeOut errors"""
         if not exc_type:
             exc_type = [requests.exceptions.ConnectionError]
@@ -63,7 +63,7 @@ class Connect(object):
             return wrapper
         return real_decorator
 
-    def _process_data(self, data:list[flatdict.FlatDict], strip:bool=True):
+    def _process_data(self, data: list[flatdict.FlatDict], strip: bool = True):
         """Process candle data
         
         Args:
@@ -73,16 +73,19 @@ class Connect(object):
         keys_to_remove = ['complete', 'volume', 'time']
         cldict = list()
         for candle in data:
-            atime = re.sub(r'\.\d+Z$','', candle['time'])
+            atime = re.sub(r'\.\d+Z$', '', candle['time'])
             if strip:
-                candle = {key: value for key, value in candle.items() if key not in keys_to_remove}
+                candle = {key: value for key, value in candle.items()
+                          if key not in keys_to_remove}
             candle['time'] = atime
-            newc = {key.replace('mid.', ''): value for key, value in candle.items()}
+            newc = {key.replace('mid.', ''): value for key,
+                    value in candle.items()}
             cldict.append(newc)
         return cldict
 
     @retry()
-    def query(self, start : datetime, end : datetime = None, count : int = None)-> List[Dict]:
+    def query(self, start: datetime, end: datetime = None,
+              count: int = None) -> List[Dict]:
         """Function to query Oanda's REST API
 
         Args:
