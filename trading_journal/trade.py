@@ -212,7 +212,7 @@ class Trade(object):
                         except BaseException:
                             self.end = cl.time
                     else:
-                        self.entry_time = cl.time.isoformat()
+                        self.end = cl.time
                     break
                 # check if success
                 if cl.l <= TP.price <= cl.h:
@@ -230,7 +230,7 @@ class Trade(object):
                         except BaseException:
                             self.end = cl.time
                     else:
-                        self.entry_time = cl.time.isoformat()
+                        self.end = cl.time
                     break
                 if count >= trade_params.numperiods:
                     t_logger.warning("No outcome could be calculated in the "
