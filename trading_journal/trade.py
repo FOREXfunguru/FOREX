@@ -104,7 +104,7 @@ class Trade(object):
             new_tp = substract_pips2price(self.pair, self.entry, tp_pips)
         return new_tp
 
-    def run_trade(self, expires: int = 2) -> None:
+    def run_trade(self, expires: int = 2, connect=True) -> None:
         """Run the trade until conclusion from a start date.
 
         Arguments:
@@ -156,7 +156,7 @@ class Trade(object):
                 t_logger.info("Run trade in the future. Skipping...")
                 break
             cl = self.clist[d]
-            if cl is None:
+            if cl is None and connect is True:
                 try:
                     conn = Connect(
                         instrument=self.pair,
@@ -174,15 +174,21 @@ class Trade(object):
                 except BaseException:
                     count -= 1
                     continue
+            elif cl is None and connect is False:
+                count -= 1
+                continue
             if self.entered is False:
                 if cl.l <= entry.price <= cl.h:
                     t_logger.info("Trade entered")
                     self.entered = True
-                    try:
-                        entry_time = entry.get_cross_time(candle=cl,
-                                                          granularity=trade_params.granularity)
-                        self.entry_time = entry_time.isoformat()
-                    except BaseException:
+                    if connect is True:
+                        try:
+                            entry_time = entry.get_cross_time(candle=cl,
+                                                              granularity=trade_params.granularity)
+                            self.entry_time = entry_time.isoformat()
+                        except BaseException:
+                            self.entry_time = cl.time.isoformat()
+                    else:
                         self.entry_time = cl.time.isoformat()
             if self.entered is True:
                 if trade_params.strat == 'exit_early' and \
@@ -199,11 +205,14 @@ class Trade(object):
                     self.outcome = 'failure'
                     self.pips = float(calculate_pips(self.pair,
                                                      abs(self.SL-self.entry)))*-1
-                    try:
-                        self.end = SL.get_cross_time(candle=cl,
-                                                     granularity=trade_params.granularity)
-                    except BaseException:
-                        self.end = cl.time
+                    if connect is True:
+                        try:
+                            self.end = SL.get_cross_time(candle=cl,
+                                                         granularity=trade_params.granularity)
+                        except BaseException:
+                            self.end = cl.time
+                    else:
+                        self.entry_time = cl.time.isoformat()
                     break
                 # check if success
                 if cl.l <= TP.price <= cl.h:
@@ -214,11 +223,14 @@ class Trade(object):
                     self.exit = TP.price
                     self.pips = float(calculate_pips(self.pair,
                                                      abs(self.TP - self.entry)))
-                    try:
-                        self.end = TP.get_cross_time(candle=cl,
-                                                     granularity=trade_params.granularity)
-                    except BaseException:
-                        self.end = cl.time
+                    if connect is True:
+                        try:
+                            self.end = TP.get_cross_time(candle=cl,
+                                                         granularity=trade_params.granularity)
+                        except BaseException:
+                            self.end = cl.time
+                    else:
+                        self.entry_time = cl.time.isoformat()
                     break
                 if count >= trade_params.numperiods:
                     t_logger.warning("No outcome could be calculated in the "
