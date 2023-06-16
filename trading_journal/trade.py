@@ -125,7 +125,6 @@ class Trade(object):
                    instrument=self.pair,
                    pips=trade_params.hr_pips,
                    granularity=self.timeframe)
-
         period = None
         if self.timeframe == "D":
             period = 24
@@ -139,8 +138,6 @@ class Trade(object):
         # running self
         date_list = [self.start + timedelta(hours=x*period)
                      for x in range(0, trade_params.interval)]
-        cutoff_dt = self.clist.candles[-1].time
-        date_list = [dt for dt in date_list if dt <= cutoff_dt]
         count = 0
         self.entered = False
         for d in date_list:
@@ -240,7 +237,8 @@ class Trade(object):
                     self.outcome = "n.a."
                     break
         if self.outcome != 'failure' and self.outcome != 'success' \
-                and self.outcome != 'exit_early' and self.entered:
+                and self.outcome != 'exit_early' and self.entered \
+                and cl is not None:
             self.outcome = "n.a."
             # pips are calculated using the Candle close price
             if (cl.c - self.entry) < 0:
