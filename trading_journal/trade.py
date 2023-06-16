@@ -139,6 +139,8 @@ class Trade(object):
         # running self
         date_list = [self.start + timedelta(hours=x*period)
                      for x in range(0, trade_params.interval)]
+        cutoff_dt = self.clist.candles[-1].time
+        date_list = [dt for dt in date_list if dt <= cutoff_dt]
         count = 0
         self.entered = False
         for d in date_list:
