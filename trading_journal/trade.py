@@ -152,6 +152,7 @@ class Trade(object):
             dtnow = datetime.now()
             if d > dtnow:
                 self.outcome = 'n.a.'
+                self.entered = False
                 t_logger.info("Run trade in the future. Skipping...")
                 break
             cl = self.clist[d]
