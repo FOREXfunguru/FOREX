@@ -101,8 +101,8 @@ def substract_pips2price(pair:  str, price: float, pips: int) -> float:
 
 
 def periodToDelta(ncandles: int, timeframe: str):
-    """Function that receives an int representing a number of candles using the 'ncandles' param
-    and returns a datetime timedelta object
+    """Function that receives an int representing a number of candles using 
+    the 'ncandles' param and returns a datetime timedelta object
 
     Arguments:
         ncandles: Number of candles for which the timedelta will be retrieved
@@ -117,7 +117,7 @@ def periodToDelta(ncandles: int, timeframe: str):
 
     delta = None
     if patt.match(timeframe):
-        raise Exception("{0} is not valid. Oanda rest service does not take it".format(timeframe))
+        raise Exception(f"{timeframe} is not valid. Oanda rest service does not take it")
     elif timeframe == 'D':
         delta = timedelta(hours=24 * ncandles)
     else:
