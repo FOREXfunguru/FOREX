@@ -2,6 +2,7 @@ import logging
 import datetime
 import matplotlib.pyplot as plt
 import numpy as np
+import pdb
 
 from utils import periodToDelta, substract_pips2price, add_pips2price
 from params import gparams, pivots_params
@@ -232,10 +233,12 @@ class Pivot(object):
         return "Pivot"
 
     def __str__(self):
-        out_str = ""
-        for attr, value in self.__dict__.items():
-            out_str += "%s:%s " % (attr, value)
-        return out_str
+        sb = []
+        for key in self.__slots__:
+            if hasattr(self, key):
+                sb.append("{key}='{value}'".format(key=key,
+                                                   value=getattr(self, key)))
+        return ', '.join(sb)
 
 
 class PivotList(object):
@@ -562,10 +565,9 @@ class PivotList(object):
 
     def __str__(self):
         sb = []
-        for key in self.__dict__:
+        for key in self.__slots__:
             sb.append("{key}='{value}'".format(key=key,
-                                               value=self.__dict__[key]))
-
+                                               value=getattr(self, key)))
         return ', '.join(sb)
 
     def __repr__(self):

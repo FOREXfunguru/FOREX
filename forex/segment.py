@@ -158,10 +158,12 @@ class Segment(object):
         return "Segment"
 
     def __str__(self):
-        out_str = ""
-        for attr, value in self.__dict__.items():
-            out_str += "%s:%s " % (attr, value)
-        return out_str
+        sb = []
+        for key in self.__slots__:
+            if hasattr(self, key):
+                sb.append("{key}='{value}'".format(key=key,
+                                                   value=getattr(self, key)))
+        return ', '.join(sb)
 
 
 class SegmentList(object):
@@ -317,7 +319,9 @@ class SegmentList(object):
         return "SegmentList"
 
     def __str__(self):
-        out_str = ""
-        for attr, value in self.__dict__.items():
-            out_str += "%s:%s " % (attr, value)
-        return out_str
+        sb = []
+        for key in self.__slots__:
+            if hasattr(self, key):
+                sb.append("{key}='{value}'".format(key=key,
+                                                   value=getattr(self, key)))
+        return ', '.join(sb)
