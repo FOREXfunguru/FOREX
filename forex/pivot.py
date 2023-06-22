@@ -566,8 +566,9 @@ class PivotList(object):
     def __str__(self):
         sb = []
         for key in self.__slots__:
-            sb.append("{key}='{value}'".format(key=key,
-                                               value=getattr(self, key)))
+            if hasattr(self, key):
+                sb.append("{key}='{value}'".format(key=key,
+                                                   value=getattr(self, key)))
         return ', '.join(sb)
 
     def __repr__(self):
