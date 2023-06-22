@@ -82,8 +82,10 @@ def calc_SR(pvLO, outfile: str = None):
 
     # selecting records over threshold
     dfsel = df.loc[(df['bounces'] > bounce_th) | (df['tot_score'] > score_th)]
+
     # repeat until no overlap between prices
     ret = calc_diff(dfsel, increment_price)
+
     dfsel = ret[0]
     tog_seen = ret[1]
     while tog_seen is True:
@@ -160,30 +162,31 @@ def calc_diff(df_loc, increment_price: float):
                 if row['bounces'] <= prev_row['bounces'] and \
                         row['tot_score'] < prev_row['tot_score']:
                     # remove current row
-                    df_loc.drop(index, inplace=True)
+                    df_loc = df_loc.drop(index)
                 elif row['bounces'] >= prev_row['bounces'] and \
-                        row['tot_score'] > prev_row['tot_score']:
+                        row['tot_score'] > prev_row['tot_score'] or \
+                        row['tot_score'] == prev_row['tot_score']:
                     # remove previous row
-                    df_loc.drop(prev_ix, inplace=True)
+                    df_loc = df_loc.drop(prev_ix)
                     prev_price = float(row['price'])
                     prev_row = row
                     prev_ix = index
                 elif row['bounces'] <= prev_row['bounces'] and \
                         row['tot_score'] > prev_row['tot_score']:
                     # remove previous row as scores in current takes precedence
-                    df_loc.drop(prev_ix, inplace=True)
+                    df_loc = df_loc.drop(prev_ix)
                     prev_price = float(row['price'])
                     prev_row = row
                     prev_ix = index
                 elif row['bounces'] >= prev_row['bounces'] and \
                         row['tot_score'] < prev_row['tot_score']:
                     # remove current row as scores in current takes precedence
-                    df_loc.drop(index, inplace=True)
+                    df_loc = df_loc.drop(index)
                 elif row['bounces'] == prev_row['bounces'] and \
                         row['tot_score'] == prev_row['tot_score']:
                     # exactly same quality for row and prev_row
                     # remove current arbitrarily
-                    df_loc.drop(index, inplace=True)
+                    df_loc = df_loc.drop(index)
             else:
                 prev_price = float(row['price'])
                 prev_row = row
