@@ -19,7 +19,10 @@ class gparams:
 @dataclass
 class tjournal_params:
     # Column names that will be written in the output worksheet
-    colnames: str = 'id,timeframe,start,end,strat,type,entry,session,TP,SL,SR,tot_SR,rank_selSR,entry_time,outcome,pips,SLdiff,lasttime,pivots,pivots_lasttime,total_score,score_lasttime,score_pivot,score_pivot_lasttime,trend_i,entry_onrsi,pips_c_trend,max_min_rsi'
+    colnames: str = 'id,timeframe,start,end,strat,type,entry,session,TP,SL,'\
+        'RR,SR,tot_SR,rank_selSR,entry_time,outcome,pips,SLdiff,lasttime,' \
+        'pivots, pivots_lasttime,total_score,score_lasttime,score_pivot,' \
+        'score_pivot_lasttime,trend_i,entry_onrsi,pips_c_trend,max_min_rsi'
 
 
 @dataclass
@@ -107,7 +110,7 @@ class trade_params:
     trade_period: int = 5000
     # number of pips to add/substract to SR to calculate lasttime
     pad: int = 30
-    ## trade management 
+    # trade management
     strat: str = "standard"  # if 'exit_early' then close the trade if price 
                              # is in profit and  trade as been active for more 
                              # than trade_params.no_candles.

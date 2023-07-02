@@ -62,10 +62,13 @@ class Trade(object):
         if not hasattr(self, 'TP') and not hasattr(self, 'RR'):
             raise Exception("Neither the RR not "
                             "the TP is defined. Please provide RR")
-        elif hasattr(self, 'RR') and not self.TP:
+        elif hasattr(self, 'RR') and not hasattr(self, 'TP'):
             diff = (self.entry - self.SL) * self.RR
             self.TP = round(self.entry + diff, 4)
-
+        elif not hasattr(self, 'RR') and hasattr(self, 'TP'):
+            RR = abs(self.TP-self.entry)/abs(self.SL-self.entry)
+            self.RR = round(RR, 2)
+      
     def init_clist(self) -> None:
         """Init clist for this Trade"""
         delta = periodToDelta(trade_params.trade_period, self.timeframe)
@@ -183,8 +186,9 @@ class Trade(object):
                     self.entered = True
                     if connect is True:
                         try:
-                            entry_time = entry.get_cross_time(candle=cl,
-                                                              granularity=trade_params.granularity)
+                            entry_time = \
+                                entry.get_cross_time(candle=cl,
+                                                     granularity=trade_params.granularity)
                             self.entry_time = entry_time.isoformat()
                         except BaseException:
                             self.entry_time = cl.time.isoformat()
@@ -203,8 +207,9 @@ class Trade(object):
                     t_logger.info("Sorry, SL was hit!")
                     self.exit = SL.price
                     self.outcome = 'failure'
-                    self.pips = float(calculate_pips(self.pair,
-                                                     abs(self.SL-self.entry)))*-1
+                    self.pips = \
+                        float(calculate_pips(self.pair,
+                                             abs(self.SL-self.entry)))*-1
                     if connect is True:
                         try:
                             self.end = SL.get_cross_time(candle=cl,
@@ -225,8 +230,9 @@ class Trade(object):
                                                      abs(self.TP - self.entry)))
                     if connect is True:
                         try:
-                            self.end = TP.get_cross_time(candle=cl,
-                                                         granularity=trade_params.granularity)
+                            self.end = \
+                                TP.get_cross_time(candle=cl,
+                                                  granularity=trade_params.granularity)
                         except BaseException:
                             self.end = cl.time
                     else:

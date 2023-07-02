@@ -1,5 +1,4 @@
 import pytest
-import pdb
 
 import datetime
 from trading_journal.trade_utils import is_entry_onrsi, get_lasttime, \
@@ -47,7 +46,7 @@ def halist_factory():
                            '2009-10-26 22:00:00', 'short', 138.518, 138.66,
                           134.1, 136.852, False),
                           ('EUR_JPY', 'H8', 'EUR_JPY 21OCT2009H8',
-                           '2009-10-21 13:00:00', 'short', 121.055, 121.517,
+                           '2009-10-21 13:00:00', 'short', 121.055, 121.518,
                           120.166, 121.517, False),
                           ('EUR_JPY', 'H8', 'EUR_JPY 04JUN2020H8',
                            '2020-06-04 21:00:00', 'short', 124.058, 124.478,
