@@ -1,7 +1,6 @@
 import pytest
 import glob
 import os
-import pdb
 
 from trading_journal.trade import Trade
 from trading_journal.trade_journal import TradeJournal
@@ -9,7 +8,7 @@ from forex.candle import CandleList
 from utils import DATA_DIR
 
 
-@pytest.fixture
+@pytest.fixture(scope='session')
 def clean_tmp():
     yield
     print("Cleanup files")

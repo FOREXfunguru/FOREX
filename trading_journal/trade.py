@@ -68,7 +68,7 @@ class Trade(object):
         elif not hasattr(self, 'RR') and hasattr(self, 'TP'):
             RR = abs(self.TP-self.entry)/abs(self.SL-self.entry)
             self.RR = round(RR, 2)
-      
+ 
     def init_clist(self) -> None:
         """Init clist for this Trade"""
         delta = periodToDelta(trade_params.trade_period, self.timeframe)

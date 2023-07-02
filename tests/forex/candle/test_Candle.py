@@ -4,9 +4,9 @@
 @email: ernestolowy@gmail.com
 '''
 import pytest
-import pdb
 
 from forex.candle import Candle
+
 
 @pytest.fixture
 def CandleO():
