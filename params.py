@@ -47,7 +47,7 @@ class tradebot_params:
     RR: float = 1.5
     # adjust_SL type
     adj_SL: str = 'candles'
-    # adjust_SL_pips number of pips
+    # adjust_SL_pips number of pips. Only relevant if adj_SL='pips'
     adj_SL_pips: int = 100
     # do not consider trades with an ic with height>than 'max_height' pips
     max_height: int = 150
@@ -110,12 +110,14 @@ class trade_params:
     trade_period: int = 5000
     # number of pips to add/substract to SR to calculate lasttime
     pad: int = 30
-    # trade management
-    strat: str = "standard"  # if 'exit_early' then close the trade if price 
-                             # is in profit and  trade as been active for more 
-                             # than trade_params.no_candles.
-                             # if 'standard' then wait to check if trade finishes
-                             #  up to trade_params.numperiods
+    """
+    Trade management
+    if 'exit_early' then close the trade if price is in profit and  trade as
+    been active for more than trade_params.no_candles. if 'standard' then
+    wait to check if trade finishes up to trade_params.numperiods
+    """
+    strat: str = "standard"
     no_candles: int = 150
-    reduce_perc: int = 50  # reduce the diff between TP and entry to this 'reduce_perc' %
+    # reduce the diff between TP and entry to this 'reduce_perc' %
+    reduce_perc: int = 50
     th_bounces: int = 0.02  # pivot sensitivity for 'get_trade_type'

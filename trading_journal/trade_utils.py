@@ -240,7 +240,7 @@ def adjust_SL_pips(candle: Candle, type: str, pair: str,
         type : Trade type ('long'/ 'short').
         pair: Pair
         no_pips: Number of pips to add the S/L value.
-    
+  
     Returns:
         adjusted SL
     """

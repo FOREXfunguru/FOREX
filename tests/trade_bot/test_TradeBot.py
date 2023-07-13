@@ -107,3 +107,20 @@ def test_run_withclist_nextSR(clO_pickled, scan_pickled, clean_tmp):
         clist=clO_pickled)
     tl = tb.prepare_trades(pretrades=scan_pickled)
     assert len(tl) == 5 or len(tl) == 4
+
+
+def test_run_withclist_pips(clO_pickled, scan_pickled, clean_tmp):
+    """
+    Test tradebot using a pickled CandleList and
+      tradebot_params.adj_SL = 'pips'
+    """
+    tradebot_params.adj_SL = 'pips'
+
+    tb = TradeBot(
+        pair='AUD_USD',
+        timeframe='D',
+        start='2016-01-05 22:00:00',
+        end='2016-02-11 22:00:00',
+        clist=clO_pickled)
+    tl = tb.prepare_trades(pretrades=scan_pickled)
+    assert len(tl) == 5 or len(tl) == 4
