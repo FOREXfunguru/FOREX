@@ -113,9 +113,11 @@ class TradeBot(object):
                 sub_pvtlst = PivotList(clist=subclO)
                 if pivots_params.plot is True:
                     dt_str = startO.strftime("%d_%m_%Y_%H_%M")
-                    outfile_png = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.png"
+                    outfile_png = f"{gparams.outdir}/{self.pair}.\
+                        {self.timeframe}.{dt_str}.halist.png"
                     # print SR report to file
-                    outfile_txt = f"{gparams.outdir}/{self.pair}.{self.timeframe}.{dt_str}.halist.txt"
+                    outfile_txt = f"{gparams.outdir}/{self.pair}.\
+                        {self.timeframe}.{dt_str}.halist.txt"
                     SRlst = calc_SR(sub_pvtlst, outfile=outfile_png)
                     res = SRlst.print()
                     f = open(outfile_txt, 'w')
@@ -124,7 +126,8 @@ class TradeBot(object):
                 else:
                     SRlst = calc_SR(sub_pvtlst)
                     res = SRlst.print()
-                tb_logger.info(f"Identified HAreaList for time:{startO.isoformat()}")
+                tb_logger.info("Identified HAreaList for"
+                               f"time:{startO.isoformat()}")
                 tb_logger.info(f"{res}")
                 loop = 0
 
@@ -157,7 +160,8 @@ class TradeBot(object):
 
                 prepare = False
                 if c_candle.indecision_c(ic_perc=gparams.ic_perc) is True and \
-                        len(SRlst.halist) >= 3 and c_candle.height(pair=self.pair) \
+                        len(SRlst.halist) >= 3 and \
+                        c_candle.height(pair=self.pair) \
                         < tradebot_params.max_height:
                     prepare = True
                 elif type == 'short' and c_candle.colour == 'red' and \
