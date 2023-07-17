@@ -99,8 +99,8 @@ class trade_params:
     # outcome
     numperiods: int = 300
     # number of candles from start of trade to create a time interval that will
-    # be assessed. This param is different from trade_params.numperiods, as 
-    # this only sets the time interval 
+    # be assessed. This param is different from trade_params.numperiods, as
+    # this only sets the time interval
     interval: int = 1500
     # granularity for HArea.get_cross_time
     granularity: str = 'H2'

@@ -12,6 +12,16 @@ tb_logger.setLevel(logging.DEBUG)
 
 
 @pytest.fixture
+def tb_object():
+    tb = TradeBot(
+            pair='EUR_GBP',
+            timeframe='D',
+            start='2020-06-29 22:00:00',
+            end='2020-07-01 22:00:00')
+    return tb
+
+
+@pytest.fixture
 def scan_pickled(clO_pickled):
     """Prepare a pickled file with potential trades identified by scan"""
     tb = TradeBot(
