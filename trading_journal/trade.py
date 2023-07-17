@@ -59,13 +59,16 @@ class Trade(object):
         self.entered = False
 
     def _validate_params(self):
-        if not hasattr(self, 'TP') and not hasattr(self, 'RR'):
+        if (getattr(self, 'TP', None) is None) and \
+                (getattr(self, 'RR', None) is None):
             raise Exception("Neither the RR not "
                             "the TP is defined. Please provide RR")
-        elif hasattr(self, 'RR') and not hasattr(self, 'TP'):
+        elif (getattr(self, 'RR', None) is not None) and \
+                (getattr(self, 'TP', None) is None):
             diff = (self.entry - self.SL) * self.RR
             self.TP = round(self.entry + diff, 4)
-        elif not hasattr(self, 'RR') and hasattr(self, 'TP'):
+        elif (getattr(self, 'RR', None) is None) and \
+                (getattr(self, 'TP', None) is not None):
             RR = abs(self.TP-self.entry)/abs(self.SL-self.entry)
             self.RR = round(RR, 2)
  

@@ -217,7 +217,8 @@ class TradeBot(object):
                 elif tradebot_params.adj_SL == 'pips':
                     SL = adjust_SL_pips(pret.candle,
                                         pret.type,
-                                        pair=self.pair)
+                                        pair=self.pair,
+                                        no_pips=tradebot_params.adj_SL_pips)
                 else:
                     SL, TP = adjust_SL_nextSR(pret.SRlst,
                                               pret.sel_ix,

@@ -239,7 +239,8 @@ def adjust_SL_pips(candle: Candle, type: str, pair: str,
         candle : Candle object for which SL will be adjusted
         type : Trade type ('long'/ 'short').
         pair: Pair
-        no_pips: Number of pips to add the S/L value.
+        no_pips: Number of pips to add to the highest/lowest of 
+        the candle to calculate the S/L value.
   
     Returns:
         adjusted SL
