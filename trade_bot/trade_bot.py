@@ -113,11 +113,11 @@ class TradeBot(object):
                 sub_pvtlst = PivotList(clist=subclO)
                 if pivots_params.plot is True:
                     dt_str = startO.strftime("%d_%m_%Y_%H_%M")
-                    outfile_png = f"{gparams.outdir}/{self.pair}.\
-                        {self.timeframe}.{dt_str}.halist.png"
+                    outfile_png = (f"{gparams.outdir}/{self.pair}."
+                                   f"{self.timeframe}.{dt_str}.halist.png")
                     # print SR report to file
-                    outfile_txt = f"{gparams.outdir}/{self.pair}.\
-                        {self.timeframe}.{dt_str}.halist.txt"
+                    outfile_txt = (f"{gparams.outdir}/{self.pair}."
+                                   f"{self.timeframe}.{dt_str}.halist.txt")
                     SRlst = calc_SR(sub_pvtlst, outfile=outfile_png)
                     res = SRlst.print()
                     f = open(outfile_txt, 'w')
