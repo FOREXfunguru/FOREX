@@ -3,6 +3,7 @@ import numpy as np
 import logging
 import math
 import re
+
 from trading_journal.trade import Trade
 from params import tjournal_params
 from openpyxl import Workbook
@@ -16,14 +17,14 @@ tj_logger.setLevel(logging.INFO)
 
 
 class TradeJournal(object):
-    '''
+    """
     Constructor
 
     Class variables:
         url: path to the .xlsx file with the trade journal
         worksheet: Name of the worksheet that will be used to create 
                    the object. i.e. 'trading_journal'
-    '''
+    """
     __slots__ = ['url', 'worksheet', 'df']
 
     def __init__(self, url: str, worksheet: str):
@@ -34,10 +35,16 @@ class TradeJournal(object):
         # pandas dataframe
         try:
             xls_file = pd.ExcelFile(url)
-            df = xls_file.parse(worksheet, converters={'start': str,
-                                                       'end': str, 'trend_i': str})
+            df = xls_file.parse(worksheet, converters={
+                "id": str,
+                "start": str,
+                "end": str,
+                "trend_i": str})
+            df = df.dropna(how='all')
+
             if df.empty is True:
-                raise Exception("No trades fetched for url:{0} and worksheet:{1}".format(self.url, self.worksheet))
+                raise Exception(f"No trades fetched for url:{self.url} and "
+                                "worksheet:{self.worksheet}")
             # replace n.a. string by NaN
             df = df.replace('n.a.', np.NaN)
             # remove trailing whitespaces from col names
@@ -51,11 +58,13 @@ class TradeJournal(object):
     def fetch_trades(self) -> List[Trade]:
         '''Function to fetch a list of Trade objects'''
         trade_list, args = [], {}
-        for index, row in self.df.iterrows():
-            pair = re.split(r'\.| ', row['id'])[0]
-            args = {'pair': pair}
-            for c in row.keys():
-                args[c] = row[c]
+        for _, row in self.df.iterrows():
+            if isinstance(row['id'], float):
+                continue
+            elms = re.split(r'\.| ', row['id'])
+            assert len(elms) >= 1, "Error parsing the trade id"
+            pair = elms[0]
+            args = {'pair': pair, **row}
             t = Trade(**args)
             trade_list.append(t)
 
@@ -81,9 +90,7 @@ class TradeJournal(object):
         number_s = number_f = tot_pips = 0
         for index, row in self.df.iterrows():
             pair = row['id'].split(" ")[0]
-            args = {'pair': pair}
-            for c in row.keys():
-                args[c] = row[c]
+            args = {'pair': pair, **row}
             t = Trade(**args, init_clist=True)
             if t.strat not in strat_l:
                 continue
