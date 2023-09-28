@@ -15,7 +15,7 @@ def try_parsing_date(text):
     Returns:
         datetime object
     '''
-    for fmt in ('%Y-%m-%dT%H:%M:%S', '%Y-%m-%d %H:%M:%S'):
+    for fmt in ('%Y-%m-%dT%H:%M:%S', '%Y-%m-%d %H:%M:%S', '%d/%m/%Y %H:%M:%S'):
         try:
             return datetime.strptime(text, fmt)
         except ValueError:
