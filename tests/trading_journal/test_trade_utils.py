@@ -9,6 +9,7 @@ from trading_journal.trade import Trade
 from forex.harea import HAreaList, HArea
 import numpy as np
 
+
 @pytest.fixture
 def halist_factory():
     hlist = []
@@ -105,7 +106,6 @@ def test_get_lasttime(start, type, SR, SL, TP, entry, lasttime, clO_pickled):
         clist=clO_pickled)
 
     assert get_lasttime(t) == lasttime
-
 
 
 @pytest.mark.parametrize("start,"
@@ -205,6 +205,7 @@ def test_calc_pips_c_trend(pair, id, timeframe, start, type, SR, SL, TP, entry, 
 
     assert pips_c_trend == calc_pips_c_trend(t)
 """
+
 
 @pytest.mark.parametrize("start,"
                          "end,"

@@ -19,20 +19,20 @@ def test_candlelist_inst(clO):
     assert len(clO) == 2
 
 
-def test_pickle_dump(clO):
+def test_pickle_dump(clO, tmp_path):
     log = logging.getLogger('Test for pickle_dump')
     log.debug('pickle_dump')
 
-    clO.pickle_dump(f"{DATA_DIR}/out/clist.pckl")
+    clO.pickle_dump(f"{tmp_path}/clist.pckl")
 
-    assert os.path.exists(DATA_DIR+"/out/clist.pckl") == 1
+    assert os.path.exists(DATA_DIR+"/clist.pckl") == 1
 
 
-def test_pickle_load(clean_tmp):
+def test_pickle_load():
     log = logging.getLogger('Test for pickle_load')
     log.debug('pickle_load')
 
-    loadedCL = CandleList.pickle_load(DATA_DIR+"/out/clist.pckl")
+    loadedCL = CandleList.pickle_load(DATA_DIR+"/clist.pckl")
     assert loadedCL.instrument == 'AUD_USD'
     assert len(loadedCL) == 2
 
@@ -55,9 +55,10 @@ def test_rsibounces(clO_pickled):
     dict1 = clO_pickled.calc_rsi_bounces()
 
     dict2 = {'number': 31,
-             'lengths': [1, 1, 3, 4, 5, 7, 1, 1, 
-             4, 5, 4, 3, 1, 1, 4, 5, 1, 2, 1, 1, 
-             1, 1, 12, 7, 14, 3, 8, 2, 3, 1, 3]}
+             'lengths': [1, 1, 3, 4, 5, 7, 1, 1,
+                         4, 5, 4, 3, 1, 1, 4, 5,
+                         1, 2, 1, 1, 1, 1, 12, 7, 
+                         14, 3, 8, 2, 3, 1, 3]}
 
     assert dict1 == dict2
 
@@ -128,9 +129,12 @@ def test_slice_with_start_end(clO_pickled):
 def test_last_time(clO_pickled):
     log = logging.getLogger('Test for last_time function')
     log.debug('last_time')
-    subCl1 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2017, 1, 3, 22, 0))
-    subCl2 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2019, 7, 19, 22, 0))
-    subCl3 = clO_pickled.slice(start=clO_pickled.candles[0].time, end=datetime.datetime(2018, 1, 26, 22, 0))
+    subCl1 = clO_pickled.slice(start=clO_pickled.candles[0].time,
+                               end=datetime.datetime(2017, 1, 3, 22, 0))
+    subCl2 = clO_pickled.slice(start=clO_pickled.candles[0].time,
+                               end=datetime.datetime(2019, 7, 19, 22, 0))
+    subCl3 = clO_pickled.slice(start=clO_pickled.candles[0].time,
+                               end=datetime.datetime(2018, 1, 26, 22, 0))
 
     lt1 = subCl1.get_lasttime(price=0.71754, type='long')
     lt2 = subCl2.get_lasttime(price=0.70621, type='short')
@@ -164,7 +168,3 @@ def test_add_two_clists(clO, clO1):
 
     newClO = clO + clO1
     assert len(newClO.candles) == 4
-
-
-
-

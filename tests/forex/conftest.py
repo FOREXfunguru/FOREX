@@ -36,4 +36,3 @@ def seglist_pickled():
 def pivotlist(clO_pickled):
     """Obtain a PivotList object"""
     return PivotList(clist=clO_pickled)
-

@@ -1,7 +1,6 @@
 import datetime
 import os
 
-from utils import DATA_DIR
 from forex.pivot import PivotList
 
 
@@ -29,12 +28,12 @@ def test_in_area(pivotlist):
     assert len(pl_inarea) == 8
 
 
-def test_plot_pivots(pivotlist, clean_tmp):
+def test_plot_pivots(pivotlist, tmp_path):
     """
     Test plot_pivots
     """
-    outfile = f"{DATA_DIR}/out/{pivotlist.clist.instrument}.png"
-    outfile_rsi = f"{DATA_DIR}/out/{pivotlist.clist.instrument}.final_rsi.png"
+    outfile = f"{tmp_path}/{pivotlist.clist.instrument}.png"
+    outfile_rsi = f"{tmp_path}/{pivotlist.clist.instrument}.final_rsi.png"
 
     pivotlist.clist.calc_rsi()
     pivotlist.plot_pivots(outfile_prices=outfile,
@@ -64,10 +63,10 @@ def test_fetch_by_time(pivotlist):
     assert rpt.candle.time == datetime.datetime(2014, 10, 2, 21, 0)
 
 
-def test_pivots_report(pivotlist, clean_tmp):
+def test_pivots_report(pivotlist, tmp_path):
     """Get a PivotList report"""
 
-    outfile = f"{DATA_DIR}/out/{pivotlist.clist.instrument}.preport.txt"
+    outfile = f"{tmp_path}/{pivotlist.clist.instrument}.preport.txt"
     pivotlist.pivots_report(outfile=outfile)
 
 
