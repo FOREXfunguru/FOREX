@@ -1,7 +1,6 @@
 import os
 
 from trading_journal.trade_journal import TradeJournal
-from utils import DATA_DIR
 
 
 def test_fetch_trades(tjO):
@@ -18,10 +17,10 @@ def test_win_rate(tjO):
     assert tot_pips == 274.5
 
 
-def test_write_tradelist(t_object_list, clean_tmp):
-    td = TradeJournal(url=DATA_DIR + "/out/testCounter1.xlsx",
+def test_write_tradelist(t_object_list, tmp_path):
+    td = TradeJournal(url=f"{tmp_path}/testCounter1.xlsx",
                       worksheet="trading_journal")
 
     td.write_tradelist(t_object_list, 'outsheet')
 
-    assert os.path.exists(DATA_DIR + "/out/testCounter1.xlsx") == 1
+    assert os.path.exists(f"{tmp_path}/testCounter1.xlsx") == 1

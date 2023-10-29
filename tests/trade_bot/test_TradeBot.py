@@ -1,14 +1,24 @@
 import logging
 import os
 import pytest
+import glob
 
 from params import tradebot_params, pivots_params
 from trade_bot.trade_bot import TradeBot
+from forex.candle import CandleList
 from utils import DATA_DIR
 
 # create logger
 tb_logger = logging.getLogger(__name__)
 tb_logger.setLevel(logging.DEBUG)
+
+
+@pytest.fixture
+def clO_pickled():
+    clO = CandleList.pickle_load(DATA_DIR+"/clist_audusd_2010_2020.pckl")
+    clO.calc_rsi()
+
+    return clO
 
 
 @pytest.fixture
@@ -22,7 +32,7 @@ def tb_object():
 
 
 @pytest.fixture
-def scan_pickled(clO_pickled):
+def scan_pickled(clO_pickled, tmp_path):
     """Prepare a pickled file with potential trades identified by scan"""
     tb = TradeBot(
         pair='AUD_USD',
@@ -30,17 +40,27 @@ def scan_pickled(clO_pickled):
         start='2016-01-05 22:00:00',
         end='2016-02-11 22:00:00',
         clist=clO_pickled)
-    outfile = tb.scan(prefix=f"{DATA_DIR}/out/test_scan")
+    outfile = tb.scan(prefix=f"{tmp_path}")
     return outfile
 
 
-def test_scan(tb_object, clean_tmp):
+@pytest.fixture
+def clean_tmp():
+    yield
+    print("Cleanup files")
+    files = glob.glob(DATA_DIR+"/out/*")
+
+    for f in files:
+        os.remove(f)
+
+
+def test_scan(tb_object, tmp_path):
     """Check the 'scan' function"""
-    outfile = tb_object.scan(prefix=f"{DATA_DIR}/out/test_scan")
+    outfile = tb_object.scan(prefix=f"{tmp_path}")
     assert os.path.isfile(outfile)
 
 
-def test_scan1(clean_tmp):
+def test_scan1(tmp_path):
     """
     Test the scan() function with a certain TradeBot interval
     """
@@ -50,11 +70,11 @@ def test_scan1(clean_tmp):
         timeframe='D',
         start='2016-01-05 22:00:00',
         end='2016-02-11 22:00:00')
-    outfile = tb.scan(prefix=f"{DATA_DIR}/out/test_scan")
+    outfile = tb.scan(prefix=f"{tmp_path}/")
     assert os.path.isfile(outfile)
 
 
-def test_scan_withclist(clO_pickled, clean_tmp):
+def test_scan_withclist(clO_pickled, tmp_path):
     """
     Test the scan() method using a pickled CandleList
     """
@@ -65,11 +85,11 @@ def test_scan_withclist(clO_pickled, clean_tmp):
         start='2016-01-05 22:00:00',
         end='2016-02-11 22:00:00',
         clist=clO_pickled)
-    outfile = tb.scan(prefix=f"{DATA_DIR}/out/test_scan")
+    outfile = tb.scan(prefix=f"{tmp_path}")
     assert os.path.isfile(outfile)
 
 
-def test_scan_withclist_future(clO_pickled, clean_tmp):
+def test_scan_withclist_future(clO_pickled, tmp_path):
     """
     Test tradebot using a pickled CandleList and using an end TradeBot time
     post clO_pickled end time. This scan() invokation will not return any
@@ -82,7 +102,7 @@ def test_scan_withclist_future(clO_pickled, clean_tmp):
         start='2020-11-15 22:00:00',
         end='2020-11-23 22:00:00',
         clist=clO_pickled)
-    outfile = tb.scan(prefix=f"{DATA_DIR}/out/test_scan")
+    outfile = tb.scan(prefix=f"{tmp_path}")
     with pytest.raises(TypeError):
         assert os.path.isfile(outfile)
 
@@ -102,7 +122,8 @@ def test_prepare_trades(clO_pickled, scan_pickled):
     assert len(tl) == 5 or len(tl) == 4
 
 
-def test_run_withclist_nextSR(clO_pickled, scan_pickled, clean_tmp):
+def test_run_withclist_nextSR(clO_pickled,
+                              scan_pickled):
     """
     Test tradebot using a pickled CandleList and
       tradebot_params.adj_SL = 'nextSR'
@@ -119,7 +140,9 @@ def test_run_withclist_nextSR(clO_pickled, scan_pickled, clean_tmp):
     assert len(tl) == 5 or len(tl) == 4
 
 
-def test_run_withclist_pips(clO_pickled, scan_pickled, clean_tmp):
+def test_run_withclist_pips(clO_pickled,
+                            scan_pickled,
+                            clean_tmp):
     """
     Test tradebot using a pickled CandleList and
       tradebot_params.adj_SL = 'pips'

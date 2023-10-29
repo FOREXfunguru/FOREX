@@ -1,20 +1,17 @@
 import pytest
-import glob
-import os
 
 from trading_journal.trade import Trade
 from trading_journal.trade_journal import TradeJournal
+from forex.candle import CandleList
 from utils import DATA_DIR
 
-
+ 
 @pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    files1 = glob.glob(DATA_DIR+"/out/*.png")
-    files2 = glob.glob(DATA_DIR+"/out/*.xlsx")
-    for f in files1 + files2:
-        os.remove(f)
+def clO_pickled():
+    clO = CandleList.pickle_load(DATA_DIR+"/clist_audusd_2010_2020.pckl")
+    clO.calc_rsi()
+
+    return clO
 
 
 @pytest.fixture

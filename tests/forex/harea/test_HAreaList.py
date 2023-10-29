@@ -1,7 +1,6 @@
 from forex.harea import HAreaList
 from forex.harea import HArea
 from forex.candle import Candle
-from utils import DATA_DIR
 
 import pytest
 import numpy as np
@@ -65,9 +64,9 @@ def test_print(hlist_factory):
     print(res)
 
 
-def test_plot(hlist_factory, clO_pickled, clean_tmp):
+def test_plot(hlist_factory, clO_pickled, tmp_path):
     '''Test 'plot' function'''
 
     halist = HAreaList(halist=hlist_factory)
 
-    halist.plot(clO_pickled, outfile=f"{DATA_DIR}/out/AUD_USD.halist.png")
+    halist.plot(clO_pickled, outfile=f"{tmp_path}/AUD_USD.halist.png")

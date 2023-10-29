@@ -1,11 +1,9 @@
 import pytest
 import logging
-import pdb
-import os
-from datetime import datetime
 
+from datetime import datetime
 from api.oanda.connect import Connect
-from utils import DATA_DIR
+
 
 @pytest.fixture
 def conn_o():
@@ -14,15 +12,10 @@ def conn_o():
 
     # creating a Connect object
     conn = Connect(
-        instrument="AUD_USD",
-        granularity='D')
+                   instrument="AUD_USD",
+                   granularity='D')
     return conn
 
-@pytest.fixture
-def clean_tmp():
-    yield
-    print("Cleanup files")
-    os.remove(DATA_DIR+"/ser.dmp")
 
 def test_query_s_e(conn_o):
     log = logging.getLogger('test_query_s_e')
@@ -33,6 +26,7 @@ def test_query_s_e(conn_o):
     assert len(clO) == 3
     assert isinstance(clO.times[0], datetime)
 
+
 def test_query_c(conn_o):
     log = logging.getLogger('test_query_c')
     log.debug("Test for 'query' function with a start and count parameters")
@@ -40,6 +34,7 @@ def test_query_c(conn_o):
     assert clO.instrument == 'AUD_USD'
     assert clO.granularity == 'D'
     assert len(clO) == 1
+
 
 @pytest.mark.parametrize("i,g,s,e,l", [('GBP_NZD', 'D', '2018-11-23T22:00:00', '2019-01-02T22:00:00', 27),
                                      ('GBP_AUD', 'D', '2002-11-23T22:00:00', '2007-01-02T22:00:00', 877),
@@ -57,15 +52,17 @@ def test_query_c(conn_o):
                                      ('AUD_USD', 'H12', '2000-11-21T22:00:00', '2002-06-15T22:00:00', 32)])
 def test_m_queries(i, g, s, e, l):
     log = logging.getLogger('test_query_ser')
-    log.debug("Test for 'query' function with a mix of instruments and different datetimes")
+    log.debug("Test for 'query' function with a mix of "
+              "instruments and different datetimes")
 
     conn = Connect(
         instrument=i,
         granularity=g)
 
     clO = conn.query(start=s,
-                       end=e)
+                     end=e)
     assert len(clO) == l
+
 
 def test_query_M30():
     log = logging.getLogger('test_query_M30')
@@ -76,7 +73,7 @@ def test_query_M30():
         granularity='M30')
 
     clO = conn.query(start='2018-05-21T21:00:00',
-                       end='2018-05-23T21:00:00')
+                     end='2018-05-23T21:00:00')
     assert len(clO) == 97
 
 
