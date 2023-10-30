@@ -1,10 +1,12 @@
 from __future__ import division
 
 import logging
+import pdb
 
 from datetime import datetime, timedelta
 from forex.pivot import PivotList
 from forex.harea import HArea
+from forex.candle import Candle
 from utils import calculate_pips, add_pips2price, try_parsing_date, \
     substract_pips2price, periodToDelta
 from params import trade_params
@@ -13,6 +15,12 @@ from api.oanda.connect import Connect
 # create logger
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
+
+# Allowed Trade class attribures
+ALLOWED_ATTRBS = ['entered', 'start', 'end', 'pair', 'timeframe',
+                  'outcome', 'entry', 'exit', 'entry_time', 'type',
+                  'SL', 'TP', 'SR', 'RR', 'pips', 'clist', 'strat',
+                  'tot_SR', 'rank_selSR']
 
 
 class Trade(object):
@@ -41,12 +49,8 @@ class Trade(object):
                outcome was failure
         clist: CandleList object used to represent this trade"""
     def __init__(self, init_clist: bool = False, **kwargs) -> None:
-        allowed_keys = ['entered', 'start', 'end', 'pair', 'timeframe',
-                        'outcome', 'entry', 'exit', 'entry_time', 'type',
-                        'SL', 'TP', 'SR', 'RR', 'pips', 'clist', 'strat',
-                        'tot_SR', 'rank_selSR']
         self.__dict__.update((k, v) for k, v in kwargs.items()
-                             if k in allowed_keys)
+                             if k in ALLOWED_ATTRBS)
         if init_clist and not hasattr(self, 'clist'):
             self.init_clist()
         self.__dict__.update({'start':
@@ -58,7 +62,7 @@ class Trade(object):
         self.SLdiff = self.get_SLdiff()
         self.entered = False
 
-    def _validate_params(self):
+    def _validate_params(self) -> None:
         if (getattr(self, 'TP', None) is None) and \
                 (getattr(self, 'RR', None) is None):
             raise Exception("Neither the RR not "
@@ -71,7 +75,17 @@ class Trade(object):
                 (getattr(self, 'TP', None) is not None):
             RR = abs(self.TP-self.entry)/abs(self.SL-self.entry)
             self.RR = round(RR, 2)
- 
+
+    def _calc_period(self) -> int:
+        """Calculate number of hours for each period
+        depending on the timeframe"""
+        period = None
+        if self.timeframe == "D":
+            period = 24
+        else:
+            period = int(self.timeframe.replace('H', ''))
+        return period
+
     def init_clist(self) -> None:
         """Init clist for this Trade"""
         delta = periodToDelta(trade_params.trade_period, self.timeframe)
@@ -98,17 +112,76 @@ class Trade(object):
 
         return candle.time
 
-    def _adjust_tp(self):
+    def _adjust_tp(self) -> float:
         """Adjust TP when trade_params.strat==exit early"""
         tp_pips = float(calculate_pips(self.pair, self.TP))
         entry_pips = float(calculate_pips(self.pair, self.entry))
         diff = abs(tp_pips-entry_pips)
         tp_pips = trade_params.reduce_perc*diff/100
-        if self.type == 'long':
+        if self.type == "long":
             new_tp = add_pips2price(self.pair, self.entry, tp_pips)
         else:
             new_tp = substract_pips2price(self.pair, self.entry, tp_pips)
         return new_tp
+
+    def _calc_HAreas(self) -> tuple[HArea, HArea, HArea]:
+        """Private method that returns an entry, SL and TP HArea objects"""
+
+        harealst = []
+        for attrb in ["entry", "SL", "TP"]:
+            price = getattr(self, attrb)
+            harea_obj = HArea(price=price,
+                              instrument=self.pair,
+                              pips=trade_params.hr_pips,
+                              granularity=self.timeframe)
+            harealst.append(harea_obj)
+
+        return (harealst[0], harealst[1], harealst[2])
+
+    def _fetch_candle(self, d: datetime) -> Candle:
+        """Private method to query the API to get a single candle
+        if it is not defined in self.clist.
+
+        It will return None if market is closed
+        """
+        conn = Connect(
+            instrument=self.pair,
+            granularity=self.timeframe)
+        clO = conn.query(start=d.isoformat(), end=d.isoformat())
+        if len(clO.candles) == 1:
+            return clO.candles[0]
+        elif len(clO.candles) > 1:
+            raise Exception("No valid number of candles in "
+                            "CandleList")
+
+    def _check_candle_overlap(self, cl: Candle, price: float) -> bool:
+        """Method to check if Candle 'cl' overlaps 'price'"""
+        return cl.l <= price <= cl.h
+
+    def _end_trade(self,
+                   connect: bool,
+                   cl: Candle,
+                   harea: HArea) -> None:
+        """End trade"""
+        end = None
+        if connect is True:
+            end = (harea.get_cross_time(candle=cl,
+                   granularity=trade_params.granularity))
+        else:
+            end = cl.time
+        self.end = end
+        self.exit = harea.price
+
+    def _calc_profit(self, cl: Candle, price: float) -> float:
+        """Calculate number of pips between cl.c and 'price'"""
+        # pips are calculated using the Candle close price
+        if (cl.c - price) < 0:
+            sign = -1 if self.type == 'long' else 1
+        else:
+            sign = 1 if self.type == 'long' else -1
+        pips = float(calculate_pips(self.pair,
+                                    abs(cl.c - price))) * sign
+        return pips
 
     def run_trade(self, expires: int = 2, connect=True) -> None:
         """Run the trade until conclusion from a start date.
@@ -119,145 +192,68 @@ class Trade(object):
         """
         t_logger.info(f"Run run_trade with id: {self.pair}:{self.start}")
 
-        entry = HArea(price=self.entry,
-                      instrument=self.pair,
-                      pips=trade_params.hr_pips,
-                      granularity=self.timeframe)
-        SL = HArea(price=self.SL,
-                   instrument=self.pair,
-                   pips=trade_params.hr_pips,
-                   granularity=self.timeframe)
-        TP = HArea(price=self.TP,
-                   instrument=self.pair,
-                   pips=trade_params.hr_pips,
-                   granularity=self.timeframe)
-        period = None
-        if self.timeframe == "D":
-            period = 24
-        else:
-            period = int(self.timeframe.replace('H', ''))
+        (entry, SL, TP) = self._calc_HAreas()
+        period = self._calc_period()
 
         # generate a range of dates starting at self.start and ending
-        # trade_params.numperiods later in order to assess the outcome
+        # trade_params.interval later in order to assess the outcome
         # of trade and also the entry time
-        # date_list will contain a list with datetimes that will be used for
-        # running self
         date_list = [self.start + timedelta(hours=x*period)
                      for x in range(0, trade_params.interval)]
         count = 0
         self.entered = False
         for d in date_list:
+            dtnow = datetime.now()
             if d.weekday() == 5:
                 continue
             count += 1
-            if expires is not None:
-                if count > expires and self.entered is False:
-                    t_logger.warning("Trade entry expired!")
-                    self.outcome = 'n.a.'
-                    break
-            dtnow = datetime.now()
-            if d > dtnow:
-                self.outcome = 'n.a.'
-                self.entered = False
-                t_logger.info("Run trade in the future. Skipping...")
-                break
+            if (count > expires or d > dtnow) and self.entered is False:
+                t_logger.warning("Trade entry expired or is in the future!")
+                self.outcome = "n.a."
+                self.pips = 0
+                return
             cl = self.clist[d]
-            if cl is None and connect is True:
-                try:
-                    conn = Connect(
-                        instrument=self.pair,
-                        granularity=self.timeframe)
-                    clO = conn.query(start=d.isoformat(), end=d.isoformat())
-                    if len(clO.candles) == 1:
-                        cl = clO.candles[0]
-                    elif len(clO.candles) > 1:
-                        raise Exception("No valid number of candles in "
-                                        "CandleList")
-                    else:
-                        # market closed
-                        count -= 1
-                        continue
-                except BaseException:
+            if cl is None:
+                if connect is True:
+                    cl = self._fetch_candle(d=d)
+                if cl is None:
                     count -= 1
                     continue
-            elif cl is None and connect is False:
-                count -= 1
-                continue
             if self.entered is False:
-                if cl.l <= entry.price <= cl.h:
+                if self._check_candle_overlap(cl, self.entry):
                     t_logger.info("Trade entered")
                     self.entered = True
                     if connect is True:
                         try:
-                            entry_time = \
-                                entry.get_cross_time(candle=cl,
-                                                     granularity=trade_params.granularity)
+                            entry_time = (entry.get_cross_time(candle=cl,
+                                          granularity=trade_params.granularity))
                             self.entry_time = entry_time.isoformat()
                         except BaseException:
                             self.entry_time = cl.time.isoformat()
                     else:
                         self.entry_time = cl.time.isoformat()
             if self.entered is True:
-                if trade_params.strat == 'exit_early' and \
-                    count >= trade_params.no_candles and \
-                        not hasattr(self, 'reduced_TP'):
-                    new_tp = self._adjust_tp()
-                    self.TP = new_tp
-                    TP.price = new_tp
-                    self.reduced_TP = True
                 # check if failure
-                if cl.l <= SL.price <= cl.h:
+                if self._check_candle_overlap(cl, SL.price):
                     t_logger.info("Sorry, SL was hit!")
-                    self.exit = SL.price
-                    self.outcome = 'failure'
-                    self.pips = \
-                        float(calculate_pips(self.pair,
-                                             abs(self.SL-self.entry)))*-1
-                    if connect is True:
-                        try:
-                            self.end = SL.get_cross_time(candle=cl,
-                                                         granularity=trade_params.granularity)
-                        except BaseException:
-                            self.end = cl.time
-                    else:
-                        self.end = cl.time
-                    break
+                    self.outcome = "failure"
+                    self.pips = self._calc_profit(cl, price=SL.price)
+                    self._end_trade(connect=connect, cl=cl, harea=SL)
+                    return
                 # check if success
-                if cl.l <= TP.price <= cl.h:
+                if self._check_candle_overlap(cl, TP.price):
                     t_logger.info("Great, TP was hit!")
-                    # if hasattr(self, 'reduced_TP'):
-                    #    self.outcome = 'exit_early'
-                    self.outcome = 'success'
-                    self.exit = TP.price
+                    self.outcome = "success"
                     self.pips = float(calculate_pips(self.pair,
-                                                     abs(self.TP - self.entry)))
-                    if connect is True:
-                        try:
-                            self.end = \
-                                TP.get_cross_time(candle=cl,
-                                                  granularity=trade_params.granularity)
-                        except BaseException:
-                            self.end = cl.time
-                    else:
-                        self.end = cl.time
-                    break
+                                                     abs(self.TP -
+                                                         self.entry)))
+                    self._end_trade(connect=connect, cl=cl, harea=TP)
+                    return
                 if count >= trade_params.numperiods:
                     t_logger.warning("No outcome could be calculated in the "
                                      "trade_params.numperiods interval")
                     self.outcome = "n.a."
-                    break
-        if self.outcome != 'failure' and self.outcome != 'success' \
-                and self.outcome != 'exit_early' and self.entered \
-                and cl is not None:
-            self.outcome = "n.a."
-            # pips are calculated using the Candle close price
-            if (cl.c - self.entry) < 0:
-                sign = -1 if self.type == 'long' else 1
-            else:
-                sign = 1 if self.type == 'long' else -1
-            self.pips = float(calculate_pips(self.pair,
-                                             abs(cl.c - self.entry))) * sign
-            self.end = cl.time
+                    return
         t_logger.info("Done run_trade")
 
     def get_SLdiff(self) -> float:
