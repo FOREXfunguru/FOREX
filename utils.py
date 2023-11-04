@@ -188,3 +188,22 @@ def correct_timeframe(settings, timeframe):
                 settings.set(section_name, key, str(new_pips))
 
     return settings
+
+
+def calculate_profit(prices: tuple[float, float],
+                     type: str, pair: str) -> float:
+    """Function to calculate the profit (in pips)
+    defined as the difference between 2 prices.
+
+    Args:
+        prices: tuple with the 2 prices to compare
+        type: ['long'/'short']
+        pair: instrument
+    """
+    if (prices[0] - prices[1]) < 0:
+        sign = -1 if type == "long" else 1
+    else:
+        sign = 1 if type == "long" else -1
+    pips = float(calculate_pips(pair,
+                                abs(prices[0]-prices[1]))) * sign
+    return pips

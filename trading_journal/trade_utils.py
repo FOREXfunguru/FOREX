@@ -310,23 +310,3 @@ def adjust_SL_candles(type: str, clObj: CandleList, number: int = 7) -> float:
             if c.l < SL:
                 SL = c.l
     return SL
-
-
-def calculate_profit(price1: float, price2: float,
-                     type: str, pair: str) -> float:
-    """Function to calculate the profit (in pips)
-    defined as the difference between 2 prices.
-
-    Args:
-        price1: first price
-        price2: second price
-        type: ['long'/'short']
-        pair: instrument
-    """
-    if (price1 - price2) < 0:
-        sign = -1 if type == "long" else 1
-    else:
-        sign = 1 if type == "long" else -1
-    pips = float(calculate_pips(pair,
-                                abs(price1-price2))) * sign
-    return pips

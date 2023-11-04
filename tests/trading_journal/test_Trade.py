@@ -40,11 +40,11 @@ def test_run_single_trade(clO_pickled):
 
 @pytest.mark.parametrize("start,type,SL,TP,entry,outcome,pips", [
         ("2017-05-10 21:00:00", "long", 0.73176, 0.75323, 0.73953,
-         "success", 137.0),
+         "success", 136.7),
         ("2017-06-08 21:00:00", "short", 0.75715, 0.74594, 0.75255,
-         "failure", -46),
+         "failure", -45.5),
         ("2023-01-10 21:00:00", "short", 0.70655, 0.66787, 0.68875,
-         "failure", -178.0)])
+         "failure", -178.5)])
 def test_run_trade(start, type, SL, TP, entry, outcome, pips,
                    clO_pickled):
     """This test checks the progression of the Trade and checks if the outcome 
@@ -109,7 +109,7 @@ trade_data2 = [
     ('2018-06-21 22:00:00', 'long', 0.72948, 0.75621, 0.73873),
     ('2018-06-26 22:00:00', 'short', 0.75349, 0.72509, 0.73929)]
 
-pips1 = [(-92.5), (142)]
+pips1 = [(-92.3), (141.9)]
 u_trade_data2 = [(*trade, pip) for trade, pip in zip(trade_data2, pips1)]
 
 

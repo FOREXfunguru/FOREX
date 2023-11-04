@@ -1,14 +1,18 @@
 from __future__ import division
 
 import logging
-import pdb
 
 from datetime import datetime, timedelta
 from forex.pivot import PivotList
 from forex.harea import HArea
 from forex.candle import Candle
-from utils import calculate_pips, add_pips2price, try_parsing_date, \
-    substract_pips2price, periodToDelta
+from utils import (
+    calculate_pips,
+    add_pips2price,
+    try_parsing_date,
+    substract_pips2price,
+    periodToDelta)
+from utils import calculate_profit
 from params import trade_params
 from api.oanda.connect import Connect
 
@@ -172,17 +176,6 @@ class Trade(object):
         self.end = end
         self.exit = harea.price
 
-    def _calc_profit(self, cl: Candle, price: float) -> float:
-        """Calculate number of pips between cl.c and 'price'"""
-        # pips are calculated using the Candle close price
-        if (cl.c - price) < 0:
-            sign = -1 if self.type == 'long' else 1
-        else:
-            sign = 1 if self.type == 'long' else -1
-        pips = float(calculate_pips(self.pair,
-                                    abs(cl.c - price))) * sign
-        return pips
-
     def run_trade(self, expires: int = 2, connect=True) -> None:
         """Run the trade until conclusion from a start date.
 
@@ -237,21 +230,26 @@ class Trade(object):
                 if self._check_candle_overlap(cl, SL.price):
                     t_logger.info("Sorry, SL was hit!")
                     self.outcome = "failure"
-                    self.pips = self._calc_profit(cl, price=SL.price)
+                    self.pips = calculate_profit(prices=(SL.price, self.entry),
+                                                 type=self.type,
+                                                 pair=self.pair)
                     self._end_trade(connect=connect, cl=cl, harea=SL)
                     return
                 # check if success
                 if self._check_candle_overlap(cl, TP.price):
                     t_logger.info("Great, TP was hit!")
                     self.outcome = "success"
-                    self.pips = float(calculate_pips(self.pair,
-                                                     abs(self.TP -
-                                                         self.entry)))
+                    self.pips = calculate_profit(prices=(TP.price, self.entry),
+                                                 type=self.type,
+                                                 pair=self.pair)
                     self._end_trade(connect=connect, cl=cl, harea=TP)
                     return
                 if count >= trade_params.numperiods:
                     t_logger.warning("No outcome could be calculated in the "
                                      "trade_params.numperiods interval")
+                    self.pips = calculate_profit(prices=(cl.c, self.entry),
+                                                 type=self.type,
+                                                 pair=self.pair)
                     self.outcome = "n.a."
                     return
         t_logger.info("Done run_trade")
