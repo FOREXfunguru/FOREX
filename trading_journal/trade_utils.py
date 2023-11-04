@@ -2,7 +2,7 @@
 import logging
 
 from datetime import datetime
-from utils import substract_pips2price, add_pips2price
+from utils import substract_pips2price, add_pips2price, calculate_pips
 from params import counter_params, tradebot_params, trade_params
 from forex.pivot import PivotList
 from forex.candle import CandleList, Candle
@@ -55,7 +55,7 @@ def get_lasttime(trade: Trade, pad: int = 0):
 
 def get_max_min_rsi(trade) -> float:
     """Function to calculate the max or min RSI for CandleList slice
-    going from trade.start-CONFIG.getint('counter', rsi_period')
+    going from trade.start-counter_params.rsi_period
     to trade.start.
 
     Returns:
@@ -167,9 +167,9 @@ def get_trade_type(dt, clObj: CandleList) -> str:
     direction = PL.pivots[-1].pre.type
 
     if direction == -1:
-        return 'long'
+        return "long"
     elif direction == 1:
-        return 'short'
+        return "short"
     else:
         raise Exception("Could not guess the file type")
 
@@ -230,7 +230,8 @@ def validate_trade(t: Trade) -> bool:
     return False
 
 
-def adjust_SL_pips(candle: Candle, type: str, pair: str,
+def adjust_SL_pips(candle: Candle,
+                   type: str, pair: str,
                    no_pips: int = 100) -> float:
     """Function to adjust the SL price
     to the most recent highest high/lowest low.
@@ -241,7 +242,7 @@ def adjust_SL_pips(candle: Candle, type: str, pair: str,
         pair: Pair
         no_pips: Number of pips to add to the highest/lowest of 
         the candle to calculate the S/L value.
-  
+
     Returns:
         adjusted SL
     """
@@ -298,36 +299,14 @@ def adjust_SL_candles(type: str, clObj: CandleList, number: int = 7) -> float:
         if ix == number:
             break
         ix += 1
-        if type == 'short':
+        if type == "short":
             if SL is None:
                 SL = c.h
             elif c.h > SL:
                 SL = c.h
-        if type == 'long':
+        if type == "long":
             if SL is None:
                 SL = c.l
             if c.l < SL:
                 SL = c.l
     return SL
-
-
-def calculate_profit(trade: Trade) -> float:
-    """Function to calculate the profit of a certain
-    trade. Profit is defined as:
-    if abs(t.entry-t.SL) is = 1
-    Then abs(t.end-t.entry) is calculated taking this t.entry-t.SL
-    as the reference diff
-
-    Arguments:
-        trade : Trade object
-    """
-    R = abs(float(trade.entry) - float(trade.SL))
-    mult = None
-    if trade.outcome == 'success':
-        mult = 1
-    elif trade.outcome == 'failure':
-        mult = -1
-    diff = abs(float(trade.exit) - float(trade.entry))
-
-    profit = mult * (diff / R)
-    return round(profit, 2)
