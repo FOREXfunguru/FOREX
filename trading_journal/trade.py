@@ -186,12 +186,11 @@ class Trade(object):
         t_logger.info(f"Run run_trade with id: {self.pair}:{self.start}")
 
         (entry, SL, TP) = self._calc_HAreas()
-        period = self._calc_period()
 
         # generate a range of dates starting at self.start and ending
         # trade_params.interval later in order to assess the outcome
         # of trade and also the entry time
-        date_list = [self.start + timedelta(hours=x*period)
+        date_list = [self.start + timedelta(hours=x*self._calc_period())
                      for x in range(0, trade_params.interval)]
         count = 0
         self.entered = False
