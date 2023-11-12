@@ -1,6 +1,7 @@
 from __future__ import division
 
 import logging
+import pdb
 
 from datetime import datetime, timedelta
 from forex.pivot import PivotList
@@ -207,6 +208,24 @@ class Trade(object):
         self.end = end
         self.exit = harea.price
 
+    def _finalise_trade(self, connect: bool, cl: Candle):
+        if self.outcome == "success":
+            price1 = self.TP.price
+            self._end_trade(connect=connect,
+                            cl=cl,
+                            harea=self.TP)
+        if self.outcome == "failure":
+            price1 = self.SL.price
+            self._end_trade(connect=connect,
+                            cl=cl,
+                            harea=self.SL)
+        if self.outcome == "n.a.":
+            price1 = cl.c
+        self.pips = calculate_profit(prices=(price1,
+                                             self.entry.price),
+                                     type=self.type,
+                                     pair=self.pair)
+
     def run_trade(self, expires: int = 2, connect=True) -> None:
         """Run the trade until conclusion from a start date.
 
@@ -254,34 +273,19 @@ class Trade(object):
                     else:
                         self.entry_time = cl.time.isoformat()
             if self.entered is True:
-                # check if failure
                 if self._check_candle_overlap(cl, self.SL.price):
                     t_logger.info("Sorry, SL was hit!")
                     self.outcome = "failure"
-                    self.pips = calculate_profit(prices=(self.SL.price,
-                                                         self.entry.price),
-                                                 type=self.type,
-                                                 pair=self.pair)
-                    self._end_trade(connect=connect, cl=cl, harea=self.SL)
-                    return
-                # check if success
                 if self._check_candle_overlap(cl, self.TP.price):
                     t_logger.info("Great, TP was hit!")
                     self.outcome = "success"
-                    self.pips = calculate_profit(prices=(self.TP.price,
-                                                         self.entry.price),
-                                                 type=self.type,
-                                                 pair=self.pair)
-                    self._end_trade(connect=connect, cl=cl, harea=self.TP)
-                    return
                 if count >= trade_params.numperiods:
                     t_logger.warning("No outcome could be calculated in the "
                                      "trade_params.numperiods interval")
-                    self.pips = calculate_profit(prices=(cl.c,
-                                                         self.entry.price),
-                                                 type=self.type,
-                                                 pair=self.pair)
                     self.outcome = "n.a."
+
+                if hasattr(self, 'outcome'):
+                    self._finalise_trade(connect=connect, cl=cl)
                     return
         t_logger.info("Done run_trade")
 
