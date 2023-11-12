@@ -20,7 +20,6 @@ class HArea(object):
         price: Price in the chart used as the middle point that will be
                extended on both sides a certain number of pips
         instrument: Instrument for this CandleList 
-                    (i.e. AUD_USD or EUR_USD etc...)
         granularity: Granularity for this CandleList (i.e. D, H12, H8 etc...)
         pips: Number of pips above/below self.price to calculate self.upper
               and self.lower
@@ -49,6 +48,7 @@ class HArea(object):
             divisor = 10000
         price = round(price, round_number)
         self.price = price
+        self.pips = pips
         self.granularity = granularity
         self.no_pivots = no_pivots
         self.tot_score = tot_score
@@ -101,8 +101,8 @@ class HArea(object):
 
     def __str__(self):
         out_str = ""
-        for attr, value in self.__dict__.items():
-            out_str += "%s:%s " % (attr, value)
+        for attr in self.__slots__:
+            out_str += f"{attr}:{getattr(self, attr)} "
         return out_str
 
 

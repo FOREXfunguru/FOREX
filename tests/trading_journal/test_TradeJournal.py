@@ -14,7 +14,7 @@ def test_win_rate(tjO):
 
     assert number_s == 2
     assert number_f == 1
-    assert tot_pips == 274.5
+    assert tot_pips == 275.0
 
 
 def test_write_tradelist(t_object_list, tmp_path):

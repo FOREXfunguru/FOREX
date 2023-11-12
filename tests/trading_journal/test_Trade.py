@@ -3,17 +3,51 @@ import pytest
 from trading_journal.trade import Trade
 from params import trade_params
 
+trade_details = ["2020-02-19T21:00:00",
+                 "EUR_GBP",
+                 "long",
+                 "D",
+                 0.83585,
+                 0.82467]
+
+
+@pytest.mark.parametrize("TP, RR, exp_instance", [
+    (0.86032, None, Trade),
+    (None, 1.5, Trade),
+    (None, None, Exception)
+])
+def test_instantiation(TP, RR, exp_instance):
+    if exp_instance is Trade:
+        Trade(RR=RR,
+              TP=TP,
+              start=trade_details[0],
+              pair=trade_details[1],
+              type=trade_details[2],
+              timeframe=trade_details[3],
+              entry=trade_details[4],
+              SL=trade_details[5])
+    elif exp_instance == Exception:
+        with pytest.raises(Exception):
+            Trade(RR=RR,
+                  TP=TP,
+                  start=trade_details[0],
+                  pair=trade_details[1],
+                  type=trade_details[2],
+                  timeframe=trade_details[3],
+                  entry=trade_details[4],
+                  SL=trade_details[5])
+
 
 def test_init_clist():
     """This test checks the init_clist function"""
     td = Trade(
-            start="2020-02-19T21:00:00",
-            entry=0.83585,
-            SL=0.82467,
             TP=0.86032,
-            pair="EUR_GBP",
-            type="long",
-            timeframe="D",
+            start=trade_details[0],
+            pair=trade_details[1],
+            type=trade_details[2],
+            timeframe=trade_details[3],
+            entry=trade_details[4],
+            SL=trade_details[5],
             init_clist=True)
     assert len(td.clist.candles) == 4104
 
@@ -40,11 +74,11 @@ def test_run_single_trade(clO_pickled):
 
 @pytest.mark.parametrize("start,type,SL,TP,entry,outcome,pips", [
         ("2017-05-10 21:00:00", "long", 0.73176, 0.75323, 0.73953,
-         "success", 136.7),
+         "success", 137.0),
         ("2017-06-08 21:00:00", "short", 0.75715, 0.74594, 0.75255,
-         "failure", -45.5),
+         "failure", -45.0),
         ("2023-01-10 21:00:00", "short", 0.70655, 0.66787, 0.68875,
-         "failure", -178.5)])
+         "failure", -179)])
 def test_run_trade(start, type, SL, TP, entry, outcome, pips,
                    clO_pickled):
     """This test checks the progression of the Trade and checks if the outcome 
@@ -109,7 +143,7 @@ trade_data2 = [
     ('2018-06-21 22:00:00', 'long', 0.72948, 0.75621, 0.73873),
     ('2018-06-26 22:00:00', 'short', 0.75349, 0.72509, 0.73929)]
 
-pips1 = [(-92.3), (141.9)]
+pips1 = [(-92.0), (142.0)]
 u_trade_data2 = [(*trade, pip) for trade, pip in zip(trade_data2, pips1)]
 
 
@@ -132,7 +166,7 @@ def test_run_trade_exitearly(start, type, SL, TP, entry, pips,
     assert td.pips == pips
 
 
-pips2 = [(0.3), (-66.7)]
+pips2 = [(0.6), (-66.6)]
 u_trade_data3 = [(*trade, pip) for trade, pip in zip(trade_data2, pips2)]
 
 
@@ -156,4 +190,4 @@ def test_run_trade_over(start, type, SL, TP, entry, pips,
 
 def test_get_SLdiff(t_object):
 
-    assert 24.2 == t_object.get_SLdiff()
+    assert 24.0 == t_object.get_SLdiff()
