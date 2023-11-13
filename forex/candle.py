@@ -69,18 +69,15 @@ class Candle(object):
         return round((body * 100) / height, 2)
 
     def indecision_c(self, ic_perc: int = 10) -> bool:
-        """Function to check if 'self' is an indecision candle.
+        """Function to check if the candle is an indecision candle.
 
         Args:
             ic_perc : Candle's body percentage below which the candle will
                       be considered indecision candle.
         """
-        if self.perc_body <= ic_perc:
-            return True
-        else:
-            return False
+        return self.perc_body <= ic_perc
 
-    def height(self, pair):
+    def height(self, pair) -> float:
         """Function to calculate the number of pips
         between self.h and self.l"""
         return abs(float(calculate_pips(pair, self.l-self.h)))
