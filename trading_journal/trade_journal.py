@@ -3,15 +3,15 @@ import numpy as np
 import logging
 import math
 import re
-
-from trading_journal.trade import Trade
-from params import tjournal_params
-from openpyxl import Workbook
 from typing import Tuple, List
 
 import openpyxl
+from openpyxl import Workbook
 
-# create logger
+from trading_journal.trade import Trade
+from params import tjournal_params
+
+
 tj_logger = logging.getLogger(__name__)
 tj_logger.setLevel(logging.INFO)
 
@@ -46,7 +46,7 @@ class TradeJournal(object):
                 raise Exception(f"No trades fetched for url:{self.url} and "
                                 "worksheet:{self.worksheet}")
             # replace n.a. string by NaN
-            df = df.replace('n.a.', np.NaN)
+            df = df.replace("n.a.", np.NaN)
             # remove trailing whitespaces from col names
             df.columns = df.columns.str.rstrip()
             self.df = df
@@ -56,7 +56,7 @@ class TradeJournal(object):
             wb.save(str(self.url))
 
     def fetch_trades(self) -> List[Trade]:
-        '''Function to fetch a list of Trade objects'''
+        """Function to fetch a list of Trade objects"""
         trade_list, args = [], {}
         for _, row in self.df.iterrows():
             if isinstance(row['id'], float):
@@ -88,7 +88,7 @@ class TradeJournal(object):
 
         strat_l = strats.split(",")
         number_s = number_f = tot_pips = 0
-        for index, row in self.df.iterrows():
+        for _, row in self.df.iterrows():
             pair = row['id'].split(" ")[0]
             args = {'pair': pair, **row}
             t = Trade(**args, init_clist=True)
@@ -115,13 +115,12 @@ class TradeJournal(object):
 
     def write_tradelist(self, trade_list: List[Trade],
                         sheet_name: str) -> None:
-        '''Write the TradeList to the Excel spreadsheet
+        """Write the TradeList to the Excel spreadsheet
         pointed by the trade_journal.
 
         Arguments:
-            trade_list : List of Trade objects, Required
-            sheet_name : worksheet name
-        '''
+            trade_list : List of Trade objects
+            sheet_name : worksheet name"""
         colnames = tjournal_params.colnames.split(",")
         data = []
         for t in trade_list:
@@ -131,8 +130,12 @@ class TradeJournal(object):
             for key in colnames:
                 # some keys are not defined for some of the Trade
                 # objects
-                if key in t.__dict__:
-                    row.append(t.__dict__[key])
+                if hasattr(t, key):
+                    if key in ["SL", "entry", "TP"]:
+                        area = getattr(t, key)
+                        row.append(area.price)
+                    else:
+                        row.append(getattr(t, key))
                 else:
                     row.append("n.a.")
             data.append(row)
