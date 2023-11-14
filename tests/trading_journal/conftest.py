@@ -34,7 +34,7 @@ def t_object(clO_pickled):
 
 @pytest.fixture
 def t_object_list(scope="session"):
-    '''Returns a list of Trade objects'''
+    """Returns a list of Trade objects"""
 
     td = Trade(
         start="2017-04-10 14:00:00",
@@ -53,7 +53,7 @@ def t_object_list(scope="session"):
 
 @pytest.fixture
 def tjO(scope="session"):
-    '''Returns a trade_journal object for a Counter trade'''
+    """Returns a trade_journal object for a Counter trade"""
     td = TradeJournal(url=DATA_DIR+"/testCounter.xlsx",
                       worksheet="trading_journal")
     return td

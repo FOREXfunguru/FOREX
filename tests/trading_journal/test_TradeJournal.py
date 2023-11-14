@@ -21,6 +21,6 @@ def test_write_tradelist(t_object_list, tmp_path):
     td = TradeJournal(url=f"{tmp_path}/testCounter1.xlsx",
                       worksheet="trading_journal")
 
-    td.write_tradelist(t_object_list, 'outsheet')
+    td.write_tradelist(t_object_list, "outsheet")
 
     assert os.path.exists(f"{tmp_path}/testCounter1.xlsx") == 1

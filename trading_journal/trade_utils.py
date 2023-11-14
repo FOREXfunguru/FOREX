@@ -2,7 +2,7 @@
 import logging
 
 from datetime import datetime
-from utils import substract_pips2price, add_pips2price, calculate_pips
+from utils import substract_pips2price, add_pips2price
 from params import counter_params, tradebot_params, trade_params
 from forex.pivot import PivotList
 from forex.candle import CandleList, Candle
