@@ -3,17 +3,18 @@
 @author: Ernesto Lowy
 @email: ernestolowy@gmail.com
 '''
-import pandas as pd
-import matplotlib
 import logging
 import pickle
 from datetime import timedelta, datetime
-from utils import try_parsing_date, calculate_pips
-from params import clist_params
+
+import pandas as pd
+import matplotlib
 from pandas.plotting import register_matplotlib_converters 
 
-register_matplotlib_converters()
+from utils import try_parsing_date, calculate_pips
+from params import clist_params
 
+register_matplotlib_converters()
 matplotlib.use('PS')
 
 logging.basicConfig(level=logging.INFO)
@@ -80,7 +81,12 @@ class Candle(object):
     def height(self, pair) -> float:
         """Function to calculate the number of pips
         between self.h and self.l"""
-        return abs(float(calculate_pips(pair, self.l-self.h)))
+        return float(calculate_pips(pair, self.h-self.l))
+    
+    def middle_point(self) -> float:
+        """Function to calculate middle candle price.
+        Defined as (self.h-self.l)/2+self.l)"""
+        return round(((self.h-self.l)/2+self.l), 5)
 
     def __repr__(self):
         return "Candle"

@@ -4,7 +4,6 @@
 @email: ernestolowy@gmail.com
 '''
 import pytest
-import pdb
 
 from forex.candle import Candle
 
@@ -58,3 +57,12 @@ def test_height(CandleFactory, height):
 
     for ix in range(len(CandleFactory)):
         assert CandleFactory[ix].height(pair="EUR_GBP") == height[ix]
+
+
+@pytest.mark.parametrize("middle_pts", [
+    ([0.87155, 0.86997, 0.86853])
+])
+def test_middle_point(CandleFactory, middle_pts):
+    """Test for the middle_point function"""
+    for ix in range(len(CandleFactory)):
+        assert CandleFactory[ix].middle_point() == middle_pts[ix]
