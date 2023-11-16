@@ -3,17 +3,18 @@
 @author: Ernesto Lowy
 @email: ernestolowy@gmail.com
 '''
-import pandas as pd
-import matplotlib
 import logging
 import pickle
 from datetime import timedelta, datetime
-from utils import try_parsing_date, calculate_pips
-from params import clist_params
+
+import pandas as pd
+import matplotlib
 from pandas.plotting import register_matplotlib_converters 
 
-register_matplotlib_converters()
+from utils import try_parsing_date, calculate_pips
+from params import clist_params
 
+register_matplotlib_converters()
 matplotlib.use('PS')
 
 logging.basicConfig(level=logging.INFO)
@@ -69,21 +70,23 @@ class Candle(object):
         return round((body * 100) / height, 2)
 
     def indecision_c(self, ic_perc: int = 10) -> bool:
-        """Function to check if 'self' is an indecision candle.
+        """Function to check if the candle is an indecision candle.
 
         Args:
             ic_perc : Candle's body percentage below which the candle will
                       be considered indecision candle.
         """
-        if self.perc_body <= ic_perc:
-            return True
-        else:
-            return False
+        return self.perc_body <= ic_perc
 
-    def height(self, pair):
+    def height(self, pair) -> float:
         """Function to calculate the number of pips
         between self.h and self.l"""
-        return abs(float(calculate_pips(pair, self.l-self.h)))
+        return float(calculate_pips(pair, self.h-self.l))
+    
+    def middle_point(self) -> float:
+        """Function to calculate middle candle price.
+        Defined as (self.h-self.l)/2+self.l)"""
+        return round(((self.h-self.l)/2+self.l), 5)
 
     def __repr__(self):
         return "Candle"
