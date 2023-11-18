@@ -189,5 +189,4 @@ def test_run_trade_over(start, type, SL, TP, entry, pips,
 
 
 def test_get_SLdiff(t_object):
-
     assert 24.0 == t_object.get_SLdiff()

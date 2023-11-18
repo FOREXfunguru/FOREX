@@ -27,6 +27,10 @@ ALLOWED_ATTRBS = ['entered', 'start', 'end', 'pair',
                   'SR', 'RR', 'pips', 'clist', 'strat',
                   'tot_SR', 'rank_selSR']
 
+# 'area_unaware': exit when candles against the trade without
+# considering if price is > or < than entry price
+VALID_TYPES = ["area_unaware", "area_aware"]
+
 
 class Trade(object):
     """This is the parent class represents a single row from the TradeJournal
@@ -127,17 +131,11 @@ class Trade(object):
         return round(RR, 2)
 
     def _calc_period(self) -> int:
-        """Calculate number of hours for each period
-        depending on the timeframe"""
-        period = None
-        if self.timeframe == "D":
-            period = 24
-        else:
-            period = int(self.timeframe.replace('H', ''))
-        return period
+        """Number of hours for period"""
+        return 24 if self.timeframe == "D" else int(self.timeframe.replace("H",
+                                                                           ""))
 
     def init_clist(self) -> None:
-        """Init clist for this Trade"""
         delta = periodToDelta(trade_params.trade_period, self.timeframe)
         start = self.start
         if not isinstance(start, datetime):
@@ -226,23 +224,27 @@ class Trade(object):
                                      type=self.type,
                                      pair=self.pair)
 
+    def gen_datelist(self) -> list[datetime]:
+        """Generate a range of dates starting at self.start and ending
+        trade_params.interval later in order to assess the outcome
+        of trade and also the entry time.
+        """
+        return [self.start + timedelta(hours=x*self._calc_period())
+                for x in range(0, trade_params.interval)]
+
     def run_trade(self, expires: int = 2, connect=True) -> None:
         """Run the trade until conclusion from a start date.
 
         Arguments:
-            expires : Number of candles after start datetime to check
+            expires: Number of candles after start datetime to check
                       for entry
+            connect: If True then it will use the API to fetch candles
         """
         t_logger.info(f"Run run_trade with id: {self.pair}:{self.start}")
 
-        # Generate a range of dates starting at self.start and ending
-        # trade_params.interval later in order to assess the outcome
-        # of trade and also the entry time
-        date_list = [self.start + timedelta(hours=x*self._calc_period())
-                     for x in range(0, trade_params.interval)]
         count = 0
         self.entered = False
-        for d in date_list:
+        for d in self.gen_datelist():
             dtnow = datetime.now()
             if d.weekday() == 5:
                 continue
@@ -273,6 +275,10 @@ class Trade(object):
                     else:
                         self.entry_time = cl.time.isoformat()
             if self.entered is True:
+
+      #          if type not in VALID_TYPES:
+      #              raise ValueError(f"Unrecognised type: {type}")
+                
                 if self._check_candle_overlap(cl, self.SL.price):
                     t_logger.info("Sorry, SL was hit!")
                     self.outcome = "failure"
