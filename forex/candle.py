@@ -198,18 +198,18 @@ class CandleList(object):
         price_1st = self.candles[0].c
         price_last = self.candles[-1].c
         if price_1st > price_last:
-            return 'short'  # or downtrend
+            return "short"  # or downtrend
         elif price_1st < price_last:
-            return 'long'  # or uptrend
+            return "long"  # or uptrend
 
     def calc_rsi(self):
-        '''Calculate the RSI for a certain candle list.'''
+        """Calculate the RSI for a certain candle list"""
         cl_logger.debug("Running calc_rsi")
 
         series = [c.c for c in self.candles]
 
-        df = pd.DataFrame({'close': series})
-        chg = df['close'].diff(1)
+        df = pd.DataFrame({"close": series})
+        chg = df["close"].diff(1)
 
         gain = chg.mask(chg < 0, 0)
         loss = chg.mask(chg > 0, 0)
@@ -224,7 +224,7 @@ class CandleList(object):
         rsi4cl = rsi[-len(self.candles):]
         # set rsi attribute in each candle of the CandleList
         ix = 0
-        for c, v in zip(self.candles, rsi4cl):
+        for _, v in zip(self.candles, rsi4cl):
             self.candles[ix].rsi = round(v, 2)
             ix += 1
         cl_logger.debug("Done calc_rsi")
@@ -322,7 +322,7 @@ class CandleList(object):
                 'lengths': lengths}
 
     def get_length_pips(self) -> int:
-        '''Function to calculate the length of CandleList in number of pips'''
+        """Function to calculate the length of CandleList in number of pips"""
 
         start_cl = self.candles[0]
         end_cl = self.candles[-1]

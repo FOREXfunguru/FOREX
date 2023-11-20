@@ -2,19 +2,20 @@ import pytest
 
 from trading_journal.open_trade import UnawareTrade
 
-trade_details = {"start": "2020-02-19T21:00:00",
-                 "pair": "EUR_GBP",
+trade_details = {"start": "2019-06-19T21:00:00",
+                 "pair": "AUD_USD",
                  "type": "long",
-                 "timeframe": "D",
+                 "timeframe": "H8",
                  "entry": 0.83585,
                  "SL": 0.82467,
                  "RR": 0.86032}
 
 
 @pytest.fixture
-def unaware_object(clO_pickled):
-    trade_details["clist"] = clO_pickled
-    return UnawareTrade(**trade_details)
+def unaware_object(clOH8_2019_pickled, clO_pickled):
+    trade_details["clist"] = clOH8_2019_pickled
+    return UnawareTrade(clist_tm=clO_pickled,
+                        **trade_details)
 
 
 def test_instantiation(unaware_object):
