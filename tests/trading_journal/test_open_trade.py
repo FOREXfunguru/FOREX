@@ -1,9 +1,8 @@
 import pytest
-import pdb
 
 from trading_journal.open_trade import UnawareTrade
 
-trade_details = {"start": "2021-02-19T21:00:00",
+trade_details = {"start": "2019-06-19T21:00:00",
                  "pair": "AUD_USD",
                  "type": "long",
                  "timeframe": "H8",
@@ -13,9 +12,9 @@ trade_details = {"start": "2021-02-19T21:00:00",
 
 
 @pytest.fixture
-def unaware_object(clO_H8_pickled, clO_D_2021pickled):
-    trade_details["clist"] = clO_H8_pickled
-    return UnawareTrade(clist_tm=clO_D_2021pickled,
+def unaware_object(clOH8_2019_pickled, clO_pickled):
+    trade_details["clist"] = clOH8_2019_pickled
+    return UnawareTrade(clist_tm=clO_pickled,
                         **trade_details)
 
 

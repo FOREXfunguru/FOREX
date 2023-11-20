@@ -11,12 +11,15 @@ conn = Connect(
 clO = conn.query('2010-11-16T22:00:00', '2020-11-19T22:00:00')
 clO.pickle_dump(f"{DATA_DIR}/clist_audusd_2010_2020.pckl")
 
-# pickle CandleList H8
+# pickle CandleLists H8
 conn = Connect(
         instrument="AUD_USD",
         granularity='H8')
-clO = conn.query('2021-01-03T22:00:00', '2021-12-31T14:00:00')
+clO = conn.query("2021-01-03T22:00:00", "2021-12-31T14:00:00")
 clO.pickle_dump(f"{DATA_DIR}/clist.AUDUSD.H8.2021.pckl")
+
+clO = conn.query("2019-01-03T22:00:00", "2019-12-31T14:00:00")
+clO.pickle_dump(f"{DATA_DIR}/clist.AUDUSD.H8.2019.pckl")
 
 
 # pickle Segment

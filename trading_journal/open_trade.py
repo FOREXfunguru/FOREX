@@ -29,7 +29,6 @@ class UnawareTrade(Trade):
 
     @clist_tm.setter
     def clist_tm(self, clist: CandleList):
-        pdb.set_trace()
         if self.start > clist.candles[-1].time:
             raise ValueError("Incorrect 'clist_tm'. Trade start "
                              "does not match the end of 'clist_end'")
@@ -39,17 +38,22 @@ class UnawareTrade(Trade):
         """Function to check if middle_point values are
         agaisnt the trade
         """
-        pass
-
+        if self.type == "long":
+            return all(UnawareTrade.middle_point[i] >
+                       UnawareTrade.middle_point[i+1] for i
+                       in range(len(UnawareTrade.middle_point)-1))
+        else:
+            return all(UnawareTrade.middle_point[i] <
+                       UnawareTrade.middle_point[i+1] for i
+                       in range(len(UnawareTrade.middle_point)-1))
+        
     def run(self, connect: bool = True):
         """Method to run this UnawareTrade.
 
         Arguments:
             connect: If True then it will use the API to fetch candles
         """
-        count = 1
         for d in self.gen_datelist():
-            pdb.set_trace()
             cl = self.clist[d]
             if cl is None:
                 if connect is True:
@@ -58,10 +62,8 @@ class UnawareTrade(Trade):
                     continue
             cl_tm = self.clist_tm[d]
             if cl_tm is not None:
-                pdb.set_trace()
                 UnawareTrade.middle_point.append(cl.middle_point())
-            if count % self.candle_number == 0:
-                self.check_if_against()
-            count += 1
-         
+            if len(UnawareTrade.middle_point) == 3:
+                res = self.check_if_against()
+                UnawareTrade.middle_point = []
             print(cl)
