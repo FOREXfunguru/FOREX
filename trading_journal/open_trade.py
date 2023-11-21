@@ -34,6 +34,7 @@ class UnawareTrade(Trade):
                              "does not match the end of 'clist_end'")
         if clist.instrument != self.clist.instrument:
             raise ValueError("Instruments self.clist_tm/self.clist differ!")
+
         self._clist_tm = clist
 
     def check_if_against(self):
@@ -75,5 +76,3 @@ class UnawareTrade(Trade):
 
                     self.SL = newSL_price
                 UnawareTrade.preceding_candles = []
-
-            print(cl)

@@ -10,7 +10,6 @@ trade_details = {"start": "2019-06-18T21:00:00",
                  "SL": 0.67288,
                  "TP": 0.71348}
 
-
 @pytest.fixture
 def unaware_object(clOH8_2019_pickled, clO_pickled):
     trade_details["clist"] = clOH8_2019_pickled
