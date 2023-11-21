@@ -203,7 +203,7 @@ def test_adjust_SL_candles_short(clO_pickled):
     start = datetime.datetime(2018, 9, 2, 21, 0)
     end = datetime.datetime(2020, 9, 2, 21, 0)
     subClO = clO_pickled.slice(start=start, end=end)
-    SL = adjust_SL_candles('short', subClO)
+    SL = adjust_SL_candles("short", subClO)
 
     assert SL == 0.74138
 
@@ -213,7 +213,7 @@ def test_adjust_SL_candles_long(clO_pickled):
     start = datetime.datetime(2019, 9, 28, 21, 0)
     end = datetime.datetime(2020, 9, 28, 21, 0)
     subClO = clO_pickled.slice(start=start, end=end)
-    SL = adjust_SL_candles('long', subClO)
+    SL = adjust_SL_candles("long", subClO)
 
     assert SL == 0.70061
 

@@ -193,7 +193,7 @@ class TradeBot(object):
             loop += 1
 
         if pretrades:
-            with open(f"{prefix}.pckl", 'wb') as f:
+            with open(f"{prefix}.pckl", "wb") as f:
                 pickle.dump(pretrades, f)
                 return f"{prefix}.pckl"
 

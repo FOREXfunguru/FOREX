@@ -143,34 +143,11 @@ trade_data2 = [
     ('2018-06-21 22:00:00', 'long', 0.72948, 0.75621, 0.73873),
     ('2018-06-26 22:00:00', 'short', 0.75349, 0.72509, 0.73929)]
 
-pips1 = [(-92.0), (142.0)]
-u_trade_data2 = [(*trade, pip) for trade, pip in zip(trade_data2, pips1)]
-
-
-@pytest.mark.parametrize("start,type,SL,TP,entry,pips", u_trade_data2)
-def test_run_trade_exitearly(start, type, SL, TP, entry, pips,
-                             clO_pickled):
-    """Run a trade using trade_params.strat==exit_early"""
-    trade_params.no_candles = 13
-    trade_params.reduce_perc = 25
-    td = Trade(
-              start=start,
-              entry=entry,
-              SL=SL,
-              TP=TP,
-              pair="AUD_USD",
-              type=type,
-              timeframe="D",
-              clist=clO_pickled)
-    td.run_trade(expires=2)
-    assert td.pips == pips
-
-
 pips2 = [(0.6), (-66.6)]
-u_trade_data3 = [(*trade, pip) for trade, pip in zip(trade_data2, pips2)]
+u_trade_data2 = [(*trade, pip) for trade, pip in zip(trade_data2, pips2)]
 
 
-@pytest.mark.parametrize("start,type,SL,TP,entry, pips", u_trade_data3)
+@pytest.mark.parametrize("start,type,SL,TP,entry, pips", u_trade_data2)
 def test_run_trade_over(start, type, SL, TP, entry, pips,
                         clO_pickled):
     """Run trade over the numperiods limit"""

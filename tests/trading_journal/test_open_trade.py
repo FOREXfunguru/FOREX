@@ -2,14 +2,13 @@ import pytest
 
 from trading_journal.open_trade import UnawareTrade
 
-trade_details = {"start": "2019-06-19T21:00:00",
+trade_details = {"start": "2019-06-18T21:00:00",
                  "pair": "AUD_USD",
                  "type": "long",
                  "timeframe": "H8",
-                 "entry": 0.83585,
-                 "SL": 0.82467,
-                 "RR": 0.86032}
-
+                 "entry": 0.68900,
+                 "SL": 0.67288,
+                 "TP": 0.71348}
 
 @pytest.fixture
 def unaware_object(clOH8_2019_pickled, clO_pickled):
