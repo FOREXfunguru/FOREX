@@ -288,7 +288,7 @@ class CandleList(object):
             if self.type is None:
                 raise Exception("type is not defined for this Candlelist")
 
-            if self.type == 'short':
+            if self.type == "short":
                 if c.rsi > 70 and adj is False:
                     num_times += 1
                     length = 1
@@ -299,7 +299,7 @@ class CandleList(object):
                     if adj is True:
                         lengths.append(length)
                     adj = False
-            elif self.type == 'long':
+            elif self.type == "long":
                 if c.rsi < 30 and adj is False:
                     num_times += 1
                     length = 1
@@ -387,17 +387,16 @@ class CandleList(object):
                    price was above/below
             trade type: either long/short
         """
-
         count = 0
         for c in reversed(self.candles):
             count += 1
             # Last time has to be at least forexparams.min candles before
             if count <= clist_params.min:
                 continue
-            if type == 'long':
+            if type == "long":
                 if c.h < price:
                     return c.time
-            elif type == 'short':
+            elif type == "short":
                 if c.l > price:
                     return c.time
 
@@ -434,3 +433,14 @@ class CandleList(object):
                 if price < min:
                     min = price
         return min
+    
+    def __repr__(self):
+        return "CandleList"
+
+    def __str__(self):
+        sb = []
+        for key in self.__slots__:
+            if hasattr(self, key):
+                sb.append("{key}='{value}'".format(key=key,
+                                                   value=getattr(self, key)))
+        return ', '.join(sb)

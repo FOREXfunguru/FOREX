@@ -97,27 +97,21 @@ class trade_params:
     hr_pips: int = 1
     # number of candles from start of trade to run the trade and assess the
     # outcome
-    numperiods: int = 300
+    numperiods: int = 30
     # number of candles from start of trade to create a time interval that will
-    # be assessed. This param is different from trade_params.numperiods, as
-    # this only sets the time interval
+    # be assessed.
     interval: int = 1500
     # granularity for HArea.get_cross_time
-    granularity: str = 'H2'
+    granularity: str = "H2"
     # num of candles from trade.start to calc ATR
     period_atr: int = 20
     # number of candles to go back when init_clist=True
     trade_period: int = 5000
     # number of pips to add/substract to SR to calculate lasttime
     pad: int = 30
+    th_bounces: int = 0.02  # pivot sensitivity for 'get_trade_type'
     """
     Trade management
-    if 'exit_early' then close the trade if price is in profit and  trade as
-    been active for more than trade_params.no_candles. if 'standard' then
-    wait to check if trade finishes up to trade_params.numperiods
     """
-    strat: str = "standard"
-    no_candles: int = 150
-    # reduce the diff between TP and entry to this 'reduce_perc' %
-    reduce_perc: int = 50
-    th_bounces: int = 0.02  # pivot sensitivity for 'get_trade_type'
+    strat: str = "area_unaware"
+    clisttm_tf: str = "D"

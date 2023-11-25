@@ -63,7 +63,8 @@ def test_run_single_trade(clO_pickled):
             pair="AUD_USD",
             type="long",
             timeframe="D",
-            clist=clO_pickled)
+            clist=clO_pickled,
+            clist_tm=clO_pickled)
     td.run_trade()
     td.start == "2017-05-10 21:00:00"
     td.entry_time == "2017-05-11T21:00:00"
@@ -128,14 +129,13 @@ def test_run_trade_wexpire(pair, start, type, SL, TP, entry,
 def test_run_trade_noclO():
     """Run run_trade without passing a pickled CandeList object"""
     td = Trade(
-        start='2017-12-11 22:00:00',
+        start="2017-12-11 22:00:00",
         entry=0.75407,
         SL=0.74790,
         TP=0.77057,
-        pair='AUD_USD',
-        type='long',
-        timeframe="D",
-        init_clist=True)
+        pair="AUD_USD",
+        type="long",
+        timeframe="D")
     td.run_trade()
 
 

@@ -8,19 +8,23 @@ ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
 DATA_DIR = ROOT_DIR+"/tests/data"
 
 
-def try_parsing_date(text):
-    '''Function to parse a string that can be formatted in
+def try_parsing_date(date_string) -> datetime:
+    """Function to parse a string that can be formatted in
     different datetime formats
 
     Returns:
         datetime object
-    '''
-    for fmt in ('%Y-%m-%dT%H:%M:%S', '%Y-%m-%d %H:%M:%S', '%d/%m/%Y %H:%M:%S'):
+    """
+    if  isinstance(date_string, datetime):
+        return date_string
+    for fmt in ("%Y-%m-%dT%H:%M:%S",
+                "%Y-%m-%d %H:%M:%S",
+                "%d/%m/%Y %H:%M:%S"):
         try:
-            return datetime.strptime(text, fmt)
+            return datetime.strptime(date_string, fmt)
         except ValueError:
             pass
-    raise ValueError(f"no valid date format found: {text}")
+    raise ValueError(f"no valid date format found: {date_string}")
 
 
 def calculate_pips(pair: str, price: float) -> float:

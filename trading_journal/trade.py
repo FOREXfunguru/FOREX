@@ -3,10 +3,11 @@ from __future__ import division
 import logging
 import pdb
 
+from trading_journal.constants import ALLOWED_ATTRBS, VALID_TYPES
 from datetime import datetime, timedelta
 from forex.pivot import PivotList
 from forex.harea import HArea
-from forex.candle import Candle
+from forex.candle import Candle, CandleList
 from utils import (
     calculate_pips,
     add_pips2price,
@@ -17,19 +18,8 @@ from utils import calculate_profit
 from params import trade_params
 from api.oanda.connect import Connect
 
-# create logger
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
-
-# Allowed Trade class attribures
-ALLOWED_ATTRBS = ['entered', 'start', 'end', 'pair',
-                  'timeframe', 'outcome', 'exit', 'entry_time', 'type',
-                  'SR', 'RR', 'pips', 'clist', 'strat',
-                  'tot_SR', 'rank_selSR']
-
-# 'area_unaware': exit when candles against the trade without
-# considering if price is > or < than entry price
-VALID_TYPES = ["area_unaware", "area_aware"]
 
 
 class Trade(object):
@@ -50,15 +40,29 @@ class Trade(object):
         RR:  Risk Ratio
         pips:  Number of pips of profit/loss. This number will be negative if
                outcome was failure
-        clist: CandleList for this trade"""
+        clist: CandleList for this trade
+        clist_tm: CandleList for trade management
+        """
     def __preinit__(self):
-        if self.init_clist and not hasattr(self, 'clist'):
-            self.init_clist()
-        self.__dict__.update({'start':
-                              try_parsing_date(self.__dict__['start'])})
-        if hasattr(self, 'end') and isinstance(self.end, datetime):
-            self.__dict__.update({'end':
-                                  try_parsing_date(self.__dict__['end'])})
+        if not hasattr(self, "clist"):
+            self.clist = self.init_clist(self.timeframe)
+        if not hasattr(self, "clist_tm"):
+            self.clist_tm = self.init_clist(trade_params.clisttm_tf)
+        if self.clist_tm.instrument != self.clist_tm.instrument:
+            raise ValueErrror("Inconsistent instruments between 'clist' and 'clist_tm'")
+
+        self.__dict__.update({"start":
+                              try_parsing_date(self.__dict__["start"])})
+        if hasattr(self, "end"):
+            self.__dict__.update({"end":
+                                  try_parsing_date(self.__dict__["end"])})
+
+    def _init_harea(self, price: float) -> HArea:
+        harea_obj = HArea(price=price,
+                          instrument=self.pair,
+                          pips=trade_params.hr_pips,
+                          granularity=self.timeframe)
+        return harea_obj
 
     def __init__(self,
                  entry: float,
@@ -68,8 +72,8 @@ class Trade(object):
         self.__dict__.update((k, v) for k, v in kwargs.items()
                              if k in ALLOWED_ATTRBS)
         self.__preinit__()
-        self.entry = entry
-        self.SL = SL
+        self.entry = self._init_harea(entry) if not isinstance(entry, HArea) else entry
+        self.SL = self._init_harea(SL) if not isinstance(SL, HArea) else SL
         if kwargs.get("RR") is None and TP is None:
             raise ValueError("Neither the RR not "
                              "the TP is defined. Please provide at least one!")
@@ -78,49 +82,9 @@ class Trade(object):
         elif kwargs.get("RR") is None and TP is not None:
             RR = self._calc_RR(TP=TP)
             self.RR = RR
-        self.TP = TP
+        self.TP = self._init_harea(TP) if not isinstance(TP, HArea) else TP
         self.SLdiff = self.get_SLdiff()
         self.entered = False
-
-    @property
-    def SL(self):
-        return self._SL
-
-    @SL.setter
-    def SL(self, price: float):
-        """HArea representing the SL price"""
-        harea_obj = HArea(price=price,
-                          instrument=self.pair,
-                          pips=trade_params.hr_pips,
-                          granularity=self.timeframe)
-        self._SL = harea_obj
-
-    @property
-    def entry(self):
-        return self._entry
-
-    @entry.setter
-    def entry(self, price: float):
-        """HArea representing the entry price"""
-        harea_obj = HArea(price=price,
-                          instrument=self.pair,
-                          pips=trade_params.hr_pips,
-                          granularity=self.timeframe)
-        self._entry = harea_obj
-
-    @property
-    def TP(self):
-        return self._TP
-
-    @TP.setter
-    def TP(self, price: float):
-        """HArea representing the TP price"""
-
-        harea_obj = HArea(price=price,
-                          instrument=self.pair,
-                          pips=trade_params.hr_pips,
-                          granularity=self.timeframe)
-        self._TP = harea_obj
 
     def _calc_TP(self, RR: float) -> float:
         diff = (self.entry.price - self.SL.price) * self.RR
@@ -135,8 +99,8 @@ class Trade(object):
         return 24 if self.timeframe == "D" else int(self.timeframe.replace("H",
                                                                            ""))
 
-    def init_clist(self) -> None:
-        delta = periodToDelta(trade_params.trade_period, self.timeframe)
+    def init_clist(self, timeframe: str) -> CandleList:
+        delta = periodToDelta(trade_params.trade_period, timeframe)
         start = self.start
         if not isinstance(start, datetime):
             start = try_parsing_date(start)
@@ -144,9 +108,9 @@ class Trade(object):
 
         conn = Connect(
             instrument=self.pair,
-            granularity=self.timeframe)
+            granularity=timeframe)
         clO = conn.query(nstart.isoformat(), start.isoformat())
-        self.clist = clO
+        return clO
 
     def get_trend_i(self) -> datetime:
         """Function to calculate the start of the trend"""
@@ -159,18 +123,6 @@ class Trade(object):
             candle = merged_s.get_lowest()
 
         return candle.time
-
-    def _adjust_tp(self) -> float:
-        """Adjust TP when trade_params.strat==exit early"""
-        tp_pips = float(calculate_pips(self.pair, self.TP))
-        entry_pips = float(calculate_pips(self.pair, self.entry))
-        diff = abs(tp_pips-entry_pips)
-        tp_pips = trade_params.reduce_perc*diff/100
-        if self.type == "long":
-            new_tp = add_pips2price(self.pair, self.entry, tp_pips)
-        else:
-            new_tp = substract_pips2price(self.pair, self.entry, tp_pips)
-        return new_tp
 
     def _fetch_candle(self, d: datetime) -> Candle:
         """Private method to query the API to get a single candle
@@ -275,24 +227,16 @@ class Trade(object):
                     else:
                         self.entry_time = cl.time.isoformat()
             if self.entered is True:
-
-      #          if type not in VALID_TYPES:
-      #              raise ValueError(f"Unrecognised type: {type}")
-                
-                if self._check_candle_overlap(cl, self.SL.price):
-                    t_logger.info("Sorry, SL was hit!")
-                    self.outcome = "failure"
-                if self._check_candle_overlap(cl, self.TP.price):
-                    t_logger.info("Great, TP was hit!")
-                    self.outcome = "success"
-                if count >= trade_params.numperiods:
-                    t_logger.warning("No outcome could be calculated in the "
-                                     "trade_params.numperiods interval")
-                    self.outcome = "n.a."
-
-                if hasattr(self, 'outcome'):
-                    self._finalise_trade(connect=connect, cl=cl)
-                    return
+                if trade_params.strat not in VALID_TYPES:
+                    raise ValueError(f"Unrecognised type: {type}")
+                managed_trade =  None
+                if trade_params.strat == "area_unaware":
+                    managed_trade = UnawareTrade(**self.__dict__)
+                    managed_trade.run_trade()
+                    self.outcome = managed_trade.outcome
+                    self.pips = managed_trade.pips
+                    self.end = managed_trade.end
+                    break
         t_logger.info("Done run_trade")
 
     def get_SLdiff(self) -> float:
@@ -315,3 +259,85 @@ class Trade(object):
 
     def __repr__(self):
         return "Trade"
+
+
+class UnawareTrade(Trade):
+    """Class to represent an open Trade of the 'area_unaware' type"""
+
+    preceding_candles = []
+
+    def __init__(self,
+                 candle_number: int = 3,
+                 **kwargs):
+        """Constructor
+
+        Arguments:
+            candle_number: number of candles against the trade to consider
+        """
+        self.candle_number = candle_number
+        super().__init__(**kwargs)
+
+    def check_if_against(self):
+        """Function to check if middle_point values are
+        agaisnt the trade
+        """
+        prices = [x.middle_point() for x in UnawareTrade.preceding_candles]
+        if self.type == "long":
+            return all(prices[i] >
+                       prices[i+1] for i
+                       in range(len(prices)-1))
+        else:
+            return all(prices[i] <
+                       prices[i+1] for i
+                       in range(len(prices)-1))
+
+    def adjust_SL(self):
+        """Adjust SL"""
+        newSL_price = (UnawareTrade.preceding_candles[-1].l
+                       if self.type == "long" else
+                       UnawareTrade.preceding_candles[-1].h)
+        self.SL = newSL_price
+
+    def run_trade(self, connect: bool = True) -> None:
+        """Method to run this UnawareTrade.
+
+        Arguments:
+            connect: If True then it will use the API to fetch candles
+
+        This function will run the trade and will set the outcome attribute
+        """
+        count = 0
+        for d in self.gen_datelist():
+            count += 1
+            cl = self.clist[d]
+            if cl is None:
+                if connect is True:
+                    cl = self._fetch_candle(d=d)
+                if cl is None:
+                    continue
+            cl_tm = self.clist_tm[d]
+            if cl_tm is None:
+                if connect is True:
+                    cl_tm = self._fetch_candle(d=d)
+            if cl_tm is not None:
+                UnawareTrade.preceding_candles.append(cl_tm)
+            if len(UnawareTrade.preceding_candles) == self.candle_number:
+                res = self.check_if_against()
+                if res is True:
+                    pdb.set_trace()
+                    self.adjust_SL()
+                UnawareTrade.preceding_candles = []
+            if self._check_candle_overlap(cl, self.SL.price):
+                t_logger.info("Sorry, SL was hit!")
+                self.outcome = "failure"
+            elif self._check_candle_overlap(cl, self.TP.price):
+                t_logger.info("Great, TP was hit!")
+                self.outcome = "success"
+            elif count >= trade_params.numperiods:
+                t_logger.warning("No outcome could be calculated in the "
+                                 "trade_params.numperiods interval")
+                self.outcome = "n.a."
+            else:
+                continue
+            self._finalise_trade(connect=connect, cl=cl)
+            return

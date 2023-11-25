@@ -40,7 +40,7 @@ class HArea(object):
         self.instrument = instrument
         round_number = None
         divisor = None
-        if first == 'JPY' or second == 'JPY':
+        if first == "JPY" or second == "JPY":
             round_number = 2
             divisor = 100
         else:
