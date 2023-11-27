@@ -53,7 +53,7 @@ def test_init_clist():
 
 
 def test_run_single_trade(clO_pickled):
-    """This test checks the progression of the Trade and checks 
+    """This test checks the progression of the Trade and checks
     if several Trade attributes are correctly defined."""
     td = Trade(
             start="2017-05-10 21:00:00",
@@ -163,7 +163,3 @@ def test_run_trade_over(start, type, SL, TP, entry, pips,
               clist=clO_pickled)
     td.run_trade(expires=2)
     assert td.pips == pips
-
-
-def test_get_SLdiff(t_object):
-    assert 24.0 == t_object.get_SLdiff()

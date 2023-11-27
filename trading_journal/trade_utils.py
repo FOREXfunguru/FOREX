@@ -1,16 +1,20 @@
 # Collection of utilities used by the Trade object
 import logging
+from datetime import datetime, timedelta
 
-from datetime import datetime
-from utils import substract_pips2price, add_pips2price
-from params import counter_params, tradebot_params, trade_params
-from forex.pivot import PivotList
-from forex.candle import CandleList, Candle
-from forex.harea import HAreaList
+from utils import (substract_pips2price,
+                   add_pips2price,
+                   calculate_pips,
+                   calculate_profit,
+                   periodToDelta,
+                   try_parsing_date)
+from params import counter_params, trade_params
+from api.oanda import Connect
 from trading_journal.trade import Trade
-from typing import Tuple
+from forex.pivot import PivotList
+from forex.candle import Candle, CandleList
+from forex.harea import HArea
 
-# create logger
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
 
@@ -53,7 +57,7 @@ def get_lasttime(trade: Trade, pad: int = 0):
     return newcl.get_lasttime(new_SR, type=trade.type)
 
 
-def get_max_min_rsi(trade) -> float:
+def get_max_min_rsi(trade: Trade) -> float:
     """Function to calculate the max or min RSI for CandleList slice
     going from trade.start-counter_params.rsi_period
     to trade.start.
@@ -82,8 +86,7 @@ def get_max_min_rsi(trade) -> float:
 
     return round(first, 2)
 
-
-def calc_trade_session(trade) -> str:
+def calc_trade_session(trade: Trade) -> str:
     """Function to calculate the trade session (European, Asian,
     NAmerican) the trade was taken
 
@@ -126,187 +129,122 @@ def calc_trade_session(trade) -> str:
         sessions.append('nosession')
     return ",".join(sessions)
 
-
-def calc_pips_c_trend(trade: Trade) -> float:
-    """Function to calculate the pips_c_trend value.
-    This value represents the average number of pips for each candle from
-    trade.trend_i up to trade.start
-
-    Arguments:
-        trade : Used for the calculation
+def calc_period(self) -> int:
+    """Number of hours for period"""
+    return 24 if self.timeframe == "D" else int(self.timeframe.replace("H",
+                                                                        ""))
+def gen_datelist(trade: Trade) -> list[datetime]:
+    """Generate a range of dates starting at self.start and ending
+    trade_params.interval later in order to assess the outcome
+    of trade and also the entry time.
     """
-    sub_cl = trade.clist.slice(start=trade.get_trend_i(),
-                               end=trade.start)
+    return [trade.start + timedelta(hours=x*calc_period())
+            for x in range(0, trade_params.interval)]
 
-    pips_c_trend = sub_cl.get_length_pips()/sub_cl.get_length_candles()
+def calc_TP(trade: Trade, RR: float) -> float:
+    diff = (trade.entry.price - Trade.SL.price) * Trade.RR
+    return round(trade.entry.price + diff, 4)
 
-    return round(pips_c_trend, 1)
+def calc_RR(trade: Trade, TP: float) -> float:
+    RR = abs(TP-trade.entry.price)/abs(trade.SL.price-trade.entry.price)
+    return round(RR, 2)
 
+def get_trend_i(trade: Trade) -> datetime:
+    """Function to calculate the start of the trend"""
+    pvLst = PivotList(trade.clist)
+    merged_s = pvLst.calc_itrend()
 
-def get_trade_type(dt, clObj: CandleList) -> str:
-    """Function to get the type of a Trade (short/long).
+    if trade.type == "long":
+        candle = merged_s.get_highest()
+    elif trade.type == "short":
+        candle = merged_s.get_lowest()
 
-    Arguments:
-        dt : datetime object
-             This will be the datetime for the IC candle
-        clObj : CandleList used for calculation
+    return candle.time
+
+def get_SLdiff(trade: Trade) -> float:
+    """Function to calculate the difference in number of pips between the
+    entry and the SL prices.
 
     Returns:
-        type (short/long)
+        number of pips
     """
-    if dt != clObj.candles[-1].time:
-        dt = clObj.candles[-1].time
+    diff = abs(trade.entry.price - trade.SL.price)
+    number_pips = float(calculate_pips(trade.pair, diff))
 
-    # increate sensitivity for pivot detection
-    PL = PivotList(clObj, th_bounces=trade_params.th_bounces)
+    return number_pips
 
-    # now, get the Pivot matching the datetime for the IC+1 candle
-    if PL.pivots[-1].candle.time != dt:
-        raise Exception("Last pivot time does not match the passed datetime")
-    # check the 'type' of Pivot.pre segment
-    direction = PL.pivots[-1].pre.type
+def fetch_candle(d: datetime) -> Candle:
+    """Private method to query the API to get a single candle
+    if it is not defined in self.clist.
 
-    if direction == -1:
-        return "long"
-    elif direction == 1:
-        return "short"
+    It will return None if market is closed
+    """
+    conn = Connect(
+        instrument=Trade.pair,
+        granularity=Trade.timeframe)
+    clO = conn.query(start=d.isoformat(), end=d.isoformat())
+    if len(clO.candles) == 1:
+        return clO.candles[0]
+    elif len(clO.candles) > 1:
+        raise Exception("No valid number of candles in "
+                        "CandleList")
+
+def check_candle_overlap(cl: Candle, price: float) -> bool:
+    """Method to check if Candle 'cl' overlaps 'price'"""
+    return cl.l <= price <= cl.h
+
+def end_trade(trade: Trade, connect: bool,
+              cl: Candle,
+              harea: HArea) -> Trade:
+    """End trade"""
+    end = None
+    if connect is True:
+        end = (harea.get_cross_time(candle=cl,
+                granularity=trade_params.granularity))
     else:
-        raise Exception("Could not guess the file type")
+        end = cl.time
+    trade.end = end
+    trade.exit = harea.price
+    return trade
 
+def finalise_trade(trade: Trade, connect: bool, cl: Candle) -> Trade:
+    """Finalise  trade by setting the outcome and calculating profit"""
+    if trade.outcome == "success":
+        price1 = trade.TP.price
+        end_trade(trade,
+                  connect=connect,
+                  cl=cl,
+                  harea=trade.TP)
+    if trade.outcome == "failure":
+        price1 = trade.SL.price
+        end_trade(trade,
+                  connect=connect,
+                  cl=cl,
+                  harea=trade.SL)
+    if trade.outcome == "n.a.":
+        price1 = cl.c
+    trade.pips = calculate_profit(prices=(price1,
+                                          trade.entry.price),
+                                    type=trade.type,
+                                    pair=trade.pair)
+    return trade
 
-def prepare_trade(tb_obj, start: datetime, type: str, SL: float, ic: Candle,
-                  harea_sel, add_pips: int = None, TP: float = None) -> Trade:
-    """Prepare a Trade object and check if it is taken.
+def init_harea(self, price: float) -> HArea:
+    harea_obj = HArea(price=price,
+                        instrument=self.pair,
+                        pips=trade_params.hr_pips,
+                        granularity=self.timeframe)
+    return harea_obj
 
-    Arguments:
-        tb_obj : TradeBot object
-        start : Start datetime for the trade
-        type : Type of trade. ['short','long']
-        SL : Adjusted (by '__get_trade_type') SL price
-        ic: Indecission candle
-        harea_sel : HArea of this trade
-        add_pips : Number of pips above/below SL and entry
-                   price to consider for recalculating
-                   the SL and entry
-        TP : Take profit value
-    """
-    if type == 'short':
-        # entry price will be the low of IC
-        entry_p = ic.l
-        if add_pips is not None:
-            SL = round(add_pips2price(tb_obj.pair,
-                                      SL, add_pips), 4)
-            entry_p = round(substract_pips2price(tb_obj.pair,
-                                                 entry_p, add_pips), 4)
-    elif type == 'long':
-        # entry price will be the high of IC
-        entry_p = ic.h
-        if add_pips is not None:
-            entry_p = add_pips2price(tb_obj.pair,
-                                     entry_p, add_pips)
-            SL = substract_pips2price(tb_obj.pair,
-                                      SL, add_pips)
+def init_clist(trade: Trade, timeframe: str) -> CandleList:
+    delta = periodToDelta(trade_params.trade_period, timeframe)
+    start = trade.start
+    if not isinstance(start, datetime):
+        start = try_parsing_date(start)
+    nstart = start - delta
 
-    t = Trade(
-        id='{0}.bot'.format(tb_obj.pair),
-        start=start.strftime('%Y-%m-%d %H:%M:%S'),
-        pair=tb_obj.pair,
-        timeframe=tb_obj.timeframe,
-        type=type,
-        entry=entry_p,
-        SR=harea_sel.price,
-        SL=SL,
-        TP=TP,
-        RR=tradebot_params.RR)
-    return t
-
-
-def validate_trade(t: Trade) -> bool:
-    """Check if Trade if valid in terms of SL, entry, TP"""
-    if t.TP > t.entry > t.SL and t.type == 'long':
-        return True
-    elif t.TP < t.entry < t.SL and t.type == 'short':
-        return True
-    return False
-
-
-def adjust_SL_pips(candle: Candle,
-                   type: str, pair: str,
-                   no_pips: int = 100) -> float:
-    """Function to adjust the SL price
-    to the most recent highest high/lowest low.
-
-    Arguments:
-        candle : Candle object for which SL will be adjusted
-        type : Trade type ('long'/ 'short').
-        pair: Pair
-        no_pips: Number of pips to add to the highest/lowest of 
-        the candle to calculate the S/L value.
-
-    Returns:
-        adjusted SL
-    """
-    if type == 'long':
-        price = candle.l
-        SL = substract_pips2price(pair, price, no_pips)
-    else:
-        price = candle.h
-        SL = add_pips2price(pair, price, no_pips)
-
-    return SL
-
-
-def adjust_SL_nextSR(SRlst: HAreaList,
-                     sel_ix: int,
-                     type: str) -> Tuple[float, float]:
-    """Function to calculate the TP and SL prices to the next SR areas"""
-    TP, SL = None, None
-    try:
-        if type == 'long':
-            SL = SRlst.halist[sel_ix-1].price
-            TP = SRlst.halist[sel_ix+1].price
-            if sel_ix-1 < 0:
-                SL = None
-        else:
-            TP = SRlst.halist[sel_ix-1].price
-            SL = SRlst.halist[sel_ix+1].price
-            if sel_ix-1 < 0:
-                TP = None
-    except Exception:
-        t_logger.warning(f"sel_ix error: {sel_ix}. Trying with adjust_SL_pips")
-
-    return SL, TP
-
-
-def adjust_SL_candles(type: str, clObj: CandleList, number: int = 7) -> float:
-    """Function to adjust the SL price
-    to the most recent highest high/lowest low.
-
-    Arguments:
-        type : Trade type ('long'/ 'short')
-        clObj : CandleList obj
-        number : Number of candles to go back
-                 to adjust the SL.
-
-    Returns:
-        adjusted SL
-    """
-    SL, ix = None, 0
-    if not clObj.candles:
-        raise Exception("No candles in CandleList. Can't calculate the SL")
-    for c in reversed(clObj.candles):
-        # go back 'number' candles
-        if ix == number:
-            break
-        ix += 1
-        if type == "short":
-            if SL is None:
-                SL = c.h
-            elif c.h > SL:
-                SL = c.h
-        if type == "long":
-            if SL is None:
-                SL = c.l
-            if c.l < SL:
-                SL = c.l
-    return SL
+    conn = Connect(
+        instrument=trade.pair,
+        granularity=timeframe)
+    clO = conn.query(nstart.isoformat(), start.isoformat())
+    return clO

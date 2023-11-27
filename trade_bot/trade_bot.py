@@ -11,11 +11,10 @@ from params import gparams, tradebot_params, pivots_params
 from forex.pivot import PivotList
 from forex.candlelist_utils import calc_SR
 from trading_journal.trade import Trade
-from trading_journal.trade_utils import (prepare_trade,
-                                         adjust_SL_candles,
-                                         adjust_SL_pips,
+from trading_journal.trade_utils import (adjust_SL_candles,
                                          adjust_SL_nextSR,
                                          get_trade_type)
+from trade_bot.trade_bot_utils import adjust_SL_pips
 from dataclasses import dataclass
 from utils import try_parsing_date, periodToDelta
 
