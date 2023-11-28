@@ -1,4 +1,4 @@
-# Collection of utilities used by the Trade object
+# Collection of utilities used by the trade.py module
 import logging
 from datetime import datetime, timedelta
 
@@ -9,8 +9,7 @@ from utils import (substract_pips2price,
                    periodToDelta,
                    try_parsing_date)
 from params import counter_params, trade_params
-from api.oanda import Connect
-from trading_journal.trade import Trade
+from api.oanda.connect import Connect
 from forex.pivot import PivotList
 from forex.candle import Candle, CandleList
 from forex.harea import HArea
@@ -44,11 +43,11 @@ def get_lasttime(trade: Trade, pad: int = 0):
     """
     new_SR = trade.SR
     if pad > 0:
-        if trade.type == 'long':
+        if trade.type == "long":
             new_SR = substract_pips2price(trade.clist.instrument,
                                           trade.SR,
                                           pad)
-        elif trade.type == 'short':
+        elif trade.type == "short":
             new_SR = add_pips2price(trade.clist.instrument,
                                     trade.SR,
                                     pad)
@@ -57,80 +56,8 @@ def get_lasttime(trade: Trade, pad: int = 0):
     return newcl.get_lasttime(new_SR, type=trade.type)
 
 
-def get_max_min_rsi(trade: Trade) -> float:
-    """Function to calculate the max or min RSI for CandleList slice
-    going from trade.start-counter_params.rsi_period
-    to trade.start.
-
-    Returns:
-        The max (if short trade) or min (long trade) rsi value
-        in the candlelist
-    """
-    t_logger.debug("Running set_max_min_rsi")
-
-    ix = counter_params.rsi_period
-    sub_clist = trade.clist.candles[-ix:]
-    rsi_list = [x.rsi for x in sub_clist]
-    first = None
-    for x in reversed(rsi_list):
-        if first is None:
-            first = x
-        elif trade.type == 'short':
-            if x > first:
-                first = x
-        elif trade.type == 'long':
-            if x < first:
-                first = x
-
-    t_logger.debug("Done set_max_min_rsi")
-
-    return round(first, 2)
-
-def calc_trade_session(trade: Trade) -> str:
-    """Function to calculate the trade session (European, Asian,
-    NAmerican) the trade was taken
-
-    Arguments:
-        trade : Trade object used for the calculation
-
-    Returns:
-        Comma-separated string with different
-        sessions: i.e. european,asian or namerican, etc...
-        It will return n.a. if self.entry_time is not defined
-    """
-    if not hasattr(trade, 'entry_time'):
-        return "n.a."
-    dtime = datetime.datetime.strptime(trade.entry_time, '%Y-%m-%dT%H:%M:%S')
-    # define the different sessions time boundaries
-    a_u2 = datetime.time(int(7), int(0), int(0))
-    a_l2 = datetime.time(int(0), int(0), int(0))
-    a_u1 = datetime.time(int(23), int(59), int(59))
-    a_l1 = datetime.time(int(23), int(0), int(0))
-    e_u = datetime.time(int(15), int(0), int(0))
-    e_l = datetime.time(int(7), int(0), int(0))
-    na_u = datetime.time(int(19), int(0), int(0))
-    na_l = datetime.time(int(12), int(0), int(0))
-
-    sessions = []
-    session_seen = False
-    if dtime.time() >= a_l1 and dtime.time() <= a_u1:
-        sessions.append('asian')
-        session_seen = True
-    if dtime.time() >= a_l2 and dtime.time() <= a_u2:
-        sessions.append('asian')
-        session_seen = True
-    if dtime.time() >= e_l and dtime.time() <= e_u:
-        sessions.append('european')
-        session_seen = True
-    if dtime.time() >= na_l and dtime.time() <= na_u:
-        sessions.append('namerican')
-        session_seen = True
-    if session_seen is False:
-        sessions.append('nosession')
-    return ",".join(sessions)
-
 def calc_period(self) -> int:
-    """Number of hours for period"""
+    """Number of hours for a certain timeframe"""
     return 24 if self.timeframe == "D" else int(self.timeframe.replace("H",
                                                                         ""))
 def gen_datelist(trade: Trade) -> list[datetime]:

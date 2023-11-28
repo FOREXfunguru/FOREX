@@ -7,7 +7,7 @@ from trading_journal.constants import ALLOWED_ATTRBS, VALID_TYPES
 from datetime import datetime
 from forex.harea import HArea
 from utils import try_parsing_date
-from trade_utils import (
+from trading_journal.trade_utils import (
     calc_TP,
     calc_RR,
     gen_datelist,
@@ -19,7 +19,6 @@ from trade_utils import (
     check_candle_overlap
 )
 from params import trade_params
-from api.oanda.connect import Connect
 
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
@@ -79,8 +78,8 @@ class Trade(ABC):
         self.SLdiff = get_SLdiff()
 
     def initialise(self, expires: int = 2, connect=True) -> None:
-        """Progress the trade and check if taken. 
-        
+        """Progress the trade and check if taken.
+   
         Arguments:
             expires: Number of candles after start datetime to check
                      for entry
@@ -125,18 +124,19 @@ class Trade(ABC):
         """
         t_logger.info(f"Run run_trade with id: {self.pair}:{self.start}")
 
-            if self.entered is True:
-                if trade_params.strat not in VALID_TYPES:
-                    raise ValueError(f"Unrecognised type: {type}")
-                managed_trade =  None
-                if trade_params.strat == "area_unaware":
-                    managed_trade = UnawareTrade(**self.__dict__)
-                    managed_trade.run_trade()
-                    self.outcome = managed_trade.outcome
-                    self.pips = managed_trade.pips
-                    self.end = managed_trade.end
-                    break
+        """
+        if self.entered is True:
+            if trade_params.strat not in VALID_TYPES:
+                raise ValueError(f"Unrecognised type: {type}")
+            managed_trade = None
+            if trade_params.strat == "area_unaware":
+                managed_trade = UnawareTrade(**self.__dict__)
+                managed_trade.run_trade()
+                self.outcome = managed_trade.outcome
+                self.pips = managed_trade.pips
+                self.end = managed_trade.end
         t_logger.info("Done run_trade")
+        """
 
     def __str__(self):
         sb = []

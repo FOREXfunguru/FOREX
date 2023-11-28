@@ -4,8 +4,7 @@ import datetime
 import numpy as np
 
 from trading_journal.trade_utils import (is_entry_onrsi,
-                                         get_lasttime,
-                                         get_max_min_rsi)
+                                         get_lasttime)
 from trading_journal.trade import Trade
 from forex.harea import HAreaList, HArea
 
@@ -135,39 +134,6 @@ def test_get_lasttime_with_pad(start, type, SR, SL, TP, entry, lasttime,
 
     assert get_lasttime(t, pad=30) == lasttime
 
-
-@pytest.mark.parametrize("pair,"
-                         "timeframe,"
-                         "id,"
-                         "start,"
-                         "type,"
-                         "SR,"
-                         "SL,"
-                         "TP,"
-                         "entry,"
-                         "avalue",
-                         [('EUR_GBP', 'D', 'EUR_GBP 23FEB2007D',
-                           '2007-02-22 22:00:00', 'short', 0.6713, 0.6758,
-                           0.6615, 0.67009, 64.48),
-                          ('EUR_GBP', 'D', 'EUR_GBP 04JUN2004D',
-                          '2004-06-03 22:00:00', 'long', 0.66379, 0.66229, 
-                           0.67418, 0.66704, 37.94)])
-def test_max_min_rsi(pair, timeframe, id, start, type, SR, SL, TP, entry, 
-                     avalue, clO_pickled):
-    t = Trade(
-        id=id,
-        start=start,
-        pair=pair,
-        timeframe=timeframe,
-        type=type,
-        SR=SR,
-        SL=SL,
-        TP=TP,
-        entry=entry,
-        strat="counter_b1",
-        clist=clO_pickled)
-
-    assert avalue == get_max_min_rsi(t)
 
 def test_get_SLdiff(t_object):
     assert 24.0 == t_object.get_SLdiff()
