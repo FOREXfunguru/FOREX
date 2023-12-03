@@ -1,9 +1,22 @@
 import datetime
 import pytest
+import numpy as np
 
+from forex.harea import HAreaList, HArea
 from trade_bot.trade_bot_utils import (adjust_SL_pips, 
                                        get_trade_type,
-                                       adjust_SL_candles)
+                                       adjust_SL_candles,
+                                       adjust_SL_nextSR)
+
+@pytest.fixture
+def halist_factory():
+    hlist = []
+    for p in np.arange(0.610, 0.80, 0.020):
+        area = HArea(price=p, pips=30, instrument="AUD_USD", granularity="D")
+        hlist.append(area)
+
+    halist = HAreaList(halist=hlist)
+    return halist
 
 def test_adjust_SL_pips_short(clO_pickled):
     clObj = clO_pickled.candles[10]

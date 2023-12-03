@@ -5,7 +5,9 @@ from forex.harea import HArea, HAreaList
 from forex.candle import Candle, CandleList
 from trading_journal.trade import Trade
 from forex.pivot import PivotList
-from params import trade_params
+from params import trade_params, tradebot_params
+from utils import add_pips2price, substract_pips2price
+
 
 def adjust_SL_pips(candle: Candle,
                    type: str, pair: str,
