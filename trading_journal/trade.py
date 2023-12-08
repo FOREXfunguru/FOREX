@@ -31,6 +31,9 @@ class Trade(ABC):
     """This is an abstrace class represents a Trade.
 
     Class variables:
+        init_clist: boolean that will be true if 
+                    clist and clist_tm should be
+                    initialised
         start: Time/date when the trade was taken
         pair: Currency pair used in the trade
         timeframe: Timeframe used for the trade.
@@ -46,25 +49,25 @@ class Trade(ABC):
         clist_tm: CandleList for trade management
     """
 
-    def __preinit__(self):
-        if not hasattr(self, "clist"):
+    def _preinit__(self):
+        if not hasattr(self, "clist") and self.init_clist is True:
             self.clist = init_clist(timeframe=self.timeframe,
                                     pair=self.pair,
                                     start=self.start)
-        if not hasattr(self, "clist_tm"):
+        if not hasattr(self, "clist_tm") and self.init_clist is True:
             self.clist_tm = init_clist(timeframe=trade_params.clisttm_tf,
                                        pair=self.pair,
                                        start=self.start)
-        if self.clist_tm.instrument != self.clist_tm.instrument:
-            raise ValueError("Inconsistent instruments between 'clist' and 'clist_tm'")
 
         self.__dict__.update({"start": try_parsing_date(self.__dict__["start"])})
         if hasattr(self, "end"):
             self.__dict__.update({"end": try_parsing_date(self.__dict__["end"])})
 
-    def __init__(self, entry: float, SL: float, TP: float = None, **kwargs) -> None:
+    def __init__(self, entry: float, SL: float, TP: float = None, init_clist=False, **kwargs) -> None:
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in ALLOWED_ATTRBS)
-        self.__preinit__()
+        self.init_clist = init_clist
+        self._preinit__()
+        self._validate_clists
         self.entry = self.init_harea(entry) if not isinstance(entry, HArea) else entry
         self.SL = self.init_harea(SL) if not isinstance(SL, HArea) else SL
         if kwargs.get("RR") is None and TP is None:
@@ -209,13 +212,13 @@ class Trade(ABC):
         """Finalise  trade by setting the outcome and calculating profit"""
         if self.outcome == "success":
             price1 = self.TP.price
-            self.end_trade(self,
+            self.end_trade(
                     connect=connect,
                     cl=cl,
                     harea=self.TP)
         if self.outcome == "failure":
             price1 = self.SL.price
-            self.end_trade(self,
+            self.end_trade(
                     connect=connect,
                     cl=cl,
                     harea=self.SL)
@@ -226,11 +229,14 @@ class Trade(ABC):
                                             type=self.type,
                                             pair=self.pair)
 
+    @abstractmethod
     def run(self, expires: int = 2, connect=True) -> None:
         """Run the trade until conclusion from a start datetime."""
+        pass
+        """
+
         t_logger.info(f"Run run_trade with id: {self.pair}:{self.start}")
 
-        """
         if self.entered is True:
             if trade_params.strat not in VALID_TYPES:
                 raise ValueError(f"Unrecognised type: {type}")
@@ -243,6 +249,10 @@ class Trade(ABC):
                 self.end = managed_trade.end
         t_logger.info("Done run_trade")
         """
+    
+    @abstractmethod
+    def adjust_SL(self):
+        pass
 
     def __str__(self):
         sb = []
@@ -272,7 +282,7 @@ class UnawareTrade(Trade):
         """Function to check if middle_point values are
         agaisnt the trade
         """
-        prices = [x.middle_point() for x in UnawareTrade.preceding_candles]
+        prices = [x.middle_point() for x in self.preceding_candles]
         if self.type == "long":
             return all(prices[i] > prices[i + 1] for i in range(len(prices) - 1))
         else:
@@ -281,14 +291,14 @@ class UnawareTrade(Trade):
     def adjust_SL(self):
         """Adjust SL"""
         newSL_price = (
-            UnawareTrade.preceding_candles[-1].l
+            self.preceding_candles[-2].l
             if self.type == "long"
-            else UnawareTrade.preceding_candles[-1].h
+            else self.preceding_candles[-2].h
         )
-        self.SL = newSL_price
+        self.SL.price = newSL_price
 
 
-    def run_trade(self, connect: bool = True) -> None:
+    def run(self, connect: bool = True) -> None:
         """Method to run this UnawareTrade.
 
         Arguments:
@@ -297,33 +307,41 @@ class UnawareTrade(Trade):
         This function will run the trade and will set the outcome attribute
         """
         count = 0
-        for d in self.gen_datelist(start=self.start):
+        completed = False
+        for d in gen_datelist(start=self.start, timeframe=self.timeframe):
+            if d > self.clist.candles[-1].time and connect is False:
+                raise Exception("No candle is available in 'clist' and connect is False. Unable to follow")
+            if completed:
+                break
             count += 1
             cl = self.clist[d]
             if cl is None:
                 if connect is True:
                     cl = fetch_candle(d=d, pair=self.pair, timeframe=self.timeframe)
                 if cl is None:
+                    count -= 1
                     continue
             cl_tm = self.clist_tm[d]
             if cl_tm is None:
                 if connect is True:
                     cl_tm = fetch_candle(d=d, pair=self.pair, timeframe=self.timeframe)
             if cl_tm is not None:
-                UnawareTrade.preceding_candles.append(cl_tm)
-            if len(UnawareTrade.preceding_candles) == self.candle_number:
+                self.preceding_candles.append(cl_tm)
+            if len(self.preceding_candles) == self.candle_number:
                 res = self.check_if_against()
                 if res is True:
-                    pdb.set_trace()
                     self.adjust_SL()
-                UnawareTrade.preceding_candles = []
-            if self._check_candle_overlap(cl, self.SL.price):
+                self.preceding_candles = []
+            if check_candle_overlap(cl, self.SL.price):
                 t_logger.info("Sorry, SL was hit!")
+                completed = True
                 self.outcome = "failure"
-            elif self._check_candle_overlap(cl, self.TP.price):
+            elif check_candle_overlap(cl, self.TP.price):
                 t_logger.info("Great, TP was hit!")
+                completed = True
                 self.outcome = "success"
             elif count >= trade_params.numperiods:
+                completed = True
                 t_logger.warning(
                     "No outcome could be calculated in the "
                     "trade_params.numperiods interval"
@@ -331,5 +349,5 @@ class UnawareTrade(Trade):
                 self.outcome = "n.a."
             else:
                 continue
-            trade = finalise_trade(self, connect=connect, cl=cl)
-            return trade
+        self.finalise_trade(connect=connect, cl=cl)
+         
