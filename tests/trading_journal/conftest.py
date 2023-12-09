@@ -1,15 +1,15 @@
 import pytest
 
-from trading_journal.trade import Trade
+from trading_journal.trade import UnawareTrade
 from trading_journal.trade_journal import TradeJournal
 from utils import DATA_DIR
 
 
 @pytest.fixture
 def t_object(clO_pickled):
-    """Returns a Trade object"""
+    """Returns a UnawareTrade object"""
 
-    td = Trade(
+    td = UnawareTrade(
         start="2017-04-10 14:00:00",
         end="2017-04-26 14:00:00",
         entry=0.74960,
@@ -19,15 +19,16 @@ def t_object(clO_pickled):
         pair="AUD_USD",
         type="long",
         timeframe="D",
-        clist=clO_pickled)
+        clist=clO_pickled,
+        clist_tm=clO_pickled)
     return td
 
 
 @pytest.fixture
-def t_object_list(scope="session"):
-    """Returns a list of Trade objects"""
+def t_object_list(clO_pickled):
+    """Returns a list of UnawareTrade objects"""
 
-    td = Trade(
+    td = UnawareTrade(
         start="2017-04-10 14:00:00",
         end="2017-04-26 14:00:00",
         entry=0.74960,
@@ -36,9 +37,11 @@ def t_object_list(scope="session"):
         SR=0.74784,
         pair="AUD_USD",
         type="long",
-        timeframe="H8",
+        timeframe="D",
         strat="counter_b1",
-        id="AUD_USD 10APR2017H8")
+        id="AUD_USD 10APR2017H8",
+        clist=clO_pickled,
+        clist_tm=clO_pickled)
     return [td]
 
 

@@ -1,6 +1,7 @@
 import logging
 import pickle
 import re
+import pdb
 
 from datetime import datetime, timedelta
 from typing import List
@@ -47,8 +48,8 @@ class TradeBot(object):
                    D,H12,H10,H8,H4,H1
         clist: CandleList object used to represent this trade
     '''
-    __slots__ = ['start', 'end', 'pair', 'timeframe', 'clist', 
-                 'delta_period', 'delta']
+    __slots__ = ["start", "end", "pair", "timeframe", "clist", 
+                 "delta_period", "delta"]
 
     def __init__(self, start: datetime, end: datetime, pair: str,
                  timeframe: str, clist: CandleList = None):
@@ -208,15 +209,15 @@ class TradeBot(object):
         """
         TP = None
         tlist = []
-        with open(pretrades, 'rb') as f:
+        with open(pretrades, "rb") as f:
             pret_lst = pickle.load(f)
             for pret in pret_lst:
                 initc_date = pret.candle.time-self.delta_period
                 newCl = self.clist.slice(start=initc_date,
                                          end=pret.candle.time)
-                if tradebot_params.adj_SL == 'candles':
+                if tradebot_params.adj_SL == "candles":
                     SL = adjust_SL_candles(pret.type, newCl)
-                elif tradebot_params.adj_SL == 'pips':
+                elif tradebot_params.adj_SL == "pips":
                     SL = adjust_SL_pips(pret.candle,
                                         pret.type,
                                         pair=self.pair,

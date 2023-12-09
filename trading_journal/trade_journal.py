@@ -8,7 +8,7 @@ from typing import Tuple, List
 import openpyxl
 from openpyxl import Workbook
 
-from trading_journal.trade import Trade
+from trading_journal.trade import UnawareTrade
 from params import tjournal_params
 
 
@@ -55,7 +55,7 @@ class TradeJournal(object):
             wb.create_sheet(worksheet)
             wb.save(str(self.url))
 
-    def fetch_trades(self) -> List[Trade]:
+    def fetch_trades(self) -> List[UnawareTrade]:
         """Function to fetch a list of Trade objects"""
         trade_list, args = [], {}
         for _, row in self.df.iterrows():
@@ -65,7 +65,7 @@ class TradeJournal(object):
             assert len(elms) >= 1, "Error parsing the trade id"
             pair = elms[0]
             args = {'pair': pair, **row}
-            t = Trade(**args)
+            t = UnawareTrade(**args)
             trade_list.append(t)
 
         return trade_list
@@ -91,11 +91,12 @@ class TradeJournal(object):
         for _, row in self.df.iterrows():
             pair = row['id'].split(" ")[0]
             args = {'pair': pair, **row}
-            t = Trade(**args, init_clist=True)
+            t = UnawareTrade(**args, init_clist=True)
             if t.strat not in strat_l:
                 continue
             if not hasattr(t, 'outcome') or math.isnan(t.outcome):
-                t.run_trade(expires=1)
+                t.initialise(expires=1)
+                t.run()
             if t.outcome == 'success':
                 number_s += 1
             elif t.outcome == 'failure':
@@ -113,7 +114,7 @@ class TradeJournal(object):
 
         return number_s, number_f, tot_pips
 
-    def write_tradelist(self, trade_list: List[Trade],
+    def write_tradelist(self, trade_list: List[UnawareTrade],
                         sheet_name: str) -> None:
         """Write the TradeList to the Excel spreadsheet
         pointed by the trade_journal.
