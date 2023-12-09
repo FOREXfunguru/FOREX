@@ -37,7 +37,7 @@ def t_object_list(clO_pickled):
         SR=0.74784,
         pair="AUD_USD",
         type="long",
-        timeframe="H8",
+        timeframe="D",
         strat="counter_b1",
         id="AUD_USD 10APR2017H8",
         clist=clO_pickled,

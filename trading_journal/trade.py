@@ -1,7 +1,6 @@
 from __future__ import division
 from abc import ABC, abstractmethod
 import logging
-import pdb
 
 from trading_journal.constants import ALLOWED_ATTRBS, VALID_TYPES
 from datetime import datetime
@@ -67,7 +66,7 @@ class Trade(ABC):
         self.__dict__.update((k, v) for k, v in kwargs.items() if k in ALLOWED_ATTRBS)
         self.init_clist = init_clist
         self._preinit__()
-        self._validate_clists
+        self._validate_clists()
         self.entry = self.init_harea(entry) if not isinstance(entry, HArea) else entry
         self.SL = self.init_harea(SL) if not isinstance(SL, HArea) else SL
         if kwargs.get("RR") is None and TP is None:
@@ -89,6 +88,13 @@ class Trade(ABC):
                             pips=trade_params.hr_pips,
                             granularity=self.timeframe)
         return harea_obj
+
+
+    def _validate_clists(self):
+        """Method to check the validity of the clists"""
+        if hasattr(self, "clist"):
+            if self.clist.instrument != self.pair or self.clist.granularity != self.timeframe:
+                raise("Incompatible clist attributes")
 
     def initialise(self, expires: int = 2, connect=True) -> None:
         """Progress the trade and check if taken.
@@ -233,22 +239,6 @@ class Trade(ABC):
     def run(self, expires: int = 2, connect=True) -> None:
         """Run the trade until conclusion from a start datetime."""
         pass
-        """
-
-        t_logger.info(f"Run run_trade with id: {self.pair}:{self.start}")
-
-        if self.entered is True:
-            if trade_params.strat not in VALID_TYPES:
-                raise ValueError(f"Unrecognised type: {type}")
-            managed_trade = None
-            if trade_params.strat == "area_unaware":
-                managed_trade = UnawareTrade(**self.__dict__)
-                managed_trade.run_trade()
-                self.outcome = managed_trade.outcome
-                self.pips = managed_trade.pips
-                self.end = managed_trade.end
-        t_logger.info("Done run_trade")
-        """
     
     @abstractmethod
     def adjust_SL(self):
@@ -267,8 +257,6 @@ class Trade(ABC):
 class UnawareTrade(Trade):
     """Class to represent an open Trade of the 'area_unaware' type"""
 
-    preceding_candles = []
-
     def __init__(self, candle_number: int = 3, **kwargs):
         """Constructor
 
@@ -276,6 +264,7 @@ class UnawareTrade(Trade):
             candle_number: number of candles against the trade to consider
         """
         self.candle_number = candle_number
+        self.preceding_candles = list()
         super().__init__(**kwargs)
 
     def check_if_against(self):
@@ -326,12 +315,14 @@ class UnawareTrade(Trade):
                 if connect is True:
                     cl_tm = fetch_candle(d=d, pair=self.pair, timeframe=self.timeframe)
             if cl_tm is not None:
+                if self.start == datetime(2019, 2, 11, 14, 0):
+                    print(cl_tm)
                 self.preceding_candles.append(cl_tm)
             if len(self.preceding_candles) == self.candle_number:
                 res = self.check_if_against()
                 if res is True:
                     self.adjust_SL()
-                self.preceding_candles = []
+                self.preceding_candles = list()
             if check_candle_overlap(cl, self.SL.price):
                 t_logger.info("Sorry, SL was hit!")
                 completed = True

@@ -1,5 +1,4 @@
 import pytest
-import pdb
 import datetime
 
 from trading_journal.trade import UnawareTrade
@@ -22,6 +21,7 @@ def test_instantiation(TP, RR, exp_instance):
             timeframe=trade_details[3],
             entry=trade_details[4],
             SL=trade_details[5],
+            init_clist=True
         )
     elif exp_instance == Exception:
         with pytest.raises(Exception):
@@ -34,6 +34,7 @@ def test_instantiation(TP, RR, exp_instance):
                 timeframe=trade_details[3],
                 entry=trade_details[4],
                 SL=trade_details[5],
+                init_clist=True
             )
 
 def test_init_clist():
@@ -168,7 +169,6 @@ def test_is_entry_onrsi(start, type, SR, SL, TP, entry, entry_onrsi, clO_pickled
 
 
 trade_data1 = [(*trade, pip) for trade, pip in zip(trades_entered, trades_outcome)]
-print(trade_data1)
 
 @pytest.mark.parametrize("start,type,SR,SL,TP,entry,trades_outcome", trade_data1)
 def test_run(start, type, SR, SL, TP, entry, trades_outcome, clOH8_2019_pickled, clO_pickled):
