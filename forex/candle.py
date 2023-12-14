@@ -347,7 +347,7 @@ class CandleList(object):
         the CandleList in place
 
         Arguments:
-            start: Slice the CandleList from this start datetime.
+            start: Slice the CandleList from this 'start' datetime.
             end:  This CandleList will have this 'end' datetime.
 
         Raises

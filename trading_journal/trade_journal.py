@@ -55,8 +55,12 @@ class TradeJournal(object):
             wb.create_sheet(worksheet)
             wb.save(str(self.url))
 
-    def fetch_trades(self) -> List[UnawareTrade]:
-        """Function to fetch a list of Trade objects"""
+    def fetch_trades(self, init_clist: bool=False) -> List[UnawareTrade]:
+        """Function to fetch a list of Trade objects.
+        
+        Args:
+            init_clist: If True, then clist and clist_tm will be initialised.
+        """
         trade_list, args = [], {}
         for _, row in self.df.iterrows():
             if isinstance(row['id'], float):
@@ -65,7 +69,7 @@ class TradeJournal(object):
             assert len(elms) >= 1, "Error parsing the trade id"
             pair = elms[0]
             args = {'pair': pair, **row}
-            t = UnawareTrade(**args)
+            t = UnawareTrade(**args, init_clist=init_clist)
             trade_list.append(t)
 
         return trade_list

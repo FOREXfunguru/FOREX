@@ -235,6 +235,32 @@ class Trade(ABC):
                                             type=self.type,
                                             pair=self.pair)
 
+    def process_start(self) -> None:
+        """Round fractional times for Trade.start"""
+        pdb.set_trace()
+
+        time_ranges_dict = {
+            "H4": [21, 1, 5, 9, 13, 17],
+            "H8": [21, 5, 13],
+            "H12": [21, 9],
+            "D" : [21]}
+        filtered_hours = [hour for hour in time_ranges_dict[self.timeframe] if (self.start.time().hour - hour) > 0]
+        if filtered_hours:
+            closest_hour = min(filtered_hours, key=lambda x: self.start.time().hour - x)
+        else:
+            closest_hour = 21
+
+        if closest_hour== 21 and self.start.time().hour >= 0 and not self.start.time().hour in [22, 23]:
+            day = self.start.day
+            self.start = self.start.replace(day=day-1,
+                                            hour=closest_hour,
+                                            minute=0,
+                                            second=0)
+        else:
+            self.start = self.start.replace(hour=closest_hour,
+                                            minute=0,
+                                            second=0)
+
     @abstractmethod
     def run(self, expires: int = 2, connect=True) -> None:
         """Run the trade until conclusion from a start datetime."""

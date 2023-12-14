@@ -2,7 +2,11 @@ import pytest
 import datetime
 
 from trading_journal.trade import UnawareTrade
-from data_for_tests import trades1, last_times, trades_entered, trades_outcome
+from data_for_tests import (trades1,
+                            last_times,
+                            trades_entered,
+                            trades_outcome,
+                            start_hours)
 
 trade_details = ["2020-02-19T21:00:00", "EUR_GBP", "long", "D", 0.83585, 0.82467]
 
@@ -173,7 +177,6 @@ trade_data1 = [(*trade, pip) for trade, pip in zip(trades_entered, trades_outcom
 @pytest.mark.parametrize("start,type,SR,SL,TP,entry,trades_outcome", trade_data1)
 def test_run(start, type, SR, SL, TP, entry, trades_outcome, clOH8_2019_pickled, clO_pickled):
     """Test 'run' function"""
-    print(trades_outcome)
     t = UnawareTrade(
         id="test",
         start=start,
@@ -190,4 +193,21 @@ def test_run(start, type, SR, SL, TP, entry, trades_outcome, clOH8_2019_pickled,
     t.run(connect=False)
     assert t.outcome == trades_outcome[0]
     assert t.pips == trades_outcome[1]
+
+@pytest.mark.parametrize("start,returned,timeframe", start_hours)
+def test_process_start(start,returned,timeframe):
+    t = UnawareTrade(
+        id="test",
+        start=start,
+        pair="AUD_USD",
+        timeframe=timeframe,
+        type="long",
+        SR=0.71857,
+        SL=0.70814,
+        TP=0.74267,
+        entry=0.72193,
+        init_clist=False)
+    t.process_start()
+    assert  t.start == returned
+
 
