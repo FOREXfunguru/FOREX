@@ -61,6 +61,7 @@ class TradeJournal(object):
         Args:
             init_clist: If True, then clist and clist_tm will be initialised.
         """
+
         trade_list, args = [], {}
         for _, row in self.df.iterrows():
             if isinstance(row['id'], float):
