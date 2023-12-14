@@ -237,13 +237,12 @@ class Trade(ABC):
 
     def process_start(self) -> None:
         """Round fractional times for Trade.start"""
-
         time_ranges_dict = {
             "H4": [21, 1, 5, 9, 13, 17],
             "H8": [21, 5, 13],
             "H12": [21, 9],
             "D" : [21]}
-        filtered_hours = [hour for hour in time_ranges_dict[self.timeframe] if (self.start.time().hour - hour) > 0]
+        filtered_hours = [hour for hour in time_ranges_dict[self.timeframe] if (self.start.time().hour - hour) >= 0]
         if filtered_hours:
             closest_hour = min(filtered_hours, key=lambda x: self.start.time().hour - x)
         else:
