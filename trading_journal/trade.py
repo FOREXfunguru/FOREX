@@ -237,7 +237,6 @@ class Trade(ABC):
 
     def process_start(self) -> None:
         """Round fractional times for Trade.start"""
-        pdb.set_trace()
 
         time_ranges_dict = {
             "H4": [21, 1, 5, 9, 13, 17],
