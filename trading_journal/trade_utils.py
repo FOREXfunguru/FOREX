@@ -27,6 +27,19 @@ def gen_datelist(start: datetime, timeframe: str) -> list[datetime]:
             for x in range(0, trade_params.interval)]
 
 
+def fetch_candle_api(d: datetime, pair: str, timeframe: str):
+    cl = None
+    cl = fetch_candle(d=d,
+                      pair=pair,
+                      timeframe=timeframe)
+    if cl is None:
+        #  try with hour-1 to deal with time shifts
+        cl = fetch_candle(d=d-timedelta(hours=1),
+                          pair=pair,
+                          timeframe=timeframe)
+    return cl
+
+
 def fetch_candle(d: datetime, pair: str, timeframe: str) -> Candle:
     """Private method to query the API to get a single candle
     if it is not defined in Trade.clist.
@@ -34,10 +47,16 @@ def fetch_candle(d: datetime, pair: str, timeframe: str) -> Candle:
     conn = Connect(
         instrument=pair,
         granularity=timeframe)
-    clO = conn.query(start=d.isoformat(), end=d.isoformat())
+    # substract one min to be sure we fetch the right candle
+    start = d - timedelta(minutes=1)
+    clO = conn.query(start=start.isoformat(), end=start.isoformat())
+
     if len(clO.candles) == 1:
+        if clO.candles[0].time != d:
+            # return None if candle is not equal to 'd'
+            return
         return clO.candles[0]
-    elif len(clO.candles) > 1:
+    if len(clO.candles) > 1:
         raise Exception("No valid number of candles in "
                         "CandleList")
 
