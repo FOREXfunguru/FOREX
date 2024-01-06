@@ -16,7 +16,7 @@ from utils import (
 )
 from trading_journal.trade_utils import (
     gen_datelist,
-    fetch_candle,
+    fetch_candle_api,
     check_candle_overlap,
     init_clist
 )
@@ -119,7 +119,7 @@ class Trade(ABC):
             cl = self.clist[d]
             if cl is None:
                 if connect is True:
-                    cl = fetch_candle(d=d, pair=self.pair, timeframe=self.timeframe)
+                    cl = fetch_candle_api(d=d, pair=self.pair, timeframe=self.timeframe)
                 if cl is None:
                     count -= 1
                     continue
@@ -230,10 +230,17 @@ class Trade(ABC):
                     harea=self.SL)
         if self.outcome == "n.a.":
             price1 = cl.c
-        self.pips = calculate_profit(prices=(price1,
-                                            self.entry.price),
-                                            type=self.type,
-                                            pair=self.pair)
+            self.end = "n.a."
+            self.exit = price1
+        if self.outcome == "future":
+            self.end = "n.a."
+            self.pips = "n.a."
+            self.exit = "n.a."
+        if self.outcome != "future":
+            self.pips = calculate_profit(prices=(price1,
+                                                self.entry.price),
+                                                type=self.type,
+                                                pair=self.pair)
 
     def process_start(self) -> None:
         """Round fractional times for Trade.start"""
@@ -319,9 +326,15 @@ class UnawareTrade(Trade):
 
         This function will run the trade and will set the outcome attribute
         """
+        current_date = datetime.now().date()
         count = 0
         completed = False
         for d in gen_datelist(start=self.start, timeframe=self.timeframe):
+            print(d)
+            if d.date() == current_date:
+                logging.warning("Skipping as unable to end the trade")
+                self.outcome = "future"
+                break
             if d > self.clist.candles[-1].time and connect is False:
                 raise Exception("No candle is available in 'clist' and connect is False. Unable to follow")
             if completed:
@@ -330,17 +343,20 @@ class UnawareTrade(Trade):
             cl = self.clist[d]
             if cl is None:
                 if connect is True:
-                    cl = fetch_candle(d=d, pair=self.pair, timeframe=self.timeframe)
-                if cl is None:
-                    count -= 1
-                    continue
+                    cl = fetch_candle_api(d=d,
+                                          pair=self.pair,
+                                          timeframe=self.timeframe)
+                    if cl is None:
+                        count -= 1
+                        continue
             cl_tm = self.clist_tm[d]
             if cl_tm is None:
                 if connect is True:
-                    cl_tm = fetch_candle(d=d, pair=self.pair, timeframe=self.timeframe)
+                    cl_tm = fetch_candle_api(d=d,
+                                             pair=self.pair,
+                                             timeframe=trade_params.clisttm_tf)
+            
             if cl_tm is not None:
-                if self.start == datetime(2019, 2, 11, 14, 0):
-                    print(cl_tm)
                 self.preceding_candles.append(cl_tm)
             if len(self.preceding_candles) == self.candle_number:
                 res = self.check_if_against()
