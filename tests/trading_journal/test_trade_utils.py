@@ -1,8 +1,7 @@
 import pytest
 import datetime
-import pdb
 
-from trading_journal.trade_utils import fetch_candle
+from trading_journal.trade_utils import fetch_candle, get_closest_hour
 
 date_data = [(datetime.datetime(2023, 10, 4, 17, 0), datetime.datetime(2023, 10, 4, 17, 0)),
              (datetime.datetime(2023, 10, 8, 18, 0), None),
@@ -19,6 +18,14 @@ def test_fetch_candle(day, expected_datetime):
     else:
         assert candle is None
 
+hour_data =[(9, "H8", 5),
+            (21, "H8", 21),
+            (17, "H8", 13)]
+
+@pytest.mark.parametrize("solve_hour,timeframe,closest_hour", hour_data)
+def test_get_closest_hour(solve_hour,timeframe,closest_hour):
+    """Test the 'get_closest_hour' function"""
+    assert get_closest_hour(timeframe=timeframe,solve_hour=solve_hour) == closest_hour
 
 def test_get_SLdiff(t_object):
     assert 24.0 == t_object.get_SLdiff()

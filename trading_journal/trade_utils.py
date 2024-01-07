@@ -17,6 +17,19 @@ def calc_period(timeframe: str) -> int:
     return 24 if timeframe == "D" else int(timeframe.replace("H",
                                                              ""))
 
+def get_closest_hour(timeframe: str, solve_hour: int) -> int:
+    """Get the closest hour to 'solve_hour'"""
+    time_ranges_dict = {
+            "H4": [21, 1, 5, 9, 13, 17],
+            "H8": [21, 5, 13],
+            "H12": [21, 9],
+            "D" : [21]}
+    filtered_hours = [hour for hour in time_ranges_dict[timeframe] if (solve_hour - hour) >= 0]
+    if filtered_hours:
+        closest_hour = min(filtered_hours, key=lambda x: solve_hour - x)
+    else:
+        closest_hour = 21
+    return closest_hour
 
 def gen_datelist(start: datetime, timeframe: str) -> list[datetime]:
     """Generate a range of dates starting at start and ending

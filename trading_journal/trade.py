@@ -18,13 +18,13 @@ from trading_journal.trade_utils import (
     gen_datelist,
     fetch_candle_api,
     check_candle_overlap,
-    init_clist
+    init_clist,
+    get_closest_hour
 )
 from params import trade_params
 
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
-
 
 class Trade(ABC):
     """This is an abstrace class represents a Trade.
@@ -244,16 +244,7 @@ class Trade(ABC):
 
     def process_start(self) -> None:
         """Round fractional times for Trade.start"""
-        time_ranges_dict = {
-            "H4": [21, 1, 5, 9, 13, 17],
-            "H8": [21, 5, 13],
-            "H12": [21, 9],
-            "D" : [21]}
-        filtered_hours = [hour for hour in time_ranges_dict[self.timeframe] if (self.start.time().hour - hour) >= 0]
-        if filtered_hours:
-            closest_hour = min(filtered_hours, key=lambda x: self.start.time().hour - x)
-        else:
-            closest_hour = 21
+        closest_hour = get_closest_hour(timeframe=self.timeframe, solve_hour=self.start.time().hour)
 
         if closest_hour== 21 and self.start.time().hour >= 0 and not self.start.time().hour in [22, 23]:
             day = self.start.day
