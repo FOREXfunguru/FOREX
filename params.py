@@ -114,4 +114,4 @@ class trade_params:
     Trade management
     """
     strat: str = "area_unaware"
-    clisttm_tf: str = "H8"
+    clisttm_tf: str = "D"

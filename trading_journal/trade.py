@@ -19,7 +19,7 @@ from trading_journal.trade_utils import (
     fetch_candle_api,
     check_candle_overlap,
     init_clist,
-    get_closest_hour
+    process_start
 )
 from params import trade_params
 
@@ -242,21 +242,6 @@ class Trade(ABC):
                                                 type=self.type,
                                                 pair=self.pair)
 
-    def process_start(self) -> None:
-        """Round fractional times for Trade.start"""
-        closest_hour = get_closest_hour(timeframe=self.timeframe, solve_hour=self.start.time().hour)
-
-        if closest_hour== 21 and self.start.time().hour >= 0 and not self.start.time().hour in [22, 23]:
-            day = self.start.day
-            self.start = self.start.replace(day=day-1,
-                                            hour=closest_hour,
-                                            minute=0,
-                                            second=0)
-        else:
-            self.start = self.start.replace(hour=closest_hour,
-                                            minute=0,
-                                            second=0)
-
     @abstractmethod
     def run(self, expires: int = 2, connect=True) -> None:
         """Run the trade until conclusion from a start datetime."""
@@ -340,10 +325,12 @@ class UnawareTrade(Trade):
                     if cl is None:
                         count -= 1
                         continue
-            cl_tm = self.clist_tm[d]
+            # align 'd' object to 'trade_params.clisttm_tf' timeframe
+            new_d = process_start(dt=d, timeframe=trade_params.clisttm_tf)
+            cl_tm = self.clist_tm[new_d]
             if cl_tm is None:
                 if connect is True:
-                    cl_tm = fetch_candle_api(d=d,
+                    cl_tm = fetch_candle_api(d=new_d,
                                              pair=self.pair,
                                              timeframe=trade_params.clisttm_tf)
             

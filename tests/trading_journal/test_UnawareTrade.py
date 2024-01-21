@@ -1,5 +1,6 @@
 import pytest
 import datetime
+import pdb
 
 from trading_journal.trade import UnawareTrade
 
@@ -191,24 +192,8 @@ def test_run(start, type, SR, SL, TP, entry, trades_outcome, clOH8_2019_pickled,
         clist=clOH8_2019_pickled,
         clist_tm=clO_pickled)
     t.initialise()
+    pdb.set_trace()
     t.run(connect=False)
     assert t.outcome == trades_outcome[0]
     assert t.pips == trades_outcome[1]
-
-@pytest.mark.parametrize("start,returned,timeframe", start_hours)
-def test_process_start(start,returned,timeframe):
-    t = UnawareTrade(
-        id="test",
-        start=start,
-        pair="AUD_USD",
-        timeframe=timeframe,
-        type="long",
-        SR=0.71857,
-        SL=0.70814,
-        TP=0.74267,
-        entry=0.72193,
-        init_clist=False)
-    t.process_start()
-    assert  t.start == returned
-
 

@@ -27,5 +27,10 @@ def test_get_closest_hour(solve_hour,timeframe,closest_hour):
     """Test the 'get_closest_hour' function"""
     assert get_closest_hour(timeframe=timeframe,solve_hour=solve_hour) == closest_hour
 
+@pytest.mark.parametrize("start,returned,timeframe",start_hours)
+def test_process_start(start,returned,timeframe):
+    aligned_start=process_start(dt=start, timeframe=timeframe)
+    assert aligned_start == returned
+
 def test_get_SLdiff(t_object):
     assert 24.0 == t_object.get_SLdiff()

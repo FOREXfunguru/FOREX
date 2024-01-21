@@ -31,6 +31,26 @@ def get_closest_hour(timeframe: str, solve_hour: int) -> int:
         closest_hour = 21
     return closest_hour
 
+def process_start(dt: datetime, timeframe: str) -> datetime:
+    """Round fractional times for Trade.start.
+    
+    Returns:
+    Rounded aligned datetime
+    """
+    closest_hour = get_closest_hour(timeframe=timeframe, solve_hour=dt.time().hour)
+
+    if closest_hour== 21 and dt.time().hour >= 0 and not dt.time().hour in [22, 23]:
+        day = dt.day
+        dt = dt.replace(day=day-1,
+                        hour=closest_hour,
+                        minute=0,
+                        second=0)
+    else:
+        dt = dt.replace(hour=closest_hour,
+                        minute=0,
+                        second=0)
+    return dt
+
 def gen_datelist(start: datetime, timeframe: str) -> list[datetime]:
     """Generate a range of dates starting at start and ending
     trade_params.interval later in order to assess the outcome
