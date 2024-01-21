@@ -88,6 +88,14 @@ class Candle(object):
         Defined as (self.h-self.l)/2+self.l)"""
         return round(((self.h-self.l)/2+self.l), 5)
 
+    def __hash__(self):
+        return hash(self.time)
+
+    def __eq__(self, other):
+        if isinstance(other, Candle):
+            return self.time == other.time
+        return False
+
     def __repr__(self):
         return "Candle"
 
