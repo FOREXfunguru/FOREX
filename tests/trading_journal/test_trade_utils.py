@@ -1,7 +1,8 @@
 import pytest
 import datetime
 
-from trading_journal.trade_utils import fetch_candle, get_closest_hour
+from trading_journal.trade_utils import fetch_candle, get_closest_hour, process_start
+from data_for_tests import start_hours
 
 date_data = [(datetime.datetime(2023, 10, 4, 17, 0), datetime.datetime(2023, 10, 4, 17, 0)),
              (datetime.datetime(2023, 10, 8, 18, 0), None),

@@ -322,9 +322,9 @@ class UnawareTrade(Trade):
                     cl = fetch_candle_api(d=d,
                                           pair=self.pair,
                                           timeframe=self.timeframe)
-                    if cl is None:
-                        count -= 1
-                        continue
+                if cl is None:
+                    count -= 1
+                    continue
             # align 'd' object to 'trade_params.clisttm_tf' timeframe
             new_d = process_start(dt=d, timeframe=trade_params.clisttm_tf)
             cl_tm = self.clist_tm[new_d]
@@ -335,7 +335,8 @@ class UnawareTrade(Trade):
                                              timeframe=trade_params.clisttm_tf)
             
             if cl_tm is not None:
-                self.preceding_candles.append(cl_tm)
+                if cl_tm not in self.preceding_candles:
+                    self.preceding_candles.append(cl_tm)
             if len(self.preceding_candles) == self.candle_number:
                 res = self.check_if_against()
                 if res is True:
