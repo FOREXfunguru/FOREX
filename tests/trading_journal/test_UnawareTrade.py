@@ -1,14 +1,12 @@
 import pytest
 import datetime
-import pdb
 
 from trading_journal.trade import UnawareTrade
 
 from data_for_tests import (trades1,
                             last_times,
                             trades_entered,
-                            trades_outcome,
-                            start_hours)
+                            trades_outcome)
 
 trade_details = ["2020-02-19T21:00:00", "EUR_GBP", "long", "D", 0.83585, 0.82467]
 
@@ -192,7 +190,6 @@ def test_run(start, type, SR, SL, TP, entry, trades_outcome, clOH8_2019_pickled,
         clist=clOH8_2019_pickled,
         clist_tm=clO_pickled)
     t.initialise()
-    pdb.set_trace()
     t.run(connect=False)
     assert t.outcome == trades_outcome[0]
     assert t.pips == trades_outcome[1]

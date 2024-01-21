@@ -26,16 +26,17 @@ last_times = [
 # trades outcome used in test_UnawareTrade.py
 trades_outcome = [
     ("n.a.", 86), # outcome + pips
-    ("failure", 103),
+    ("failure", 102.7),
     ("n.a.", 140.5),
     ("failure", -10.8)
 ]
 
 start_hours = [
-    ("2023-12-09 09:01:00", datetime.datetime(2023, 12, 9, 9, 0), "H4"),
-    ("2023-12-09 14:37:00", datetime.datetime(2023, 12, 9, 13, 0), "H4"),
-    ("2023-12-09 00:10:00", datetime.datetime(2023, 12, 8, 21, 0), "H8"),
-    ("2023-12-09 20:00:00", datetime.datetime(2023, 12, 9, 9, 0), "H12"),
-    ("2023-12-09 20:00:00", datetime.datetime(2023, 12, 8, 21, 0), "D"),
-    ("2023-12-09 23:00:00", datetime.datetime(2023, 12, 9, 21, 0), "H4"),
+    (datetime.datetime(2023, 12, 9, 9, 1), datetime.datetime(2023, 12, 9, 9, 0), "H4"),
+    (datetime.datetime(2023, 12, 9, 14, 37), datetime.datetime(2023, 12, 9, 13, 0), "H4"),
+    (datetime.datetime(2023, 12, 9, 0, 10), datetime.datetime(2023, 12, 8, 21, 0), "H8"),
+    (datetime.datetime(2023, 12, 9, 20, 0), datetime.datetime(2023, 12, 9, 9, 0), "H12"),
+    (datetime.datetime(2023, 12, 9, 20, 0), datetime.datetime(2023, 12, 8, 21, 0), "D"),
+    (datetime.datetime(2023, 12, 9, 23, 0), datetime.datetime(2023, 12, 9, 21, 0), "H4"),
+    (datetime.datetime(2023, 7, 1, 6, 0), datetime.datetime(2023, 6, 30, 21, 0), "D")
 ]
