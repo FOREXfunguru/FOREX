@@ -26,9 +26,9 @@ last_times = [
 # trades outcome used in test_UnawareTrade.py
 trades_outcome = [
     ("n.a.", 86), # outcome + pips
-    ("failure", 102.7),
+    ("n.a.", 125.9),
     ("n.a.", 140.5),
-    ("failure", -10.8)
+    ("failure", -53.0)
 ]
 
 start_hours = [
