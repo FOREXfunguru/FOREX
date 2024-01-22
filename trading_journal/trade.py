@@ -1,6 +1,7 @@
 from __future__ import division
 from abc import ABC, abstractmethod
 import logging
+import pdb
 
 from trading_journal.constants import ALLOWED_ATTRBS, VALID_TYPES
 from datetime import datetime
@@ -19,7 +20,8 @@ from trading_journal.trade_utils import (
     fetch_candle_api,
     check_candle_overlap,
     init_clist,
-    process_start
+    process_start,
+    adjust_SL
 )
 from params import trade_params
 
@@ -246,10 +248,6 @@ class Trade(ABC):
     def run(self, expires: int = 2, connect=True) -> None:
         """Run the trade until conclusion from a start datetime."""
         pass
-    
-    @abstractmethod
-    def adjust_SL(self):
-        pass
 
     def __str__(self):
         sb = []
@@ -283,16 +281,6 @@ class UnawareTrade(Trade):
             return all(prices[i] > prices[i + 1] for i in range(len(prices) - 1))
         else:
             return all(prices[i] < prices[i + 1] for i in range(len(prices) - 1))
-
-    def adjust_SL(self):
-        """Adjust SL"""
-        newSL_price = (
-            self.preceding_candles[-2].l
-            if self.type == "long"
-            else self.preceding_candles[-2].h
-        )
-        self.SL.price = newSL_price
-
 
     def run(self, connect: bool = True) -> None:
         """Method to run this UnawareTrade.
@@ -340,7 +328,10 @@ class UnawareTrade(Trade):
             if len(self.preceding_candles) == self.candle_number:
                 res = self.check_if_against()
                 if res is True:
-                    self.adjust_SL()
+                    new_SL = adjust_SL(pair=self.pair, 
+                                       type=self.type,
+                                       list_candles=self.preceding_candles)
+                    self.SL.price = new_SL
                 self.preceding_candles = list()
             if check_candle_overlap(cl, self.SL.price):
                 t_logger.info("Sorry, SL was hit!")

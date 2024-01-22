@@ -3,7 +3,9 @@ import logging
 from datetime import datetime, timedelta
 
 from utils import (periodToDelta,
-                   try_parsing_date)
+                   try_parsing_date,
+                   add_pips2price,
+                   substract_pips2price)
 from params import trade_params
 from api.oanda.connect import Connect
 from forex.candle import Candle, CandleList
@@ -110,3 +112,23 @@ def init_clist(timeframe: str, pair: str, start: datetime) -> CandleList:
         instrument= pair,
         granularity=timeframe)
     return conn.query(nstart.isoformat(), start.isoformat())
+
+def adjust_SL(pair: str, type: str, list_candles = list[Candle],
+              pips_offset: int=10) -> float:
+    """Adjust SL to minimum in 'list_candles'.
+    
+    Arguments:
+        pair: Instrument
+        type: Trade type (short/long)
+        list_candles: List of candles
+        pips_offset: Number of pips to offset to obj.h and obj.l
+    """
+    if type == "short":
+        max_candle = max(list_candles, key=lambda obj: obj.h)
+        new_high = add_pips2price(pair, max_candle.h, pips_offset)
+        return new_high
+
+    if type == "long":
+        min_candle = min(list_candles, key=lambda obj: obj.l)
+        new_low = substract_pips2price(pair, min_candle.l, pips_offset)
+        return new_low

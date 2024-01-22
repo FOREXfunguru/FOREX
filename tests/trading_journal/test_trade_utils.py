@@ -1,7 +1,8 @@
 import pytest
 import datetime
 
-from trading_journal.trade_utils import fetch_candle, get_closest_hour, process_start
+from forex.candle import Candle
+from trading_journal.trade_utils import fetch_candle, get_closest_hour, process_start, adjust_SL
 from data_for_tests import start_hours
 
 date_data = [(datetime.datetime(2023, 10, 4, 17, 0), datetime.datetime(2023, 10, 4, 17, 0)),
@@ -35,3 +36,34 @@ def test_process_start(start,returned,timeframe):
 
 def test_get_SLdiff(t_object):
     assert 24.0 == t_object.get_SLdiff()
+
+# lisf of lists containing tuples, where each tuple is composed of a candle high and low
+high_low_candles = [[(0.80, 0.70), (0.82, 0.70), (0.79, 0.70)],
+                    [(0.90, 0.70), (0.95, 0.65), (0.97, 0.72)]]
+# trade types for each sublist in 'high_low_candles'
+trade_types = ["short", "long"]
+# adjusted SL prices
+sl_adjusted = [0.821, 0.649]
+
+@pytest.fixture
+def mock_candle_list(mocker):
+    """Creates a list of lists, each sublist containing 3 mocked Candle objects"""
+    tri_candle_list = list()
+    for tri_candle in high_low_candles:
+        candle_list = list()
+        for high_low in tri_candle:
+            mock_Candle_instrance = mocker.MagicMock(spec=Candle)
+            mocker.patch.object(mock_Candle_instrance, "h", high_low[0])
+            mocker.patch.object(mock_Candle_instrance, "l", high_low[1])
+            candle_list.append(mock_Candle_instrance)
+        tri_candle_list.append(candle_list)
+    return tri_candle_list
+
+    
+def test_adjust_sl(mock_candle_list):
+    """Test 'adjust_sl' function"""
+
+    for ix in range(len(mock_candle_list)):
+        tri_candle = mock_candle_list[ix]
+        new_SL = adjust_SL(pair="AUD_USD", type=trade_types[ix], list_candles=tri_candle)
+        assert sl_adjusted[ix] == new_SL
