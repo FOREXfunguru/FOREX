@@ -69,8 +69,13 @@ def fetch_candle_api(d: datetime, pair: str, timeframe: str):
                       pair=pair,
                       timeframe=timeframe)
     if cl is None:
+        new_d = None
+        if d.hour%2 > 0:
+            new_d = d+timedelta(hours=1)
+        else:
+            new_d = d-timedelta(hours=1)
         #  try with hour-1 to deal with time shifts
-        cl = fetch_candle(d=d-timedelta(hours=1),
+        cl = fetch_candle(d=new_d,
                           pair=pair,
                           timeframe=timeframe)
     return cl
