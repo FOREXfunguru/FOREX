@@ -1,4 +1,5 @@
 import datetime
+import logging
 from typing import Tuple
 
 from forex.harea import HAreaList
@@ -7,6 +8,10 @@ from trading_journal.trade import UnawareTrade
 from forex.pivot import PivotList
 from params import trade_params, tradebot_params
 from utils import add_pips2price, substract_pips2price
+
+# create logger
+t_logger = logging.getLogger(__name__)
+t_logger.setLevel(logging.INFO)
 
 
 def adjust_SL_pips(candle: Candle,
@@ -130,6 +135,7 @@ def adjust_SL_nextSR(SRlst: HAreaList,
         t_logger.warning(f"sel_ix error: {sel_ix}. Trying with adjust_SL_pips")
 
     return SL, TP
+
 
 def adjust_SL_candles(type: str, clObj: CandleList, number: int = 7) -> float:
     """Function to adjust the SL price
