@@ -19,6 +19,14 @@ def calc_period(timeframe: str) -> int:
     return 24 if timeframe == "D" else int(timeframe.replace("H",
                                                              ""))
 
+def check_timeframes_fractions(timeframe1: str, timeframe2: str) -> float:
+    """Get the number of times 'timeframe1' is contained in 'timeframe2'"""
+    hours1 = calc_period(timeframe1)
+    hours2 = calc_period(timeframe2)
+
+    return float(hours1/hours2)
+
+
 def get_closest_hour(timeframe: str, solve_hour: int) -> int:
     """Get the closest hour to 'solve_hour'"""
     time_ranges_dict = {

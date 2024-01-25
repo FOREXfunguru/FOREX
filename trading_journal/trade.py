@@ -13,7 +13,8 @@ from utils import (
     calculate_pips,
     try_parsing_date,
     substract_pips2price,
-    calculate_profit
+    calculate_profit,
+    periodToDelta
 )
 from trading_journal.trade_utils import (
     gen_datelist,
@@ -21,7 +22,8 @@ from trading_journal.trade_utils import (
     check_candle_overlap,
     init_clist,
     process_start,
-    adjust_SL
+    adjust_SL,
+    check_timeframes_fractions
 )
 from params import trade_params
 
@@ -281,6 +283,33 @@ class UnawareTrade(Trade):
             return all(prices[i] > prices[i + 1] for i in range(len(prices) - 1))
         else:
             return all(prices[i] < prices[i + 1] for i in range(len(prices) - 1))
+        
+    def append_trademanagement_candles(self,
+                                       aligned_d: datetime,
+                                       fraction: float,
+                                       connect: bool):
+        """Append the trademanagement candles to self.preceding_candles"""
+        delta = periodToDelta(ncandles=1,
+                              timeframe=trade_params.clisttm_tf)
+        if fraction < 1:
+            fraction = 1 
+        for ix in range(int(fraction)):
+            new_datetime = aligned_d + delta*ix
+            cl_tm = self.clist_tm[new_datetime]
+            if cl_tm is None:
+                if connect is True:
+                    cl_tm = fetch_candle_api(d=new_datetime,
+                                             pair=self.pair,
+                                             timeframe=trade_params.clisttm_tf)
+            
+            if cl_tm is not None:
+                if cl_tm not in self.preceding_candles:
+                    self.preceding_candles.append(cl_tm)
+        
+        # slice to self.candle_number if more than this number
+        if len(self.preceding_candles) > self.candle_number:
+            self.preceding_candles = self.preceding_candles[(self.candle_number)*-1:]
+        
 
     def run(self, connect: bool = True) -> None:
         """Method to run this UnawareTrade.
@@ -290,6 +319,9 @@ class UnawareTrade(Trade):
 
         This function will run the trade and will set the outcome attribute
         """
+        fraction = check_timeframes_fractions(timeframe1=self.timeframe,
+                                               timeframe2=trade_params.clisttm_tf)
+
         current_date = datetime.now().date()
         count = 0
         completed = False
@@ -314,17 +346,9 @@ class UnawareTrade(Trade):
                     count -= 1
                     continue
             # align 'd' object to 'trade_params.clisttm_tf' timeframe
-            new_d = process_start(dt=d, timeframe=trade_params.clisttm_tf)
-            cl_tm = self.clist_tm[new_d]
-            if cl_tm is None:
-                if connect is True:
-                    cl_tm = fetch_candle_api(d=new_d,
-                                             pair=self.pair,
-                                             timeframe=trade_params.clisttm_tf)
-            
-            if cl_tm is not None:
-                if cl_tm not in self.preceding_candles:
-                    self.preceding_candles.append(cl_tm)
+            aligned_d = process_start(dt=d, timeframe=trade_params.clisttm_tf)
+            self.append_trademanagement_candles(aligned_d, fraction, connect)
+
             if len(self.preceding_candles) == self.candle_number:
                 res = self.check_if_against()
                 if res is True:
