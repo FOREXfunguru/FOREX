@@ -8,7 +8,7 @@ from typing import Tuple, List
 import openpyxl
 from openpyxl import Workbook
 
-from trading_journal.trade import UnawareTrade
+from trading_journal.open_trade import UnawareTrade
 from params import tjournal_params
 
 

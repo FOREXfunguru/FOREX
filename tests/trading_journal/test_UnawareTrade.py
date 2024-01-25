@@ -1,7 +1,7 @@
 import pytest
 import datetime
 
-from trading_journal.trade import UnawareTrade
+from trading_journal.open_trade import UnawareTrade
 
 from data_for_tests import (trades1,
                             last_times,
