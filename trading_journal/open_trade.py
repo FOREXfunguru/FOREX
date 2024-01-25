@@ -37,8 +37,7 @@ class OpenTrade(Trade):
     
     def append_trademanagement_candles(self,
                                        aligned_d: datetime,
-                                       fraction: float,
-                                       connect: bool):
+                                       fraction: float):
         """Append the trademanagement candles to self.preceding_candles"""
         delta = periodToDelta(ncandles=1,
                               timeframe=trade_params.clisttm_tf)
@@ -48,7 +47,7 @@ class OpenTrade(Trade):
             new_datetime = aligned_d + delta*ix
             cl_tm = self.clist_tm[new_datetime]
             if cl_tm is None:
-                if connect is True:
+                if self.connect is True:
                     cl_tm = fetch_candle_api(d=new_datetime,
                                              pair=self.pair,
                                              timeframe=trade_params.clisttm_tf)
@@ -71,12 +70,12 @@ class OpenTrade(Trade):
         else:
             return all(prices[i] < prices[i + 1] for i in range(len(prices) - 1))
 
-    def end_trade(self, connect: bool,
+    def end_trade(self,
                   cl: Candle,
                   harea: HArea) -> None:
         """End trade"""
         end = None
-        if connect is True:
+        if self.connect is True:
             end = (harea.get_cross_time(candle=cl,
                 granularity=trade_params.granularity))
         else:
@@ -84,18 +83,16 @@ class OpenTrade(Trade):
         self.end = end
         self.exit = harea.price
     
-    def finalise_trade(self, connect: bool, cl: Candle) -> None:
+    def finalise_trade(self, cl: Candle) -> None:
         """Finalise  trade by setting the outcome and calculating profit"""
         if self.outcome == "success":
             price1 = self.TP.price
             self.end_trade(
-                    connect=connect,
                     cl=cl,
                     harea=self.TP)
         if self.outcome == "failure":
             price1 = self.SL.price
             self.end_trade(
-                    connect=connect,
                     cl=cl,
                     harea=self.SL)
         if self.outcome == "n.a.":
@@ -137,14 +134,14 @@ class UnawareTrade(OpenTrade):
                 logging.warning("Skipping, as unable to end the trade")
                 self.outcome = "future"
                 break
-            if d > self.clist.candles[-1].time and connect is False:
+            if d > self.clist.candles[-1].time and self.connect is False:
                 raise Exception("No candle is available in 'clist' and connect is False. Unable to follow")
             if completed:
                 break
             count += 1
             cl = self.clist[d]
             if cl is None:
-                if connect is True:
+                if self.connect is True:
                     cl = fetch_candle_api(d=d,
                                           pair=self.pair,
                                           timeframe=self.timeframe)
@@ -153,7 +150,7 @@ class UnawareTrade(OpenTrade):
                     continue
             # align 'd' object to 'trade_params.clisttm_tf' timeframe
             aligned_d = process_start(dt=d, timeframe=trade_params.clisttm_tf)
-            self.append_trademanagement_candles(aligned_d, fraction, connect)
+            self.append_trademanagement_candles(aligned_d, fraction)
 
             if len(self.preceding_candles) == self.candle_number:
                 res = self.check_if_against()
@@ -180,5 +177,5 @@ class UnawareTrade(OpenTrade):
                 self.outcome = "n.a."
             else:
                 continue
-        self.finalise_trade(connect=connect, cl=cl)
+        self.finalise_trade(cl=cl)
          

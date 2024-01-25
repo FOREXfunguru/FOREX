@@ -200,7 +200,7 @@ class Trade(ABC):
         return number_pips
 
     @abstractmethod
-    def run(self, expires: int = 2, connect=True) -> None:
+    def run(self, expires: int = 2) -> None:
         """Run the trade until conclusion from a start datetime."""
         pass
 

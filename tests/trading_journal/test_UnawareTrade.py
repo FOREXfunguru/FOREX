@@ -188,9 +188,10 @@ def test_run(start, type, SR, SL, TP, entry, trades_outcome, clOH8_2019_pickled,
         TP=TP,
         entry=entry,
         clist=clOH8_2019_pickled,
-        clist_tm=clO_pickled)
+        clist_tm=clO_pickled,
+        connect=False)
     t.initialise()
-    t.run(connect=False)
+    t.run()
     assert t.outcome == trades_outcome[0]
     assert t.pips == trades_outcome[1]
 
