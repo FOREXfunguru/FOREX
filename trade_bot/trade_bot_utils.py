@@ -1,4 +1,5 @@
 import datetime
+import logging
 from typing import Tuple
 
 from forex.harea import HAreaList
@@ -8,6 +9,9 @@ from forex.pivot import PivotList
 from params import trade_params, tradebot_params
 from utils import add_pips2price, substract_pips2price
 
+# create logger
+t_logger = logging.getLogger(__name__)
+t_logger.setLevel(logging.INFO)
 
 def adjust_SL_pips(candle: Candle,
                    type: str, pair: str,
