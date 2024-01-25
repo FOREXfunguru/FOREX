@@ -29,9 +29,11 @@ class OpenTrade(Trade):
         Arguments:
             candle_number: number of candles against the trade to consider
             connect: If True then it will use the API to fetch candles
+            completed: Is this Trade completed?
         """
         self.candle_number = candle_number
         self.connect = connect
+        self.completed = False # is this OpenTrade completed
         self.preceding_candles = list()
         super().__init__(**kwargs)
     
@@ -70,6 +72,20 @@ class OpenTrade(Trade):
         else:
             return all(prices[i] < prices[i + 1] for i in range(len(prices) - 1))
 
+    def calculate_overlap(self, cl: Candle) -> None:
+        """Check if 'cl' overlaps either self.SL or self.TP.
+        
+        It also sets the outcome
+        """
+        if check_candle_overlap(cl, self.SL.price):
+            t_logger.info("Sorry, SL was hit!")
+            self.completed = True
+            self.outcome = "failure"
+        elif check_candle_overlap(cl, self.TP.price):
+            t_logger.info("Great, TP was hit!")
+            self.completed = True
+            self.outcome = "success"
+    
     def end_trade(self,
                   cl: Candle,
                   harea: HArea) -> None:
@@ -109,6 +125,16 @@ class OpenTrade(Trade):
                                                 type=self.type,
                                                 pair=self.pair)
 
+    def fetch_candle(self, d:datetime) -> Candle:
+        """Fetch a Candle object given a datetime"""
+        cl = None
+        cl = self.clist[d]
+        if cl is None:
+            if self.connect is True:
+                cl = fetch_candle_api(d=d,
+                                      pair=self.pair,
+                                      timeframe=self.timeframe)
+        return cl
 
 class UnawareTrade(OpenTrade):
     """Class to represent an open Trade of the 'area_unaware' type"""
@@ -127,7 +153,6 @@ class UnawareTrade(OpenTrade):
 
         current_date = datetime.now().date()
         count = 0
-        completed = False
         for d in gen_datelist(start=self.start, timeframe=self.timeframe):
             print(d)
             if d.date() == current_date:
@@ -136,18 +161,13 @@ class UnawareTrade(OpenTrade):
                 break
             if d > self.clist.candles[-1].time and self.connect is False:
                 raise Exception("No candle is available in 'clist' and connect is False. Unable to follow")
-            if completed:
+            if self.completed:
                 break
             count += 1
-            cl = self.clist[d]
+            cl = self.fetch_candle(d)
             if cl is None:
-                if self.connect is True:
-                    cl = fetch_candle_api(d=d,
-                                          pair=self.pair,
-                                          timeframe=self.timeframe)
-                if cl is None:
-                    count -= 1
-                    continue
+                count -= 1
+                continue
             # align 'd' object to 'trade_params.clisttm_tf' timeframe
             aligned_d = process_start(dt=d, timeframe=trade_params.clisttm_tf)
             self.append_trademanagement_candles(aligned_d, fraction)
@@ -160,22 +180,13 @@ class UnawareTrade(OpenTrade):
                                        list_candles=self.preceding_candles)
                     self.SL.price = new_SL
                 self.preceding_candles = list()
-            if check_candle_overlap(cl, self.SL.price):
-                t_logger.info("Sorry, SL was hit!")
-                completed = True
-                self.outcome = "failure"
-            elif check_candle_overlap(cl, self.TP.price):
-                t_logger.info("Great, TP was hit!")
-                completed = True
-                self.outcome = "success"
-            elif count >= trade_params.numperiods:
-                completed = True
+            self.calculate_overlap(cl=cl)
+            if count >= trade_params.numperiods:
+                self.completed = True
                 t_logger.warning(
                     "No outcome could be calculated in the "
                     "trade_params.numperiods interval"
                 )
                 self.outcome = "n.a."
-            else:
-                continue
         self.finalise_trade(cl=cl)
          
