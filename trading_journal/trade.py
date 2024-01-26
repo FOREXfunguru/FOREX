@@ -1,5 +1,4 @@
 from __future__ import division
-from abc import ABC, abstractmethod
 import logging
 import pdb
 
@@ -24,7 +23,7 @@ from params import trade_params
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
 
-class Trade(ABC):
+class Trade():
     """This is an abstrace class represents a Trade.
 
     Class variables:
@@ -198,11 +197,6 @@ class Trade(ABC):
         number_pips = float(calculate_pips(self.pair, diff))
 
         return number_pips
-
-    @abstractmethod
-    def run(self, expires: int = 2) -> None:
-        """Run the trade until conclusion from a start datetime."""
-        pass
 
     def __str__(self):
         sb = []

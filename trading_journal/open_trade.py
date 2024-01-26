@@ -1,4 +1,5 @@
 import logging
+
 from datetime import datetime
 
 from trading_journal.trade import Trade
@@ -189,4 +190,3 @@ class UnawareTrade(OpenTrade):
                 )
                 self.outcome = "n.a."
         self.finalise_trade(cl=cl)
-         
