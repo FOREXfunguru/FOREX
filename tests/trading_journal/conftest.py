@@ -1,6 +1,6 @@
 import pytest
 
-from trading_journal.trade import UnawareTrade
+from trading_journal.open_trade import UnawareTrade
 from trading_journal.trade_journal import TradeJournal
 from utils import DATA_DIR
 

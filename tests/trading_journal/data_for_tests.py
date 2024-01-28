@@ -31,6 +31,14 @@ trades_outcome = [
     ("failure", -53.0)
 ]
 
+# trades outcome used in test_AwareTrade.py
+trades_outcome1 = [
+    ("n.a.", 86), # outcome + pips
+    ("n.a.", 125.9),
+    ("n.a.", 140.5),
+    ("failure", -61.0)
+]
+
 start_hours = [
     (datetime.datetime(2023, 12, 9, 9, 1), datetime.datetime(2023, 12, 9, 9, 0), "H4"),
     (datetime.datetime(2023, 12, 9, 14, 37), datetime.datetime(2023, 12, 9, 13, 0), "H4"),
