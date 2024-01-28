@@ -1,19 +1,21 @@
 import pytest
 
-from trading_journal.open_trade import UnawareTrade
+from trading_journal.open_trade import Trade, AwareTrade
+from forex.candle import Candle
 
-from data_for_tests import (trades_entered,
-                            trades_outcome)
+from data_for_tests import (trades1,
+                            trades_entered,
+                            trades_outcome1)
 
 trade_details = ["2020-02-19T21:00:00", "EUR_GBP", "long", "D", 0.83585, 0.82467]
 
 @pytest.mark.parametrize(
     "TP, RR, exp_instance",
-    [(0.86032, None, UnawareTrade), (None, 1.5, UnawareTrade), (None, None, Exception)],
+    [(0.86032, None, AwareTrade), (None, 1.5, AwareTrade), (None, None, Exception)],
 )
 def test_instantiation(TP, RR, exp_instance):
-    if exp_instance is UnawareTrade:
-        UnawareTrade(
+    if exp_instance is AwareTrade:
+        AwareTrade(
             RR=RR,
             TP=TP,
             start=trade_details[0],
@@ -26,7 +28,7 @@ def test_instantiation(TP, RR, exp_instance):
         )
     elif exp_instance == Exception:
         with pytest.raises(Exception):
-            UnawareTrade(
+            AwareTrade(
                 RR=RR,
                 TP=TP,
                 start=trade_details[0],
@@ -40,7 +42,7 @@ def test_instantiation(TP, RR, exp_instance):
 
 def test_init_clist():
     """This test checks the init_clist function"""
-    td = UnawareTrade(
+    td = AwareTrade(
         TP=0.86032,
         start=trade_details[0],
         pair=trade_details[1],
@@ -52,12 +54,13 @@ def test_init_clist():
     )
     assert len(td.clist.candles) == 4104
 
-trade_data1 = [(*trade, pip) for trade, pip in zip(trades_entered, trades_outcome)]
+
+trade_data1 = [(*trade, pip) for trade, pip in zip(trades_entered, trades_outcome1)]
 
 @pytest.mark.parametrize("start,type,SR,SL,TP,entry,trades_outcome", trade_data1)
 def test_run(start, type, SR, SL, TP, entry, trades_outcome, clOH8_2019_pickled, clO_pickled):
     """Test 'run' function"""
-    t = UnawareTrade(
+    t = AwareTrade(
         id="test",
         start=start,
         pair="AUD_USD",

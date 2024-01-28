@@ -63,6 +63,21 @@ class OpenTrade(Trade):
         if len(self.preceding_candles) > self.candle_number:
             self.preceding_candles = self.preceding_candles[(self.candle_number)*-1:]
 
+    def process_trademanagement(self, d: datetime, fraction: float):
+        """Process trademanagement candles and ajust SL if required"""
+        # align 'd' object to 'trade_params.clisttm_tf' timeframe
+        aligned_d = process_start(dt=d, timeframe=trade_params.clisttm_tf)
+        self.append_trademanagement_candles(aligned_d, fraction)
+
+        if len(self.preceding_candles) == self.candle_number:
+            res = self.check_if_against()
+            if res is True:
+                new_SL = adjust_SL(pair=self.pair, 
+                                    type=self.type,
+                                    list_candles=self.preceding_candles)
+                self.SL.price = new_SL
+            self.preceding_candles = list()
+
     def check_if_against(self):
         """Function to check if middle_point values are
         agaisnt the trade
@@ -155,7 +170,6 @@ class UnawareTrade(OpenTrade):
         current_date = datetime.now().date()
         count = 0
         for d in gen_datelist(start=self.start, timeframe=self.timeframe):
-            print(d)
             if d.date() == current_date:
                 logging.warning("Skipping, as unable to end the trade")
                 self.outcome = "future"
@@ -169,18 +183,7 @@ class UnawareTrade(OpenTrade):
             if cl is None:
                 count -= 1
                 continue
-            # align 'd' object to 'trade_params.clisttm_tf' timeframe
-            aligned_d = process_start(dt=d, timeframe=trade_params.clisttm_tf)
-            self.append_trademanagement_candles(aligned_d, fraction)
-
-            if len(self.preceding_candles) == self.candle_number:
-                res = self.check_if_against()
-                if res is True:
-                    new_SL = adjust_SL(pair=self.pair, 
-                                       type=self.type,
-                                       list_candles=self.preceding_candles)
-                    self.SL.price = new_SL
-                self.preceding_candles = list()
+            self.process_trademanagement(d=d, fraction=fraction)
             self.calculate_overlap(cl=cl)
             if count >= trade_params.numperiods:
                 self.completed = True
@@ -190,3 +193,65 @@ class UnawareTrade(OpenTrade):
                 )
                 self.outcome = "n.a."
         self.finalise_trade(cl=cl)
+
+class AwareTrade(OpenTrade):
+    """Class to represent an open Trade of the 'area_aware' type"""
+    
+    def __init__(self, **kwargs):
+        """Constructor"""
+        super().__init__(**kwargs)
+    
+    def isin_profit(self, price: float) -> bool:
+        """method to calculate if price is in profit.
+        
+        Argument:
+        price: Check if price is in profit area 
+        """
+        if self.type == "long":
+            if price >= self.entry.price:
+                return True
+        if self.type == "short":
+            if price <= self.entry.price:
+                return True
+        return False
+
+
+    def run(self) -> None:
+        """Method to run this AwareTrade.
+
+        This function will run the trade and will set the outcome attribute
+        """
+        fraction = check_timeframes_fractions(timeframe1=self.timeframe,
+                                              timeframe2=trade_params.clisttm_tf)
+
+        current_date = datetime.now().date()
+        count = 0
+        for d in gen_datelist(start=self.start, timeframe=self.timeframe):
+            if d.date() == current_date:
+                logging.warning("Skipping, as unable to end the trade")
+                self.outcome = "future"
+                break
+            if d > self.clist.candles[-1].time and self.connect is False:
+                raise Exception("No candle is available in 'clist' and connect is False. Unable to follow")
+            if self.completed:
+                break
+            count += 1
+            cl = self.fetch_candle(d)
+            if cl is None:
+                count -= 1
+                continue
+            if self.isin_profit(price=cl.c):
+                self.process_trademanagement(d=d, fraction=fraction)
+            else:
+                self.preceding_candles = list()
+
+            self.calculate_overlap(cl=cl)
+            if count >= trade_params.numperiods:
+                self.completed = True
+                t_logger.warning(
+                    "No outcome could be calculated in the "
+                    "trade_params.numperiods interval"
+                )
+                self.outcome = "n.a."
+        self.finalise_trade(cl=cl)
+                
