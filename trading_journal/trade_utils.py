@@ -48,12 +48,13 @@ def process_start(dt: datetime, timeframe: str) -> datetime:
     Rounded aligned datetime
     """
     closest_hour = get_closest_hour(timeframe=timeframe, solve_hour=dt.time().hour)
-
     if closest_hour== 21 and dt.time().hour >= 0 and not dt.time().hour in [22, 23]:
+
         result_datetime = dt - timedelta(hours=calc_period(timeframe))
         dt = dt.replace(day=result_datetime.day,
                         month=result_datetime.month,
                         hour=closest_hour,
+                        year=result_datetime.year,
                         minute=0,
                         second=0)
     else:
