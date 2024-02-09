@@ -8,11 +8,9 @@ import time
 import logging
 import requests
 import re
-import pdb
 import os
 import datetime
 import json
-import sys
 import flatdict
 import argparse
 
@@ -20,7 +18,6 @@ from api.params import Params as apiparams
 from typing import Dict, List
 from forex.candle import CandleList
 
-# create logger
 o_logger = logging.getLogger(__name__)
 o_logger.setLevel(logging.INFO)
 
@@ -119,20 +116,20 @@ class Connect(object):
                                 headers={"content-type": f"{apiparams.content_type}",
                                          "Authorization": f"Bearer {os.environ.get('TOKEN')}"})
             if resp.status_code != 200:
-                raise Exception(resp.status_code)
+                raise ConnectionError(resp.status_code)
             else:
                 data = json.loads(resp.content.decode("utf-8"))
                 newdata = [flatdict.FlatDict(c, delimiter='.') for c in data['candles']]
                 newdata1 = self._process_data(data=newdata)
-                cl = CandleList(instrument=self.instrument,
-                                granularity=self.granularity,
-                                data=newdata1)
-                return cl
-        except Exception as err:
-            # Something went wrong.
-            print("Something went wrong. url used was:\n{0}".format(resp.url))
-            print("Error message was: {0}".format(err))
-            sys.exit(1)
+                return CandleList(instrument=self.instrument,
+                                  granularity=self.granularity,
+                                  data=newdata1)
+        except ConnectionError as err:
+            logging.exception("Something went wrong. url used was:\n{0}".format(resp.url))
+            logging.exception("Error message was: {0}".format(err))
+            return CandleList(instrument=self.instrument,
+                              granularity=self.granularity,
+                              data=[])
 
     def validate_datetime(self, datestr : str, granularity: str)->datetime:
         """Function to parse a string datetime to return

@@ -3,6 +3,7 @@ import logging
 
 from datetime import datetime
 from api.oanda.connect import Connect
+from trading_journal.trade_utils import process_start
 
 
 @pytest.fixture
@@ -86,3 +87,14 @@ def test_validate_datetime():
 
     with pytest.raises(ValueError):
         conn.validate_datetime('2018-05-23T21', 'D')
+
+def test_query_in_future():
+    """Query with a future datetime"""
+    timeframe = "D"
+    now = datetime.now()
+    aligned_start=process_start(dt=now, timeframe=timeframe).isoformat().split(".")[0]
+
+    conn = Connect(
+                   instrument=timeframe,
+                   granularity="AUD_USD")
+    assert conn.query(aligned_start, count=1).candles == []

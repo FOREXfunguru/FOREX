@@ -8,7 +8,6 @@ from forex.candle import Candle
 import matplotlib.pyplot as plt
 import matplotlib.dates as mdates
 
-# create logger
 h_logger = logging.getLogger(__name__)
 h_logger.setLevel(logging.INFO)
 
@@ -86,11 +85,11 @@ class HArea(object):
                              end=cend.isoformat())
 
             seen = False
-            for c in res:
-                if c.l <= self.price <= c.h:
-                    seen = True
-                    return c.time
-
+            if res.candles:
+                for c in res:
+                    if c.l <= self.price <= c.h:
+                        seen = True
+                        return c.time
             if seen is False:
                 return candle.time
         else:
