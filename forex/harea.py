@@ -1,4 +1,5 @@
 import logging
+import sys
 
 from datetime import timedelta, datetime
 from api.oanda.connect import Connect
@@ -35,7 +36,11 @@ class HArea(object):
                  granularity: str, pips: int, no_pivots: int = None,
                  tot_score: int = None):
 
-        (first, second) = instrument.split("_")
+        try:
+            (first, second) = instrument.split("_")
+        except ValueError:
+            logging.exception(f"Incorrect '_' split for instrument:{instrument}")
+            sys.exit(1)
         self.instrument = instrument
         round_number = None
         divisor = None
