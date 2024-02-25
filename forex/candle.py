@@ -1,21 +1,21 @@
-'''
+"""
 @date: 22/11/2020
 @author: Ernesto Lowy
 @email: ernestolowy@gmail.com
-'''
+"""
 import logging
 import pickle
 from datetime import timedelta, datetime
 
 import pandas as pd
 import matplotlib
-from pandas.plotting import register_matplotlib_converters 
+from pandas.plotting import register_matplotlib_converters
 
 from utils import try_parsing_date, calculate_pips
 from params import clist_params
 
 register_matplotlib_converters()
-matplotlib.use('PS')
+matplotlib.use("PS")
 
 logging.basicConfig(level=logging.INFO)
 
@@ -26,12 +26,22 @@ cl_logger.setLevel(logging.INFO)
 
 class Candle(object):
     """Class representing a particular Candle"""
-    __slots__ = ["complete", "volume", "time", "o", "h", "c",
-                 "l", "_colour", "_perc_body", "granularity",
-                 "rsi"]
 
-    def __init__(self, time: str, o: float, h: float,
-                 c: float, l: float) -> None:
+    __slots__ = [
+        "complete",
+        "volume",
+        "time",
+        "o",
+        "h",
+        "c",
+        "l",
+        "_colour",
+        "_perc_body",
+        "granularity",
+        "rsi",
+    ]
+
+    def __init__(self, time: str, o: float, h: float, c: float, l: float) -> None:
         self.o = float(o)
         self.h = float(h)
         self.c = float(c)
@@ -39,8 +49,7 @@ class Candle(object):
         self.time = time
 
         if isinstance(self.time, str):
-            self.time = datetime.strptime(self.time,
-                                          '%Y-%m-%dT%H:%M:%S')
+            self.time = datetime.strptime(self.time, "%Y-%m-%dT%H:%M:%S")
         self._colour = self._set_colour()
         self._perc_body = self._calc_perc_body()
 
@@ -81,12 +90,12 @@ class Candle(object):
     def height(self, pair) -> float:
         """Function to calculate the number of pips
         between self.h and self.l"""
-        return float(calculate_pips(pair, self.h-self.l))
-    
+        return float(calculate_pips(pair, self.h - self.l))
+
     def middle_point(self) -> float:
         """Function to calculate middle candle price.
         Defined as (self.h-self.l)/2+self.l)"""
-        return round(((self.h-self.l)/2+self.l), 5)
+        return round(((self.h - self.l) / 2 + self.l), 5)
 
     def __hash__(self):
         return hash(self.time)
@@ -103,9 +112,8 @@ class Candle(object):
         sb = []
         for key in self.__slots__:
             if hasattr(self, key):
-                sb.append("{key}='{value}'".format(key=key,
-                                                   value=getattr(self, key)))
-        return ', '.join(sb)
+                sb.append("{key}='{value}'".format(key=key, value=getattr(self, key)))
+        return ", ".join(sb)
 
 
 class CandleList(object):
@@ -117,11 +125,19 @@ class CandleList(object):
         candles: List of Candle objects
         type: Type of this CandleList. Possible values are 'long'/'short'"""
 
-    __slots__ = ["instrument", "granularity", "data", "candles", 
-                 "_type", "times", "pos"]
+    __slots__ = [
+        "instrument",
+        "granularity",
+        "data",
+        "candles",
+        "_type",
+        "times",
+        "pos",
+    ]
 
-    def __init__(self, instrument: str, granularity: str, data: list = None,
-                 candles=None):
+    def __init__(
+        self, instrument: str, granularity: str, data: list = None, candles=None
+    ):
         """Constructor
 
         Arguments:
@@ -134,8 +150,10 @@ class CandleList(object):
             self.times = [c.time for c in candles]
         elif data:
             self.candles = [Candle(**d) for d in data]
-            self.times = [try_parsing_date(d['time']) if isinstance(d['time'],
-                                                                     str) else d['time'] for d in data]
+            self.times = [
+                try_parsing_date(d["time"]) if isinstance(d["time"], str) else d["time"]
+                for d in data
+            ]
         else:
             self.candles = []
             self.times = []
@@ -152,7 +170,7 @@ class CandleList(object):
         return self
 
     def __next__(self):
-        if (self.pos < len(self.candles)):
+        if self.pos < len(self.candles):
             self.pos += 1
             return self.candles[self.pos - 1]
         else:
@@ -163,8 +181,8 @@ class CandleList(object):
             raise ValueError("A datetime object is needed!")
         fdt = None
         if adatetime not in self.times:
-            dtp1 = (adatetime + timedelta(hours=1))
-            dtm1 = (adatetime - timedelta(hours=1))
+            dtp1 = adatetime + timedelta(hours=1)
+            dtm1 = adatetime - timedelta(hours=1)
             if dtp1 in self.times:
                 fdt = dtp1
             elif dtm1 in self.times:
@@ -177,8 +195,8 @@ class CandleList(object):
     def __index__(self, adatetime: datetime) -> int:
         fdt = None
         if adatetime not in self.times:
-            dtp1 = (adatetime + timedelta(hours=1))
-            dtm1 = (adatetime - timedelta(hours=1))
+            dtp1 = adatetime + timedelta(hours=1)
+            dtm1 = adatetime - timedelta(hours=1)
             if dtp1 in self.times:
                 fdt = dtp1
             elif dtm1 in self.times:
@@ -195,9 +213,9 @@ class CandleList(object):
 
     def __add__(self, ClO):
         clist = self.candles + ClO.candles
-        newClO = CandleList(instrument=self.instrument,
-                            granularity=self.granularity,
-                            candles=clist)
+        newClO = CandleList(
+            instrument=self.instrument, granularity=self.granularity, candles=clist
+        )
         return newClO
 
     def _guess_type(self) -> str:
@@ -229,7 +247,7 @@ class CandleList(object):
         rs = abs(avg_gain / avg_loss)
         rsi = 100 - (100 / (1 + rs))
 
-        rsi4cl = rsi[-len(self.candles):]
+        rsi4cl = rsi[-len(self.candles) :]
         # set rsi attribute in each candle of the CandleList
         ix = 0
         for _, v in zip(self.candles, rsi4cl):
@@ -290,9 +308,11 @@ class CandleList(object):
 
         for c in self.candles:
             if c.rsi is None:
-                raise Exception("RSI values are not defined for this "
-                                "Candlelist, "
-                                "run calc_rsi first")
+                raise Exception(
+                    "RSI values are not defined for this "
+                    "Candlelist, "
+                    "run calc_rsi first"
+                )
             if self.type is None:
                 raise Exception("type is not defined for this Candlelist")
 
@@ -323,11 +343,8 @@ class CandleList(object):
             lengths.append(length)
 
         if num_times != len(lengths):
-            raise Exception("Number of times"
-                            "and lengths do not"
-                            "match")
-        return {'number': num_times,
-                'lengths': lengths}
+            raise Exception("Number of times" "and lengths do not" "match")
+        return {"number": num_times, "lengths": lengths}
 
     def get_length_pips(self) -> int:
         """Function to calculate the length of CandleList in number of pips"""
@@ -337,7 +354,7 @@ class CandleList(object):
 
         (first, second) = self.instrument.split("_")
         round_number = None
-        if first == 'JPY' or second == 'JPY':
+        if first == "JPY" or second == "JPY":
             round_number = 2
         else:
             round_number = 4
@@ -345,12 +362,13 @@ class CandleList(object):
         start_price = round(float(start_cl.c), round_number)
         end_price = round(float(end_cl.c), round_number)
 
-        diff = (start_price-end_price)*10**round_number
+        diff = (start_price - end_price) * 10**round_number
 
         return abs(int(round(diff, 0)))
 
-    def slice(self, start: datetime, end: datetime,
-              inplace: bool = False) -> 'CandleList':
+    def slice(
+        self, start: datetime, end: datetime, inplace: bool = False
+    ) -> "CandleList":
         """Function to slice self on a date interval. It will modify
         the CandleList in place
 
@@ -366,23 +384,25 @@ class CandleList(object):
         if self.granularity == "D":
             delta = timedelta(hours=24)
         else:
-            fgran = self.granularity.replace('H', '')
+            fgran = self.granularity.replace("H", "")
             delta = timedelta(hours=int(fgran))
 
         while not self.__getitem__(start):
-            start = start+delta
+            start = start + delta
         while not self.__getitem__(end):
-            end = end+delta
+            end = end + delta
         start_ix = self.__index__(start)
         end_ix = self.__index__(end)
         if not inplace:
-            cl = CandleList(instrument=self.instrument,
-                            granularity=self.granularity,
-                            candles=self.candles[start_ix:end_ix+1])
+            cl = CandleList(
+                instrument=self.instrument,
+                granularity=self.granularity,
+                candles=self.candles[start_ix : end_ix + 1],
+            )
             return cl
         else:
-            self.candles = self.candles[start_ix:end_ix+1]
-            self.times = self.times[start_ix:end_ix+1]
+            self.candles = self.candles[start_ix : end_ix + 1]
+            self.times = self.times[start_ix : end_ix + 1]
             self._type = self._guess_type()
             return self
 
@@ -441,7 +461,7 @@ class CandleList(object):
                 if price < min:
                     min = price
         return min
-    
+
     def __repr__(self):
         return "CandleList"
 
@@ -449,6 +469,5 @@ class CandleList(object):
         sb = []
         for key in self.__slots__:
             if hasattr(self, key):
-                sb.append("{key}='{value}'".format(key=key,
-                                                   value=getattr(self, key)))
-        return ', '.join(sb)
+                sb.append("{key}='{value}'".format(key=key, value=getattr(self, key)))
+        return ", ".join(sb)

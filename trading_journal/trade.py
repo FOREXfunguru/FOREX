@@ -2,7 +2,8 @@ from __future__ import division
 import logging
 import pdb
 
-from trading_journal.constants import ALLOWED_ATTRBS, VALID_TYPES
+from trading_journal.constants import ALLOWED_ATTRBS
+from api.oanda.connect import Connect
 from datetime import datetime
 from forex.harea import HArea
 from forex.pivot import PivotList
@@ -14,7 +15,6 @@ from utils import (
     )
 from trading_journal.trade_utils import (
     gen_datelist,
-    fetch_candle_api,
     check_candle_overlap,
     init_clist
 )
@@ -116,7 +116,8 @@ class Trade():
             cl = self.clist[d]
             if cl is None:
                 if connect is True:
-                    cl = fetch_candle_api(d=d, pair=self.pair, timeframe=self.timeframe)
+                    conn = Connect(instrument=self.pair, granularity=self.timeframe)
+                    cl = conn.fetch_candle(d=d)
                 if cl is None:
                     count -= 1
                     continue
