@@ -3,12 +3,12 @@ import logging
 from datetime import datetime
 
 from trading_journal.trade import Trade
+from api.oanda.connect import Connect
 from forex.harea import HArea
 from forex.candle import Candle
 from utils import periodToDelta, calculate_profit
 from trading_journal.trade_utils import (
     gen_datelist,
-    fetch_candle_api,
     check_candle_overlap,
     process_start,
     adjust_SL,
@@ -33,7 +33,7 @@ class OpenTrade(Trade):
             completed: Is this Trade completed?
         """
         self.candle_number = candle_number
-        self.connect = connect
+        self.connect= connect
         self.completed = False # is this OpenTrade completed
         self.preceding_candles = list()
         super().__init__(**kwargs)
@@ -51,10 +51,8 @@ class OpenTrade(Trade):
             cl_tm = self.clist_tm[new_datetime]
             if cl_tm is None:
                 if self.connect is True:
-                    cl_tm = fetch_candle_api(d=new_datetime,
-                                             pair=self.pair,
-                                             timeframe=trade_params.clisttm_tf)
-            
+                    conn = Connect(instrument=self.pair, granularity=trade_params.clisttm_tf)
+                    cl_tm = conn.fetch_candle(d=new_datetime)
             if cl_tm is not None:
                 if cl_tm not in self.preceding_candles:
                     self.preceding_candles.append(cl_tm)
@@ -147,9 +145,10 @@ class OpenTrade(Trade):
         cl = self.clist[d]
         if cl is None:
             if self.connect is True:
-                cl = fetch_candle_api(d=d,
-                                      pair=self.pair,
-                                      timeframe=self.timeframe)
+                conn = Connect(instrument=self.pair, granularity=self.timeframe)
+                cl = conn.fetch_candle(d=d)
+        if cl is None:
+            print(d)
         return cl
 
 class UnawareTrade(OpenTrade):

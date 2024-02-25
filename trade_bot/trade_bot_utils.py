@@ -4,7 +4,7 @@ from typing import Tuple
 
 from forex.harea import HAreaList
 from forex.candle import Candle, CandleList
-from trading_journal.trade import UnawareTrade
+from trading_journal.trade import Trade
 from forex.pivot import PivotList
 from params import trade_params, tradebot_params
 from utils import add_pips2price, substract_pips2price
@@ -69,7 +69,7 @@ def get_trade_type(dt, clObj: CandleList) -> str:
         raise Exception("Could not guess the file type")
 
 def prepare_trade(tb_obj, start: datetime, type: str, SL: float, ic: Candle,
-                  harea_sel, add_pips: int = None, TP: float = None) -> UnawareTrade:
+                  harea_sel, add_pips: int = None, TP: float = None) -> Trade:
     """Prepare a Trade object
 
     Arguments:
@@ -101,7 +101,7 @@ def prepare_trade(tb_obj, start: datetime, type: str, SL: float, ic: Candle,
             SL = substract_pips2price(tb_obj.pair,
                                       SL, add_pips)
 
-    t = UnawareTrade(
+    t = Trade(
         id='{0}.bot'.format(tb_obj.pair),
         start=start.strftime('%Y-%m-%d %H:%M:%S'),
         pair=tb_obj.pair,
