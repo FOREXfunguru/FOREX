@@ -147,8 +147,6 @@ class OpenTrade(Trade):
             if self.connect is True:
                 conn = Connect(instrument=self.pair, granularity=self.timeframe)
                 cl = conn.fetch_candle(d=d)
-        if cl is None:
-            print(d)
         return cl
 
 class UnawareTrade(OpenTrade):
