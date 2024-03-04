@@ -150,7 +150,11 @@ class OpenTrade(Trade):
         return cl
 
 class UnawareTrade(OpenTrade):
-    """Class to represent an open Trade of the 'area_unaware' type"""
+    """Represent a trade that ignores whether the price is in profit or loss.
+
+    Characterizes for not being conditioned by the price being in loss or profit (hence the name 'unaware')
+    to begin to add candles to 'start.preceding_candles'."
+    """
 
     def __init__(self, **kwargs):
         """Constructor"""
@@ -192,7 +196,10 @@ class UnawareTrade(OpenTrade):
         self.finalise_trade(cl=cl)
 
 class AwareTrade(OpenTrade):
-    """Class to represent an open Trade of the 'area_aware' type"""
+    """Represent a trade that is aware of the price being in profit or loss.
+
+    Characterizes for adding candles to 'start.preceding_candles' only if price is in profit
+    """
     
     def __init__(self, **kwargs):
         """Constructor"""
@@ -251,4 +258,3 @@ class AwareTrade(OpenTrade):
                 )
                 self.outcome = "n.a."
         self.finalise_trade(cl=cl)
-                
