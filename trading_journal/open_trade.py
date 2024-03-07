@@ -148,6 +148,20 @@ class OpenTrade(Trade):
                 conn = Connect(instrument=self.pair, granularity=self.timeframe)
                 cl = conn.fetch_candle(d=d)
         return cl
+    
+    def isin_profit(self, price: float) -> bool:
+        """Is price in profit?.
+        
+        Argument:
+            price: price to check
+        """
+        if self.type == "long":
+            if price >= self.entry.price:
+                return True
+        if self.type == "short":
+            if price <= self.entry.price:
+                return True
+        return False
 
 class UnawareTrade(OpenTrade):
     """Represent a trade that ignores whether the price is in profit or loss.
@@ -204,21 +218,6 @@ class AwareTrade(OpenTrade):
     def __init__(self, **kwargs):
         """Constructor"""
         super().__init__(**kwargs)
-    
-    def isin_profit(self, price: float) -> bool:
-        """method to calculate if price is in profit.
-        
-        Argument:
-        price: Check if price is in profit area 
-        """
-        if self.type == "long":
-            if price >= self.entry.price:
-                return True
-        if self.type == "short":
-            if price <= self.entry.price:
-                return True
-        return False
-
 
     def run(self) -> None:
         """Method to run this AwareTrade.
@@ -258,3 +257,10 @@ class AwareTrade(OpenTrade):
                 )
                 self.outcome = "n.a."
         self.finalise_trade(cl=cl)
+    
+class BreakEvenTrade(OpenTrade):
+    """Represent a trade that adjusts SL to breakeven when in profit.
+
+    When 'self.SL' is adjusted to breakeven, then candles will start being added
+    to 'self.preceding_candles'
+    """

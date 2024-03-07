@@ -6,7 +6,7 @@ from data_for_tests import (trades1,
                             last_times)
 
 
-trade_data1 = [(*trade, pip) for trade, pip in zip(trades1, last_times)]
+trade_data1 = [(*trade, alast_time) for trade, alast_time in zip(trades1, last_times)]
 
 @pytest.mark.parametrize("start,type,SR,SL,TP,entry,lasttime", trade_data1)
 def test_get_lasttime(start, type, SR, SL, TP, entry, lasttime, clO_pickled):
