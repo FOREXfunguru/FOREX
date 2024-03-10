@@ -47,6 +47,8 @@ def process_start(dt: datetime, timeframe: str) -> datetime:
     Returns:
     Rounded aligned datetime
     """
+    if not isinstance(dt, datetime):
+        raise ValueError(f"{dt} should be a datetime instance")
     closest_hour = get_closest_hour(timeframe=timeframe, solve_hour=dt.time().hour)
     if closest_hour== 21 and dt.time().hour >= 0 and not dt.time().hour in [22, 23]:
 
