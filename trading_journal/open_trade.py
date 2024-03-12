@@ -271,3 +271,46 @@ class BreakEvenTrade(OpenTrade):
     When 'self.SL' is adjusted to breakeven, then candles will start being added
     to 'self.preceding_candles'
     """
+    def __init__(self, **kwargs):
+        """Constructor"""
+        super().__init__(**kwargs)
+
+    def run(self) -> None:
+        """Method to run this BreakEvenTrade.
+
+        This function will run the trade and will set the outcome attribute
+        """
+        fraction = check_timeframes_fractions(timeframe1=self.timeframe,
+                                              timeframe2=trade_params.clisttm_tf)
+
+        current_date = datetime.now().date()
+        count = 0
+        for d in gen_datelist(start=self.start, timeframe=self.timeframe):
+            if d.date() == current_date:
+                logging.warning("Skipping, as unable to end the trade")
+                self.outcome = "future"
+                break
+            if d > self.clist.candles[-1].time and self.connect is False:
+                raise Exception("No candle is available in 'clist' and connect is False. Unable to follow")
+            if self.completed:
+                break
+            count += 1
+            cl = self.fetch_candle(d)
+            if cl is None:
+                count -= 1
+                continue
+            if self.isin_profit(price=cl.c):
+                self.process_trademanagement(d=d, fraction=fraction)
+            else:
+                self.preceding_candles = list()
+
+            self.calculate_overlap(cl=cl)
+            if count >= trade_params.numperiods:
+                self.completed = True
+                t_logger.warning(
+                    "No outcome could be calculated in the "
+                    "trade_params.numperiods interval"
+                )
+                self.outcome = "n.a."
+        self.finalise_trade(cl=cl)
+

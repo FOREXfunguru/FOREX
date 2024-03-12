@@ -23,7 +23,7 @@ from params import trade_params
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
 
-class Trade():
+class Trade:
     """This is an abstrace class represents a Trade.
 
     Class variables:
