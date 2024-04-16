@@ -20,12 +20,12 @@ t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
 
 class OpenTrade(Trade):
-    """Class to represent an open Trade"""
+    """An open Trade (i.e. entered)"""
     def __init__(self,
                  candle_number: int = 3,
                  connect: bool = True,
                  **kwargs):
-        """Constructor
+        """Constructor.
 
         Arguments:
             candle_number: number of candles against the trade to consider
