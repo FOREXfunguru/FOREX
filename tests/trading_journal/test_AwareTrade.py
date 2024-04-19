@@ -1,10 +1,7 @@
 import pytest
 
-from trading_journal.open_trade import Trade, AwareTrade
-from forex.candle import Candle
-
-from data_for_tests import (trades1,
-                            trades_entered,
+from trading_journal.open_trade import AwareTrade
+from data_for_tests import (trades_entered,
                             trades_outcome1)
 
 trade_details = ["2020-02-19T21:00:00", "EUR_GBP", "long", "D", 0.83585, 0.82467]
@@ -60,6 +57,7 @@ trade_data1 = [(*trade, pip) for trade, pip in zip(trades_entered, trades_outcom
 @pytest.mark.parametrize("start,type,SR,SL,TP,entry,trades_outcome", trade_data1)
 def test_run(start, type, SR, SL, TP, entry, trades_outcome, clOH8_2019_pickled, clO_pickled):
     """Test 'run' function"""
+
     t = AwareTrade(
         id="test",
         start=start,

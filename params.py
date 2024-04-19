@@ -115,3 +115,4 @@ class trade_params:
     """
     strat: str = "area_unaware" # possible values: 'area_unaware', 'area_aware'
     clisttm_tf: str = "D"
+    preceding_clist_strat: str = "wipe" # possible values: 'wipe', 'queue'

@@ -37,7 +37,7 @@ class OpenTrade(Trade):
         self.completed = False # is this OpenTrade completed
         self.preceding_candles = list()
         super().__init__(**kwargs)
-    
+
     def append_trademanagement_candles(self,
                                        aligned_d: datetime,
                                        fraction: float):
@@ -56,7 +56,7 @@ class OpenTrade(Trade):
             if cl_tm is not None:
                 if cl_tm not in self.preceding_candles:
                     self.preceding_candles.append(cl_tm)
-        
+
         # slice to self.candle_number if more than this number
         if len(self.preceding_candles) > self.candle_number:
             self.preceding_candles = self.preceding_candles[(self.candle_number)*-1:]
@@ -74,7 +74,14 @@ class OpenTrade(Trade):
                                     type=self.type,
                                     list_candles=self.preceding_candles)
                 self.SL.price = new_SL
-            self.preceding_candles = list()
+            if trade_params.preceding_clist_strat == "wipe":
+                self.preceding_candles = list()
+            elif trade_params.preceding_clist_strat == "queue":
+                self.preceding_candles = self.preceding_candles[1:]
+            else:
+                raise NotImplementedError(
+                    f"Invalid trade_params.preceding_clist_strat: {trade_params.preceding_clist_strat}"
+                )
 
     def check_if_against(self):
         """Function to check if middle_point values are
@@ -99,7 +106,7 @@ class OpenTrade(Trade):
             t_logger.info("Great, TP was hit!")
             self.completed = True
             self.outcome = "success"
-    
+
     def end_trade(self,
                   cl: Candle,
                   harea: HArea) -> None:
@@ -112,7 +119,7 @@ class OpenTrade(Trade):
             end = cl.time
         self.end = end
         self.exit = harea.price
-    
+
     def finalise_trade(self, cl: Candle) -> None:
         """Finalise  trade by setting the outcome and calculating profit"""
         if self.outcome == "success":
@@ -148,7 +155,7 @@ class OpenTrade(Trade):
                 conn = Connect(instrument=self.pair, granularity=self.timeframe)
                 cl = conn.fetch_candle(d=d)
         return cl
-    
+
     def isin_profit(self, price: float) -> bool:
         """Is price in profit?.
         
@@ -257,7 +264,7 @@ class AwareTrade(OpenTrade):
                 )
                 self.outcome = "n.a."
         self.finalise_trade(cl=cl)
-    
+
 class BreakEvenTrade(OpenTrade):
     """Represent a trade that adjusts SL to breakeven when in profit.
 
