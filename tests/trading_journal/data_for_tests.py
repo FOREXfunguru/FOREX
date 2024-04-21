@@ -8,35 +8,17 @@ trades1 = [
     ("2018-05-03 22:00:00", "long", 0.75064, 0.74267, 0.77386, 0.75525),
 ]
 
-# AUD_USD H8 2019 data- used for entered trades
+# ["start", "pair", "timeframe", "type", "SR", "SL", "entry"]
 trades_entered = [
-    ("2019-02-11 14:00:00", "long", 0.70693, 0.69352, 0.73151, 0.70872),
-    ("2019-04-17 13:00:00", "short", 0.71910, 0.72958, 0.69676, 0.71643),
-    ("2019-06-18 13:00:00", "long", 0.68390, 0.67325, 0.70583, 0.68573),
-    ("2019-10-22 05:00:00", "short", 0.68750, 0.69223, 0.67684, 0.68607),
-]
+        ("2019-04-17 22:00:00", "AUD_USD", "D", "short", 0.71600, 0.72187, 0.71433),
+    ]
+
 
 last_times = [
     datetime.datetime(2016, 2, 28, 22, 0),
     datetime.datetime(2017, 1, 9, 22, 0),
     datetime.datetime(2015, 5, 13, 21, 0),
     datetime.datetime(2017, 6, 4, 21, 0),
-]
-
-# trades outcome used in test_UnawareTrade.py
-trades_outcome = [
-    ("n.a.", 86), # outcome + pips
-    ("n.a.", 125.9),
-    ("n.a.", 140.5),
-    ("failure", -53.0)
-]
-
-# trades outcome used in test_AwareTrade.py
-trades_outcome1 = [
-    ("n.a.", 86), # outcome + pips
-    ("n.a.", 125.9),
-    ("n.a.", 140.5),
-    ("failure", -61.0)
 ]
 
 start_hours = [

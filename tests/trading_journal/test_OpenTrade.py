@@ -14,7 +14,11 @@ class TestOpenTrade:
         "SL":0.70814,
         "entry":0.72193,
     }
-
+    trade_features_list = []
+    features = ["start", "pair", "timeframe", "type", "SR", "SL", "entry"]
+    for trade_values in trades_entered:
+        trade_features_list.append({key: value for key, value in zip(features, trade_values)})
+    
     @pytest.mark.parametrize(
     "TP, RR, exp_instance",
     [(0.86032, None, OpenTrade), (None, 1.5, OpenTrade), (None, None, Exception)],
@@ -35,14 +39,14 @@ class TestOpenTrade:
                     **self.trade_features,
                     init_clist=False
                 )
-    
+
     def test_init_clist(self):
         td = OpenTrade(
-            **self.trade_features,
+            **self.trade_features_list[0],
             TP=0.74267,
             init_clist=True,
         )   
-        assert len(td.clist.candles) == 4270
+        assert len(td.clist.candles) == 4141
 
     results = [True, False, True, False]
     prices = [0.72632, 0.74277, 0.79, 0.74]
@@ -73,7 +77,7 @@ class TestBreakEvenTrade(TestOpenTrade):
             BreakEvenTrade(
                 RR=RR,
                 TP=TP,
-                **self.trade_features,
+                **self.trade_features_list[0],
                 init_clist=False
             )
         elif exp_instance == Exception:
@@ -81,41 +85,26 @@ class TestBreakEvenTrade(TestOpenTrade):
                 BreakEvenTrade(
                     RR=RR,
                     TP=TP,
-                    **self.trade_features,
+                    **self.trade_features_list[0],
                     init_clist=False
                 )
-    
-    """
-    @pytest.mark.parametrize("start,type,SR,SL,TP,entry", trades_entered)
-    def test_run(self, clO_pickled, clOH8_2019_pickled):
-        bkeven_trade = BreakEvenTrade(
-            start=self.trade_features["start"],
-            pair=self.trade_features["pair"],
-            timeframe=self.trade_features["timeframe"],
-            type=self.trade_features["type"],
-            SR=self.trade_features["SR"],
-            SL=self.trade_features["SL"],
-            TP=self.trade_features["SL"],
-            entry=self.trade_features["entry"],
-            clist=clO_pickled,
-            clist_tm=clOH8_2019_pickled
-        )
-        pdb.set_trace()
-        print("h")
-    """
-        
-        
 class TestAwareTrade(TestOpenTrade):
+
+    # trades outcome for run() function
+    trades_outcome = [
+    ("success", 114.0), # outcome , pips
+    ]
+
     @pytest.mark.parametrize(
     "TP, RR, exp_instance",
-    [(0.86032, None, BreakEvenTrade), (None, 1.5, AwareTrade), (None, None, Exception)],
+    [(0.86032, None, AwareTrade), (None, 1.5, AwareTrade), (None, None, Exception)],
     )
     def test_instantiation(self, TP, RR, exp_instance):
-        if exp_instance is BreakEvenTrade:
+        if exp_instance is AwareTrade:
             AwareTrade(
                 RR=RR,
                 TP=TP,
-                **self.trade_features,
+                **self.trade_features_list[0],
                 init_clist=False
             )
         elif exp_instance == Exception:
@@ -123,6 +112,20 @@ class TestAwareTrade(TestOpenTrade):
                 AwareTrade(
                     RR=RR,
                     TP=TP,
-                    **self.trade_features,
+                    **self.trade_features_list[0],
                     init_clist=False
                 )
+
+    def test_run(self, clOH8_2019_pickled, clO_pickled):
+        for ix in range(len(self.trade_features_list)):
+            aware_trade_object = AwareTrade(
+                **self.trade_features_list[ix],
+                RR=1.5,
+                clist=clO_pickled,
+                clist_tm=clOH8_2019_pickled,
+                connect=False,
+            )
+            aware_trade_object.initialise()
+            aware_trade_object.run()
+            aware_trade_object.outcome == self.trades_outcome[ix][0]
+            aware_trade_object.pips == self.trades_outcome[ix][1]
