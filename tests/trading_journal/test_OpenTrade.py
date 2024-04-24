@@ -1,6 +1,6 @@
 import pytest
 import pdb
-from trading_journal.open_trade import OpenTrade, BreakEvenTrade, AwareTrade
+from trading_journal.open_trade import OpenTrade, BreakEvenTrade, AwareTrade, UnawareTrade
 from data_for_tests import trades1, trades_entered
 
 
@@ -46,7 +46,7 @@ class TestOpenTrade:
             TP=0.74267,
             init_clist=True,
         )   
-        assert len(td.clist.candles) == 4141
+        assert len(td.clist.candles) == 4130
 
     results = [True, False, True, False]
     prices = [0.72632, 0.74277, 0.79, 0.74]
@@ -88,11 +88,28 @@ class TestBreakEvenTrade(TestOpenTrade):
                     **self.trade_features_list[0],
                     init_clist=False
                 )
+    
+    def test_run(self, clOH8_2019_pickled, clO_pickled):
+        pdb.set_trace()
+        for ix in range(len(self.trade_features_list)):
+            breakeven_trade_object = BreakEvenTrade(
+                **self.trade_features_list[ix],
+                RR=1.5,
+                clist=clO_pickled,
+                clist_tm=clOH8_2019_pickled,
+                connect=False,
+            )
+            breakeven_trade_object.initialise()
+            breakeven_trade_object.run()
+            assert breakeven_trade_object.outcome == self.trades_outcome[ix][0]
+            assert breakeven_trade_object.pips == self.trades_outcome[ix][1]
+    
 class TestAwareTrade(TestOpenTrade):
 
     # trades outcome for run() function
     trades_outcome = [
     ("success", 114.0), # outcome , pips
+    ("failure", -141.0)
     ]
 
     @pytest.mark.parametrize(
@@ -117,6 +134,7 @@ class TestAwareTrade(TestOpenTrade):
                 )
 
     def test_run(self, clOH8_2019_pickled, clO_pickled):
+        pdb.set_trace()
         for ix in range(len(self.trade_features_list)):
             aware_trade_object = AwareTrade(
                 **self.trade_features_list[ix],
@@ -127,5 +145,48 @@ class TestAwareTrade(TestOpenTrade):
             )
             aware_trade_object.initialise()
             aware_trade_object.run()
-            aware_trade_object.outcome == self.trades_outcome[ix][0]
-            aware_trade_object.pips == self.trades_outcome[ix][1]
+            assert aware_trade_object.outcome == self.trades_outcome[ix][0]
+            assert aware_trade_object.pips == self.trades_outcome[ix][1]
+
+class TestUnawareTrade(TestOpenTrade):
+
+    # trades outcome for run() function
+    trades_outcome = [
+    ("success", 114.0), # outcome , pips
+    ("failure", -97.0)
+    ]
+
+    @pytest.mark.parametrize(
+    "TP, RR, exp_instance",
+    [(0.86032, None, UnawareTrade), (None, 1.5, UnawareTrade), (None, None, Exception)],
+    )
+    def test_instantiation(self, TP, RR, exp_instance):
+        if exp_instance is UnawareTrade:
+            UnawareTrade(
+                RR=RR,
+                TP=TP,
+                **self.trade_features_list[0],
+                init_clist=False
+            )
+        elif exp_instance == Exception:
+            with pytest.raises(Exception):
+                UnawareTrade(
+                    RR=RR,
+                    TP=TP,
+                    **self.trade_features_list[0],
+                    init_clist=False
+                )
+
+    def test_run(self, clOH8_2019_pickled, clO_pickled):
+        for ix in range(len(self.trade_features_list)):
+            unaware_trade_object = UnawareTrade(
+                **self.trade_features_list[ix],
+                RR=1.5,
+                clist=clO_pickled,
+                clist_tm=clOH8_2019_pickled,
+                connect=False,
+            )
+            unaware_trade_object.initialise()
+            unaware_trade_object.run()
+            assert unaware_trade_object.outcome == self.trades_outcome[ix][0]
+            assert unaware_trade_object.pips == self.trades_outcome[ix][1]

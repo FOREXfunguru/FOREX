@@ -11,6 +11,7 @@ trades1 = [
 # ["start", "pair", "timeframe", "type", "SR", "SL", "entry"]
 trades_entered = [
         ("2019-04-17 22:00:00", "AUD_USD", "D", "short", 0.71600, 0.72187, 0.71433),
+        ("2019-07-17 22:00:00", "AUD_USD", "D", "long", 0.69976, 0.69114, 0.70524),
     ]
 
 
