@@ -68,6 +68,14 @@ class TestOpenTrade:
 
 
 class TestBreakEvenTrade(TestOpenTrade):
+
+     # trades outcome for run() function
+    trades_outcome = [
+    ("success", 114.0), # outcome , pips
+    ("failure", 0),
+    ("failure", 0)
+    ]
+
     @pytest.mark.parametrize(
     "TP, RR, exp_instance",
     [(0.86032, None, BreakEvenTrade), (None, 1.5, BreakEvenTrade), (None, None, Exception)],
@@ -90,7 +98,6 @@ class TestBreakEvenTrade(TestOpenTrade):
                 )
     
     def test_run(self, clOH8_2019_pickled, clO_pickled):
-        pdb.set_trace()
         for ix in range(len(self.trade_features_list)):
             breakeven_trade_object = BreakEvenTrade(
                 **self.trade_features_list[ix],
@@ -109,7 +116,8 @@ class TestAwareTrade(TestOpenTrade):
     # trades outcome for run() function
     trades_outcome = [
     ("success", 114.0), # outcome , pips
-    ("failure", -141.0)
+    ("failure", -141.0),
+    ("n.a.", -7.0)
     ]
 
     @pytest.mark.parametrize(
@@ -134,7 +142,6 @@ class TestAwareTrade(TestOpenTrade):
                 )
 
     def test_run(self, clOH8_2019_pickled, clO_pickled):
-        pdb.set_trace()
         for ix in range(len(self.trade_features_list)):
             aware_trade_object = AwareTrade(
                 **self.trade_features_list[ix],
@@ -153,7 +160,8 @@ class TestUnawareTrade(TestOpenTrade):
     # trades outcome for run() function
     trades_outcome = [
     ("success", 114.0), # outcome , pips
-    ("failure", -97.0)
+    ("failure", -97.0),
+    ("failure", -22.0)
     ]
 
     @pytest.mark.parametrize(
