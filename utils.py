@@ -76,7 +76,7 @@ def add_pips2price(pair: str, price: float, pips: int) -> float:
     return iprice
 
 
-def substract_pips2price(pair:  str, price: float, pips: int) -> float:
+def substract_pips2price(pair: str, price: float, pips: int) -> float:
     '''Function that gets a price value and substracts
     a certain number of pips to the price
 
@@ -200,7 +200,7 @@ def calculate_profit(prices: tuple[float, float],
     defined as the difference between 2 prices.
 
     Args:
-        prices: tuple with the 2 prices to compare
+        prices: tuple with the 2 prices to compare [price, entry]
         type: ['long'/'short']
         pair: instrument
     """
