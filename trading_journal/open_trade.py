@@ -14,7 +14,7 @@ from trading_journal.trade_utils import (
     adjust_SL,
     check_timeframes_fractions,
 )
-from params import trade_params
+from params import trade_management_params
 
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
@@ -30,6 +30,8 @@ class OpenTrade(Trade):
             candle_number: number of candles against the trade to consider
             connect: If True then it will use the API to fetch candles
             completed: Is this Trade completed?
+            preceding_candles: Number of candles to check if CandleList 
+                               goes against the trade
         """
         self.candle_number = candle_number
         self.connect = connect
@@ -39,7 +41,7 @@ class OpenTrade(Trade):
 
     def append_trademanagement_candles(self, aligned_d: datetime, fraction: float):
         """Append the trademanagement candles to self.preceding_candles"""
-        delta = periodToDelta(ncandles=1, timeframe=trade_params.clisttm_tf)
+        delta = periodToDelta(ncandles=1, timeframe=trade_management_params.clisttm_tf)
         if fraction < 1:
             fraction = 1
         for ix in range(int(fraction)):
@@ -48,7 +50,7 @@ class OpenTrade(Trade):
             if cl_tm is None:
                 if self.connect is True:
                     conn = Connect(
-                        instrument=self.pair, granularity=trade_params.clisttm_tf
+                        instrument=self.pair, granularity=trade_management_params.clisttm_tf
                     )
                     cl_tm = conn.fetch_candle(d=new_datetime)
             if cl_tm is not None:
@@ -61,8 +63,8 @@ class OpenTrade(Trade):
 
     def process_trademanagement(self, d: datetime, fraction: float):
         """Process trademanagement candles and ajust SL if required"""
-        # align 'd' object to 'trade_params.clisttm_tf' timeframe
-        aligned_d = process_start(dt=d, timeframe=trade_params.clisttm_tf)
+        # align 'd' object to 'trade_management_params.clisttm_tf' timeframe
+        aligned_d = process_start(dt=d, timeframe=trade_management_params.clisttm_tf)
         self.append_trademanagement_candles(aligned_d, fraction)
 
         if len(self.preceding_candles) == self.candle_number:
@@ -72,13 +74,13 @@ class OpenTrade(Trade):
                     pair=self.pair, type=self.type, list_candles=self.preceding_candles
                 )
                 self.SL.price = new_SL
-            if trade_params.preceding_clist_strat == "wipe":
+            if trade_management_params.preceding_clist_strat == "wipe":
                 self.preceding_candles = list()
-            elif trade_params.preceding_clist_strat == "queue":
+            elif trade_management_params.preceding_clist_strat == "queue":
                 self.preceding_candles = self.preceding_candles[1:]
             else:
                 raise NotImplementedError(
-                    f"Invalid trade_params.preceding_clist_strat: {trade_params.preceding_clist_strat}"
+                    f"Invalid trade_management_params.preceding_clist_strat: {trade_management_params.preceding_clist_strat}"
                 )
 
     def check_if_against(self):
@@ -109,7 +111,7 @@ class OpenTrade(Trade):
         """End trade"""
         end = None
         if self.connect is True:
-            end = harea.get_cross_time(candle=cl, granularity=trade_params.granularity)
+            end = harea.get_cross_time(candle=cl, granularity=trade_management_params.granularity)
         else:
             end = cl.time
         self.end = end
@@ -178,7 +180,7 @@ class UnawareTrade(OpenTrade):
         This function will run the trade and will set the outcome attribute
         """
         fraction = check_timeframes_fractions(
-            timeframe1=self.timeframe, timeframe2=trade_params.clisttm_tf
+            timeframe1=self.timeframe, timeframe2=trade_management_params.clisttm_tf
         )
 
         current_date = datetime.now().date()
@@ -201,7 +203,7 @@ class UnawareTrade(OpenTrade):
                 continue
             self.process_trademanagement(d=d, fraction=fraction)
             self.calculate_overlap(cl=cl)
-            if count >= trade_params.numperiods:
+            if count >= trade_management_params.numperiods:
                 self.completed = True
                 t_logger.warning(
                     "No outcome could be calculated in the "
@@ -227,7 +229,7 @@ class AwareTrade(OpenTrade):
         This function will run the trade and will set the outcome attribute
         """
         fraction = check_timeframes_fractions(
-            timeframe1=self.timeframe, timeframe2=trade_params.clisttm_tf
+            timeframe1=self.timeframe, timeframe2=trade_management_params.clisttm_tf
         )
 
         current_date = datetime.now().date()
@@ -254,7 +256,7 @@ class AwareTrade(OpenTrade):
                 self.preceding_candles = list()
 
             self.calculate_overlap(cl=cl)
-            if count >= trade_params.numperiods:
+            if count >= trade_management_params.numperiods:
                 self.completed = True
                 t_logger.warning(
                     "No outcome could be calculated in the "
@@ -285,7 +287,7 @@ class BreakEvenTrade(OpenTrade):
         This function will run the trade and will set the outcome attribute
         """
         fraction = check_timeframes_fractions(
-            timeframe1=self.timeframe, timeframe2=trade_params.clisttm_tf
+            timeframe1=self.timeframe, timeframe2=trade_management_params.clisttm_tf
         )
 
         current_date = datetime.now().date()
@@ -316,11 +318,11 @@ class BreakEvenTrade(OpenTrade):
 
             self.process_trademanagement(d=d, fraction=fraction)
 
-            if count >= trade_params.numperiods:
+            if count >= trade_management_params.numperiods:
                 self.completed = True
                 t_logger.warning(
                     "No outcome could be calculated in the "
-                    "trade_params.numperiods interval"
+                    "trade_management_params.numperiods interval"
                 )
                 self.outcome = "n.a."
         self.finalise_trade(cl=cl)

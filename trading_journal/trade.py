@@ -18,7 +18,7 @@ from trading_journal.trade_utils import (
     check_candle_overlap,
     init_clist
 )
-from params import trade_params
+from params import trade_params, trade_management_params
 
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
@@ -51,7 +51,7 @@ class Trade:
                                     pair=self.pair,
                                     start=self.start)
         if not hasattr(self, "clist_tm") and self.init_clist is True:
-            self.clist_tm = init_clist(timeframe=trade_params.clisttm_tf,
+            self.clist_tm = init_clist(timeframe=trade_management_params.clisttm_tf,
                                        pair=self.pair,
                                        start=self.start)
 
