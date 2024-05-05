@@ -30,7 +30,7 @@ class OpenTrade(Trade):
             candle_number: number of candles against the trade to consider
             connect: If True then it will use the API to fetch candles
             completed: Is this Trade completed?
-            preceding_candles: Number of candles to check if CandleList 
+            preceding_candles: Number of candles to check if CandleList
                                goes against the trade
         """
         self.candle_number = candle_number
@@ -59,7 +59,7 @@ class OpenTrade(Trade):
 
         # slice to self.candle_number if more than this number
         if len(self.preceding_candles) > self.candle_number:
-            self.preceding_candles = self.preceding_candles[(self.candle_number) * -1 :]
+            self.preceding_candles = self.preceding_candles[(self.candle_number) * -1:]
 
     def process_trademanagement(self, d: datetime, fraction: float):
         """Process trademanagement candles and ajust SL if required"""
@@ -80,7 +80,8 @@ class OpenTrade(Trade):
                 self.preceding_candles = self.preceding_candles[1:]
             else:
                 raise NotImplementedError(
-                    f"Invalid trade_management_params.preceding_clist_strat: {trade_management_params.preceding_clist_strat}"
+                    "Invalid trade_management_params.preceding_clist_strat: "
+                    f"{trade_management_params.preceding_clist_strat}"
                 )
 
     def check_if_against(self):
@@ -111,7 +112,8 @@ class OpenTrade(Trade):
         """End trade"""
         end = None
         if self.connect is True:
-            end = harea.get_cross_time(candle=cl, granularity=trade_management_params.granularity)
+            end = harea.get_cross_time(candle=cl,
+                                       granularity=trade_management_params.granularity)
         else:
             end = cl.time
         self.end = end
@@ -144,7 +146,8 @@ class OpenTrade(Trade):
         cl = self.clist[d]
         if cl is None:
             if self.connect is True:
-                conn = Connect(instrument=self.pair, granularity=self.timeframe)
+                conn = Connect(instrument=self.pair,
+                               granularity=self.timeframe)
                 cl = conn.fetch_candle(d=d)
         return cl
 
@@ -166,8 +169,8 @@ class OpenTrade(Trade):
 class UnawareTrade(OpenTrade):
     """Represent a trade that ignores whether the price is in profit or loss.
 
-    Characterizes for not being conditioned by the price being in loss or profit (hence the name 'unaware')
-    to begin to add candles to 'start.preceding_candles'."
+    Characterizes for not being conditioned by the price being in loss or profit 
+    (hence the name 'unaware') to begin to add candles to 'start.preceding_candles'."
     """
 
     def __init__(self, **kwargs):
@@ -180,7 +183,8 @@ class UnawareTrade(OpenTrade):
         This function will run the trade and will set the outcome attribute
         """
         fraction = check_timeframes_fractions(
-            timeframe1=self.timeframe, timeframe2=trade_management_params.clisttm_tf
+            timeframe1=self.timeframe,
+            timeframe2=trade_management_params.clisttm_tf
         )
 
         current_date = datetime.now().date()
@@ -229,7 +233,8 @@ class AwareTrade(OpenTrade):
         This function will run the trade and will set the outcome attribute
         """
         fraction = check_timeframes_fractions(
-            timeframe1=self.timeframe, timeframe2=trade_management_params.clisttm_tf
+            timeframe1=self.timeframe,
+            timeframe2=trade_management_params.clisttm_tf
         )
 
         current_date = datetime.now().date()
@@ -269,8 +274,8 @@ class AwareTrade(OpenTrade):
 class BreakEvenTrade(OpenTrade):
     """Represent a trade that adjusts SL to breakeven when in profit.
 
-    When 'self.SL' is adjusted to breakeven, then candles will start being added
-    to 'self.preceding_candles'
+    When 'self.SL' is adjusted to breakeven, then candles will start
+    being added to 'self.preceding_candles'
     """
 
     def __init__(self, number_of_pips=10, **kwargs):
@@ -287,7 +292,8 @@ class BreakEvenTrade(OpenTrade):
         This function will run the trade and will set the outcome attribute
         """
         fraction = check_timeframes_fractions(
-            timeframe1=self.timeframe, timeframe2=trade_management_params.clisttm_tf
+            timeframe1=self.timeframe,
+            timeframe2=trade_management_params.clisttm_tf
         )
 
         current_date = datetime.now().date()

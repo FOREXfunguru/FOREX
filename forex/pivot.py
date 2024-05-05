@@ -2,7 +2,6 @@ import logging
 import datetime
 import matplotlib.pyplot as plt
 import numpy as np
-import pdb
 
 from utils import periodToDelta, substract_pips2price, add_pips2price
 from params import gparams, pivots_params
@@ -90,7 +89,7 @@ class Pivot(object):
                     p_logger.debug("Skipping merge because of %_diff")
                     extension_needed = False
             else:
-                # exit the while loop, as type of previous (s) and self.pre 
+                # exit the while loop, as type of previous (s) and self.pre
                 # are different and s.count is greater than n_candles
                 extension_needed = False
 
@@ -316,9 +315,11 @@ class PivotList(object):
                 submode = [modes[pair[0]+1]]
             # checking if all elements in submode are the same:
             assert len(np.unique(submode).tolist()) == 1, "more than one type in modes"
-            s = Segment(type=submode[0],
-                        clist=self.clist.candles[pair[0]:pair[1]],
-                        instrument=self.clist.instrument)
+            s = Segment(
+                type=submode[0],
+                clist=self.clist.candles[pair[0]: pair[1]],
+                instrument=self.clist.instrument,
+            )
             # create Pivot object
             cl = self.clist.candles[pair[0]]
             # add granularity to object
@@ -333,7 +334,7 @@ class PivotList(object):
             # Append it to segs
             segs.append(s)
             pre_s = s
-        
+
         # add last Pivot
         cl = self.clist.candles[ixs[-1]]
         cl.granularity = self.clist.granularity

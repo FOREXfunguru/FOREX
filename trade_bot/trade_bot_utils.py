@@ -13,6 +13,7 @@ from utils import add_pips2price, substract_pips2price
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
 
+
 def adjust_SL_pips(candle: Candle,
                    type: str, pair: str,
                    no_pips: int = 100) -> float:
@@ -23,7 +24,7 @@ def adjust_SL_pips(candle: Candle,
         candle : Candle object for which SL will be adjusted
         type : Trade type ('long'/ 'short').
         pair: Pair
-        no_pips: Number of pips to add to the highest/lowest of 
+        no_pips: Number of pips to add to the highest/lowest of
         the candle to calculate the S/L value.
 
     Returns:
@@ -37,6 +38,7 @@ def adjust_SL_pips(candle: Candle,
         SL = add_pips2price(pair, price, no_pips)
 
     return SL
+
 
 def get_trade_type(dt, clObj: CandleList) -> str:
     """Function to get the type of a Trade (short/long).
@@ -67,6 +69,7 @@ def get_trade_type(dt, clObj: CandleList) -> str:
         return "short"
     else:
         raise Exception("Could not guess the file type")
+
 
 def prepare_trade(tb_obj, start: datetime, type: str, SL: float, ic: Candle,
                   harea_sel, add_pips: int = None, TP: float = None) -> Trade:
@@ -114,6 +117,7 @@ def prepare_trade(tb_obj, start: datetime, type: str, SL: float, ic: Candle,
         RR=tradebot_params.RR)
     return t
 
+
 def adjust_SL_nextSR(SRlst: HAreaList,
                      sel_ix: int,
                      type: str) -> Tuple[float, float]:
@@ -134,6 +138,7 @@ def adjust_SL_nextSR(SRlst: HAreaList,
         t_logger.warning(f"sel_ix error: {sel_ix}. Trying with adjust_SL_pips")
 
     return SL, TP
+
 
 def adjust_SL_candles(type: str, clObj: CandleList, number: int = 7) -> float:
     """Function to adjust the SL price
@@ -167,6 +172,3 @@ def adjust_SL_candles(type: str, clObj: CandleList, number: int = 7) -> float:
             if c.l < SL:
                 SL = c.l
     return SL
-
-
-
