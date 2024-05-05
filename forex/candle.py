@@ -41,7 +41,8 @@ class Candle(object):
         "rsi",
     ]
 
-    def __init__(self, time: str, o: float, h: float, c: float, l: float) -> None:
+    def __init__(self, time: str, o: float, h: float,
+                 c: float, l: float) -> None:
         self.o = float(o)
         self.h = float(h)
         self.c = float(c)
@@ -136,7 +137,8 @@ class CandleList(object):
     ]
 
     def __init__(
-        self, instrument: str, granularity: str, data: list = None, candles=None
+        self, instrument: str, granularity: str,
+        data: list = None, candles=None
     ):
         """Constructor
 
@@ -214,7 +216,8 @@ class CandleList(object):
     def __add__(self, ClO):
         clist = self.candles + ClO.candles
         newClO = CandleList(
-            instrument=self.instrument, granularity=self.granularity, candles=clist
+            instrument=self.instrument,
+            granularity=self.granularity, candles=clist
         )
         return newClO
 
@@ -397,12 +400,12 @@ class CandleList(object):
             cl = CandleList(
                 instrument=self.instrument,
                 granularity=self.granularity,
-                candles=self.candles[start_ix : end_ix + 1],
+                candles=self.candles[start_ix: end_ix + 1],
             )
             return cl
         else:
-            self.candles = self.candles[start_ix : end_ix + 1]
-            self.times = self.times[start_ix : end_ix + 1]
+            self.candles = self.candles[start_ix: end_ix + 1]
+            self.times = self.times[start_ix: end_ix + 1]
             self._type = self._guess_type()
             return self
 
@@ -469,5 +472,6 @@ class CandleList(object):
         sb = []
         for key in self.__slots__:
             if hasattr(self, key):
-                sb.append("{key}='{value}'".format(key=key, value=getattr(self, key)))
+                sb.append("{key}='{value}'".format(key=key,
+                                                   value=getattr(self, key)))
         return ", ".join(sb)

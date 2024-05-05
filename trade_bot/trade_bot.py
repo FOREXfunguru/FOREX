@@ -1,7 +1,6 @@
 import logging
 import pickle
 import re
-import pdb
 
 from datetime import datetime, timedelta
 from typing import List
@@ -48,7 +47,7 @@ class TradeBot(object):
                    D,H12,H10,H8,H4,H1
         clist: CandleList object used to represent this trade
     '''
-    __slots__ = ["start", "end", "pair", "timeframe", "clist", 
+    __slots__ = ["start", "end", "pair", "timeframe", "clist",
                  "delta_period", "delta"]
 
     def __init__(self, start: datetime, end: datetime, pair: str,
@@ -153,7 +152,7 @@ class TradeBot(object):
                                " Skipping...")
                 startO = startO + self.delta
                 continue
-         
+
             # check if there is any HArea overlapping with c_candle
             HAreaSel, sel_ix = SRlst.onArea(candle=c_candle)
             if HAreaSel is not None:

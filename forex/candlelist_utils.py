@@ -51,8 +51,8 @@ def calc_SR(pvLO, outfile: str = None):
         bounces.append(len(newPL.pivots))
         tot_score.append(newPL.get_score())
         score_per_bounce.append(mean_pivot)
-        # increment price to following price. Because the increment is made in pips
-        # it does not suffer of the JPY pairs issue
+        # increment price to following price. Because the increment is made
+        # in pips it does not suffer of the JPY pairs issue
         p = add_pips2price(pvLO.clist.instrument, p,
                            2*clist_params.i_pips)
         if prev_p is None:

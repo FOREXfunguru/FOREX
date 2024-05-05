@@ -10,10 +10,10 @@ trades1 = [
 
 # ["start", "pair", "timeframe", "type", "SR", "SL", "entry"]
 trades_entered = [
-        ("2019-04-17 22:00:00", "AUD_USD", "D", "short", 0.71600, 0.72187, 0.71433),
-        ("2019-07-17 22:00:00", "AUD_USD", "D", "long", 0.69976, 0.69114, 0.70524),
-        ("2019-08-25 22:00:00", "AUD_USD", "D", "long", 0.67499, 0.66530, 0.67766),
-    ]
+    ("2019-04-17 22:00:00", "AUD_USD", "D", "short", 0.71600, 0.72187, 0.71433),
+    ("2019-07-17 22:00:00", "AUD_USD", "D", "long", 0.69976, 0.69114, 0.70524),
+    ("2019-08-25 22:00:00", "AUD_USD", "D", "long", 0.67499, 0.66530, 0.67766),
+]
 
 
 last_times = [
@@ -25,10 +25,26 @@ last_times = [
 
 start_hours = [
     (datetime.datetime(2023, 12, 9, 9, 1), datetime.datetime(2023, 12, 9, 9, 0), "H4"),
-    (datetime.datetime(2023, 12, 9, 14, 37), datetime.datetime(2023, 12, 9, 13, 0), "H4"),
-    (datetime.datetime(2023, 12, 9, 0, 10), datetime.datetime(2023, 12, 8, 21, 0), "H8"),
-    (datetime.datetime(2023, 12, 9, 20, 0), datetime.datetime(2023, 12, 9, 9, 0), "H12"),
+    (
+        datetime.datetime(2023, 12, 9, 14, 37),
+        datetime.datetime(2023, 12, 9, 13, 0),
+        "H4",
+    ),
+    (
+        datetime.datetime(2023, 12, 9, 0, 10),
+        datetime.datetime(2023, 12, 8, 21, 0),
+        "H8",
+    ),
+    (
+        datetime.datetime(2023, 12, 9, 20, 0),
+        datetime.datetime(2023, 12, 9, 9, 0),
+        "H12",
+    ),
     (datetime.datetime(2023, 12, 9, 20, 0), datetime.datetime(2023, 12, 8, 21, 0), "D"),
-    (datetime.datetime(2023, 12, 9, 23, 0), datetime.datetime(2023, 12, 9, 21, 0), "H4"),
-    (datetime.datetime(2023, 7, 1, 6, 0), datetime.datetime(2023, 6, 30, 21, 0), "D")
+    (
+        datetime.datetime(2023, 12, 9, 23, 0),
+        datetime.datetime(2023, 12, 9, 21, 0),
+        "H4",
+    ),
+    (datetime.datetime(2023, 7, 1, 6, 0), datetime.datetime(2023, 6, 30, 21, 0), "D"),
 ]
