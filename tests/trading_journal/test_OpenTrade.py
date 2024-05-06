@@ -69,9 +69,10 @@ class TestBreakEvenTrade(TestOpenTrade):
 
     # trades outcome for run() function
     trades_outcome = [
-        ("success", 114.0),  # outcome , pips
-        ("failure", 0),
-        ("failure", 0),
+        ("success", 114.0),  # outcome, pips
+        ("failure", 10),
+        ("failure", 10),
+        ("failure", 10),
     ]
 
     @pytest.mark.parametrize(
@@ -90,7 +91,8 @@ class TestBreakEvenTrade(TestOpenTrade):
         elif exp_instance == Exception:
             with pytest.raises(Exception):
                 BreakEvenTrade(
-                    RR=RR, TP=TP, **self.trade_features_list[0], init_clist=False
+                    RR=RR, TP=TP, **self.trade_features_list[0],
+                    init_clist=False
                 )
 
     def test_run(self, clOH8_2019_pickled, clO_pickled):
@@ -113,6 +115,7 @@ class TestAwareTrade(TestOpenTrade):
     # trades outcome for run() function
     trades_outcome = [
         ("success", 114.0),  # outcome , pips
+        ("failure", 39.0),
         ("failure", -141.0),
         ("n.a.", -7.0),
     ]
@@ -150,6 +153,7 @@ class TestUnawareTrade(TestOpenTrade):
     # trades outcome for run() function
     trades_outcome = [
         ("success", 114.0),  # outcome , pips
+        ("failure", 39),
         ("failure", -97.0),
         ("failure", -22.0),
     ]

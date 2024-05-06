@@ -6,7 +6,11 @@ from trading_journal.trade import Trade
 from api.oanda.connect import Connect
 from forex.harea import HArea
 from forex.candle import Candle
-from utils import periodToDelta, calculate_profit
+from utils import (
+    periodToDelta,
+    calculate_profit,
+    add_pips2price,
+    substract_pips2price)
 from trading_journal.trade_utils import (
     gen_datelist,
     check_candle_overlap,
@@ -278,10 +282,13 @@ class BreakEvenTrade(OpenTrade):
     being added to 'self.preceding_candles'
     """
 
-    def __init__(self, number_of_pips=10, **kwargs):
+    def __init__(self, number_of_pips=20, **kwargs):
         """Constructor
         Arguments:
-            number_of_pips = Number of pips in profit to move to breakeven
+            number_of_pips = Number of pips in profit to move to breakeven.
+                             This parameter will also control the SL new price,
+                             which will be (self.entry+number_of_pips) minus 10
+                             pips
         """
         self.number_of_pips = number_of_pips
         super().__init__(**kwargs)
@@ -305,10 +312,9 @@ class BreakEvenTrade(OpenTrade):
                 break
             if d > self.clist.candles[-1].time and self.connect is False:
                 raise Exception(
-                    "No candle is available in 'clist' and connect is False. Unable to follow"
+                    "No candle is available in 'clist' and connect is False."
+                    "Unable to follow"
                 )
-            if self.completed:
-                break
             count += 1
             cl = self.fetch_candle(d)
             if cl is None:
@@ -316,11 +322,25 @@ class BreakEvenTrade(OpenTrade):
                 continue
 
             self.calculate_overlap(cl=cl)
+            if self.completed:
+                break
             pips_distance = calculate_profit(
                 prices=(cl.c, self.entry.price), type=self.type, pair=self.pair
             )
             if pips_distance > self.number_of_pips:
-                self.SL.price = self.entry.price
+                # This controls the gain achieved when moving the SL price
+                pips_of_gain = self.number_of_pips - 10
+                if self.type == "long":
+                    new_price = add_pips2price(
+                        pair=self.pair, price=self.entry.price,
+                        pips=pips_of_gain
+                    )
+                elif self.type == "short":
+                    new_price = substract_pips2price(
+                        pair=self.pair, price=self.entry.price,
+                        pips=pips_of_gain
+                    )
+                self.SL.price = new_price
 
             self.process_trademanagement(d=d, fraction=fraction)
 
