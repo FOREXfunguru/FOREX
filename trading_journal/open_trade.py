@@ -54,7 +54,8 @@ class OpenTrade(Trade):
             if cl_tm is None:
                 if self.connect is True:
                     conn = Connect(
-                        instrument=self.pair, granularity=trade_management_params.clisttm_tf
+                        instrument=self.pair,
+                        granularity=trade_management_params.clisttm_tf
                     )
                     cl_tm = conn.fetch_candle(d=new_datetime)
             if cl_tm is not None:
@@ -64,29 +65,6 @@ class OpenTrade(Trade):
         # slice to self.candle_number if more than this number
         if len(self.preceding_candles) > self.candle_number:
             self.preceding_candles = self.preceding_candles[(self.candle_number) * -1:]
-
-    def process_trademanagement(self, d: datetime, fraction: float):
-        """Process trademanagement candles and ajust SL if required"""
-        # align 'd' object to 'trade_management_params.clisttm_tf' timeframe
-        aligned_d = process_start(dt=d, timeframe=trade_management_params.clisttm_tf)
-        self.append_trademanagement_candles(aligned_d, fraction)
-
-        if len(self.preceding_candles) == self.candle_number:
-            res = self.check_if_against()
-            if res is True:
-                new_SL = adjust_SL(
-                    pair=self.pair, type=self.type, list_candles=self.preceding_candles
-                )
-                self.SL.price = new_SL
-            if trade_management_params.preceding_clist_strat == "wipe":
-                self.preceding_candles = list()
-            elif trade_management_params.preceding_clist_strat == "queue":
-                self.preceding_candles = self.preceding_candles[1:]
-            else:
-                raise NotImplementedError(
-                    "Invalid trade_management_params.preceding_clist_strat: "
-                    f"{trade_management_params.preceding_clist_strat}"
-                )
 
     def check_if_against(self):
         """Function to check if middle_point values are
@@ -169,11 +147,54 @@ class OpenTrade(Trade):
                 return True
         return False
 
+    def process_trademanagement(self, d: datetime, fraction: float):
+        """Process trademanagement candles and ajust SL if required"""
+        # align 'd' object to 'trade_management_params.clisttm_tf' timeframe
+        aligned_d = process_start(dt=d,
+                                  timeframe=trade_management_params.clisttm_tf)
+        self.append_trademanagement_candles(aligned_d, fraction)
+
+        if len(self.preceding_candles) == self.candle_number:
+            res = self.check_if_against()
+            if res is True:
+                new_SL = adjust_SL(
+                    pair=self.pair, type=self.type,
+                    list_candles=self.preceding_candles
+                )
+                self.SL.price = new_SL
+            if trade_management_params.preceding_clist_strat == "wipe":
+                self.preceding_candles = list()
+            elif trade_management_params.preceding_clist_strat == "queue":
+                self.preceding_candles = self.preceding_candles[1:]
+            else:
+                raise NotImplementedError(
+                    "Invalid trade_management_params.preceding_clist_strat: "
+                    f"{trade_management_params.preceding_clist_strat}"
+                )
+
+    def _validate_datetime(self, d: datetime) -> bool:
+        """False if datatime is in the future.
+
+        raises ValueError: if no info in the clist
+        """
+        current_date = datetime.now().date()
+
+        if d.date() == current_date:
+            logging.warning("Skipping, as unable to end the trade")
+            self.outcome = "future"
+            return False
+        if d > self.clist.candles[-1].time and self.connect is False:
+            raise ValueError(
+                "No candle is available in 'clist' and connect is False."
+                "Unable to follow"
+            )
+        return True
+
 
 class UnawareTrade(OpenTrade):
     """Represent a trade that ignores whether the price is in profit or loss.
 
-    Characterizes for not being conditioned by the price being in loss or profit 
+    Characterizes for not being conditioned by the price being in loss or profit
     (hence the name 'unaware') to begin to add candles to 'start.preceding_candles'."
     """
 
@@ -190,19 +211,9 @@ class UnawareTrade(OpenTrade):
             timeframe1=self.timeframe,
             timeframe2=trade_management_params.clisttm_tf
         )
-
-        current_date = datetime.now().date()
         count = 0
         for d in gen_datelist(start=self.start, timeframe=self.timeframe):
-            if d.date() == current_date:
-                logging.warning("Skipping, as unable to end the trade")
-                self.outcome = "future"
-                break
-            if d > self.clist.candles[-1].time and self.connect is False:
-                raise Exception(
-                    "No candle is available in 'clist' and connect is False. Unable to follow"
-                )
-            if self.completed:
+            if not self._validate_datetime or self.completed:
                 break
             count += 1
             cl = self.fetch_candle(d)
@@ -241,18 +252,9 @@ class AwareTrade(OpenTrade):
             timeframe2=trade_management_params.clisttm_tf
         )
 
-        current_date = datetime.now().date()
         count = 0
         for d in gen_datelist(start=self.start, timeframe=self.timeframe):
-            if d.date() == current_date:
-                logging.warning("Skipping, as unable to end the trade")
-                self.outcome = "future"
-                break
-            if d > self.clist.candles[-1].time and self.connect is False:
-                raise Exception(
-                    "No candle is available in 'clist' and connect is False. Unable to follow"
-                )
-            if self.completed:
+            if not self._validate_datetime or self.completed:
                 break
             count += 1
             cl = self.fetch_candle(d)
@@ -303,18 +305,10 @@ class BreakEvenTrade(OpenTrade):
             timeframe2=trade_management_params.clisttm_tf
         )
 
-        current_date = datetime.now().date()
         count = 0
         for d in gen_datelist(start=self.start, timeframe=self.timeframe):
-            if d.date() == current_date:
-                logging.warning("Skipping, as unable to end the trade")
-                self.outcome = "future"
+            if not self._validate_datetime or self.completed:
                 break
-            if d > self.clist.candles[-1].time and self.connect is False:
-                raise Exception(
-                    "No candle is available in 'clist' and connect is False."
-                    "Unable to follow"
-                )
             count += 1
             cl = self.fetch_candle(d)
             if cl is None:
