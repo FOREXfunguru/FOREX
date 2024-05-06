@@ -105,7 +105,7 @@ def substract_pips2price(pair: str, price: float, pips: int) -> float:
 
 
 def periodToDelta(ncandles: int, timeframe: str):
-    """Function that receives an int representing a number of candles using 
+    """Function that receives an int representing a number of candles using
     the 'ncandles' param and returns a datetime timedelta object
 
     Arguments:
@@ -117,7 +117,7 @@ def periodToDelta(ncandles: int, timeframe: str):
     Returns:
         datetime timedelta object
     """
-    patt = re.compile("(\d)D")
+    patt = re.compile(r"(\d)D")
 
     delta = None
     if patt.match(timeframe):
