@@ -15,7 +15,7 @@ def try_parsing_date(date_string) -> datetime:
     Returns:
         datetime object
     """
-    if  isinstance(date_string, datetime):
+    if isinstance(date_string, datetime):
         return date_string
     for fmt in ("%Y-%m-%dT%H:%M:%S",
                 "%Y-%m-%d %H:%M:%S",

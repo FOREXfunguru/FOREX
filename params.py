@@ -111,14 +111,21 @@ class trade_params:
     pad: int = 30
     th_bounces: int = 0.02  # pivot sensitivity for 'get_trade_type'
 
+
 @dataclass
 class trade_management_params(trade_params):
     strat: str = "area_unaware"
-    clisttm_tf: str = "D" 
+    clisttm_tf: str = "D"
     preceding_clist_strat: str = "wipe"
+
     def __post_init__(self):
-        if not self.strat in ["area_unaware", "area_aware", "breakeven"]:
+        if self.strat not in ["area_unaware", "area_aware", "breakeven"]:
             raise ValueError(f"Invalid strat: {self.strat}")
 
-        if not self.preceding_clist_strat in ["wipe", "queue"]:
+        if self.preceding_clist_strat not in ["wipe", "queue"]:
             raise ValueError(f"Invalid preceding_clist_strat: {self.strat}")
+
+
+@dataclass
+class breakeven_params(trade_management_params):
+    number_of_pips: int = 10
