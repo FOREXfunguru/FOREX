@@ -59,7 +59,7 @@ class tradebot_params:
 
 @dataclass
 class pivots_params:
-    # Number of pips above/below SR to identify bounces                                                                                                          \
+    # Number of pips above/below SR to identify bounces
     hr_pips: int = 25
     # Value used by ZigZag to identify pivots. The lower the
     # value the higher the sensitivity
