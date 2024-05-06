@@ -19,6 +19,7 @@ def calc_period(timeframe: str) -> int:
     return 24 if timeframe == "D" else int(timeframe.replace("H",
                                                              ""))
 
+
 def check_timeframes_fractions(timeframe1: str, timeframe2: str) -> float:
     """Get the number of times 'timeframe1' is contained in 'timeframe2'"""
     hours1 = calc_period(timeframe1)
@@ -33,24 +34,25 @@ def get_closest_hour(timeframe: str, solve_hour: int) -> int:
             "H4": [21, 1, 5, 9, 13, 17],
             "H8": [21, 5, 13],
             "H12": [21, 9],
-            "D" : [21]}
-    filtered_hours = [hour for hour in time_ranges_dict[timeframe] if (solve_hour - hour) >= 0]
+            "D": [21]}
+    filtered_hours = [hour for hour in time_ranges_dict[timeframe] if (solve_hour-hour) >= 0]
     if filtered_hours:
         closest_hour = min(filtered_hours, key=lambda x: solve_hour - x)
     else:
         closest_hour = 21
     return closest_hour
 
+
 def process_start(dt: datetime, timeframe: str) -> datetime:
     """Round fractional times for Trade.start.
-    
+
     Returns:
     Rounded aligned datetime
     """
     if not isinstance(dt, datetime):
         raise ValueError(f"{dt} should be a datetime instance")
     closest_hour = get_closest_hour(timeframe=timeframe, solve_hour=dt.time().hour)
-    if closest_hour== 21 and dt.time().hour >= 0 and not dt.time().hour in [22, 23]:
+    if closest_hour == 21 and dt.time().hour >= 0 and not dt.time().hour in [22, 23]:
 
         result_datetime = dt - timedelta(hours=calc_period(timeframe))
         dt = dt.replace(day=result_datetime.day,
@@ -64,6 +66,7 @@ def process_start(dt: datetime, timeframe: str) -> datetime:
                         minute=0,
                         second=0)
     return dt
+
 
 def gen_datelist(start: datetime, timeframe: str) -> list[datetime]:
     """Generate a range of dates starting at start and ending
@@ -86,14 +89,15 @@ def init_clist(timeframe: str, pair: str, start: datetime) -> CandleList:
     nstart = start - delta
 
     conn = Connect(
-        instrument= pair,
+        instrument=pair,
         granularity=timeframe)
     return conn.query(nstart.isoformat(), start.isoformat())
 
-def adjust_SL(pair: str, type: str, list_candles = list[Candle],
-              pips_offset: int=10) -> float:
+
+def adjust_SL(pair: str, type: str, list_candles=list[Candle],
+              pips_offset: int = 10) -> float:
     """Adjust SL to minimum in 'list_candles'.
-    
+
     Arguments:
         pair: Instrument
         type: Trade type (short/long)
