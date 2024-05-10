@@ -5,6 +5,7 @@ from trading_journal.open_trade import (
     BreakEvenTrade,
     AwareTrade,
     UnawareTrade,
+    TrackingTrade,
 )
 from data_for_tests import trades1, trades_entered
 
@@ -178,6 +179,50 @@ class TestUnawareTrade(TestOpenTrade):
     def test_run(self, clOH8_2019_pickled, clO_pickled):
         for ix in range(len(self.trade_features_list)):
             unaware_trade_object = UnawareTrade(
+                **self.trade_features_list[ix],
+                RR=1.5,
+                clist=clO_pickled,
+                clist_tm=clOH8_2019_pickled,
+                connect=False,
+            )
+            unaware_trade_object.initialise()
+            unaware_trade_object.run()
+            assert unaware_trade_object.outcome == self.trades_outcome[ix][0]
+            assert unaware_trade_object.pips == self.trades_outcome[ix][1]
+
+
+class TestTrackingTrade(TestOpenTrade):
+
+    # trades outcome for run() function
+    trades_outcome = [
+        ("success", 114.0),  # outcome , pips
+        ("failure", 9.0),
+        ("failure", -56.0),
+        ("failure", -81.0),
+    ]
+
+    @pytest.mark.parametrize(
+        "TP, RR, exp_instance",
+        [
+            (0.86032, None, TrackingTrade),
+            (None, 1.5, TrackingTrade),
+            (None, None, Exception),
+        ],
+    )
+    def test_instantiation(self, TP, RR, exp_instance):
+        if exp_instance is TrackingTrade:
+            TrackingTrade(RR=RR, TP=TP, **self.trade_features_list[0],
+                          init_clist=False)
+        elif exp_instance == Exception:
+            with pytest.raises(Exception):
+                TrackingTrade(
+                    RR=RR, TP=TP, **self.trade_features_list[0],
+                    init_clist=False
+                )
+
+    def test_run(self, clOH8_2019_pickled, clO_pickled):
+        for ix in range(len(self.trade_features_list)):
+            unaware_trade_object = TrackingTrade(
                 **self.trade_features_list[ix],
                 RR=1.5,
                 clist=clO_pickled,
