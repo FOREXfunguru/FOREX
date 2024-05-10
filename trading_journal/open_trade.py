@@ -34,7 +34,7 @@ class OpenTrade(Trade):
             candle_number: number of candles against the trade to consider
             connect: If True then it will use the API to fetch candles
             completed: Is this Trade completed?
-            preceding_candles: Number of candles to check if CandleList
+            preceding_candles: List with CandleList to check if it
                                goes against the trade
         """
         self.candle_number = candle_number
@@ -147,20 +147,29 @@ class OpenTrade(Trade):
                 return True
         return False
 
-    def process_trademanagement(self, d: datetime, fraction: float):
-        """Process trademanagement candles and ajust SL if required"""
+    def process_trademanagement(
+        self, d: datetime, fraction: float, check_against: bool = True
+    ):
+        """Process trademanagement candles and ajust 'SL' if required"""
         # align 'd' object to 'trade_management_params.clisttm_tf' timeframe
         aligned_d = process_start(dt=d,
                                   timeframe=trade_management_params.clisttm_tf)
         self.append_trademanagement_candles(aligned_d, fraction)
 
         if len(self.preceding_candles) == self.candle_number:
-            res = self.check_if_against()
-            if res is True:
+            if check_against:
+                res = self.check_if_against()
+                if res is True:
+                    new_SL = adjust_SL(
+                        pair=self.pair, type=self.type,
+                        list_candles=self.preceding_candles
+                    )
+                    self.SL.price = new_SL
+            else:
                 new_SL = adjust_SL(
-                    pair=self.pair, type=self.type,
-                    list_candles=self.preceding_candles
-                )
+                        pair=self.pair, type=self.type,
+                        list_candles=self.preceding_candles
+                    )
                 self.SL.price = new_SL
             if trade_management_params.preceding_clist_strat == "wipe":
                 self.preceding_candles = list()
@@ -343,6 +352,44 @@ class BreakEvenTrade(OpenTrade):
                 t_logger.warning(
                     "No outcome could be calculated in the "
                     "trade_management_params.numperiods interval"
+                )
+                self.outcome = "n.a."
+        self.finalise_trade(cl=cl)
+
+
+class TrackingTrade(OpenTrade):
+    """Trade where SL will be set when
+    OpenTrade.preceding_candles==candle_number
+    regardless of whether the CandleList goes against the trade"""
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def run(self) -> None:
+        """Method to run this BreakEvenTrade.
+
+        This function will run the trade and will set the outcome attribute
+        """
+        fraction = check_timeframes_fractions(
+            timeframe1=self.timeframe,
+            timeframe2=trade_management_params.clisttm_tf
+        )
+        count = 0
+        for d in gen_datelist(start=self.start, timeframe=self.timeframe):
+            if not self._validate_datetime or self.completed:
+                break
+            count += 1
+            cl = self.fetch_candle(d)
+            if cl is None:
+                count -= 1
+                continue
+            self.process_trademanagement(d=d, fraction=fraction,
+                                         check_against=False)
+            self.calculate_overlap(cl=cl)
+            if count >= trade_management_params.numperiods:
+                self.completed = True
+                t_logger.warning(
+                    "No outcome could be calculated in the "
+                    "trade_params.numperiods interval"
                 )
                 self.outcome = "n.a."
         self.finalise_trade(cl=cl)
