@@ -119,7 +119,12 @@ class trade_management_params(trade_params):
     preceding_clist_strat: str = "wipe"
 
     def __post_init__(self):
-        if self.strat not in ["area_unaware", "area_aware", "breakeven"]:
+        if self.strat not in [
+            "area_unaware",
+            "area_aware",
+            "breakeven",
+            "trackingtrade",
+        ]:
             raise ValueError(f"Invalid strat: {self.strat}")
 
         if self.preceding_clist_strat not in ["wipe", "queue"]:
