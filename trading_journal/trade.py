@@ -1,6 +1,5 @@
 from __future__ import division
 import logging
-import pdb
 
 from trading_journal.constants import ALLOWED_ATTRBS
 from api.oanda.connect import Connect
@@ -22,6 +21,7 @@ from params import trade_params, trade_management_params
 
 t_logger = logging.getLogger(__name__)
 t_logger.setLevel(logging.INFO)
+
 
 class Trade:
     """This is an abstract class represents a Trade.
@@ -59,8 +59,10 @@ class Trade:
         if hasattr(self, "end"):
             self.__dict__.update({"end": try_parsing_date(self.__dict__["end"])})
 
-    def __init__(self, entry: float, SL: float, TP: float = None, init_clist=False, **kwargs) -> None:
-        self.__dict__.update((k, v) for k, v in kwargs.items() if k in ALLOWED_ATTRBS)
+    def __init__(self, entry: float, SL: float, TP: float = None,
+                 init_clist=False, **kwargs) -> None:
+        self.__dict__.update((k, v) for k, v in kwargs.items() if
+                             k in ALLOWED_ATTRBS)
         self.init_clist = init_clist
         self._preinit__()
         self._validate_clists()
@@ -78,20 +80,21 @@ class Trade:
         self.TP = self.init_harea(TP) if not isinstance(TP, HArea) else TP
         self.SLdiff = self.get_SLdiff()
 
-
     def init_harea(self, price: float) -> HArea:
         harea_obj = HArea(price=price,
-                            instrument=self.pair,
-                            pips=trade_params.hr_pips,
-                            granularity=self.timeframe)
+                          instrument=self.pair,
+                          pips=trade_params.hr_pips,
+                          granularity=self.timeframe)
         return harea_obj
-
 
     def _validate_clists(self):
         """Method to check the validity of the clists"""
         if hasattr(self, "clist"):
-            if self.clist.instrument != self.pair or self.clist.granularity != self.timeframe:
-                raise("Incompatible clist attributes")
+            if (
+                self.clist.instrument != self.pair
+                or self.clist.granularity != self.timeframe
+            ):
+                raise ("Incompatible clist attributes")
 
     def initialise(self, expires: int = 2, connect=True) -> None:
         """Progress the trade and check if taken.
@@ -116,7 +119,8 @@ class Trade:
             cl = self.clist[d]
             if cl is None:
                 if connect is True:
-                    conn = Connect(instrument=self.pair, granularity=self.timeframe)
+                    conn = Connect(instrument=self.pair,
+                                   granularity=self.timeframe)
                     cl = conn.fetch_candle(d=d)
                 if cl is None:
                     count -= 1
@@ -161,10 +165,12 @@ class Trade:
         new_SR = self.SR
         if pad > 0:
             if self.type == "long":
-                new_SR = substract_pips2price(self.clist.instrument, self.SR, pad)
+                new_SR = substract_pips2price(self.clist.instrument, 
+                                              self.SR, pad)
             elif self.type == "short":
                 new_SR = add_pips2price(self.clist.instrument, self.SR, pad)
-        newcl = self.clist.slice(start=self.clist.candles[0].time, end=self.start)
+        newcl = self.clist.slice(start=self.clist.candles[0].time,
+                                 end=self.start)
         return newcl.get_lasttime(new_SR, type=self.type)
 
     def calc_TP(self) -> float:
