@@ -182,12 +182,11 @@ class OpenTrade(Trade):
                 )
 
     def _validate_datetime(self, d: datetime) -> bool:
-        """False if datatime is in the future.
+        """False if datetime is in the future.
 
         raises ValueError: if no info in the clist
         """
         current_date = datetime.now().date()
-
         if d.date() == current_date:
             logging.warning("Skipping, as unable to end the trade")
             self.outcome = "future"
@@ -263,7 +262,7 @@ class AwareTrade(OpenTrade):
 
         count = 0
         for d in gen_datelist(start=self.start, timeframe=self.timeframe):
-            if not self._validate_datetime or self.completed:
+            if not self._validate_datetime(d) or self.completed:
                 break
             count += 1
             cl = self.fetch_candle(d)
