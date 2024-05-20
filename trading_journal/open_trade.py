@@ -37,6 +37,8 @@ class OpenTrade(Trade):
             preceding_candles: List with CandleList to check if it
                                goes against the trade
         """
+        if candle_number < 2:
+            raise ValueError("I need a value higher than 1 for 'candle_number'")
         self.candle_number = candle_number
         self.connect = connect
         self.completed = False  # is this OpenTrade completed
@@ -157,6 +159,7 @@ class OpenTrade(Trade):
         self.append_trademanagement_candles(aligned_d, fraction)
 
         if len(self.preceding_candles) == self.candle_number:
+            import pdb
             if check_against:
                 res = self.check_if_against()
                 if res is True:
