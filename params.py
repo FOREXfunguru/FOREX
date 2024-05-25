@@ -124,6 +124,7 @@ class trade_management_params(trade_params):
             "area_aware",
             "breakeven",
             "trackingtrade",
+            "trackingawaretrade"
         ]:
             raise ValueError(f"Invalid strat: {self.strat}")
 
