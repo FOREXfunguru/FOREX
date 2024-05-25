@@ -346,7 +346,6 @@ class BreakEvenTrade(OpenTrade):
                 self.SL.price = new_price
 
             self.process_trademanagement(d=d, fraction=fraction)
-
             if count >= trade_management_params.numperiods:
                 self.completed = True
                 t_logger.warning(
@@ -387,6 +386,50 @@ class TrackingTrade(OpenTrade):
                 break
             self.process_trademanagement(d=d, fraction=fraction,
                                          check_against=False)
+            if count >= trade_management_params.numperiods:
+                self.completed = True
+                t_logger.warning(
+                    "No outcome could be calculated in the "
+                    "trade_params.numperiods interval"
+                )
+                self.outcome = "n.a."
+        self.finalise_trade(cl=cl)
+
+class TrackingAwareTrade(OpenTrade):
+    """Trade where SL will be set when
+    OpenTrade.preceding_candles==candle_number
+    regardless of whether the CandleList goes against the trade
+    and only the price is on profit
+    """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+
+    def run(self) -> None:
+        """Method to run this BreakEvenTrade.
+
+        This function will run the trade and will set the outcome attribute
+        """
+        fraction = check_timeframes_fractions(
+            timeframe1=self.timeframe,
+            timeframe2=trade_management_params.clisttm_tf
+        )
+        count = 0
+        for d in gen_datelist(start=self.start, timeframe=self.timeframe):
+            if not self._validate_datetime:
+                break
+            count += 1
+            cl = self.fetch_candle(d)
+            if cl is None:
+                count -= 1
+                continue
+            self.calculate_overlap(cl=cl)
+            if self.completed is True:
+                break
+            if self.isin_profit(price=cl.c):
+                self.process_trademanagement(d=d, fraction=fraction,
+                                             check_against=False)
+            else:
+                self.preceding_candles = list()
             if count >= trade_management_params.numperiods:
                 self.completed = True
                 t_logger.warning(

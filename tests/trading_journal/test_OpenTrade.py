@@ -7,6 +7,7 @@ from trading_journal.open_trade import (
     AwareTrade,
     UnawareTrade,
     TrackingTrade,
+    TrackingAwareTrade
 )
 from data_for_tests import trades1, trades_entered
 
@@ -235,3 +236,47 @@ class TestTrackingTrade(TestOpenTrade):
             assert tracking_trade_object.outcome == self.trades_outcome[ix][0]
             assert tracking_trade_object.pips == self.trades_outcome[ix][1]
             assert tracking_trade_object.end == self.trades_outcome[ix][2]
+
+class TestTrackingAwareTrade(TestOpenTrade):
+
+    # trades outcome for run() function
+    trades_outcome = [
+        ("success", 114.0, datetime.datetime(2019, 4, 23, 21, 0)),  # outcome , pips, end datetime
+        ("failure", 9.0, datetime.datetime(2019, 5, 30, 21, 0)),
+        ("failure", -141.0, datetime.datetime(2019, 7, 25, 21, 0)),
+        ("failure", 72.0, datetime.datetime(2019, 9, 16, 21, 0)),
+    ]
+
+    @pytest.mark.parametrize(
+        "TP, RR, exp_instance",
+        [
+            (0.86032, None, TrackingAwareTrade),
+            (None, 1.5, TrackingAwareTrade),
+            (None, None, Exception),
+        ],
+    )
+    def test_instantiation(self, TP, RR, exp_instance):
+        if exp_instance is TrackingAwareTrade:
+            TrackingAwareTrade(RR=RR, TP=TP, **self.trade_features_list[0],
+                               init_clist=False)
+        elif exp_instance == Exception:
+            with pytest.raises(Exception):
+                TrackingAwareTrade(
+                    RR=RR, TP=TP, **self.trade_features_list[0],
+                    init_clist=False
+                )
+
+    def test_run(self, clOH8_2019_pickled, clO_pickled):
+        for ix in range(len(self.trade_features_list)):
+            tracking_aware_trade_object = TrackingAwareTrade(
+                **self.trade_features_list[ix],
+                RR=1.5,
+                clist=clO_pickled,
+                clist_tm=clOH8_2019_pickled,
+                connect=False,
+            )
+            tracking_aware_trade_object.initialise()
+            tracking_aware_trade_object.run()
+            assert tracking_aware_trade_object.outcome == self.trades_outcome[ix][0]
+            assert tracking_aware_trade_object.pips == self.trades_outcome[ix][1]
+            assert tracking_aware_trade_object.end == self.trades_outcome[ix][2]
