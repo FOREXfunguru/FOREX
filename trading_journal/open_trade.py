@@ -155,23 +155,24 @@ class OpenTrade(Trade):
         aligned_d = process_start(dt=d,
                                   timeframe=trade_management_params.clisttm_tf)
         self.append_trademanagement_candles(aligned_d, fraction)
-        if self.candle_number < 2 and check_against is True:
-            raise ValueError("I need a value higher than 1 for 'candle_number'")
         if len(self.preceding_candles) == self.candle_number:
+            new_SL = adjust_SL(
+                        pair=self.pair,
+                        type=self.type,
+                        list_candles=self.preceding_candles
+                    )
             if check_against:
                 res = self.check_if_against()
                 if res is True:
-                    new_SL = adjust_SL(
-                        pair=self.pair, type=self.type,
-                        list_candles=self.preceding_candles
-                    )
-                    self.SL.price = new_SL
+                    if self.type == "short" and (new_SL < self.SL.price):
+                        self.SL.price = new_SL
+                    elif self.type == "long" and (new_SL > self.SL.price):
+                        self.SL.price = new_SL
             else:
-                new_SL = adjust_SL(
-                        pair=self.pair, type=self.type,
-                        list_candles=self.preceding_candles
-                    )
-                self.SL.price = new_SL
+                if self.type == "short" and (new_SL < self.SL.price):
+                    self.SL.price = new_SL
+                elif self.type == "long" and (new_SL > self.SL.price):
+                    self.SL.price = new_SL
             if trade_management_params.preceding_clist_strat == "wipe":
                 self.preceding_candles = list()
             elif trade_management_params.preceding_clist_strat == "queue":
