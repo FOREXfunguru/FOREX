@@ -232,6 +232,8 @@ class UnawareTrade(OpenTrade):
                 continue
             self.process_trademanagement(d=d, fraction=fraction)
             self.calculate_overlap(cl=cl)
+            if self.completed:
+                break
             if count >= trade_management_params.numperiods:
                 self.completed = True
                 t_logger.warning(
@@ -277,6 +279,8 @@ class AwareTrade(OpenTrade):
                 self.preceding_candles = list()
 
             self.calculate_overlap(cl=cl)
+            if self.completed:
+                break
             if count >= trade_management_params.numperiods:
                 self.completed = True
                 t_logger.warning(
