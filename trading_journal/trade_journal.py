@@ -154,4 +154,4 @@ class TradeJournal(object):
         tj_logger.info("Creating new worksheet with trades with name: {0}".
                        format(sheet_name))
         df.to_excel(writer, sheet_name)
-        writer.save()
+        writer.close()
