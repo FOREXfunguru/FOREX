@@ -88,17 +88,13 @@ class TradeBot(object):
         clO = conn.query(initc_date.isoformat(), self.end.isoformat())
         self.clist = clO
 
-    def scan(self, prefix: str = 'pretrades', discard_sat: bool = True) -> str:
+    def scan(self, discard_sat: bool = True) -> List[preTrade]:
         """This function will scan for candles on S/R areas.
         These candles will be written to a .csv file
 
         Arguments:
-            prefix: Prefix for pickled file with a list of preTrade objects
             discard_sat: If True, then the Trade wil not
                          be taken if IC falls on a Saturday
-
-        Returns:
-            Path to file containing a list of preTrade objects
         """
         tb_logger.info("Running...")
 
@@ -191,13 +187,8 @@ class TradeBot(object):
 
             startO = startO+self.delta
             loop += 1
-
-        if pretrades:
-            with open(f"{prefix}.pckl", "wb") as f:
-                pickle.dump(pretrades, f)
-                return f"{prefix}.pckl"
-
         tb_logger.info("Run done")
+        return pretrades
 
     def prepare_trades(self, pretrades: str) -> List[Trade]:
         """This function unpickles the preTrade objects

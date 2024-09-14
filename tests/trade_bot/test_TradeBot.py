@@ -2,6 +2,7 @@ import logging
 import os
 import pytest
 import glob
+import pickle
 
 from params import tradebot_params, pivots_params
 from trade_bot.trade_bot import TradeBot
@@ -40,8 +41,10 @@ def scan_pickled(clO_pickled, tmp_path):
         start='2016-01-05 22:00:00',
         end='2016-02-11 22:00:00',
         clist=clO_pickled)
-    outfile = tb.scan(prefix=f"{tmp_path}")
-    return outfile
+    prep_trades_list = tb.scan()
+    with open(f"{tmp_path}/preptrades.pckl", "wb") as outfile:
+        pickle.dump(prep_trades_list, outfile)
+    return f"{tmp_path}/preptrades.pckl"
 
 
 @pytest.fixture
@@ -56,8 +59,8 @@ def clean_tmp():
 
 def test_scan(tb_object, tmp_path):
     """Check the 'scan' function"""
-    outfile = tb_object.scan(prefix=f"{tmp_path}")
-    assert os.path.isfile(outfile)
+    preptrade_list = tb_object.scan()
+    assert len(preptrade_list) == 1
 
 
 def test_scan1(tmp_path):
@@ -70,8 +73,8 @@ def test_scan1(tmp_path):
         timeframe='D',
         start='2016-01-05 22:00:00',
         end='2016-02-11 22:00:00')
-    outfile = tb.scan(prefix=f"{tmp_path}/")
-    assert os.path.isfile(outfile)
+    preptrade_list = tb.scan()
+    assert len(preptrade_list) == 5
 
 
 def test_scan_withclist(clO_pickled, tmp_path):
@@ -85,8 +88,8 @@ def test_scan_withclist(clO_pickled, tmp_path):
         start='2016-01-05 22:00:00',
         end='2016-02-11 22:00:00',
         clist=clO_pickled)
-    outfile = tb.scan(prefix=f"{tmp_path}")
-    assert os.path.isfile(outfile)
+    preptrade_list = tb.scan()
+    assert len(preptrade_list) == 5
 
 
 def test_scan_withclist_future(clO_pickled, tmp_path):
@@ -102,9 +105,8 @@ def test_scan_withclist_future(clO_pickled, tmp_path):
         start='2020-11-15 22:00:00',
         end='2020-11-23 22:00:00',
         clist=clO_pickled)
-    outfile = tb.scan(prefix=f"{tmp_path}")
-    with pytest.raises(TypeError):
-        assert os.path.isfile(outfile)
+    preptrade_list = tb.scan()
+    assert len(preptrade_list) == 0
 
 
 def test_prepare_trades(clO_pickled, scan_pickled):
