@@ -3,6 +3,8 @@ import matplotlib
 import datetime
 import pickle
 
+from typing import List, Dict
+
 matplotlib.use('PS')
 
 
@@ -19,7 +21,7 @@ class Segment(object):
 
     __slots__ = ['type', 'clist', 'instrument', '_diff']
 
-    def __init__(self, type: int, clist: list[dict], instrument: str):
+    def __init__(self, type: int, clist: List[Dict], instrument: str):
         self.type = type
         self.clist = clist
         self.instrument = instrument

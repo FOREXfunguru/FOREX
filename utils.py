@@ -1,5 +1,7 @@
 import re
 import os
+from typing import Tuple
+
 from datetime import datetime, timedelta
 
 ROOT_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -194,7 +196,7 @@ def correct_timeframe(settings, timeframe):
     return settings
 
 
-def calculate_profit(prices: tuple[float, float],
+def calculate_profit(prices: Tuple[float, float],
                      type: str, pair: str) -> float:
     """Function to calculate the profit (in pips)
     defined as the difference between 2 prices.
