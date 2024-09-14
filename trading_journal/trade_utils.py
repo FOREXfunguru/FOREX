@@ -1,5 +1,6 @@
 # Collection of utilities used by the trade.py module
 import logging
+from typing import List
 from datetime import datetime, timedelta
 
 from utils import (periodToDelta,
@@ -68,7 +69,7 @@ def process_start(dt: datetime, timeframe: str) -> datetime:
     return dt
 
 
-def gen_datelist(start: datetime, timeframe: str) -> list[datetime]:
+def gen_datelist(start: datetime, timeframe: str) -> List[datetime]:
     """Generate a range of dates starting at start and ending
     trade_params.interval later in order to assess the outcome
     of trade and also the entry time.
@@ -94,7 +95,7 @@ def init_clist(timeframe: str, pair: str, start: datetime) -> CandleList:
     return conn.query(nstart.isoformat(), start.isoformat())
 
 
-def adjust_SL(pair: str, type: str, list_candles=list[Candle],
+def adjust_SL(pair: str, type: str, list_candles=List[Candle],
               pips_offset: int = 10) -> float:
     """Adjust SL to minimum in 'list_candles'.
 

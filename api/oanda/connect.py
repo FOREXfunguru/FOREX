@@ -9,7 +9,6 @@ import logging
 import requests
 import re
 import os
-import datetime
 import json
 import flatdict
 import argparse
@@ -89,7 +88,7 @@ class Connect(object):
 
         return real_decorator
 
-    def _process_data(self, data: list[flatdict.FlatDict], strip: bool = True):
+    def _process_data(self, data: List[flatdict.FlatDict], strip: bool = True):
         """Process candle data
 
         Args:
