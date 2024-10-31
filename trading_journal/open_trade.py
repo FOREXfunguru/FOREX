@@ -28,8 +28,7 @@ class OpenTrade(Trade):
     """An open Trade (i.e. entered)"""
 
     def __init__(self, candle_number: int = 3, connect: bool = True, **kwargs):
-        """Constructor.
-
+        """
         Arguments:
             candle_number: number of candles against the trade to consider
             connect: If True then it will use the API to fetch candles
@@ -202,7 +201,7 @@ class OpenTrade(Trade):
 
 
 class UnawareTrade(OpenTrade):
-    """Represent a trade that ignores whether the price is in profit or loss.
+    """Represents a trade that ignores whether the price is in profit or loss.
 
     Characterizes for not being conditioned by the price being in loss or profit
     (hence the name 'unaware') to begin to add candles to 'start.preceding_candles'."
@@ -223,7 +222,7 @@ class UnawareTrade(OpenTrade):
         )
         count = 0
         for d in gen_datelist(start=self.start, timeframe=self.timeframe):
-            if not self._validate_datetime or self.completed:
+            if not self._validate_datetime(d) or self.completed:
                 break
             count += 1
             cl = self.fetch_candle(d)
@@ -321,7 +320,7 @@ class BreakEvenTrade(OpenTrade):
 
         count = 0
         for d in gen_datelist(start=self.start, timeframe=self.timeframe):
-            if not self._validate_datetime or self.completed:
+            if not self._validate_datetime(d) or self.completed:
                 break
             count += 1
             cl = self.fetch_candle(d)
@@ -379,7 +378,7 @@ class TrackingTrade(OpenTrade):
         )
         count = 0
         for d in gen_datelist(start=self.start, timeframe=self.timeframe):
-            if not self._validate_datetime:
+            if not self._validate_datetime(d):
                 break
             count += 1
             cl = self.fetch_candle(d)
@@ -420,7 +419,7 @@ class TrackingAwareTrade(OpenTrade):
         )
         count = 0
         for d in gen_datelist(start=self.start, timeframe=self.timeframe):
-            if not self._validate_datetime:
+            if not self._validate_datetime(d):
                 break
             count += 1
             cl = self.fetch_candle(d)
