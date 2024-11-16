@@ -65,7 +65,7 @@ class OpenTrade(Trade):
         if len(self.preceding_candles) > self.candle_number:
             self.preceding_candles = self.preceding_candles[(self.candle_number) * -1:]
 
-    def check_if_against(self):
+    def check_if_against(self) -> bool:
         """Function to check if middle_point values are
         agaisnt the trade
         """
