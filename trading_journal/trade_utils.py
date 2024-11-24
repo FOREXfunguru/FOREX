@@ -22,7 +22,10 @@ def calc_period(timeframe: str) -> int:
 
 
 def check_timeframes_fractions(timeframe1: str, timeframe2: str) -> float:
-    """Get the number of times 'timeframe1' is contained in 'timeframe2'"""
+    """Get the fraction of times 'timeframe1' is contained in 'timeframe2'.
+    For example: timeframe1=H12 and timeframe2=H8 will return 1.5
+                 timeframe1=H8 and timeframe2=H4 will return 2
+    """
     hours1 = calc_period(timeframe1)
     hours2 = calc_period(timeframe2)
 
