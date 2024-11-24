@@ -213,3 +213,19 @@ def calculate_profit(prices: Tuple[float, float],
     pips = float(calculate_pips(pair,
                                 abs(prices[0]-prices[1]))) * sign
     return pips
+
+
+def is_even_hour(d: datetime) -> bool:
+    """Check if hour in datetime is even"""
+    if d.hour % 2 == 0:
+        return True
+    elif d.hour % 2 != 0:
+        return False
+
+
+def is_week_day(d: datetime) -> bool:
+    """Returns True if 'd' falls on a weekday"""
+
+    is_weekday = d.isoweekday() < 6
+    return is_weekday
+

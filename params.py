@@ -115,7 +115,7 @@ class trade_params:
 @dataclass
 class trade_management_params(trade_params):
     strat: str = "area_unaware"
-    clisttm_tf: str = "D"
+    clisttm_tf: str = "H8"
     preceding_clist_strat: str = "wipe"
 
     def __post_init__(self):

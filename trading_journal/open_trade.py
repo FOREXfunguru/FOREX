@@ -1,6 +1,7 @@
 import logging
+import math
 
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from trading_journal.trade import Trade
 from api.oanda.connect import Connect
@@ -10,7 +11,9 @@ from utils import (
     periodToDelta,
     calculate_profit,
     add_pips2price,
-    substract_pips2price)
+    substract_pips2price,
+    is_even_hour,
+    is_week_day)
 from trading_journal.trade_utils import (
     gen_datelist,
     check_candle_overlap,
@@ -42,19 +45,32 @@ class OpenTrade(Trade):
         self.preceding_candles = list()
         super().__init__(**kwargs)
 
-    def append_trademanagement_candles(self, aligned_d: datetime, fraction: float):
-        """Append the trademanagement candles to self.preceding_candles"""
-        delta = periodToDelta(ncandles=1, timeframe=trade_management_params.clisttm_tf)
+    def append_trademanagement_candles(self, d: datetime, fraction: float) -> None:
+        """Append the trademanagement candles to self.preceding_candles.
+
+        This method will add the number of candles to self.preceding_candles
+        depending on fraction
+
+        Arguments:
+            d: datetime that will be used to start adding candles
+            fraction: Fraction of times one timeframe is within the other
+        """
+        trade_management_timeframe = trade_management_params.clisttm_tf
+
+        delta = periodToDelta(ncandles=1,
+                              timeframe=trade_management_timeframe)
+
         if fraction < 1:
             fraction = 1
+        fraction = math.ceil(fraction)
         for ix in range(int(fraction)):
-            new_datetime = aligned_d + delta * ix
+            new_datetime = d + delta * ix
             cl_tm = self.clist_tm[new_datetime]
             if cl_tm is None:
                 if self.connect is True:
                     conn = Connect(
                         instrument=self.pair,
-                        granularity=trade_management_params.clisttm_tf
+                        granularity=trade_management_timeframe
                     )
                     cl_tm = conn.fetch_candle(d=new_datetime)
             if cl_tm is not None:
@@ -62,6 +78,7 @@ class OpenTrade(Trade):
                     self.preceding_candles.append(cl_tm)
 
         # slice to self.candle_number if more than this number
+        # and remove the oldest candle
         if len(self.preceding_candles) > self.candle_number:
             self.preceding_candles = self.preceding_candles[(self.candle_number) * -1:]
 
@@ -125,11 +142,19 @@ class OpenTrade(Trade):
         """Fetch a Candle object given a datetime"""
         cl = None
         cl = self.clist[d]
+        if not is_week_day(d):
+            return None
         if cl is None:
             if self.connect is True:
                 conn = Connect(instrument=self.pair,
                                granularity=self.timeframe)
                 cl = conn.fetch_candle(d=d)
+                if cl is None:
+                    if is_even_hour(d):
+                        d = d - timedelta(seconds=3600)
+                    else:
+                        d = d + timedelta(seconds=3600)
+                    cl = conn.fetch_candle(d=d)
         return cl
 
     def isin_profit(self, price: float) -> bool:
@@ -149,7 +174,14 @@ class OpenTrade(Trade):
     def process_trademanagement(
         self, d: datetime, fraction: float, check_against: bool = True
     ):
-        """Process trademanagement candles and ajust 'SL' if required"""
+        """Process trademanagement candles and ajust 'SL' if required.
+
+        Args:
+            d: datetime for the Candle that is being analysed
+            fraction: Number of times timeframe1 is contained in timeframe2
+            check_against: Check if the trade is going against and adjust 
+                           SL if so
+        """
         # align 'd' object to 'trade_management_params.clisttm_tf' timeframe
         aligned_d = process_start(dt=d,
                                   timeframe=trade_management_params.clisttm_tf)

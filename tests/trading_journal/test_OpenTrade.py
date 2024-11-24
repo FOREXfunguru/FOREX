@@ -9,7 +9,9 @@ from trading_journal.open_trade import (
     TrackingTrade,
     TrackingAwareTrade
 )
-from data_for_tests import trades1, trades_entered
+from trading_journal.trade_utils import check_timeframes_fractions
+from data_for_tests import trades1, trades_entered, trades_for_test_run
+from params import trade_management_params
 
 
 class TestOpenTrade:
@@ -22,11 +24,14 @@ class TestOpenTrade:
         "SL": 0.70814,
         "entry": 0.72193,
     }
-    trade_features_list = []
-    features = ["start", "pair", "timeframe", "type", "SR", "SL", "entry"]
-    for trade_values in trades_entered:
-        trade_features_list.append({key: value for key, value in zip(features,
-                                                                     trade_values)})
+
+    def init_trades(self, mock_trades):
+        features = ["start", "pair", "timeframe", "type", "SR", "SL", "entry"]
+        trade_features_list = []
+        for trade_values in mock_trades:
+            trade_features_list.append({key: value for key, value in zip(features,
+                                                                         trade_values)})
+        return trade_features_list
 
     @pytest.mark.parametrize(
         "TP, RR, exp_instance",
@@ -40,8 +45,9 @@ class TestOpenTrade:
                 OpenTrade(RR=RR, TP=TP, **self.trade_features, init_clist=False)
 
     def test_init_clist(self):
+        trade_features_list = self.init_trades(mock_trades=trades_entered)
         td = OpenTrade(
-            **self.trade_features_list[0],
+            **trade_features_list[0],
             TP=0.74267,
             init_clist=True,
         )
@@ -67,6 +73,40 @@ class TestOpenTrade:
         )
         assert open_trade.isin_profit(price=price) is result
 
+    def test_append_trademanagement_candles(self):
+        open_trade = OpenTrade(RR=1.5,
+                               **self.trade_features,
+                               init_clist=True)
+        open_trade.append_trademanagement_candles(d=datetime.datetime(2023, 1, 10, 21, 0, 0),
+                                                  fraction=3)
+        expected_hours = [22, 6, 14]
+        for i, expected_hour in enumerate(expected_hours):
+            assert (
+                open_trade.preceding_candles[i].time.hour == expected_hour
+            ), f"Expected hour {expected_hour}, but got {open_trade.preceding_candles[i].time.hour}"
+
+    @pytest.mark.parametrize(
+        "trade_feats, results",
+        [
+            (("D", "H8", (datetime.datetime(2023, 1, 10, 21, 0, 0))), (0, 0.7081)),
+            (("H12", "H8", (datetime.datetime(2023, 1, 10, 21, 0, 0))), (2, 0.7081)),
+            (("H12", "H8", (datetime.datetime(2023, 1, 10, 9, 0, 0))), (2, 0.7081))
+        ],
+    )
+    def test_process_trademanagement(self, trade_feats, results):
+        """Tests process_trademanagent which is also invoking 'check_timeframes_fractions'
+        to calculate the fraction of candles
+        """
+        fraction = check_timeframes_fractions(timeframe1=trade_feats[0],
+                                              timeframe2=trade_feats[1])
+        open_trade = OpenTrade(RR=1.5,
+                               **self.trade_features,
+                               init_clist=True)
+        open_trade.process_trademanagement(d=trade_feats[2],
+                                           fraction=fraction)
+        assert len(open_trade.preceding_candles) == results[0]
+        assert open_trade.SL.price == results[1]
+
 
 class TestBreakEvenTrade(TestOpenTrade):
 
@@ -87,21 +127,23 @@ class TestBreakEvenTrade(TestOpenTrade):
         ],
     )
     def test_instantiation(self, TP, RR, exp_instance):
+        trade_features_list = self.init_trades(mock_trades=trades_entered)
         if exp_instance is BreakEvenTrade:
             BreakEvenTrade(
-                RR=RR, TP=TP, **self.trade_features_list[0], init_clist=False
+                RR=RR, TP=TP, **trade_features_list[0], init_clist=False
             )
         elif exp_instance == Exception:
             with pytest.raises(Exception):
                 BreakEvenTrade(
-                    RR=RR, TP=TP, **self.trade_features_list[0],
+                    RR=RR, TP=TP, **trade_features_list[0],
                     init_clist=False
                 )
 
     def test_run(self, clOH8_2019_pickled, clO_pickled):
-        for ix in range(len(self.trade_features_list)):
+        trade_features_list = self.init_trades(mock_trades=trades_entered)
+        for ix in range(len(trade_features_list)):
             breakeven_trade_object = BreakEvenTrade(
-                **self.trade_features_list[ix],
+                **trade_features_list[ix],
                 RR=1.5,
                 clist=clO_pickled,
                 clist_tm=clOH8_2019_pickled,
@@ -137,9 +179,10 @@ class TestAwareTrade(TestOpenTrade):
                 )
 
     def test_run(self, clOH8_2019_pickled, clO_pickled):
-        for ix in range(len(self.trade_features_list)):
+        trade_features_list = self.init_trades(mock_trades=trades_entered)
+        for ix in range(len(trade_features_list)):
             aware_trade_object = AwareTrade(
-                **self.trade_features_list[ix],
+                **trade_features_list[ix],
                 RR=1.5,
                 clist=clO_pickled,
                 clist_tm=clOH8_2019_pickled,
@@ -153,12 +196,19 @@ class TestAwareTrade(TestOpenTrade):
 
 class TestUnawareTrade(TestOpenTrade):
 
-    # trades outcome for run() function
+    # trades outcome for test_run() function
     trades_outcome = [
-        ("success", 114.0),  # outcome , pips
-        ("failure", 39),
-        ("failure", -97.0),
-        ("failure", -22.0),
+         ("success", 114.0),  # outcome , pips
+         ("failure", 18),
+         ("failure", -24.0),
+         ("failure", -40.0),
+    ]
+
+    # trades outcome for test_run1() function
+    trades_outcome1 = [
+         ("n.a.", -15.6),  # outcome , pips
+         ("n.a.", -15.6),
+         ("n.a.", 39)
     ]
 
     @pytest.mark.parametrize(
@@ -170,18 +220,22 @@ class TestUnawareTrade(TestOpenTrade):
         ],
     )
     def test_instantiation(self, TP, RR, exp_instance):
+        trade_features_list = self.init_trades(mock_trades=trades_entered)
         if exp_instance is UnawareTrade:
-            UnawareTrade(RR=RR, TP=TP, **self.trade_features_list[0], init_clist=False)
+            UnawareTrade(RR=RR, TP=TP, **trade_features_list[0],
+                         init_clist=False)
         elif exp_instance == Exception:
             with pytest.raises(Exception):
                 UnawareTrade(
-                    RR=RR, TP=TP, **self.trade_features_list[0], init_clist=False
+                    RR=RR, TP=TP, **self.trade_features_list[0],
+                    init_clist=False
                 )
 
     def test_run(self, clOH8_2019_pickled, clO_pickled):
-        for ix in range(len(self.trade_features_list)):
+        trade_features_list = self.init_trades(mock_trades=trades_entered)
+        for ix in range(len(trade_features_list)):
             unaware_trade_object = UnawareTrade(
-                **self.trade_features_list[ix],
+                **trade_features_list[ix],
                 RR=1.5,
                 clist=clO_pickled,
                 clist_tm=clOH8_2019_pickled,
@@ -191,6 +245,24 @@ class TestUnawareTrade(TestOpenTrade):
             unaware_trade_object.run()
             assert unaware_trade_object.outcome == self.trades_outcome[ix][0]
             assert unaware_trade_object.pips == self.trades_outcome[ix][1]
+
+    def test_run1(self):
+        """Test run() with different timeframes and start of the trades.
+        Just to check how well the method behaves, also this test will not
+        used the pickled clists
+        """
+        trade_management_params.numperiods = 5
+        trade_features_list = self.init_trades(mock_trades=trades_for_test_run)
+        for ix in range(len(trade_features_list)):
+            unaware_trade_object = UnawareTrade(
+                **trade_features_list[ix],
+                RR=1.5,
+                init_clist=True
+            )
+            unaware_trade_object.initialise()
+            unaware_trade_object.run()
+            assert unaware_trade_object.outcome == self.trades_outcome1[ix][0]
+            assert unaware_trade_object.pips == self.trades_outcome1[ix][1]
 
 
 class TestTrackingTrade(TestOpenTrade):
@@ -212,20 +284,22 @@ class TestTrackingTrade(TestOpenTrade):
         ],
     )
     def test_instantiation(self, TP, RR, exp_instance):
+        trade_features_list = self.init_trades(mock_trades=trades_entered)
         if exp_instance is TrackingTrade:
-            TrackingTrade(RR=RR, TP=TP, **self.trade_features_list[0],
+            TrackingTrade(RR=RR, TP=TP, **trade_features_list[0],
                           init_clist=False)
         elif exp_instance == Exception:
             with pytest.raises(Exception):
                 TrackingTrade(
-                    RR=RR, TP=TP, **self.trade_features_list[0],
+                    RR=RR, TP=TP, **trade_features_list[0],
                     init_clist=False
                 )
 
     def test_run(self, clOH8_2019_pickled, clO_pickled):
-        for ix in range(len(self.trade_features_list)):
+        trade_features_list = self.init_trades(mock_trades=trades_entered)
+        for ix in range(len(trade_features_list)):
             tracking_trade_object = TrackingTrade(
-                **self.trade_features_list[ix],
+                **trade_features_list[ix],
                 RR=1.5,
                 clist=clO_pickled,
                 clist_tm=clOH8_2019_pickled,
@@ -236,6 +310,7 @@ class TestTrackingTrade(TestOpenTrade):
             assert tracking_trade_object.outcome == self.trades_outcome[ix][0]
             assert tracking_trade_object.pips == self.trades_outcome[ix][1]
             assert tracking_trade_object.end == self.trades_outcome[ix][2]
+
 
 class TestTrackingAwareTrade(TestOpenTrade):
 
@@ -256,20 +331,22 @@ class TestTrackingAwareTrade(TestOpenTrade):
         ],
     )
     def test_instantiation(self, TP, RR, exp_instance):
+        trade_features_list = self.init_trades(mock_trades=trades_entered)
         if exp_instance is TrackingAwareTrade:
-            TrackingAwareTrade(RR=RR, TP=TP, **self.trade_features_list[0],
+            TrackingAwareTrade(RR=RR, TP=TP, **trade_features_list[0],
                                init_clist=False)
         elif exp_instance == Exception:
             with pytest.raises(Exception):
                 TrackingAwareTrade(
-                    RR=RR, TP=TP, **self.trade_features_list[0],
+                    RR=RR, TP=TP, **trade_features_list[0],
                     init_clist=False
                 )
 
     def test_run(self, clOH8_2019_pickled, clO_pickled):
-        for ix in range(len(self.trade_features_list)):
+        trade_features_list = self.init_trades(mock_trades=trades_entered)
+        for ix in range(len(trade_features_list)):
             tracking_aware_trade_object = TrackingAwareTrade(
-                **self.trade_features_list[ix],
+                **trade_features_list[ix],
                 RR=1.5,
                 clist=clO_pickled,
                 clist_tm=clOH8_2019_pickled,

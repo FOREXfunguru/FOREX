@@ -1,7 +1,11 @@
 import pytest
 
 from forex.candle import Candle
-from trading_journal.trade_utils import get_closest_hour, process_start, adjust_SL
+from trading_journal.trade_utils import (
+    get_closest_hour,
+    process_start,
+    adjust_SL,
+    check_timeframes_fractions)
 from data_for_tests import start_hours
 
 hour_data = [(9, "H8", 5), (21, "H8", 21), (17, "H8", 13)]
@@ -17,6 +21,16 @@ def test_get_closest_hour(solve_hour, timeframe, closest_hour):
 def test_process_start(start, returned, timeframe):
     aligned_start = process_start(dt=start, timeframe=timeframe)
     assert aligned_start == returned
+
+
+fraction_data = [("D", "H8", 3.0), ("H12", "H8", 1.5),  ("H8", "H4", 2.0)]
+
+
+@pytest.mark.parametrize("timeframe1,timeframe2,fraction", fraction_data)
+def test_check_timeframes_fractions(timeframe1, timeframe2, fraction):
+    res_fraction = check_timeframes_fractions(timeframe1=timeframe1,
+                                              timeframe2=timeframe2)
+    assert res_fraction == fraction
 
 
 def test_get_SLdiff(t_object):
