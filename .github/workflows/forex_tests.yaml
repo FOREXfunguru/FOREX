@@ -32,11 +32,11 @@ jobs:
         run: |
           export PYTHONPATH=$PWD
           export TOKEN=${{ secrets.OANDA_TOKEN  }}
-          pip install pytest && cd tests/trade_bot/
-          pytest -s -v
+          pip install pytest && cd tests
+          pytest -s -v trade_bot/
       - name: Test trading_journal library with pytest
         run: |
           export PYTHONPATH=$PWD
           export TOKEN=${{ secrets.OANDA_TOKEN  }}
-          pip install pytest && cd tests/trading_journal/
-          pytest -s -v
+          pip install pytest && cd tests
+          pytest -s -v trading_journal/
