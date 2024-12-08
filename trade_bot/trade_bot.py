@@ -88,7 +88,8 @@ class TradeBot(object):
         clO = conn.query(initc_date.isoformat(), self.end.isoformat())
         self.clist = clO
 
-    def scan(self, prefix: str = 'pretrades', discard_sat: bool = True) -> str:
+    def scan(self, prefix: str = 'pretrades', discard_sat: bool = True,
+             srlist: str = None) -> str:
         """This function will scan for candles on S/R areas.
         These candles will be written to a .csv file
 
@@ -96,11 +97,17 @@ class TradeBot(object):
             prefix: Prefix for pickled file with a list of preTrade objects
             discard_sat: If True, then the Trade wil not
                          be taken if IC falls on a Saturday
+            srlist: If passed, then do not run calc_SR and use the ones in the
+                    file passed
 
         Returns:
             Path to file containing a list of preTrade objects
         """
         tb_logger.info("Running...")
+        if srlist:
+            srlist = HAreaList.from_csv(srlist,
+                                        instrument=self.pair,
+                                        granularity=self.timeframe)
 
         pretrades = []
         startO = self.start
@@ -120,13 +127,19 @@ class TradeBot(object):
                     # print SR report to file
                     outfile_txt = (f"{gparams.outdir}/{self.pair}."
                                    f"{self.timeframe}.{dt_str}.halist.txt")
-                    SRlst = calc_SR(sub_pvtlst, outfile=outfile_png)
+                    if not srlist:
+                        SRlst = calc_SR(sub_pvtlst, outfile=outfile_png)
+                    else:
+                        SRlst = srlist
                     res = SRlst.print()
                     f = open(outfile_txt, 'w')
                     f.write(res+"\n")
                     f.close()
                 else:
-                    SRlst = calc_SR(sub_pvtlst)
+                    if not srlist:
+                        SRlst = calc_SR(sub_pvtlst)
+                    else:
+                        SRlst = srlist
                     res = SRlst.print()
                 tb_logger.info("Identified HAreaList for"
                                f"time:{startO.isoformat()}")

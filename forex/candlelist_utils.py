@@ -10,7 +10,7 @@ cl_logger = logging.getLogger(__name__)
 cl_logger.setLevel(logging.INFO)
 
 
-def calc_SR(pvLO, outfile: str = None):
+def calc_SR(pvLO, outfile: str = None) -> HAreaList:
     """Function to calculate S/R lines.
 
     Args:
@@ -95,7 +95,7 @@ def calc_SR(pvLO, outfile: str = None):
 
     # iterate over DF with selected SR to create a HAreaList
     halist = []
-    for index, row in dfsel.iterrows():
+    for _, row in dfsel.iterrows():
         resist = HArea(price=row['price'],
                        pips=pivots_params.hr_pips,
                        instrument=pvLO.clist.instrument,

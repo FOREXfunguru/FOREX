@@ -74,6 +74,22 @@ def test_scan1(tmp_path):
     assert os.path.isfile(outfile)
 
 
+def test_scan_withsrlist(tmp_path):
+    """
+    Test the scan() function with the SR list passed
+    in a .csv file
+    """
+    pivots_params.th_bounces = 0.05
+    tb = TradeBot(
+        pair='AUD_USD',
+        timeframe='D',
+        start='2016-01-05 22:00:00',
+        end='2016-02-11 22:00:00')
+    outfile = tb.scan(prefix=f"{tmp_path}/",
+                      srlist=f"{DATA_DIR}/harealist_file.txt")
+    assert os.path.isfile(outfile)
+
+
 def test_scan_withclist(clO_pickled, tmp_path):
     """
     Test the scan() method using a pickled CandleList
