@@ -84,7 +84,7 @@ class HArea(object):
             cend = cstart+delta
             conn = Connect(instrument=self.instrument,
                            granularity=granularity)
-           
+
             h_logger.debug("Fetching data from API")
             res = conn.query(start=cstart.isoformat(),
                              end=cend.isoformat())
@@ -110,6 +110,10 @@ class HArea(object):
         return out_str
 
 
+def is_ordered_ascending(lst):
+    return all(lst[i] <= lst[i + 1] for i in range(len(lst) - 1))
+
+
 class HAreaList(object):
     """Class that represents a list of HArea objects.
 
@@ -120,6 +124,32 @@ class HAreaList(object):
 
     def __init__(self, halist):
         self.halist = halist
+
+    @classmethod
+    def from_csv(cls, ifile: str,
+                 instrument: str,
+                 granularity: str,
+                 pips: int = 30):
+        """Creates object from file with the SR prices.
+
+        Args:
+            ifile: Floats in the file should be sorted (ascending)
+        """
+        with open(ifile, "r") as f:
+            prices = [float(line.strip()) for line in f.readlines()]
+            if not is_ordered_ascending(prices):
+                raise ValueError("Prices in {ifile} should be sorted (ascending)")
+            hlist = []
+            for price in prices:
+                harea = HArea(
+                    price=price,
+                    pips=pips,
+                    instrument=instrument,
+                    granularity=granularity
+                )
+                hlist.append(harea)
+            halist_object = HAreaList(halist=hlist)
+            return halist_object
 
     def onArea(self, candle: Candle):
         '''Function that will check which (if any) of the HArea objects

@@ -1,13 +1,11 @@
+import pytest
+import logging
+import numpy as np
+
 from forex.harea import HAreaList
 from forex.harea import HArea
 from forex.candle import Candle
-
-import pytest
-import numpy as np
-import logging
-
-instrument = 'AUD_USD'
-granularity = 'D'
+from utils import DATA_DIR
 
 
 @pytest.fixture
@@ -20,8 +18,8 @@ def hlist_factory():
     for p in np.arange(0.660, 0.720, 0.020):
         area = HArea(price=p,
                      pips=30,
-                     instrument=instrument,
-                     granularity=granularity)
+                     instrument="AUD_USD",
+                     granularity="D")
         hlist.append(area)
     return hlist
 
@@ -70,3 +68,10 @@ def test_plot(hlist_factory, clO_pickled, tmp_path):
     halist = HAreaList(halist=hlist_factory)
 
     halist.plot(clO_pickled, outfile=f"{tmp_path}/AUD_USD.halist.png")
+
+
+def test_from_csv():
+    harea_list_object = HAreaList.from_csv(f"{DATA_DIR}/harealist_file.txt",
+                                           instrument="AUD_USD",
+                                           granularity="D")
+    assert len(harea_list_object.halist) == 5
