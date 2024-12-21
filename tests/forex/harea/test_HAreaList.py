@@ -75,3 +75,10 @@ def test_from_csv():
                                            instrument="AUD_USD",
                                            granularity="D")
     assert len(harea_list_object.halist) == 5
+
+
+def test_from_list():
+    harea_list_object = HAreaList.from_list(prices=[0.1, 0.2, 0.3, 0.4],
+                                            instrument="AUD_USD",
+                                            granularity="D")
+    assert len(harea_list_object.halist) == 4
