@@ -74,7 +74,7 @@ def test_from_csv():
     harea_list_object = HAreaList.from_csv(f"{DATA_DIR}/harealist_file.txt",
                                            instrument="AUD_USD",
                                            granularity="D")
-    assert len(harea_list_object.halist) == 5
+    assert len(harea_list_object.halist) == 6
 
 
 def test_from_list():
