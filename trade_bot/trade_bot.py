@@ -89,7 +89,7 @@ class TradeBot(object):
         self.clist = clO
 
     def scan(self, prefix: str = 'pretrades', discard_sat: bool = True,
-             srlist: str = None) -> str:
+             srlist: list[float] = None) -> str:
         """This function will scan for candles on S/R areas.
         These candles will be written to a .csv file
 
@@ -98,16 +98,16 @@ class TradeBot(object):
             discard_sat: If True, then the Trade wil not
                          be taken if IC falls on a Saturday
             srlist: If passed, then do not run calc_SR and use the ones in the
-                    file passed
+                    list passed
 
         Returns:
             Path to file containing a list of preTrade objects
         """
         tb_logger.info("Running...")
         if srlist:
-            srlist = HAreaList.from_csv(srlist,
-                                        instrument=self.pair,
-                                        granularity=self.timeframe)
+            srlist = HAreaList.from_list(srlist,
+                                         instrument=self.pair,
+                                         granularity=self.timeframe)
 
         pretrades = []
         startO = self.start

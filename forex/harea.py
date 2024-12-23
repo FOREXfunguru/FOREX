@@ -126,6 +126,31 @@ class HAreaList(object):
         self.halist = halist
 
     @classmethod
+    def from_list(cls, prices: list[float],
+                  instrument: str,
+                  granularity: str,
+                  pips: int = 30
+                  ):
+        """Creates object from list with the SR prices.
+
+        Args:
+            prices: List with Floats. Prices should be sorted (ascending)
+        """
+        if not is_ordered_ascending(prices):
+            raise ValueError("Prices in {ifile} should be sorted (ascending)")
+        hlist = []
+        for price in prices:
+            harea = HArea(
+                price=price,
+                pips=pips,
+                instrument=instrument,
+                granularity=granularity
+            )
+            hlist.append(harea)
+        halist_object = HAreaList(halist=hlist)
+        return halist_object
+
+    @classmethod
     def from_csv(cls, ifile: str,
                  instrument: str,
                  granularity: str,
@@ -139,16 +164,10 @@ class HAreaList(object):
             prices = [float(line.strip()) for line in f.readlines()]
             if not is_ordered_ascending(prices):
                 raise ValueError("Prices in {ifile} should be sorted (ascending)")
-            hlist = []
-            for price in prices:
-                harea = HArea(
-                    price=price,
-                    pips=pips,
-                    instrument=instrument,
-                    granularity=granularity
-                )
-                hlist.append(harea)
-            halist_object = HAreaList(halist=hlist)
+            halist_object = cls.from_list(
+                prices=prices, instrument=instrument, granularity=granularity,
+                pips=pips
+            )
             return halist_object
 
     def onArea(self, candle: Candle):

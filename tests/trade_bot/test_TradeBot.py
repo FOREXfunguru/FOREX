@@ -6,7 +6,7 @@ import glob
 from params import tradebot_params, pivots_params
 from trade_bot.trade_bot import TradeBot
 from forex.candle import CandleList
-from utils import DATA_DIR
+from utils import DATA_DIR, load_config_yaml_file
 
 # create logger
 tb_logger = logging.getLogger(__name__)
@@ -77,7 +77,7 @@ def test_scan1(tmp_path):
 def test_scan_withsrlist(tmp_path):
     """
     Test the scan() function with the SR list passed
-    in a .csv file
+    in a .yaml file
     """
     pivots_params.th_bounces = 0.05
     tb = TradeBot(
@@ -85,8 +85,9 @@ def test_scan_withsrlist(tmp_path):
         timeframe='D',
         start='2016-01-05 22:00:00',
         end='2016-02-11 22:00:00')
+    srlist_dict = load_config_yaml_file(f"{DATA_DIR}/harealist_file.yaml")
     outfile = tb.scan(prefix=f"{tmp_path}/",
-                      srlist=f"{DATA_DIR}/harealist_file.txt")
+                      srlist=srlist_dict["AUD_USD"])
     assert os.path.isfile(outfile)
 
 

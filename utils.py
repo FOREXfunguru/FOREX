@@ -1,5 +1,6 @@
 import re
 import os
+import yaml
 from typing import Tuple
 
 from datetime import datetime, timedelta
@@ -229,3 +230,9 @@ def is_week_day(d: datetime) -> bool:
     is_weekday = d.isoweekday() < 6
     return is_weekday
 
+
+def load_config_yaml_file(yaml_file: str) -> dict:
+    """Loads a yaml file into a dict"""
+    with open(yaml_file, 'r') as file:
+        config = yaml.safe_load(file)
+        return config
